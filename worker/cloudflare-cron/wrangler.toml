@@ -1,0 +1,21 @@
+name = "lending-terminal-cron"
+main = "src/index.ts"
+compatibility_date = "2025-01-01"
+
+# Cron schedule — disabled as of the derived-rates refactor.
+# The dashboard no longer reads from the `rate_snapshots` table at runtime;
+# borrow APY history is now derived from supply APY × utilization × (1/(1−RF))
+# using DefiLlama data we already pull. To re-enable daily snapshots, restore
+# the `[triggers]` block below and re-run `wrangler deploy`.
+#
+# [triggers]
+# crons = ["0 1 * * *"]
+
+# Non-secret defaults. Override with `wrangler secret put CRON_SECRET` and
+# `wrangler secret put ENDPOINT_URL` once the Next.js app is deployed.
+[vars]
+ENDPOINT_URL = "https://lending-terminal.datumlabs.xyz/api/cron/snapshot-rates"
+
+# Observability — lightweight, free tier friendly.
+[observability]
+enabled = true

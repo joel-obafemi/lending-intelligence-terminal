@@ -1,0 +1,16 @@
+{
+  "name": "lending-terminal-cron",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Cloudflare Worker that POSTs to the Next.js /api/cron/snapshot-rates endpoint on a daily schedule.",
+  "scripts": {
+    "dev": "wrangler dev",
+    "deploy": "wrangler deploy",
+    "tail": "wrangler tail"
+  },
+  "devDependencies": {
+    "@cloudflare/workers-types": "^4.20250101.0",
+    "typescript": "^5.0.0",
+    "wrangler": "^3.99.0"
+  }
+}
