@@ -186,6 +186,8 @@ export function MarketSupplyBorrowChart({
   const colors = useThemeColors()
   const cardRef = useRef<HTMLDivElement>(null)
   const bucket = rangeToBucket(range)
+  const hasAnyCap = supplyCapUsd != null || borrowCapUsd != null
+  const title = hasAnyCap ? "Supply / Borrow vs Caps" : "Supply / Borrow History"
 
   // Merge supply + borrow timestamps into one row per day so Recharts can
   // render two lines from a single dataset. After bucketing we trim any
@@ -240,17 +242,32 @@ export function MarketSupplyBorrowChart({
         className="border-b border-border flex items-center justify-between flex-wrap gap-2"
         style={{ padding: "10px 16px" }}
       >
-        <span
-          className="text-accent"
-          style={{
-            fontSize: "11px",
-            fontWeight: 700,
-            textTransform: "uppercase",
-            letterSpacing: "0.1em",
-          }}
-        >
-          Supply / Borrow vs Caps
-        </span>
+        <div className="flex items-center gap-2 flex-wrap">
+          <span
+            className="text-accent"
+            style={{
+              fontSize: "11px",
+              fontWeight: 700,
+              textTransform: "uppercase",
+              letterSpacing: "0.1em",
+            }}
+          >
+            {title}
+          </span>
+          {!hasAnyCap && (
+            <span
+              className="text-[9px]"
+              style={{
+                color: "var(--text-muted)",
+                letterSpacing: "0.05em",
+                textTransform: "none",
+              }}
+              title="This reserve has no on-chain supply or borrow cap configured. Some protocols leave stablecoins or trusted assets uncapped."
+            >
+              · no on-chain cap
+            </span>
+          )}
+        </div>
         <div className="flex items-center gap-3 text-[10px] flex-wrap">
           <LegendItem color={SUPPLY_COLOR} label="Supply" />
           <LegendItem color={BORROW_COLOR} label="Borrow" />
@@ -268,7 +285,7 @@ export function MarketSupplyBorrowChart({
             options={[7, 30, 90, 0]}
             labels={{ 7: "W", 30: "M", 90: "Q", 0: "All" }}
           />
-          <ChartActions cardRef={cardRef} title="Supply Borrow vs Caps" />
+          <ChartActions cardRef={cardRef} title={title} />
         </div>
       </div>
       <div className="relative p-4 h-[260px] chart-body">
