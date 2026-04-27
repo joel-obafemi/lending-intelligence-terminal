@@ -9,6 +9,7 @@ import { MarketCrossProtocolTable } from "@/components/market-detail/market-cros
 import { MarketParametersCard } from "@/components/market-detail/market-parameters-card"
 import { MarketDataSourceFooter } from "@/components/market-detail/market-data-source-footer"
 import { MarketIrmCurve } from "@/components/market-detail/market-irm-curve"
+import { MarketSupplyBorrowChart } from "@/components/market-detail/market-supply-borrow-chart"
 import { VaultHeroCards } from "@/components/market-detail/vault-hero-cards"
 import { VaultMarketAllocationTable } from "@/components/market-detail/vault-market-allocation-table"
 import { VaultDetailsPanel } from "@/components/market-detail/vault-details-panel"
@@ -263,30 +264,11 @@ function MarketLayout({ detail }: { detail: MarketDetail }) {
       />
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
-        <MarketMultiLineChart
-          title="Supply & Borrow Cap Utilization"
-          format="percent"
-          bucketMode="last"
-          decimals={1}
-          series={[
-            {
-              key: "supplyCap",
-              label: "Supply Cap",
-              color: "#10B981",
-              data: detail.supplyCapUtilHistory,
-            },
-            {
-              key: "borrowCap",
-              label: "Borrow Cap",
-              color: "#FF8A3D",
-              data: detail.borrowCapUtilHistory,
-            },
-          ]}
-          emptyMessage={
-            "Cap utilization history requires both an on-chain cap and historical " +
-            "supply/borrow USD. Available for Aave V3 + SparkLend reserves where caps " +
-            "are configured; not yet wired for this pool."
-          }
+        <MarketSupplyBorrowChart
+          supplyHistory={detail.supplyUsdHistory}
+          borrowHistory={detail.borrowUsdHistory}
+          supplyCapUsd={detail.supplyCapUsd}
+          borrowCapUsd={detail.borrowCapUsd}
         />
         <MarketMultiLineChart
           title="Interest Rate History"
