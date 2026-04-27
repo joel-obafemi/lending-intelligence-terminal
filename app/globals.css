@@ -4,61 +4,63 @@
 
 @import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;500;600;700&display=swap');
 
-/* ─── Datum Labs Terminal Theme — Dark (default) ───
- * Shared design language with SparkLend Terminal and Liquidator Economy.
+/**
+ * ─── Datum Labs Terminal Theme — Light Mode ───
+ *
+ * Mirrors `@datumlabs/dashboard-kit/src/theme/globals.css` (the canonical
+ * DatumLabs SDK theme). All token NAMES from the SDK are present, plus
+ * back-compat aliases for variable names we adopted earlier (`--card-bg`,
+ * `--card-border`, `--text-primary`, `--success`, `--danger`, etc.) so
+ * existing components keep working with zero edits.
+ *
+ * Light-mode-only design system. The Liquidator Economy and other
+ * SDK-aligned dashboards use this exact palette.
  */
-:root {
-  --background: #0B0D0F;
-  --foreground: #E0E0E0;
-  --card-bg: #111318;
-  --card-hover: #1A1E24;
-  --card-border: rgba(255, 255, 255, 0.08);
-  --border-bright: rgba(255, 255, 255, 0.15);
-  --text-primary: #E0E0E0;
-  --text-secondary: #A0A4AB;
-  --text-muted: #6B7280;
-  --accent: #FF6B35;
-  --accent-orange: #FF6B35;
-  --accent-secondary: #B44AFF;
-  --success: #10B981;
-  --danger: #FF4444;
-  --panel-header: #0D0F13;
-  --tooltip-bg: rgba(17, 19, 24, 0.97);
-  --tooltip-shadow: rgba(0, 0, 0, 0.6);
-  --scanline-color: rgba(0, 0, 0, 0.04);
-  --hover-overlay: rgba(255, 255, 255, 0.03);
-  --chart-1: #5B7FFF;
-  --chart-2: #10B981;
-  --chart-3: #F59E0B;
-  --chart-4: #B44AFF;
-  --chart-5: #00D4FF;
-  --chart-6: #FF6B35;
-  --chart-7: #EC4899;
-  --chart-8: #6366F1;
-  color-scheme: dark;
-}
 
-/* ─── Light theme ─── */
-[data-theme="light"] {
-  --background: #F5F7FA;
-  --foreground: #1A1E24;
-  --card-bg: #FFFFFF;
-  --card-hover: #F0F2F5;
-  --card-border: rgba(0, 0, 0, 0.08);
-  --border-bright: rgba(0, 0, 0, 0.15);
-  --text-primary: #1A1E24;
-  --text-secondary: #4B5563;
-  --text-muted: #6B7280;
-  --accent: #E55A1F;
-  --accent-orange: #E55A1F;
-  --accent-secondary: #9333EA;
-  --success: #059669;
-  --danger: #DC2626;
-  --panel-header: #FAFBFC;
+:root {
+  /* ─── Surface (SDK names) ─── */
+  --background: #F5F6F8;          /* app background — cool off-white */
+  --foreground: #0F1115;          /* primary text — near-black */
+  --card: #FFFFFF;                /* panel body surface */
+  --card-hover: #F0F2F5;          /* row / interactive hover */
+  --panel-header: #FAFBFC;        /* panel + status-bar header surface */
+  --border: rgba(15, 17, 21, 0.08);
+  --border-bright: rgba(15, 17, 21, 0.16);
+  --text-muted: #5B6373;
+
+  /* ─── Brand accents (SDK) ─── */
+  --accent-orange: #FF6B35;
+  --accent-red: #D6322E;
+  --accent-blue: #3B5FE0;
+  --accent-green: #0F9D58;
+  --accent-purple: #9B4AE0;
+  --accent-cyan: #0090B2;
+  --accent-yellow: #D97706;
+
+  /* ─── Chart palette (SDK — darkened for contrast on light surfaces) ─── */
+  --chart-1: #3B5FE0;
+  --chart-2: #0F9D58;
+  --chart-3: #D97706;
+  --chart-4: #9B4AE0;
+  --chart-5: #0090B2;
+  --chart-6: #FF6B35;
+  --chart-7: #D81B7A;
+  --chart-8: #4F46E5;
+
+  /* ─── Back-compat aliases (legacy variable names this codebase used) ─── */
+  --card-bg: var(--card);
+  --card-border: var(--border);
+  --text-primary: var(--foreground);
+  --text-secondary: #2C3344;
+  --accent: var(--accent-orange);
+  --accent-secondary: var(--accent-purple);
+  --success: var(--accent-green);
+  --danger: var(--accent-red);
   --tooltip-bg: rgba(255, 255, 255, 0.98);
-  --tooltip-shadow: rgba(0, 0, 0, 0.12);
-  --scanline-color: rgba(0, 0, 0, 0.012);
-  --hover-overlay: rgba(0, 0, 0, 0.03);
+  --tooltip-shadow: rgba(15, 17, 21, 0.10);
+  --hover-overlay: rgba(15, 17, 21, 0.03);
+  --scanline-color: rgba(15, 17, 21, 0.02);
+
   color-scheme: light;
 }
 
@@ -70,15 +72,14 @@
 
 body {
   background-color: var(--background);
-  color: var(--text-primary);
+  color: var(--foreground);
   font-family: 'JetBrains Mono', monospace;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   font-size: 13px;
-  transition: background-color 0.2s ease, color 0.2s ease;
 }
 
-/* ─── TUI scanline overlay ─── */
+/* ─── Subtle TUI scanline overlay (very faint on light bg) ─── */
 body::before {
   content: '';
   position: fixed;
@@ -97,14 +98,14 @@ body::before {
 /* ─── Custom scrollbar ─── */
 ::-webkit-scrollbar { width: 5px; height: 5px; }
 ::-webkit-scrollbar-track { background: var(--background); }
-::-webkit-scrollbar-thumb { background: var(--card-border); border-radius: 3px; }
+::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
 ::-webkit-scrollbar-thumb:hover { background: var(--border-bright); }
 
 /* ─── Recharts tooltip ─── */
 .recharts-tooltip-wrapper { outline: none !important; }
 .custom-tooltip {
   background: var(--tooltip-bg) !important;
-  border: 1px solid var(--card-border) !important;
+  border: 1px solid var(--border) !important;
   border-radius: 4px !important;
   backdrop-filter: blur(12px);
   padding: 12px 16px !important;
@@ -113,8 +114,8 @@ body::before {
 
 /* ─── TUI Panel ─── */
 .tui-panel {
-  background: var(--card-bg);
-  border: 1px solid var(--card-border);
+  background: var(--card);
+  border: 1px solid var(--border);
   border-radius: 4px;
   overflow: hidden;
   position: relative;
@@ -125,7 +126,7 @@ body::before {
   top: 0; left: 0; right: 0;
   height: 1px;
   background: linear-gradient(90deg, transparent, var(--accent-orange), transparent);
-  opacity: 0.15;
+  opacity: 0.35;
 }
 .tui-panel-header {
   display: flex;
@@ -133,7 +134,7 @@ body::before {
   justify-content: space-between;
   padding: 8px 16px;
   background: var(--panel-header);
-  border-bottom: 1px solid var(--card-border);
+  border-bottom: 1px solid var(--border);
   min-height: 36px;
 }
 .tui-panel-title {
@@ -150,13 +151,13 @@ body::before {
 }
 
 /* ─── Dividers ─── */
-.tui-divider { height: 1px; background: var(--card-border); margin: 0; }
+.tui-divider { height: 1px; background: var(--border); margin: 0; }
 .tui-divider-labeled {
   display: flex; align-items: center; gap: 12px; margin: 16px 0;
 }
 .tui-divider-labeled::before,
 .tui-divider-labeled::after {
-  content: ""; flex: 1; height: 1px; background: var(--card-border);
+  content: ""; flex: 1; height: 1px; background: var(--border);
 }
 .tui-divider-label {
   font-size: 10px; text-transform: uppercase; letter-spacing: 0.15em; color: var(--text-muted);
@@ -178,18 +179,18 @@ body::before {
   border-bottom: 1px solid var(--border-bright); font-weight: 600; white-space: nowrap;
 }
 .data-table thead th.text-right { text-align: right; }
-.data-table tbody td { padding: 8px 12px; border-bottom: 1px solid var(--card-border); white-space: nowrap; }
+.data-table tbody td { padding: 8px 12px; border-bottom: 1px solid var(--border); white-space: nowrap; }
 .data-table tbody tr:last-child td { border-bottom: none; }
 .data-table tbody tr:hover { background: var(--hover-overlay); }
 
 /* ─── Time range buttons ─── */
 .time-btn {
   padding: 3px 10px; font-size: 10px; text-transform: uppercase; letter-spacing: 0.08em;
-  border: 1px solid var(--card-border); border-radius: 3px; background: transparent;
+  border: 1px solid var(--border); border-radius: 3px; background: transparent;
   color: var(--text-muted); cursor: pointer; transition: all 0.15s ease;
 }
-.time-btn:hover { border-color: var(--border-bright); color: var(--text-primary); }
-.time-btn.active { border-color: var(--accent-orange); color: var(--accent-orange); background: rgba(255, 107, 53, 0.08); }
+.time-btn:hover { border-color: var(--border-bright); color: var(--foreground); }
+.time-btn.active { border-color: var(--accent-orange); color: var(--accent-orange); background: rgba(255, 107, 53, 0.1); }
 
 /* ─── Active nav indicator (terminal style) ─── */
 .nav-active {
@@ -214,16 +215,13 @@ body::before {
 /* ─── Shimmer skeleton ─── */
 @keyframes shimmer { 0% { background-position: -200% 0; } 100% { background-position: 200% 0; } }
 .skeleton {
-  background: linear-gradient(90deg, var(--card-bg) 25%, var(--card-hover) 50%, var(--card-bg) 75%);
+  background: linear-gradient(90deg, var(--card-hover) 25%, var(--card) 50%, var(--card-hover) 75%);
   background-size: 200% 100%; animation: shimmer 1.5s infinite; border-radius: 2px;
 }
 
 /* ─── Card hover ─── */
 .tui-card { transition: border-color 0.2s ease, box-shadow 0.2s ease; }
 .tui-card:hover {
-  border-color: rgba(255, 107, 53, 0.15);
-  box-shadow: 0 0 20px rgba(255, 107, 53, 0.03);
+  border-color: rgba(255, 107, 53, 0.25);
+  box-shadow: 0 0 20px rgba(255, 107, 53, 0.05);
 }
-
-/* ─── Prevent FOUC ─── */
-html:not([data-theme]) body { visibility: hidden; }

@@ -1,36 +1,17 @@
 /**
  * Next.js config for the Lending Intelligence Terminal.
  *
- * `basePath: '/lending-terminal'` makes the app serve every route under that
- * prefix so it can be mounted as a sub-path of `datumlab.xyz` via a rewrite
- * on the main Datum Labs site:
+ * The terminal is served as an isolated Vercel deployment and embedded into
+ * datumlab.xyz/lending-terminal via an <iframe> on a one-line route in the
+ * DatumLabs site repo. No basePath is needed — the dashboard renders at the
+ * root of its own Vercel URL, and the parent route just frames it.
  *
- *     // datumlab.xyz/next.config.js
- *     async rewrites() {
- *       return [
- *         {
- *           source: '/lending-terminal',
- *           destination: 'https://<vercel-deployment>.vercel.app/lending-terminal',
- *         },
- *         {
- *           source: '/lending-terminal/:path*',
- *           destination: 'https://<vercel-deployment>.vercel.app/lending-terminal/:path*',
- *         },
- *       ]
- *     }
- *
- * `basePath` also auto-prefixes:
- *   - `<Link href="/markets/foo">` → `/lending-terminal/markets/foo`
- *   - Static asset URLs in `_next/static/*`
- *   - API routes (e.g. `/api/overview` → `/lending-terminal/api/overview`)
- *
- * Note: this changes the dev server URL too. `npm run dev` now serves the
- * app at `http://localhost:3000/lending-terminal` (NOT the bare root).
+ * If you ever need the terminal to live as a sub-path of a parent Next.js
+ * app (rewrite-based mounting), restore `basePath: "/lending-terminal"` and
+ * add the matching rewrite on the parent.
  */
 
 /** @type {import('next').NextConfig} */
-const nextConfig = {
-  basePath: "/lending-terminal",
-}
+const nextConfig = {}
 
 module.exports = nextConfig

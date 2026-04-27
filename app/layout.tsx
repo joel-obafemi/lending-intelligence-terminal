@@ -1,40 +1,26 @@
 import type { Metadata } from "next"
 import { Suspense } from "react"
 import { NavHeader } from "@/components/nav-header"
-import { ThemeProvider } from "@/components/theme-provider"
 import "./globals.css"
 
 export const metadata: Metadata = {
   title: "Lending Intelligence Terminal · Datum Labs",
-  description: "Multi-protocol lending analytics: Aave V3, Spark, Morpho, Fluid",
+  description: "Multi-protocol lending analytics: Aave V3, SparkLend, Morpho, Fluid",
 }
 
 function PageFallback() {
   return (
     <div className="max-w-[1400px] mx-auto px-4 lg:px-6 py-5 animate-pulse space-y-4">
-      <div className="h-4 w-24 bg-card-bg rounded" />
+      <div className="h-4 w-24 bg-card rounded" />
       <div className="grid grid-cols-3 gap-4">
         {[1, 2, 3].map((i) => (
-          <div key={i} className="h-24 bg-card-bg border border-card-border rounded" />
+          <div key={i} className="h-24 bg-card border border-border rounded" />
         ))}
       </div>
-      <div className="h-[340px] bg-card-bg border border-card-border rounded" />
+      <div className="h-[340px] bg-card border border-border rounded" />
     </div>
   )
 }
-
-// Inline script to set theme before paint (prevents FOUC)
-const themeScript = `
-(function() {
-  try {
-    var stored = localStorage.getItem('lit-theme');
-    var theme = stored || (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
-    document.documentElement.setAttribute('data-theme', theme);
-  } catch(e) {
-    document.documentElement.setAttribute('data-theme', 'dark');
-  }
-})();
-`
 
 export default function RootLayout({
   children,
@@ -42,38 +28,33 @@ export default function RootLayout({
   children: React.ReactNode
 }) {
   return (
-    <html lang="en" suppressHydrationWarning>
-      <head>
-        <script dangerouslySetInnerHTML={{ __html: themeScript }} />
-      </head>
+    <html lang="en">
       <body>
-        <ThemeProvider>
-          <div
-            className="min-h-screen font-mono flex flex-col"
-            style={{ background: "var(--background)", color: "var(--text-primary)" }}
-          >
-            <NavHeader />
-            <main className="flex-1">
-              <Suspense fallback={<PageFallback />}>{children}</Suspense>
-            </main>
+        <div
+          className="min-h-screen font-mono flex flex-col"
+          style={{ background: "var(--background)", color: "var(--foreground)" }}
+        >
+          <NavHeader />
+          <main className="flex-1">
+            <Suspense fallback={<PageFallback />}>{children}</Suspense>
+          </main>
 
-            {/* Status Bar */}
-            <div
-              className="flex items-center justify-between px-4 lg:px-6 h-7 text-[11px]"
-              style={{
-                borderTop: "1px solid var(--card-border)",
-                background: "var(--panel-header)",
-                color: "var(--text-muted)",
-              }}
-            >
-              <div className="flex items-center gap-1.5">
-                <span style={{ color: "var(--accent-orange)" }}>&gt;</span>
-                <span>datumlabs.xyz/lending</span>
-              </div>
-              <span>Powered by Datum Labs</span>
+          {/* Status Bar — matches SDK DashboardLayout footer */}
+          <div
+            className="flex items-center justify-between px-4 lg:px-6 h-7 text-[11px]"
+            style={{
+              borderTop: "1px solid var(--border)",
+              background: "var(--panel-header)",
+              color: "var(--text-muted)",
+            }}
+          >
+            <div className="flex items-center gap-1.5">
+              <span style={{ color: "var(--accent-orange)" }}>&gt;</span>
+              <span>datumlab.xyz/lending-terminal</span>
             </div>
+            <span>Powered by Datum Labs</span>
           </div>
-        </ThemeProvider>
+        </div>
       </body>
     </html>
   )

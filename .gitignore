@@ -31,5 +31,11 @@ yarn-error.log*
 # TypeScript
 *.tsbuildinfo
 
-# Local caches
+# Local caches (DatumLabs SDK convention — catch all *-cache.json)
 .*-cache.json
+*-cache.json
+
+# Claude Code editor configuration — don't ship the launch config
+.claude/
+
+.vercel
