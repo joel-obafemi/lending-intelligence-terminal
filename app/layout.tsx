@@ -1,6 +1,7 @@
 import type { Metadata } from "next"
 import { Suspense } from "react"
 import { NavHeader } from "@/components/nav-header"
+import { IframePathSync } from "@/components/iframe-path-sync"
 import "./globals.css"
 
 export const metadata: Metadata = {
@@ -35,6 +36,9 @@ export default function RootLayout({
           style={{ background: "var(--background)", color: "var(--foreground)" }}
         >
           <NavHeader />
+          <Suspense>
+            <IframePathSync />
+          </Suspense>
           <main className="flex-1">
             <Suspense fallback={<PageFallback />}>{children}</Suspense>
           </main>

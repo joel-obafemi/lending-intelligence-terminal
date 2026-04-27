@@ -1,5 +1,6 @@
 "use client"
 
+import { useRef } from "react"
 import {
   Line,
   LineChart,
@@ -10,6 +11,7 @@ import {
   YAxis,
 } from "recharts"
 import { useThemeColors } from "../theme-provider"
+import { ChartActions } from "../chart-actions"
 
 interface Props {
   /** Per-utilization sample points. Utilization is 0-1; APYs are PERCENT. */
@@ -62,6 +64,7 @@ function CustomTooltip({ active, payload, label }: any) {
 
 export function MarketIrmCurve({ curve, currentUtilizationPct, kink }: Props) {
   const colors = useThemeColors()
+  const cardRef = useRef<HTMLDivElement>(null)
   const data = curve.map((p) => ({
     utilization: p.utilization,
     supplyApy: p.supplyApy,
@@ -72,7 +75,10 @@ export function MarketIrmCurve({ curve, currentUtilizationPct, kink }: Props) {
   const yMax = Math.max(...data.map((d) => d.borrowApy), 0)
 
   return (
-    <div className="tui-card bg-card-bg border border-card-border rounded overflow-hidden flex flex-col">
+    <div
+      ref={cardRef}
+      className="tui-card bg-card-bg border border-card-border rounded overflow-hidden flex flex-col"
+    >
       <div
         className="border-b border-card-border flex items-center justify-between flex-wrap gap-2"
         style={{ padding: "10px 16px" }}
@@ -88,18 +94,21 @@ export function MarketIrmCurve({ curve, currentUtilizationPct, kink }: Props) {
         >
           Interest Rate Curve
         </span>
-        <div className="flex items-center gap-3 text-[10px]" style={{ color: "var(--text-muted)" }}>
-          <div className="flex items-center gap-1">
-            <span className="w-2 h-2 rounded-full" style={{ backgroundColor: "#FF8A3D" }} />
-            <span>Borrow Rate</span>
+        <div className="flex items-center gap-3">
+          <div className="flex items-center gap-3 text-[10px]" style={{ color: "var(--text-muted)" }}>
+            <div className="flex items-center gap-1">
+              <span className="w-2 h-2 rounded-full" style={{ backgroundColor: "#FF8A3D" }} />
+              <span>Borrow Rate</span>
+            </div>
+            <div className="flex items-center gap-1">
+              <span className="w-2 h-2 rounded-full" style={{ backgroundColor: "#10B981" }} />
+              <span>Supply Rate</span>
+            </div>
           </div>
-          <div className="flex items-center gap-1">
-            <span className="w-2 h-2 rounded-full" style={{ backgroundColor: "#10B981" }} />
-            <span>Supply Rate</span>
-          </div>
+          <ChartActions cardRef={cardRef} title="Interest Rate Curve" />
         </div>
       </div>
-      <div className="relative p-4 h-[260px]">
+      <div className="relative p-4 h-[260px] chart-body">
         <ResponsiveContainer width="100%" height="100%">
           {/* `top: 28` reserves headroom for two stacked reference-line labels
               (e.g. when current util sits right on the kink, both labels live

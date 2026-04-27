@@ -1,6 +1,6 @@
 "use client"
 
-import { useMemo, useState } from "react"
+import { useMemo, useRef, useState } from "react"
 import {
   Area,
   AreaChart,
@@ -13,6 +13,7 @@ import {
 } from "recharts"
 import { useThemeColors } from "../theme-provider"
 import { TimeToggle, type TimeRange } from "../time-toggle"
+import { ChartActions } from "../chart-actions"
 import {
   bucketSeries,
   formatBucketLabel,
@@ -85,6 +86,7 @@ export function MarketHistoryChart({
 }: Props) {
   const [range, setRange] = useState<TimeRange>(30)
   const colors = useThemeColors()
+  const cardRef = useRef<HTMLDivElement>(null)
   const lineColor = color ?? colors.accent
   const bucket = rangeToBucket(range)
   const bucketed = useMemo(
@@ -95,7 +97,10 @@ export function MarketHistoryChart({
   const isEmpty = !data || data.length < 2
 
   return (
-    <div className="tui-card bg-card-bg border border-card-border rounded overflow-hidden flex flex-col">
+    <div
+      ref={cardRef}
+      className="tui-card bg-card-bg border border-card-border rounded overflow-hidden flex flex-col"
+    >
       <div
         className="border-b border-card-border flex items-center justify-between"
         style={{ padding: "10px 16px" }}
@@ -111,14 +116,17 @@ export function MarketHistoryChart({
         >
           {title}
         </span>
-        <TimeToggle
-          selected={range}
-          onChange={setRange}
-          options={[7, 30, 90, 0]}
-          labels={{ 7: "W", 30: "M", 90: "Q", 0: "All" }}
-        />
+        <div className="flex items-center gap-2">
+          <TimeToggle
+            selected={range}
+            onChange={setRange}
+            options={[7, 30, 90, 0]}
+            labels={{ 7: "W", 30: "M", 90: "Q", 0: "All" }}
+          />
+          <ChartActions cardRef={cardRef} title={title} />
+        </div>
       </div>
-      <div className="relative p-4 h-[260px]">
+      <div className="relative p-4 h-[260px] chart-body">
         {isEmpty ? (
           <div className="h-full flex items-center justify-center text-[11px] text-text-muted text-center px-6">
             {emptyMessage ?? "Not enough history yet."}

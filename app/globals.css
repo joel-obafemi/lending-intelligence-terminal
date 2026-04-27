@@ -225,3 +225,33 @@ body::before {
   border-color: rgba(255, 107, 53, 0.25);
   box-shadow: 0 0 20px rgba(255, 107, 53, 0.05);
 }
+
+/* ─── Chart expand overlay ───
+ *
+ * Toggled on by ChartActions when the user clicks the maximize button.
+ * Promotes a chart card to a near-fullscreen overlay; the inner Recharts
+ * ResponsiveContainer reflows automatically. Click outside or press Esc
+ * to dismiss (handled in chart-actions.tsx). */
+.chart-expanded {
+  position: fixed !important;
+  inset: 24px !important;
+  z-index: 60 !important;
+  width: auto !important;
+  max-width: none !important;
+  box-shadow: 0 24px 64px rgba(15, 17, 21, 0.25);
+}
+/* Stretch the chart body so the chart fills the expanded card. The
+ * .chart-body class is added by chart components on the Recharts
+ * container wrapper. */
+.chart-expanded .chart-body {
+  flex: 1 1 auto;
+  min-height: 0;
+  height: auto !important;
+}
+.chart-expanded::after {
+  content: "";
+  position: fixed;
+  inset: 0;
+  background: rgba(15, 17, 21, 0.45);
+  z-index: -1;
+}

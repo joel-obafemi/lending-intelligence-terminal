@@ -1,6 +1,6 @@
 "use client"
 
-import { useMemo, useState } from "react"
+import { useMemo, useRef, useState } from "react"
 import {
   BarChart,
   Bar,
@@ -12,6 +12,7 @@ import {
 import { formatUSD } from "@/lib/utils"
 import { useThemeColors } from "../theme-provider"
 import { TimeToggle, type TimeRange } from "../time-toggle"
+import { ChartActions } from "../chart-actions"
 import {
   bucketSeries,
   formatBucketLabel,
@@ -85,6 +86,7 @@ function Tt({ active, payload, bucket }: any) {
 export function RevenueByRecipientChart({ title, subtitle, color, data, defaultRange = 90 }: Props) {
   const [range, setRange] = useState<TimeRange>(defaultRange)
   const colors = useThemeColors()
+  const cardRef = useRef<HTMLDivElement>(null)
   const bucket = rangeToBucket(range)
   // Recipient revenue is flow data — sum daily/weekly values within each bucket.
   const bucketed = useMemo(
@@ -98,7 +100,10 @@ export function RevenueByRecipientChart({ title, subtitle, color, data, defaultR
   )
 
   return (
-    <div className="tui-card bg-card-bg border border-card-border rounded overflow-hidden flex flex-col">
+    <div
+      ref={cardRef}
+      className="tui-card bg-card-bg border border-card-border rounded overflow-hidden flex flex-col"
+    >
       <div
         className="border-b border-card-border flex items-center justify-between"
         style={{ padding: "10px 16px" }}
@@ -115,14 +120,17 @@ export function RevenueByRecipientChart({ title, subtitle, color, data, defaultR
             </span>
           )}
         </div>
-        <TimeToggle
-          selected={range}
-          onChange={setRange}
-          options={[7, 30, 90]}
-          labels={{ 7: "W", 30: "M", 90: "Q" }}
-        />
+        <div className="flex items-center gap-2">
+          <TimeToggle
+            selected={range}
+            onChange={setRange}
+            options={[7, 30, 90]}
+            labels={{ 7: "W", 30: "M", 90: "Q" }}
+          />
+          <ChartActions cardRef={cardRef} title={title} />
+        </div>
       </div>
-      <div className="relative p-4 h-[240px]">
+      <div className="relative p-4 h-[240px] chart-body">
         <ResponsiveContainer width="100%" height="100%">
           <BarChart data={bucketed} margin={{ top: 5, right: 5, left: 5, bottom: 0 }}>
             <XAxis

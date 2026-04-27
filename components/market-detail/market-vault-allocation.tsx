@@ -1,7 +1,9 @@
 "use client"
 
+import { useRef } from "react"
 import { Cell, Pie, PieChart, ResponsiveContainer, Tooltip } from "recharts"
 import { formatPercent, formatUSD } from "@/lib/utils"
+import { ChartActions } from "../chart-actions"
 import type { VaultAllocationRow } from "@/lib/market-detail"
 
 interface Props {
@@ -60,9 +62,13 @@ export function MarketVaultAllocation({ allocation, asset }: Props) {
   // Pre-color the rows so the legend, donut, and table all match.
   const colored = allocation.map((a, i) => ({ ...a, color: SLICE_COLORS[i % SLICE_COLORS.length] }))
   const total = colored.reduce((s, r) => s + r.vaultSupplyUsd, 0)
+  const cardRef = useRef<HTMLDivElement>(null)
 
   return (
-    <div className="tui-card bg-card-bg border border-card-border rounded overflow-hidden flex flex-col">
+    <div
+      ref={cardRef}
+      className="tui-card bg-card-bg border border-card-border rounded overflow-hidden flex flex-col"
+    >
       <div
         className="border-b border-card-border flex items-center justify-between"
         style={{ padding: "10px 16px" }}
@@ -78,9 +84,12 @@ export function MarketVaultAllocation({ allocation, asset }: Props) {
         >
           Vault Allocation
         </span>
-        <span className="text-[10px] text-text-muted">
-          Where this vault deploys {asset} deposits across underlying Morpho markets
-        </span>
+        <div className="flex items-center gap-2">
+          <span className="text-[10px] text-text-muted">
+            Where this vault deploys {asset} deposits across underlying Morpho markets
+          </span>
+          <ChartActions cardRef={cardRef} title="Vault Allocation" />
+        </div>
       </div>
       <div className="grid grid-cols-1 lg:grid-cols-[200px_1fr] gap-4 p-4 items-center">
         <div className="h-[200px] relative">

@@ -11,12 +11,17 @@
  * succeeded. The tooltip shows all four values (matching the Moonwell
  * dashboard's exact field labels).
  *
- * Y-axis is sized to the supply/borrow data — when a cap is far above
- * (typical for under-utilized reserves) the dashed line still renders if
- * within domain, otherwise the cap shows in the tooltip only.
+ * Y-axis: domain is rounded up to a "nice" round value so tick labels read
+ * as $250M / $500M / $1B instead of an exact $996.81M echoing the data peak.
+ * When caps are loaded they're folded into the domain so the dashed lines
+ * always sit within view.
+ *
+ * Leading-zero trim: pools that didn't exist for the full window have empty
+ * leading buckets. We drop them so the chart focuses on the period the asset
+ * has been live.
  */
 
-import { useMemo, useState } from "react"
+import { useMemo, useRef, useState } from "react"
 import {
   Area,
   AreaChart,
@@ -28,6 +33,7 @@ import {
 } from "recharts"
 import { useThemeColors } from "../theme-provider"
 import { TimeToggle, type TimeRange } from "../time-toggle"
+import { ChartActions } from "../chart-actions"
 import {
   bucketSeries,
   formatBucketLabel,
@@ -53,9 +59,26 @@ function fmtUsd(v: number): string {
   if (!Number.isFinite(v)) return "—"
   const abs = Math.abs(v)
   if (abs >= 1e9) return `$${(v / 1e9).toFixed(2)}B`
-  if (abs >= 1e6) return `$${(v / 1e6).toFixed(2)}M`
-  if (abs >= 1e3) return `$${(v / 1e3).toFixed(1)}K`
+  if (abs >= 1e6) return `$${(v / 1e6).toFixed(0)}M`
+  if (abs >= 1e3) return `$${(v / 1e3).toFixed(0)}K`
   return `$${v.toFixed(0)}`
+}
+
+/**
+ * Round `v` up to a "nice" round number (1, 2, 2.5, 5, or 10 × 10^n).
+ * Used for the y-axis domain so tick labels are readable.
+ */
+function niceCeil(v: number): number {
+  if (!Number.isFinite(v) || v <= 0) return 0
+  const exp = Math.pow(10, Math.floor(Math.log10(v)))
+  const m = v / exp
+  let rounded: number
+  if (m <= 1) rounded = 1
+  else if (m <= 2) rounded = 2
+  else if (m <= 2.5) rounded = 2.5
+  else if (m <= 5) rounded = 5
+  else rounded = 10
+  return rounded * exp
 }
 
 interface TooltipRowProps {
@@ -161,10 +184,14 @@ export function MarketSupplyBorrowChart({
 }: Props) {
   const [range, setRange] = useState<TimeRange>(30)
   const colors = useThemeColors()
+  const cardRef = useRef<HTMLDivElement>(null)
   const bucket = rangeToBucket(range)
 
   // Merge supply + borrow timestamps into one row per day so Recharts can
-  // render two lines from a single dataset.
+  // render two lines from a single dataset. After bucketing we trim any
+  // leading buckets where both values are zero — pools that didn't exist
+  // for the full window otherwise show a flat baseline that wastes space
+  // and obscures the actual trend.
   const data = useMemo(() => {
     const supplyByTs = new Map<number, number>()
     for (const p of supplyHistory) supplyByTs.set(p.timestamp, p.value)
@@ -176,21 +203,39 @@ export function MarketSupplyBorrowChart({
       supply: supplyByTs.get(ts) ?? 0,
       borrow: borrowByTs.get(ts) ?? 0,
     }))
-    return bucketSeries(merged, bucket, "last", ["supply", "borrow"])
+    const bucketed = bucketSeries(merged, bucket, "last", ["supply", "borrow"])
+    let firstNonZero = 0
+    while (
+      firstNonZero < bucketed.length &&
+      (bucketed[firstNonZero].supply ?? 0) <= 0 &&
+      (bucketed[firstNonZero].borrow ?? 0) <= 0
+    ) {
+      firstNonZero++
+    }
+    return firstNonZero > 0 ? bucketed.slice(firstNonZero) : bucketed
   }, [supplyHistory, borrowHistory, bucket])
 
   const isEmpty = data.length < 2
 
-  // Y-domain sized to the supply/borrow values; caps may sit above the
-  // visible top — they still appear in the tooltip and as a clipped marker
-  // at the top edge if Recharts can render them within range.
+  // Y-domain is rounded UP to a nice round value so tick labels read clean
+  // ($250M / $500M / $1B instead of an exact peak echo). When caps are
+  // loaded we include them so the dashed lines always sit within view.
   const yMax = useMemo(() => {
-    const peak = data.reduce((m, p) => Math.max(m, p.supply ?? 0, p.borrow ?? 0), 0)
-    return peak > 0 ? peak * 1.15 : undefined
-  }, [data])
+    let peak = 0
+    for (const p of data) {
+      if ((p.supply ?? 0) > peak) peak = p.supply ?? 0
+      if ((p.borrow ?? 0) > peak) peak = p.borrow ?? 0
+    }
+    if (supplyCapUsd != null && supplyCapUsd > peak) peak = supplyCapUsd
+    if (borrowCapUsd != null && borrowCapUsd > peak) peak = borrowCapUsd
+    return peak > 0 ? niceCeil(peak * 1.05) : undefined
+  }, [data, supplyCapUsd, borrowCapUsd])
 
   return (
-    <div className="tui-card bg-card border border-border rounded overflow-hidden flex flex-col">
+    <div
+      ref={cardRef}
+      className="tui-card bg-card border border-border rounded overflow-hidden flex flex-col"
+    >
       <div
         className="border-b border-border flex items-center justify-between flex-wrap gap-2"
         style={{ padding: "10px 16px" }}
@@ -216,14 +261,17 @@ export function MarketSupplyBorrowChart({
             <LegendItem color={BORROW_CAP_COLOR} label="Borrow Cap" dashed />
           )}
         </div>
-        <TimeToggle
-          selected={range}
-          onChange={setRange}
-          options={[7, 30, 90, 0]}
-          labels={{ 7: "W", 30: "M", 90: "Q", 0: "All" }}
-        />
+        <div className="flex items-center gap-2">
+          <TimeToggle
+            selected={range}
+            onChange={setRange}
+            options={[7, 30, 90, 0]}
+            labels={{ 7: "W", 30: "M", 90: "Q", 0: "All" }}
+          />
+          <ChartActions cardRef={cardRef} title="Supply Borrow vs Caps" />
+        </div>
       </div>
-      <div className="relative p-4 h-[260px]">
+      <div className="relative p-4 h-[260px] chart-body">
         {isEmpty ? (
           <div
             className="h-full flex items-center justify-center text-[11px] text-center px-6"
@@ -271,9 +319,6 @@ export function MarketSupplyBorrowChart({
                 }
                 cursor={{ stroke: colors.textMuted, strokeWidth: 1, strokeDasharray: "4 4" }}
               />
-              {/* Cap reference lines — only render when within visible domain.
-                  Recharts auto-clips lines outside the y-domain, but the
-                  tooltip still shows the cap value either way. */}
               {supplyCapUsd != null && yMax != null && supplyCapUsd <= yMax && (
                 <ReferenceLine
                   y={supplyCapUsd}

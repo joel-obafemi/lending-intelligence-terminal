@@ -1,6 +1,6 @@
 "use client"
 
-import { useMemo, useState } from "react"
+import { useMemo, useRef, useState } from "react"
 import {
   Line,
   LineChart,
@@ -11,6 +11,7 @@ import {
 } from "recharts"
 import { useThemeColors } from "../theme-provider"
 import { TimeToggle, type TimeRange } from "../time-toggle"
+import { ChartActions } from "../chart-actions"
 import {
   bucketSeries,
   formatBucketLabel,
@@ -104,6 +105,7 @@ export function MarketMultiLineChart({
 }: Props) {
   const [range, setRange] = useState<TimeRange>(30)
   const colors = useThemeColors()
+  const cardRef = useRef<HTMLDivElement>(null)
   const bucket = rangeToBucket(range)
 
   // Bucket each series independently, then merge.
@@ -126,7 +128,10 @@ export function MarketMultiLineChart({
   const isEmpty = !hasAnyData || !enoughBuckets
 
   return (
-    <div className="tui-card bg-card-bg border border-card-border rounded overflow-hidden flex flex-col">
+    <div
+      ref={cardRef}
+      className="tui-card bg-card-bg border border-card-border rounded overflow-hidden flex flex-col"
+    >
       <div
         className="border-b border-card-border flex items-center justify-between flex-wrap gap-2"
         style={{ padding: "10px 16px" }}
@@ -157,9 +162,10 @@ export function MarketMultiLineChart({
             options={[7, 30, 90, 0]}
             labels={{ 7: "W", 30: "M", 90: "Q", 0: "All" }}
           />
+          <ChartActions cardRef={cardRef} title={title} />
         </div>
       </div>
-      <div className="relative p-4 h-[260px]">
+      <div className="relative p-4 h-[260px] chart-body">
         {isEmpty ? (
           <div className="h-full flex items-center justify-center text-[11px] text-text-muted text-center px-6">
             {/* Two distinct empty states: (a) we have daily samples but the
