@@ -138,8 +138,21 @@ export default async function ProtocolsPage({ searchParams }: { searchParams: Se
       {/* Fluid-only: Smart Collateral / Smart Debt adoption — Fluid's
           headline differentiator vs. Aave V3 forks. Sits high on the page
           since this is the metric most Fluid pieces hinge on. */}
-      {slug === "fluid" && fluidStats && (
-        <FluidSmartStatsCard stats={fluidStats} />
+      {slug === "fluid" && (
+        <div data-debug-fluid-stats={JSON.stringify({
+          slug,
+          isNull: fluidStats == null,
+          smartAnyPct: fluidStats?.smartAnyPct ?? null,
+          totalVaults: fluidStats?.totalVaults ?? null,
+        })}>
+          {fluidStats ? (
+            <FluidSmartStatsCard stats={fluidStats} />
+          ) : (
+            <div className="text-[10px]" style={{ color: "var(--danger)" }}>
+              [debug] fluidStats is null at render time
+            </div>
+          )}
+        </div>
       )}
 
       {/* Total Supply + Total Borrows by asset for this protocol */}
