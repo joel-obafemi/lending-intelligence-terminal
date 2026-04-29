@@ -273,20 +273,44 @@ export function ChartActions({ cardRef, title }: Props) {
         styles.getPropertyValue("--card").trim() ||
         "#ffffff"
 
-      // Pass 1: html2canvas captures the chrome (text, table cells, badges)
-      // crisply at SCALE×.
-      const canvas = await html2canvas(el, {
-        backgroundColor: cardBg,
-        scale: SCALE,
-        useCORS: true,
-        logging: false,
-        width: el.offsetWidth,
-        height: el.offsetHeight,
-        // Make sure html2canvas doesn't squash to a fixed window — match the
-        // current viewport so positioning lines up.
-        windowWidth: document.documentElement.clientWidth,
-        windowHeight: document.documentElement.clientHeight,
-      })
+      // Pass 1: html2canvas captures the chrome (text, table cells, badges).
+      //
+      // `foreignObjectRendering: true` uses an SVG <foreignObject> wrapper
+      // that lets the browser's native renderer paint the HTML — text,
+      // borders, small CSS circles all come out pixel-identical to what's
+      // on screen, vs. html2canvas's manual rasterizer which adds slight
+      // bolding + blur to small text/shapes. We fall back to the manual
+      // path on the rare environments where foreignObject taints the
+      // canvas (caught by the outer try/catch and retried below).
+      let canvas: HTMLCanvasElement
+      try {
+        canvas = await html2canvas(el, {
+          backgroundColor: cardBg,
+          scale: SCALE,
+          useCORS: true,
+          logging: false,
+          width: el.offsetWidth,
+          height: el.offsetHeight,
+          windowWidth: document.documentElement.clientWidth,
+          windowHeight: document.documentElement.clientHeight,
+          foreignObjectRendering: true,
+        })
+      } catch (err) {
+        console.warn(
+          "[chart-actions] foreignObjectRendering failed, falling back to manual:",
+          err,
+        )
+        canvas = await html2canvas(el, {
+          backgroundColor: cardBg,
+          scale: SCALE,
+          useCORS: true,
+          logging: false,
+          width: el.offsetWidth,
+          height: el.offsetHeight,
+          windowWidth: document.documentElement.clientWidth,
+          windowHeight: document.documentElement.clientHeight,
+        })
+      }
 
       // Pass 2: redraw each Recharts SVG at vector fidelity over the bitmap.
       // This is the core quality fix — html2canvas rasterizes SVG at
