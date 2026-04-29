@@ -18,7 +18,8 @@
  *  - Camera → renders the cardRef element to PNG via html2canvas at 2× DPI
  *    so the saved image matches what's on screen at retina quality. The
  *    current ChartActions buttons are hidden during capture so they don't
- *    leak into the screenshot.
+ *    leak into the screenshot. After capture, a subtle `@joel_obafemi`
+ *    watermark is drawn in the bottom-right corner.
  *  - Maximize → toggles a `chart-expanded` class on the card that promotes
  *    it to a fullscreen overlay (CSS in globals.css). The chart body uses
  *    Recharts' ResponsiveContainer so it reflows automatically. Esc closes.
@@ -31,6 +32,30 @@ import html2canvas from "html2canvas"
 interface Props {
   cardRef: React.RefObject<HTMLElement | null>
   title: string
+}
+
+/** X handle stamped subtly into the bottom-right corner of every screenshot.
+ *  Kept here so it's easy to find / change in one place. */
+const WATERMARK_HANDLE = "@joel_obafemi"
+
+/** Draw a low-opacity handle in the bottom-right corner of the canvas.
+ *  Sized in CSS pixels (the 2× scale factor html2canvas uses gets folded in).
+ *  Two-tone: light text + a faint matching shadow so it stays legible against
+ *  any chart background. */
+function drawWatermark(canvas: HTMLCanvasElement, scale: number) {
+  const ctx = canvas.getContext("2d")
+  if (!ctx) return
+  const fontPx = 10 * scale
+  ctx.save()
+  ctx.font = `500 ${fontPx}px "JetBrains Mono", ui-monospace, monospace`
+  ctx.textBaseline = "bottom"
+  ctx.textAlign = "right"
+  const padding = 10 * scale
+  const x = canvas.width - padding
+  const y = canvas.height - padding
+  ctx.fillStyle = "rgba(15, 17, 21, 0.32)"
+  ctx.fillText(WATERMARK_HANDLE, x, y)
+  ctx.restore()
 }
 
 export function ChartActions({ cardRef, title }: Props) {
@@ -79,15 +104,17 @@ export function ChartActions({ cardRef, title }: Props) {
         "#ffffff"
       // scale 2 = retina-quality bitmap. backgroundColor avoids transparent
       // pixels that render as black on some viewers.
+      const SCALE = 2
       const canvas = await html2canvas(el, {
         backgroundColor: cardBg,
-        scale: 2,
+        scale: SCALE,
         useCORS: true,
         logging: false,
         // Capture the live size so the rendered image matches what users see.
         width: el.offsetWidth,
         height: el.offsetHeight,
       })
+      drawWatermark(canvas, SCALE)
       const blob: Blob | null = await new Promise((res) =>
         canvas.toBlob((b) => res(b), "image/png", 1.0),
       )

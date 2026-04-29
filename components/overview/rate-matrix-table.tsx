@@ -87,10 +87,13 @@ export function RateMatrixTable({ title, cells }: Props) {
                   <td style={{ fontWeight: 600 }}>{sym}</td>
                   {PROTOCOLS.map((p) => {
                     const cell = row.get(p.slug)
+                    const supplyReward = cell?.supplyApyReward ?? 0
+                    const borrowReward = cell?.borrowApyReward ?? 0
+                    const hasRewards = supplyReward > 0 || borrowReward > 0
                     return (
                       <td key={p.slug} className="text-right">
                         <div className="flex items-center justify-end gap-2">
-                          <span title="Supply APY (current / 30d avg)" className="flex items-center gap-1">
+                          <span title="Supply APY base (rewards shown below if any)" className="flex items-center gap-1">
                             <span
                               className="w-1.5 h-1.5 rounded-full"
                               style={{ backgroundColor: "var(--success)" }}
@@ -98,7 +101,7 @@ export function RateMatrixTable({ title, cells }: Props) {
                             {fmtPct(cell?.supplyApy ?? null)}
                           </span>
                           <span className="text-text-muted">/</span>
-                          <span title="Borrow APY (current / 30d avg)" className="flex items-center gap-1">
+                          <span title="Borrow APY base (rewards shown below if any)" className="flex items-center gap-1">
                             <span
                               className="w-1.5 h-1.5 rounded-full"
                               style={{ backgroundColor: "var(--danger)" }}
@@ -106,6 +109,21 @@ export function RateMatrixTable({ title, cells }: Props) {
                             {fmtPct(cell?.borrowApy ?? null)}
                           </span>
                         </div>
+                        {hasRewards && (
+                          <div
+                            className="text-[9px] tabular-nums"
+                            style={{ color: "var(--accent-orange)" }}
+                            title={
+                              `Effective APY including token rewards (depositor earns base + rewards; borrower pays base − rewards). ` +
+                              `Supply effective ${cell?.supplyApyEffective != null ? cell.supplyApyEffective.toFixed(2) + "%" : "—"} / ` +
+                              `Borrow effective ${cell?.borrowApyEffective != null ? cell.borrowApyEffective.toFixed(2) + "%" : "—"}`
+                            }
+                          >
+                            +rew {supplyReward > 0 ? `+${supplyReward.toFixed(2)}%` : "—"}
+                            {" / "}
+                            {borrowReward > 0 ? `−${borrowReward.toFixed(2)}%` : "—"}
+                          </div>
+                        )}
                         <div className="text-[9px] text-text-muted tabular-nums">
                           {cell?.supplyApy30d != null || cell?.borrowApy30d != null ? (
                             <span title="Trailing 30-day average">

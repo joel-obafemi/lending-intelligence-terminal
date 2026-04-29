@@ -74,13 +74,13 @@ export default async function OverviewPage() {
 
       {/* Row 1: Supply + Borrows by protocol */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
-        <TvlStackChart title="Total Supply by Protocol" data={data.supplySeries} />
-        <TvlStackChart title="Total Borrows by Protocol" data={data.borrowedSeries} />
+        <TvlStackChart title="Total Supply by Protocol" data={data.supplySeries} paramKey="supply" />
+        <TvlStackChart title="Total Borrows by Protocol" data={data.borrowedSeries} paramKey="borrow" />
       </div>
 
       {/* Row 2: TVL + Utilization by protocol */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
-        <TvlStackChart title="TVL by Protocol" data={tvlSeries} showAllOption />
+        <TvlStackChart title="TVL by Protocol" data={tvlSeries} showAllOption paramKey="tvl" />
         <UtilizationChart title="Utilization by Protocol" data={data.utilizationSeries} />
       </div>
 

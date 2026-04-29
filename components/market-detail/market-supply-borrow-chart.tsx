@@ -21,7 +21,7 @@
  * has been live.
  */
 
-import { useMemo, useRef, useState } from "react"
+import { useMemo, useRef } from "react"
 import {
   Area,
   AreaChart,
@@ -34,6 +34,7 @@ import {
 import { useThemeColors } from "../theme-provider"
 import { TimeToggle, type TimeRange } from "../time-toggle"
 import { ChartActions } from "../chart-actions"
+import { usePermalinkRange } from "@/lib/use-permalink-range"
 import {
   bucketSeries,
   formatBucketLabel,
@@ -182,7 +183,7 @@ export function MarketSupplyBorrowChart({
   supplyCapUsd,
   borrowCapUsd,
 }: Props) {
-  const [range, setRange] = useState<TimeRange>(30)
+  const [range, setRange] = usePermalinkRange("sb", 30)
   const colors = useThemeColors()
   const cardRef = useRef<HTMLDivElement>(null)
   const bucket = rangeToBucket(range)

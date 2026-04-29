@@ -899,3 +899,170 @@ export async function findMorphoVaultForDefillamaPool(
   const chosen = match ?? items[0]
   return { address: chosen.address, symbol: chosen.symbol, name: chosen.name }
 }
+
+// ─────────────────────────────────────────────────────────────────────────
+// Curator leaderboard
+//
+// Aggregates total assets across every Ethereum-mainnet MetaMorpho vault by
+// curator. Used on the Morpho protocol page (`/protocols?p=morpho-blue`) to
+// surface who's running the largest pools of capital. The Morpho metadata
+// index keys vaults to a curator name + logo, so we group by name.
+// ─────────────────────────────────────────────────────────────────────────
+
+const CURATOR_LEADERBOARD_QUERY = /* GraphQL */ `
+  query CuratorLeaderboard($chainId: Int!, $first: Int!, $skip: Int!) {
+    vaults(
+      first: $first
+      skip: $skip
+      where: { chainId_in: [$chainId] }
+      orderBy: TotalAssetsUsd
+      orderDirection: Desc
+    ) {
+      items {
+        address
+        name
+        symbol
+        state {
+          totalAssetsUsd
+          netApy
+        }
+        metadata {
+          curators { name image }
+        }
+        asset { symbol }
+      }
+      pageInfo { count countTotal }
+    }
+  }
+`
+
+interface CuratorLeaderboardRaw {
+  vaults: {
+    items: Array<{
+      address: string
+      name: string
+      symbol: string
+      state: { totalAssetsUsd: number | null; netApy: number | null } | null
+      metadata: { curators: Array<{ name: string | null; image: string | null }> | null } | null
+      asset: { symbol: string }
+    }>
+    pageInfo: { count: number; countTotal: number }
+  }
+}
+
+/** One row in the curator leaderboard — TVL summed across all the vaults a
+ *  given curator runs, plus a net-APY weighted by vault TVL. */
+export interface CuratorLeaderboardRow {
+  /** Display name. We group by lowercased name; this is the first-seen casing. */
+  name: string
+  /** Curator logo URL when Morpho's metadata index has it. */
+  imageUrl: string | null
+  /** Number of vaults this curator runs (with non-zero TVL). */
+  vaultCount: number
+  /** Sum of `totalAssetsUsd` across this curator's vaults. */
+  totalAssetsUsd: number
+  /** TVL-weighted average of `netApy` across this curator's vaults, in PERCENT. */
+  weightedNetApyPct: number | null
+  /** Asset diversity — count of unique underlying assets across this curator's vaults. */
+  uniqueAssets: number
+  /** Largest single vault under this curator (for the row's hover detail). */
+  topVault: { name: string; symbol: string; totalAssetsUsd: number } | null
+}
+
+/** Fetch every Ethereum MetaMorpho vault, group by curator, return ranked
+ *  leaderboard. Vaults without a curator name (uncurated, factory-default)
+ *  are bucketed under "Uncurated". Excludes vaults with $0 TVL.
+ *
+ *  Pages through Morpho's `vaults` query — they cap `first` at ~100 per call,
+ *  so we paginate until we've drained the list. There are typically 200-600
+ *  active Ethereum vaults so 2-7 calls. */
+export async function loadMorphoCuratorLeaderboard(): Promise<CuratorLeaderboardRow[]> {
+  const PAGE_SIZE = 100
+  const MAX_PAGES = 10  // Hard ceiling — Morpho is well under 1k vaults today.
+  const all: CuratorLeaderboardRaw["vaults"]["items"] = []
+  for (let page = 0; page < MAX_PAGES; page++) {
+    const data = await gql<CuratorLeaderboardRaw>(CURATOR_LEADERBOARD_QUERY, {
+      chainId: ETH_CHAIN_ID,
+      first: PAGE_SIZE,
+      skip: page * PAGE_SIZE,
+    })
+    const items = data.vaults.items
+    all.push(...items)
+    if (items.length < PAGE_SIZE) break
+  }
+
+  // Group by curator name (case-insensitive). Vaults without a curator land
+  // under "Uncurated".
+  interface Acc {
+    name: string
+    imageUrl: string | null
+    vaults: Array<{
+      name: string
+      symbol: string
+      assetSymbol: string
+      totalAssetsUsd: number
+      netApy: number | null
+    }>
+  }
+  const byCurator = new Map<string, Acc>()
+
+  for (const v of all) {
+    const tvl = v.state?.totalAssetsUsd ?? 0
+    if (tvl <= 0) continue  // Skip empty vaults — they don't count for ranking.
+    const curators = v.metadata?.curators ?? null
+    const primary = curators && curators.length > 0 ? curators[0] : null
+    const displayName = primary?.name?.trim() || "Uncurated"
+    const key = displayName.toLowerCase()
+    const acc =
+      byCurator.get(key) ??
+      ({ name: displayName, imageUrl: primary?.image ?? null, vaults: [] } as Acc)
+    if (!acc.imageUrl && primary?.image) acc.imageUrl = primary.image
+    acc.vaults.push({
+      name: v.name,
+      symbol: v.symbol,
+      assetSymbol: v.asset.symbol,
+      totalAssetsUsd: tvl,
+      netApy: v.state?.netApy ?? null,
+    })
+    byCurator.set(key, acc)
+  }
+
+  const rows: CuratorLeaderboardRow[] = []
+  for (const acc of byCurator.values()) {
+    const totalAssetsUsd = acc.vaults.reduce((s, v) => s + v.totalAssetsUsd, 0)
+    // TVL-weighted net APY. Morpho returns netApy as 0-1 fraction; convert to %.
+    let weightedNum = 0
+    let weightedDenom = 0
+    for (const v of acc.vaults) {
+      if (v.netApy != null && Number.isFinite(v.netApy)) {
+        weightedNum += v.netApy * v.totalAssetsUsd
+        weightedDenom += v.totalAssetsUsd
+      }
+    }
+    const weightedNetApyPct =
+      weightedDenom > 0 ? (weightedNum / weightedDenom) * 100 : null
+    const topVault = acc.vaults
+      .slice()
+      .sort((a, b) => b.totalAssetsUsd - a.totalAssetsUsd)[0] ?? null
+    const uniqueAssets = new Set(acc.vaults.map((v) => v.assetSymbol.toUpperCase())).size
+    rows.push({
+      name: acc.name,
+      imageUrl: acc.imageUrl,
+      vaultCount: acc.vaults.length,
+      totalAssetsUsd,
+      weightedNetApyPct,
+      uniqueAssets,
+      topVault: topVault
+        ? {
+            name: topVault.name,
+            symbol: topVault.symbol,
+            totalAssetsUsd: topVault.totalAssetsUsd,
+          }
+        : null,
+    })
+  }
+
+  rows.sort((a, b) => b.totalAssetsUsd - a.totalAssetsUsd)
+  return rows
+}
+

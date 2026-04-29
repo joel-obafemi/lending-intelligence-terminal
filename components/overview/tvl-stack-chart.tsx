@@ -1,6 +1,6 @@
 "use client"
 
-import { useMemo, useRef, useState } from "react"
+import { useMemo, useRef } from "react"
 import {
   AreaChart,
   Area,
@@ -16,6 +16,7 @@ import { formatUSD } from "@/lib/utils"
 import { useThemeColors } from "../theme-provider"
 import { TimeToggle, type TimeRange } from "../time-toggle"
 import { ChartActions } from "../chart-actions"
+import { usePermalinkRange } from "@/lib/use-permalink-range"
 import {
   bucketSeries,
   formatBucketLabel,
@@ -35,6 +36,10 @@ interface Props {
    * stacked-area behavior — useful when total + composition is the point.
    */
   mode?: "lines" | "stacked"
+  /** When set, the time-range toggle syncs to a URL query param so the
+   *  chart's W/M/Q/All state survives reload + can be linked. Distinct keys
+   *  required when multiple TvlStackCharts share a page. */
+  paramKey?: string
 }
 
 function CustomTooltip({ active, payload, bucket, mode }: any) {
@@ -80,8 +85,9 @@ export function TvlStackChart({
   data,
   showAllOption = false,
   mode = "lines",
+  paramKey,
 }: Props) {
-  const [range, setRange] = useState<TimeRange>(30)
+  const [range, setRange] = usePermalinkRange(paramKey, 30)
   const colors = useThemeColors()
   const cardRef = useRef<HTMLDivElement>(null)
   const bucket = rangeToBucket(range)

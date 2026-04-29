@@ -76,6 +76,16 @@ export interface RateMatrixCell {
   /** Trailing 30-day mean of borrow APY. Null until we have a free history
    *  source per protocol — currently only Morpho exposes this directly. */
   borrowApy30d: number | null
+  /** Token-incentive APY layered on top of base supply rate. From DefiLlama
+   *  `apyReward`; null when no rewards program is active. */
+  supplyApyReward: number | null
+  /** Token-incentive APY layered on top of base borrow rate (negative cost
+   *  to borrowers). From DefiLlama `apyRewardBorrow`; null when no rewards. */
+  borrowApyReward: number | null
+  /** Effective supply APY = base + rewards; null if base is null. */
+  supplyApyEffective: number | null
+  /** Effective borrow APY = base − rewards (rewards offset cost). Null if base is null. */
+  borrowApyEffective: number | null
   /** borrow − supply, null if either side is missing */
   spread: number | null
   utilization: number | null
@@ -131,6 +141,13 @@ function pickRepresentativePools(pools: YieldPool[]): RateMatrixCell[] {
     const [protocolSlug, symbol] = key.split(":")
     const supply = p.apyBase ?? null
     const borrow = p.apyBaseBorrow ?? null
+    const supplyReward = p.apyReward ?? null
+    const borrowReward = p.apyRewardBorrow ?? null
+    const supplyEff =
+      supply != null ? supply + (supplyReward ?? 0) : null
+    // Borrow rewards are paid TO borrowers, so they reduce the effective cost.
+    const borrowEff =
+      borrow != null ? borrow - (borrowReward ?? 0) : null
     return {
       protocolSlug,
       symbol,
@@ -138,6 +155,10 @@ function pickRepresentativePools(pools: YieldPool[]): RateMatrixCell[] {
       supplyApy30d: p.apyMean30d ?? null,
       borrowApy: borrow,
       borrowApy30d: null,
+      supplyApyReward: supplyReward,
+      borrowApyReward: borrowReward,
+      supplyApyEffective: supplyEff,
+      borrowApyEffective: borrowEff,
       spread: supply != null && borrow != null ? borrow - supply : null,
       utilization: p.utilization,
       totalSupplyUsd: p.totalSupplyUsd,
@@ -179,6 +200,12 @@ async function overlayOnChainRates(matrix: RateMatrixCell[]): Promise<void> {
     cell.totalSupplyUsd = r.totalSupplyUsd
     cell.totalBorrowUsd = r.totalBorrowUsd
     cell.spread = r.borrowApy - r.supplyApy
+    // Re-derive effective APY against the freshened on-chain base. Rewards
+    // come from DefiLlama (they're a separate incentives layer that's not in
+    // UiPoolDataProviderV3), so keep the existing reward fields and just
+    // re-add them to the live base.
+    cell.supplyApyEffective = r.supplyApy + (cell.supplyApyReward ?? 0)
+    cell.borrowApyEffective = r.borrowApy - (cell.borrowApyReward ?? 0)
     cell.liveSource = "on-chain"
   }
 
