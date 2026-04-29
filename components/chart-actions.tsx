@@ -1,43 +1,26 @@
 "use client"
 
 /**
- * ChartActions — drop-in screenshot + expand controls for any chart card.
+ * ChartActions — drop-in screenshot / SVG-export / expand controls for any
+ * chart card.
  *
- * Usage:
- *   const cardRef = useRef<HTMLDivElement>(null)
- *   ...
- *   <div ref={cardRef} className="tui-card ...">
- *     <header>
- *       ...title, legend, time toggle...
- *       <ChartActions cardRef={cardRef} title="My chart" />
- *     </header>
- *     ...chart body...
- *   </div>
+ * Three buttons:
+ *  - Camera → PNG. Best-effort raster via html2canvas + an SVG-redraw
+ *    overlay for the chart bars + a native ctx.arc() pass for legend dots.
+ *    Use when the consumer specifically needs a raster file.
+ *  - FileDown → SVG. Pure-vector composite of the entire card. Walks the
+ *    DOM and emits native SVG primitives (text → <text>, CSS circles →
+ *    <circle>, backgrounds → <rect>, the chart's Recharts SVG embedded
+ *    verbatim). Pixel-perfect at any zoom — no html2canvas in the path.
+ *  - Maximize → toggles a `chart-expanded` class on the card promoting it
+ *    to a fullscreen overlay. Recharts reflows automatically. Esc closes.
  *
- * Two buttons:
- *  - Camera → renders the cardRef element to PNG.
- *
- *    Two-pass capture:
- *      1. html2canvas snapshots the card chrome (header, legend, table cells,
- *         tooltips) at 2× DPI. html2canvas's text renderer is reliable at
- *         this density; pushing higher introduces subpixel artifacts on
- *         small text (period toggles, legend pills).
- *      2. Each Recharts SVG inside the card is then redrawn directly from the
- *         live DOM (with computed styles inlined) onto the same canvas at
- *         the same 2× scale. Drawing the vector SVG straight to the target
- *         resolution avoids html2canvas's downsample-then-upscale path,
- *         which is what made bars / thin lines look fuzzy before.
- *
- *    After capture the buttons are unhidden and a subtle `@joel_obafemi`
- *    watermark is stamped in the bottom-right corner.
- *
- *  - Maximize → toggles a `chart-expanded` class on the card that promotes
- *    it to a fullscreen overlay (CSS in globals.css). The chart body uses
- *    Recharts' ResponsiveContainer so it reflows automatically. Esc closes.
+ * Both export paths honor `[data-chart-export-hide]` (the W/M/Q time
+ * toggle) and the actions container itself.
  */
 
 import { useEffect, useRef, useState } from "react"
-import { Camera, Maximize2, Minimize2 } from "lucide-react"
+import { Camera, FileDown, Maximize2, Minimize2 } from "lucide-react"
 import html2canvas from "html2canvas"
 
 interface Props {
@@ -228,9 +211,232 @@ async function redrawSvgsAtVectorFidelity(
   return redrawn
 }
 
-/** Height of the watermark footer strip (CSS px). Added to the captured
- *  canvas so the handle has its own row and doesn't fight chart content. */
+/** Height of the watermark footer strip (CSS px) appended below the chart
+ *  card content in both PNG and SVG exports. Gives the handle clear space
+ *  so it doesn't fight the legend's right-side note. */
 const WATERMARK_FOOTER_PX = 22
+
+// ─────────────────────────────────────────────────────────────────────────
+// SVG download path — pure-vector composite of the chart card.
+//
+// Walks the card's DOM, converts each visible element to a native SVG
+// primitive (text → <text>, CSS circles → <circle>, backgrounds → <rect>,
+// embedded Recharts SVGs as-is), and emits one composite <svg> document.
+// Output is pixel-perfect at any zoom because every element is rendered
+// by the browser's native SVG engine — no rasterization in the path.
+// ─────────────────────────────────────────────────────────────────────────
+
+function escapeXml(s: string): string {
+  return s
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&apos;")
+}
+
+/** Build the card-background fill — falls back through CSS variables. */
+function getCardBg(): string {
+  const styles = getComputedStyle(document.body)
+  return (
+    styles.getPropertyValue("--card-bg").trim() ||
+    styles.getPropertyValue("--card").trim() ||
+    "#ffffff"
+  )
+}
+
+/** Apply CSS `text-transform` manually since SVG doesn't honor it. */
+function applyTextTransform(text: string, transform: string): string {
+  if (transform === "uppercase") return text.toUpperCase()
+  if (transform === "lowercase") return text.toLowerCase()
+  if (transform === "capitalize") {
+    return text.replace(/\b\w/g, (c) => c.toUpperCase())
+  }
+  return text
+}
+
+/** Detect leaf-text elements: those whose direct children are only text /
+ *  comment nodes (no nested elements). Avoids re-emitting nested wrappers. */
+function isTextLeaf(el: Element): boolean {
+  if (el.childNodes.length === 0) return false
+  for (const c of Array.from(el.childNodes)) {
+    if (c.nodeType !== Node.TEXT_NODE && c.nodeType !== Node.COMMENT_NODE) {
+      return false
+    }
+  }
+  return (el.textContent ?? "").trim().length > 0
+}
+
+/** Recursively walk an element, emitting SVG strings for visible content. */
+function walkToSvg(
+  node: Node,
+  cardRect: DOMRect,
+  out: string[],
+  embedded: Set<Element>,
+): void {
+  if (node.nodeType !== Node.ELEMENT_NODE) return
+  const el = node as HTMLElement
+
+  // Same export-skip rules as the PNG path.
+  if (el.hasAttribute("data-chart-export-hide")) return
+  if (el.hasAttribute("data-chart-actions")) return
+
+  const cs = window.getComputedStyle(el)
+  if (cs.display === "none" || cs.visibility === "hidden") return
+  if (parseFloat(cs.opacity) === 0) return
+
+  // If this element lives inside an SVG we already embedded verbatim, stop —
+  // we don't want to re-emit chart internals on top of the embedded chart.
+  for (const svg of embedded) {
+    if (svg.contains(el) && svg !== el) return
+  }
+
+  const rect = el.getBoundingClientRect()
+  // Recharts ResponsiveContainer SVG → embed verbatim using the same
+  // serializer as the PNG path (inlines computed styles for fidelity).
+  if (
+    el.tagName.toLowerCase() === "svg" &&
+    el.closest(".recharts-wrapper") &&
+    !embedded.has(el)
+  ) {
+    embedded.add(el)
+    if (rect.width === 0 || rect.height === 0) return
+    const x = rect.left - cardRect.left
+    const y = rect.top - cardRect.top
+    const inner = serializeSvgWithStyles(el as unknown as SVGElement)
+    out.push(`<g transform="translate(${x.toFixed(2)},${y.toFixed(2)})">${inner}</g>`)
+    return
+  }
+
+  if (rect.width === 0 || rect.height === 0) {
+    // Could still have visible children laid out elsewhere via fragments —
+    // recurse anyway.
+    for (const child of Array.from(el.childNodes)) {
+      walkToSvg(child, cardRect, out, embedded)
+    }
+    return
+  }
+
+  const x = rect.left - cardRect.left
+  const y = rect.top - cardRect.top
+  const w = rect.width
+  const h = rect.height
+
+  // ─── Background (rect or circle) ─────────────────────────────────────
+  const bg = cs.backgroundColor
+  if (bg && bg !== "transparent" && bg !== "rgba(0, 0, 0, 0)") {
+    const corner = parseFloat(cs.borderTopLeftRadius)
+    const isCircle =
+      Number.isFinite(corner) &&
+      Math.abs(w - h) < 0.5 &&
+      corner >= w / 2 - 0.5
+    if (isCircle) {
+      out.push(
+        `<circle cx="${(x + w / 2).toFixed(2)}" cy="${(y + h / 2).toFixed(2)}" r="${(w / 2).toFixed(2)}" fill="${escapeXml(bg)}"/>`,
+      )
+    } else {
+      const rx = Number.isFinite(corner) && corner > 0 ? `rx="${corner.toFixed(2)}" ry="${corner.toFixed(2)}"` : ""
+      out.push(
+        `<rect x="${x.toFixed(2)}" y="${y.toFixed(2)}" width="${w.toFixed(2)}" height="${h.toFixed(2)}" fill="${escapeXml(bg)}" ${rx}/>`,
+      )
+    }
+  }
+
+  // ─── Border (single uniform border for now) ──────────────────────────
+  const borderTopWidth = parseFloat(cs.borderTopWidth)
+  const borderTopColor = cs.borderTopColor
+  if (
+    Number.isFinite(borderTopWidth) &&
+    borderTopWidth > 0 &&
+    borderTopColor &&
+    borderTopColor !== "transparent" &&
+    borderTopColor !== "rgba(0, 0, 0, 0)"
+  ) {
+    // Approximate as a top-edge line (matches the chart card's header divider).
+    out.push(
+      `<line x1="${x.toFixed(2)}" y1="${y.toFixed(2)}" x2="${(x + w).toFixed(2)}" y2="${y.toFixed(2)}" stroke="${escapeXml(borderTopColor)}" stroke-width="${borderTopWidth.toFixed(2)}"/>`,
+    )
+  }
+  const borderBottomWidth = parseFloat(cs.borderBottomWidth)
+  const borderBottomColor = cs.borderBottomColor
+  if (
+    Number.isFinite(borderBottomWidth) &&
+    borderBottomWidth > 0 &&
+    borderBottomColor &&
+    borderBottomColor !== "transparent" &&
+    borderBottomColor !== "rgba(0, 0, 0, 0)"
+  ) {
+    out.push(
+      `<line x1="${x.toFixed(2)}" y1="${(y + h).toFixed(2)}" x2="${(x + w).toFixed(2)}" y2="${(y + h).toFixed(2)}" stroke="${escapeXml(borderBottomColor)}" stroke-width="${borderBottomWidth.toFixed(2)}"/>`,
+    )
+  }
+
+  // ─── Text leaf → emit <text> ─────────────────────────────────────────
+  if (isTextLeaf(el)) {
+    const raw = (el.textContent ?? "").trim()
+    if (raw) {
+      const text = escapeXml(applyTextTransform(raw, cs.textTransform))
+      const align = cs.textAlign
+      let tx = x
+      let anchor = "start"
+      if (align === "center") {
+        tx = x + w / 2
+        anchor = "middle"
+      } else if (align === "right" || align === "end") {
+        tx = x + w
+        anchor = "end"
+      }
+      const ty = y + h / 2  // dominant-baseline middle handles vertical centering
+      const fontFamily = cs.fontFamily.replace(/"/g, "'")
+      const letterSpacing =
+        cs.letterSpacing && cs.letterSpacing !== "normal"
+          ? ` letter-spacing="${cs.letterSpacing}"`
+          : ""
+      out.push(
+        `<text x="${tx.toFixed(2)}" y="${ty.toFixed(2)}" dominant-baseline="middle" text-anchor="${anchor}" font-family="${escapeXml(fontFamily)}" font-size="${cs.fontSize}" font-weight="${cs.fontWeight}" fill="${escapeXml(cs.color)}"${letterSpacing}>${text}</text>`,
+      )
+    }
+    return  // don't recurse into leaf
+  }
+
+  // ─── Recurse into children ───────────────────────────────────────────
+  for (const child of Array.from(el.childNodes)) {
+    walkToSvg(child, cardRect, out, embedded)
+  }
+}
+
+/** Build a single composite SVG document for the entire chart card.
+ *  Includes a watermark footer strip with @joel_obafemi at the bottom. */
+function buildCompositeSvg(card: HTMLElement): string {
+  const cardRect = card.getBoundingClientRect()
+  const W = cardRect.width
+  const H = cardRect.height
+  const FOOTER = WATERMARK_FOOTER_PX
+  const totalH = H + FOOTER
+  const cardBg = getCardBg()
+
+  const inner: string[] = []
+  walkToSvg(card, cardRect, inner, new Set())
+
+  // Watermark footer.
+  inner.push(
+    `<rect x="0" y="${H.toFixed(2)}" width="${W.toFixed(2)}" height="${FOOTER}" fill="${escapeXml(cardBg)}"/>`,
+    `<text x="${(W - 14).toFixed(2)}" y="${(H + FOOTER / 2).toFixed(2)}" dominant-baseline="middle" text-anchor="end" font-family="'JetBrains Mono', ui-monospace, monospace" font-size="11" font-weight="500" fill="rgba(15,17,21,0.5)">${escapeXml(WATERMARK_HANDLE)}</text>`,
+  )
+
+  return (
+    `<?xml version="1.0" encoding="UTF-8"?>\n` +
+    `<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" ` +
+    `width="${W.toFixed(2)}" height="${totalH.toFixed(2)}" ` +
+    `viewBox="0 0 ${W.toFixed(2)} ${totalH.toFixed(2)}">\n` +
+    `<rect width="${W.toFixed(2)}" height="${totalH.toFixed(2)}" fill="${escapeXml(cardBg)}"/>\n` +
+    inner.join("\n") +
+    `\n</svg>\n`
+  )
+}
+
+// (WATERMARK_FOOTER_PX is declared at the top of the file; reused for both
+// the PNG canvas footer and the SVG composite footer.)
 
 /** Append a small footer strip below the captured card and stamp the X
  *  handle in it. Returns a NEW canvas (taller than the input) so callers
@@ -376,6 +582,51 @@ export function ChartActions({ cardRef, title }: Props) {
     }
   }
 
+  /** Pure-vector SVG download. Output is pixel-perfect at any zoom — every
+   *  element is rendered by the browser's native SVG engine, no html2canvas
+   *  in the path. Honors the same hide list as the PNG path so the W/M/Q
+   *  toggle and the chart-actions buttons themselves don't appear. */
+  async function onSvgDownload() {
+    const el = cardRef.current
+    if (!el || busy) return
+    setBusy(true)
+    const actionsEl = actionsRef.current
+    const prevVisibility = actionsEl?.style.visibility ?? ""
+    if (actionsEl) actionsEl.style.visibility = "hidden"
+    const hideTargets = Array.from(
+      el.querySelectorAll<HTMLElement>("[data-chart-export-hide]"),
+    )
+    const hideSnapshot = hideTargets.map((node) => ({
+      node,
+      prev: node.style.visibility,
+    }))
+    for (const t of hideTargets) t.style.visibility = "hidden"
+
+    try {
+      const svgString = buildCompositeSvg(el)
+      const blob = new Blob([svgString], { type: "image/svg+xml;charset=utf-8" })
+      const url = URL.createObjectURL(blob)
+      const a = document.createElement("a")
+      a.href = url
+      const safeName = title
+        .replace(/[^\w\s-]/g, "")
+        .trim()
+        .replace(/\s+/g, "-")
+        .toLowerCase()
+      a.download = `${safeName || "chart"}.svg`
+      document.body.appendChild(a)
+      a.click()
+      a.remove()
+      URL.revokeObjectURL(url)
+    } catch (err) {
+      console.error("[chart-actions] SVG export failed:", err)
+    } finally {
+      if (actionsEl) actionsEl.style.visibility = prevVisibility
+      for (const { node, prev } of hideSnapshot) node.style.visibility = prev
+      setBusy(false)
+    }
+  }
+
   return (
     <div ref={actionsRef} className="flex items-center gap-0.5" data-chart-actions>
       <button
@@ -388,6 +639,17 @@ export function ChartActions({ cardRef, title }: Props) {
         style={{ color: "var(--text-muted)" }}
       >
         <Camera size={12} />
+      </button>
+      <button
+        type="button"
+        onClick={onSvgDownload}
+        disabled={busy}
+        title="Save as SVG (vector, lossless)"
+        aria-label="Save chart as SVG"
+        className="p-1 rounded transition-colors hover:bg-card-border/40 disabled:opacity-50"
+        style={{ color: "var(--text-muted)" }}
+      >
+        <FileDown size={12} />
       </button>
       <button
         type="button"
