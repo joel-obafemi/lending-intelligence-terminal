@@ -19,13 +19,14 @@
  *
  *    Two-pass capture:
  *      1. html2canvas snapshots the card chrome (header, legend, table cells,
- *         tooltips) at 3× DPI so text + UI chrome are crisp.
+ *         tooltips) at 2× DPI. html2canvas's text renderer is reliable at
+ *         this density; pushing higher introduces subpixel artifacts on
+ *         small text (period toggles, legend pills).
  *      2. Each Recharts SVG inside the card is then redrawn directly from the
  *         live DOM (with computed styles inlined) onto the same canvas at
- *         vector fidelity. html2canvas tends to rasterize SVG at screen
- *         resolution before upscaling, which produces fuzzy bars / thin
- *         lines — drawing the SVG ourselves at the target resolution skips
- *         that downsample.
+ *         the same 2× scale. Drawing the vector SVG straight to the target
+ *         resolution avoids html2canvas's downsample-then-upscale path,
+ *         which is what made bars / thin lines look fuzzy before.
  *
  *    After capture the buttons are unhidden and a subtle `@joel_obafemi`
  *    watermark is stamped in the bottom-right corner.
@@ -45,9 +46,10 @@ interface Props {
 }
 
 const WATERMARK_HANDLE = "@joel_obafemi"
-/** Output bitmap multiplier. 3× gives clean retina output without bloating
- *  PNG size on typical 400-1000px chart cards. */
-const SCALE = 3
+/** Output bitmap multiplier. 2× = retina target. The SVG redraw pass
+ *  produces vector-fidelity bars on top of this, so going higher just
+ *  bloats PNG size + degrades html2canvas's text rendering. */
+const SCALE = 2
 
 /** Computed-style properties we inline into cloned SVG nodes so the
  *  serialized SVG renders the same colors / strokes / fonts the live DOM
@@ -176,20 +178,29 @@ async function redrawSvgsAtVectorFidelity(
   return redrawn
 }
 
-/** Stamp a low-opacity X handle in the bottom-right corner of the canvas,
- *  in CSS-pixel sizes adjusted for the bitmap scale factor. */
+/** Stamp the X handle in the bottom-right corner with a faint white halo
+ *  so it stays legible against any chart background (dark bars, gradient
+ *  fills, the legend's existing copy). Subtle but unmistakable. */
 function drawWatermark(canvas: HTMLCanvasElement, scale: number) {
   const ctx = canvas.getContext("2d")
   if (!ctx) return
-  const fontPx = 11 * scale
+  const fontPx = 12 * scale
   ctx.save()
-  ctx.font = `500 ${fontPx}px "JetBrains Mono", ui-monospace, monospace`
+  ctx.font = `600 ${fontPx}px "JetBrains Mono", ui-monospace, monospace`
   ctx.textBaseline = "bottom"
   ctx.textAlign = "right"
-  const padding = 12 * scale
+  const padding = 14 * scale
   const x = canvas.width - padding
   const y = canvas.height - padding
-  ctx.fillStyle = "rgba(15, 17, 21, 0.32)"
+  // White halo first so the handle stays readable on dark gradient fills
+  // (e.g. liquidation bars, area-chart shadows).
+  ctx.lineWidth = 3 * scale
+  ctx.lineJoin = "round"
+  ctx.strokeStyle = "rgba(255, 255, 255, 0.85)"
+  ctx.strokeText(WATERMARK_HANDLE, x, y)
+  // Then the handle itself, more opaque than before so it's clearly visible
+  // without dominating the chart.
+  ctx.fillStyle = "rgba(15, 17, 21, 0.55)"
   ctx.fillText(WATERMARK_HANDLE, x, y)
   ctx.restore()
 }
