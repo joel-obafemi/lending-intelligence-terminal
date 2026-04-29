@@ -253,6 +253,19 @@ export function ChartActions({ cardRef, title }: Props) {
     const actionsEl = actionsRef.current
     const prevVisibility = actionsEl?.style.visibility ?? ""
     if (actionsEl) actionsEl.style.visibility = "hidden"
+
+    // Hide any element flagged for export-only-hide (e.g. the W/M/Q time
+    // toggle). html2canvas struggles with their tight borders + bg pills
+    // at small sizes; the chart's x-axis already conveys the period.
+    const hideTargets = Array.from(
+      el.querySelectorAll<HTMLElement>("[data-chart-export-hide]"),
+    )
+    const hideSnapshot = hideTargets.map((node) => ({
+      node,
+      prev: node.style.visibility,
+    }))
+    for (const t of hideTargets) t.style.visibility = "hidden"
+
     try {
       const styles = getComputedStyle(document.body)
       const cardBg =
@@ -305,6 +318,7 @@ export function ChartActions({ cardRef, title }: Props) {
       console.error("[chart-actions] screenshot failed:", err)
     } finally {
       if (actionsEl) actionsEl.style.visibility = prevVisibility
+      for (const { node, prev } of hideSnapshot) node.style.visibility = prev
       setBusy(false)
     }
   }

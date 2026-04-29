@@ -28,6 +28,10 @@ export function TimeToggle({
   const getLabel = (opt: TimeRange) => labels?.[opt] ?? DEFAULT_LABELS[opt]
   return (
     <div
+      // ChartActions hides this during PNG export — html2canvas doesn't
+      // rasterize the toggle's tight border + bg cleanly at small sizes
+      // and the chart's x-axis already conveys the time range.
+      data-chart-export-hide="time-toggle"
       style={{
         display: "inline-flex",
         borderRadius: "4px",
