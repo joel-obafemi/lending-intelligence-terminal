@@ -9,9 +9,10 @@
  * Should be removed once the Fluid stats are stable in prod.
  */
 import { NextResponse } from "next/server"
-import { loadFluidSmartVaultStats } from "@/lib/fluid-stats"
+import { loadFluidSmartVaultStats, type FluidSmartVaultStats } from "@/lib/fluid-stats"
 import { loadAllFluidVaultsLive } from "@/lib/fluid-onchain"
 import { fetchAllYieldPools } from "@/lib/defillama"
+import { loadProtocolDetail } from "@/lib/protocol-detail"
 
 export const dynamic = "force-dynamic"
 export const maxDuration = 60
@@ -68,6 +69,31 @@ export async function GET() {
     out.step3_full = { ok: true, ms: Date.now() - t3, isNull: stats == null, stats }
   } catch (e: any) {
     out.step3_full = { ok: false, ms: Date.now() - t3, error: e?.message ?? String(e) }
+  }
+
+  // Step 4: replicate the exact /protocols page Promise.all to see if a race
+  // with loadProtocolDetail() is what's causing fluidStats to be null in
+  // the page render even though the standalone call works.
+  const t4 = Date.now()
+  try {
+    const [detail, fluidStats] = await Promise.all([
+      loadProtocolDetail("fluid"),
+      loadFluidSmartVaultStats().catch((err: any) => {
+        return { error: err?.message ?? String(err) } as unknown as FluidSmartVaultStats
+      }),
+    ])
+    out.step4_page_race = {
+      ok: true,
+      ms: Date.now() - t4,
+      detailNull: detail == null,
+      detailMarkets: detail?.markets?.length ?? null,
+      fluidStatsNull: fluidStats == null,
+      fluidStatsHasError: !!(fluidStats as any)?.error,
+      fluidStatsErrorMessage: (fluidStats as any)?.error ?? null,
+      fluidStatsSmartAnyPct: (fluidStats as FluidSmartVaultStats)?.smartAnyPct ?? null,
+    }
+  } catch (e: any) {
+    out.step4_page_race = { ok: false, ms: Date.now() - t4, error: e?.message ?? String(e) }
   }
 
   return NextResponse.json(out, { headers: { "cache-control": "no-store" } })
