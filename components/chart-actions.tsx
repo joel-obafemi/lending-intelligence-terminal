@@ -131,6 +131,48 @@ function loadSvgAsImage(svgString: string): Promise<HTMLImageElement> {
   })
 }
 
+/** Find every CSS-circle element inside the card (`border-radius: 50%` on
+ *  a small box) and overdraw it on the canvas as a native `ctx.arc()` —
+ *  perfectly anti-aliased, pixel-aligned, no html2canvas softness. This is
+ *  what fixes the legend dot fuzz: 8px dots are too small for html2canvas's
+ *  rasterizer to handle cleanly, but the canvas circle primitive nails them
+ *  at any scale. Skips circles inside Recharts SVGs (those go through the
+ *  vector redraw pass already). */
+function redrawCssCircles(card: HTMLElement, canvas: HTMLCanvasElement, scale: number) {
+  const ctx = canvas.getContext("2d")
+  if (!ctx) return
+  const cardRect = card.getBoundingClientRect()
+  const candidates = Array.from(card.querySelectorAll<HTMLElement>("*"))
+  for (const node of candidates) {
+    // Skip anything inside a Recharts SVG — those circles are already
+    // redrawn at vector fidelity by the SVG pass.
+    if (node.closest("svg")) continue
+    const cs = window.getComputedStyle(node)
+    const radius = cs.borderRadius
+    // Match `50%` or any value that produces a circle (some libs use
+    // `9999px` etc; treat those as circles too if w == h).
+    const isHalfPct = radius.includes("50%")
+    const rect = node.getBoundingClientRect()
+    if (rect.width === 0 || rect.height === 0) continue
+    if (Math.abs(rect.width - rect.height) > 0.5) continue  // not square
+    if (rect.width > 24) continue  // skip large rounded boxes — only care about dots
+    if (!isHalfPct) continue
+    const bg = cs.backgroundColor
+    if (!bg || bg === "transparent" || bg === "rgba(0, 0, 0, 0)") continue
+
+    const cx = (rect.left - cardRect.left + rect.width / 2) * scale
+    const cy = (rect.top - cardRect.top + rect.height / 2) * scale
+    const r = (rect.width / 2) * scale
+
+    ctx.save()
+    ctx.fillStyle = bg
+    ctx.beginPath()
+    ctx.arc(cx, cy, r, 0, Math.PI * 2)
+    ctx.fill()
+    ctx.restore()
+  }
+}
+
 /** Re-render every Recharts SVG inside the card directly from the DOM onto
  *  the existing canvas at scale resolution, replacing whatever html2canvas
  *  put there. Returns the count of SVGs successfully redrawn. */
@@ -287,11 +329,16 @@ export function ChartActions({ cardRef, title }: Props) {
       })
 
       // Pass 2: redraw each Recharts SVG at vector fidelity over the bitmap.
-      // This is the core quality fix — html2canvas rasterizes SVG at
-      // screen resolution before scaling, which is where the fuzz comes from.
+      // html2canvas rasterizes SVG at screen resolution before scaling,
+      // which is where chart-bar fuzziness came from.
       await redrawSvgsAtVectorFidelity(el, canvas, SCALE, cardBg)
 
-      // Pass 3: append a small footer strip with the @joel_obafemi handle.
+      // Pass 3: overdraw CSS legend dots as native canvas circles. The 8px
+      // CSS circles are too small for html2canvas to anti-alias cleanly;
+      // ctx.arc() draws them perfectly at any scale.
+      redrawCssCircles(el, canvas, SCALE)
+
+      // Pass 4: append a small footer strip with the @joel_obafemi handle.
       // Returns a new (taller) canvas — replaces `canvas` for toBlob below.
       const finalCanvas = appendWatermarkFooter(canvas, SCALE, cardBg)
 
