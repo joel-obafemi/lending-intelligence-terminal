@@ -131,33 +131,39 @@ function loadSvgAsImage(svgString: string): Promise<HTMLImageElement> {
   })
 }
 
-/** Find every CSS-circle element inside the card (`border-radius: 50%` on
- *  a small box) and overdraw it on the canvas as a native `ctx.arc()` —
- *  perfectly anti-aliased, pixel-aligned, no html2canvas softness. This is
- *  what fixes the legend dot fuzz: 8px dots are too small for html2canvas's
- *  rasterizer to handle cleanly, but the canvas circle primitive nails them
- *  at any scale. Skips circles inside Recharts SVGs (those go through the
- *  vector redraw pass already). */
+/** Returns true if the computed border-radius of a square element is large
+ *  enough to make it a full circle visually. Handles both `50%` (which the
+ *  browser normalizes to `width/2 px` in `borderTopLeftRadius`) and any
+ *  large pixel value like Tailwind's `rounded-full` → `9999px`. */
+function rendersAsCircle(node: HTMLElement, rect: DOMRect): boolean {
+  if (rect.width === 0 || rect.height === 0) return false
+  if (Math.abs(rect.width - rect.height) > 0.5) return false
+  const cs = window.getComputedStyle(node)
+  const corner = parseFloat(cs.borderTopLeftRadius)
+  if (!Number.isFinite(corner)) return false
+  // 0.5px slop to forgive rounding.
+  return corner >= rect.width / 2 - 0.5
+}
+
+/** Find every CSS-circle element inside the card (small square element with
+ *  border-radius producing a full circle) and overdraw it on the canvas as
+ *  a native `ctx.arc()` — perfectly anti-aliased, pixel-aligned, no
+ *  html2canvas softness. This fixes the legend dot fuzz: 8px dots are too
+ *  small for html2canvas's rasterizer, but `ctx.arc()` nails them at any
+ *  scale. Skips circles inside Recharts SVGs (they're already redrawn at
+ *  vector fidelity by the SVG pass). */
 function redrawCssCircles(card: HTMLElement, canvas: HTMLCanvasElement, scale: number) {
   const ctx = canvas.getContext("2d")
   if (!ctx) return
   const cardRect = card.getBoundingClientRect()
-  const candidates = Array.from(card.querySelectorAll<HTMLElement>("*"))
-  for (const node of candidates) {
-    // Skip anything inside a Recharts SVG — those circles are already
-    // redrawn at vector fidelity by the SVG pass.
+  let drawn = 0
+  for (const node of Array.from(card.querySelectorAll<HTMLElement>("*"))) {
+    // Skip anything inside an SVG — those go through the vector redraw pass.
     if (node.closest("svg")) continue
-    const cs = window.getComputedStyle(node)
-    const radius = cs.borderRadius
-    // Match `50%` or any value that produces a circle (some libs use
-    // `9999px` etc; treat those as circles too if w == h).
-    const isHalfPct = radius.includes("50%")
     const rect = node.getBoundingClientRect()
-    if (rect.width === 0 || rect.height === 0) continue
-    if (Math.abs(rect.width - rect.height) > 0.5) continue  // not square
-    if (rect.width > 24) continue  // skip large rounded boxes — only care about dots
-    if (!isHalfPct) continue
-    const bg = cs.backgroundColor
+    if (!rendersAsCircle(node, rect)) continue
+    if (rect.width > 24) continue  // small dots only — avoid drawing over avatar pills
+    const bg = window.getComputedStyle(node).backgroundColor
     if (!bg || bg === "transparent" || bg === "rgba(0, 0, 0, 0)") continue
 
     const cx = (rect.left - cardRect.left + rect.width / 2) * scale
@@ -170,7 +176,9 @@ function redrawCssCircles(card: HTMLElement, canvas: HTMLCanvasElement, scale: n
     ctx.arc(cx, cy, r, 0, Math.PI * 2)
     ctx.fill()
     ctx.restore()
+    drawn += 1
   }
+  if (drawn > 0) console.debug("[chart-actions] redrew", drawn, "CSS circles")
 }
 
 /** Re-render every Recharts SVG inside the card directly from the DOM onto
