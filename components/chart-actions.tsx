@@ -15,11 +15,21 @@
  *   </div>
  *
  * Two buttons:
- *  - Camera → renders the cardRef element to PNG via html2canvas at 2× DPI
- *    so the saved image matches what's on screen at retina quality. The
- *    current ChartActions buttons are hidden during capture so they don't
- *    leak into the screenshot. After capture, a subtle `@joel_obafemi`
- *    watermark is drawn in the bottom-right corner.
+ *  - Camera → renders the cardRef element to PNG.
+ *
+ *    Two-pass capture:
+ *      1. html2canvas snapshots the card chrome (header, legend, table cells,
+ *         tooltips) at 3× DPI so text + UI chrome are crisp.
+ *      2. Each Recharts SVG inside the card is then redrawn directly from the
+ *         live DOM (with computed styles inlined) onto the same canvas at
+ *         vector fidelity. html2canvas tends to rasterize SVG at screen
+ *         resolution before upscaling, which produces fuzzy bars / thin
+ *         lines — drawing the SVG ourselves at the target resolution skips
+ *         that downsample.
+ *
+ *    After capture the buttons are unhidden and a subtle `@joel_obafemi`
+ *    watermark is stamped in the bottom-right corner.
+ *
  *  - Maximize → toggles a `chart-expanded` class on the card that promotes
  *    it to a fullscreen overlay (CSS in globals.css). The chart body uses
  *    Recharts' ResponsiveContainer so it reflows automatically. Esc closes.
@@ -34,23 +44,149 @@ interface Props {
   title: string
 }
 
-/** X handle stamped subtly into the bottom-right corner of every screenshot.
- *  Kept here so it's easy to find / change in one place. */
 const WATERMARK_HANDLE = "@joel_obafemi"
+/** Output bitmap multiplier. 3× gives clean retina output without bloating
+ *  PNG size on typical 400-1000px chart cards. */
+const SCALE = 3
 
-/** Draw a low-opacity handle in the bottom-right corner of the canvas.
- *  Sized in CSS pixels (the 2× scale factor html2canvas uses gets folded in).
- *  Two-tone: light text + a faint matching shadow so it stays legible against
- *  any chart background. */
+/** Computed-style properties we inline into cloned SVG nodes so the
+ *  serialized SVG renders the same colors / strokes / fonts the live DOM
+ *  uses. Anything that isn't on this allowlist falls back to the SVG's own
+ *  attribute (which Recharts mostly sets directly). Including too many
+ *  properties bloats the SVG and slows serialization. */
+const STYLE_PROPS = [
+  "fill",
+  "fill-opacity",
+  "stroke",
+  "stroke-width",
+  "stroke-opacity",
+  "stroke-dasharray",
+  "stroke-linecap",
+  "stroke-linejoin",
+  "font-family",
+  "font-size",
+  "font-weight",
+  "text-anchor",
+  "dominant-baseline",
+  "opacity",
+  "color",
+] as const
+
+/** Walk an SVG subtree and inline computed styles for the props above so the
+ *  SVG renders identically when serialized + reloaded as an Image. */
+function inlineSvgStyles(node: Element, root: Element) {
+  if (node instanceof Element) {
+    const computed = window.getComputedStyle(node)
+    let inline = ""
+    for (const prop of STYLE_PROPS) {
+      const value = computed.getPropertyValue(prop)
+      if (!value || value === "none") continue
+      inline += `${prop}:${value};`
+    }
+    if (inline) {
+      const existing = node.getAttribute("style") ?? ""
+      node.setAttribute("style", existing + inline)
+    }
+  }
+  for (const child of Array.from(node.children)) {
+    inlineSvgStyles(child, root)
+  }
+}
+
+/** Serialize an SVG element with inline styles to an SVG string suitable for
+ *  loading via `new Image()` + a `data:image/svg+xml` URL. */
+function serializeSvgWithStyles(svg: SVGElement): string {
+  const clone = svg.cloneNode(true) as SVGElement
+  // Ensure xmlns is set — required for SVG-as-image data URLs.
+  if (!clone.getAttribute("xmlns")) {
+    clone.setAttribute("xmlns", "http://www.w3.org/2000/svg")
+  }
+  // Preserve the rendered size exactly (Recharts often renders without
+  // explicit width/height on the root <svg>; an Image needs them).
+  const rect = svg.getBoundingClientRect()
+  clone.setAttribute("width", String(rect.width))
+  clone.setAttribute("height", String(rect.height))
+  inlineSvgStyles(clone, clone)
+  return new XMLSerializer().serializeToString(clone)
+}
+
+/** Load an SVG string into an HTMLImageElement (so it can be drawn into a
+ *  canvas). Resolves once the image has decoded. */
+function loadSvgAsImage(svgString: string): Promise<HTMLImageElement> {
+  return new Promise((resolve, reject) => {
+    const blob = new Blob([svgString], { type: "image/svg+xml;charset=utf-8" })
+    const url = URL.createObjectURL(blob)
+    const img = new Image()
+    img.onload = () => {
+      URL.revokeObjectURL(url)
+      resolve(img)
+    }
+    img.onerror = (e) => {
+      URL.revokeObjectURL(url)
+      reject(new Error("SVG image load failed: " + String(e)))
+    }
+    img.src = url
+  })
+}
+
+/** Re-render every Recharts SVG inside the card directly from the DOM onto
+ *  the existing canvas at scale resolution, replacing whatever html2canvas
+ *  put there. Returns the count of SVGs successfully redrawn. */
+async function redrawSvgsAtVectorFidelity(
+  card: HTMLElement,
+  canvas: HTMLCanvasElement,
+  scale: number,
+  bgFill: string,
+): Promise<number> {
+  const ctx = canvas.getContext("2d")
+  if (!ctx) return 0
+  const cardRect = card.getBoundingClientRect()
+  const svgs = Array.from(card.querySelectorAll("svg")) as SVGElement[]
+  let redrawn = 0
+  for (const svg of svgs) {
+    // Skip lucide icons / sparklines that are unaffected by the rasterization
+    // issue — they're tiny and html2canvas handles them fine. Recharts
+    // signature: the wrapper <div class="recharts-wrapper"> contains the
+    // chart's main SVG. We use that as our filter.
+    const wrapper = svg.closest(".recharts-wrapper")
+    if (!wrapper) continue
+
+    const rect = svg.getBoundingClientRect()
+    if (rect.width === 0 || rect.height === 0) continue
+
+    // Position relative to the card, then scale to bitmap coords.
+    const x = (rect.left - cardRect.left) * scale
+    const y = (rect.top - cardRect.top) * scale
+    const w = rect.width * scale
+    const h = rect.height * scale
+
+    try {
+      const svgString = serializeSvgWithStyles(svg)
+      const img = await loadSvgAsImage(svgString)
+      // Paint the card background first to clear any low-res html2canvas
+      // output, then draw the SVG fresh at target resolution.
+      ctx.fillStyle = bgFill
+      ctx.fillRect(x, y, w, h)
+      ctx.drawImage(img, x, y, w, h)
+      redrawn += 1
+    } catch (err) {
+      console.warn("[chart-actions] SVG re-render skipped:", err)
+    }
+  }
+  return redrawn
+}
+
+/** Stamp a low-opacity X handle in the bottom-right corner of the canvas,
+ *  in CSS-pixel sizes adjusted for the bitmap scale factor. */
 function drawWatermark(canvas: HTMLCanvasElement, scale: number) {
   const ctx = canvas.getContext("2d")
   if (!ctx) return
-  const fontPx = 10 * scale
+  const fontPx = 11 * scale
   ctx.save()
   ctx.font = `500 ${fontPx}px "JetBrains Mono", ui-monospace, monospace`
   ctx.textBaseline = "bottom"
   ctx.textAlign = "right"
-  const padding = 10 * scale
+  const padding = 12 * scale
   const x = canvas.width - padding
   const y = canvas.height - padding
   ctx.fillStyle = "rgba(15, 17, 21, 0.32)"
@@ -63,7 +199,6 @@ export function ChartActions({ cardRef, title }: Props) {
   const [busy, setBusy] = useState(false)
   const actionsRef = useRef<HTMLDivElement>(null)
 
-  // Apply / remove the expanded class. Restored on unmount.
   useEffect(() => {
     const el = cardRef.current
     if (!el) return
@@ -80,7 +215,6 @@ export function ChartActions({ cardRef, title }: Props) {
     }
   }, [expanded, cardRef])
 
-  // Esc to close.
   useEffect(() => {
     if (!expanded) return
     function onKey(e: KeyboardEvent) {
@@ -98,23 +232,34 @@ export function ChartActions({ cardRef, title }: Props) {
     const prevVisibility = actionsEl?.style.visibility ?? ""
     if (actionsEl) actionsEl.style.visibility = "hidden"
     try {
+      const styles = getComputedStyle(document.body)
       const cardBg =
-        getComputedStyle(document.body).getPropertyValue("--card-bg").trim() ||
-        getComputedStyle(document.body).getPropertyValue("--card").trim() ||
+        styles.getPropertyValue("--card-bg").trim() ||
+        styles.getPropertyValue("--card").trim() ||
         "#ffffff"
-      // scale 2 = retina-quality bitmap. backgroundColor avoids transparent
-      // pixels that render as black on some viewers.
-      const SCALE = 2
+
+      // Pass 1: html2canvas captures the chrome (text, table cells, badges)
+      // crisply at SCALE×.
       const canvas = await html2canvas(el, {
         backgroundColor: cardBg,
         scale: SCALE,
         useCORS: true,
         logging: false,
-        // Capture the live size so the rendered image matches what users see.
         width: el.offsetWidth,
         height: el.offsetHeight,
+        // Make sure html2canvas doesn't squash to a fixed window — match the
+        // current viewport so positioning lines up.
+        windowWidth: document.documentElement.clientWidth,
+        windowHeight: document.documentElement.clientHeight,
       })
+
+      // Pass 2: redraw each Recharts SVG at vector fidelity over the bitmap.
+      // This is the core quality fix — html2canvas rasterizes SVG at
+      // screen resolution before scaling, which is where the fuzz comes from.
+      await redrawSvgsAtVectorFidelity(el, canvas, SCALE, cardBg)
+
       drawWatermark(canvas, SCALE)
+
       const blob: Blob | null = await new Promise((res) =>
         canvas.toBlob((b) => res(b), "image/png", 1.0),
       )
