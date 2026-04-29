@@ -178,31 +178,42 @@ async function redrawSvgsAtVectorFidelity(
   return redrawn
 }
 
-/** Stamp the X handle in the bottom-right corner with a faint white halo
- *  so it stays legible against any chart background (dark bars, gradient
- *  fills, the legend's existing copy). Subtle but unmistakable. */
-function drawWatermark(canvas: HTMLCanvasElement, scale: number) {
-  const ctx = canvas.getContext("2d")
-  if (!ctx) return
-  const fontPx = 12 * scale
-  ctx.save()
-  ctx.font = `600 ${fontPx}px "JetBrains Mono", ui-monospace, monospace`
-  ctx.textBaseline = "bottom"
+/** Height of the watermark footer strip (CSS px). Added to the captured
+ *  canvas so the handle has its own row and doesn't fight chart content. */
+const WATERMARK_FOOTER_PX = 22
+
+/** Append a small footer strip below the captured card and stamp the X
+ *  handle in it. Returns a NEW canvas (taller than the input) so callers
+ *  can chain `.toBlob` on the result. The footer fills with the same card
+ *  background so visually it reads as natural chrome continuing past the
+ *  legend, and the watermark sits in clear space — no overlap with any
+ *  chart pixels, can't be missed. */
+function appendWatermarkFooter(
+  src: HTMLCanvasElement,
+  scale: number,
+  bgFill: string,
+): HTMLCanvasElement {
+  const footerH = WATERMARK_FOOTER_PX * scale
+  const out = document.createElement("canvas")
+  out.width = src.width
+  out.height = src.height + footerH
+  const ctx = out.getContext("2d")
+  if (!ctx) return src
+  // Whole canvas background first (covers the new footer area).
+  ctx.fillStyle = bgFill
+  ctx.fillRect(0, 0, out.width, out.height)
+  // Original capture on top.
+  ctx.drawImage(src, 0, 0)
+  // Watermark in the footer strip.
+  const fontPx = 11 * scale
+  ctx.font = `500 ${fontPx}px "JetBrains Mono", ui-monospace, monospace`
+  ctx.textBaseline = "middle"
   ctx.textAlign = "right"
-  const padding = 14 * scale
-  const x = canvas.width - padding
-  const y = canvas.height - padding
-  // White halo first so the handle stays readable on dark gradient fills
-  // (e.g. liquidation bars, area-chart shadows).
-  ctx.lineWidth = 3 * scale
-  ctx.lineJoin = "round"
-  ctx.strokeStyle = "rgba(255, 255, 255, 0.85)"
-  ctx.strokeText(WATERMARK_HANDLE, x, y)
-  // Then the handle itself, more opaque than before so it's clearly visible
-  // without dominating the chart.
-  ctx.fillStyle = "rgba(15, 17, 21, 0.55)"
+  const x = out.width - 14 * scale
+  const y = src.height + footerH / 2
+  ctx.fillStyle = "rgba(15, 17, 21, 0.5)"
   ctx.fillText(WATERMARK_HANDLE, x, y)
-  ctx.restore()
+  return out
 }
 
 export function ChartActions({ cardRef, title }: Props) {
@@ -269,10 +280,12 @@ export function ChartActions({ cardRef, title }: Props) {
       // screen resolution before scaling, which is where the fuzz comes from.
       await redrawSvgsAtVectorFidelity(el, canvas, SCALE, cardBg)
 
-      drawWatermark(canvas, SCALE)
+      // Pass 3: append a small footer strip with the @joel_obafemi handle.
+      // Returns a new (taller) canvas — replaces `canvas` for toBlob below.
+      const finalCanvas = appendWatermarkFooter(canvas, SCALE, cardBg)
 
       const blob: Blob | null = await new Promise((res) =>
-        canvas.toBlob((b) => res(b), "image/png", 1.0),
+        finalCanvas.toBlob((b) => res(b), "image/png", 1.0),
       )
       if (!blob) return
       const url = URL.createObjectURL(blob)
