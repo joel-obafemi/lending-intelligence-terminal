@@ -10,11 +10,11 @@
     "lint": "next lint",
     "db:init": "tsx scripts/init-db.ts",
     "snapshot:rates": "tsx scripts/snapshot-rates.ts",
-    "scan": "tsx scripts/scan.ts"
+    "scan": "tsx scripts/scan.ts",
+    "export:friend": "tsx scripts/export-friend-csvs.ts"
   },
   "dependencies": {
     "@neondatabase/serverless": "^1.0.2",
-    "html2canvas": "^1.4.1",
     "lucide-react": "^0.460.0",
     "next": "^14.2.0",
     "react": "^18.3.0",
