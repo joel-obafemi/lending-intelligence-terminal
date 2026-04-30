@@ -104,6 +104,23 @@ CREATE TABLE IF NOT EXISTS rate_snapshots (
 CREATE INDEX IF NOT EXISTS rate_snapshots_day_idx ON rate_snapshots(day);
 CREATE INDEX IF NOT EXISTS rate_snapshots_symbol_idx ON rate_snapshots(symbol);
 
+-- ─── Sector daily snapshot (Page 1 source — primary read path) ────────────
+-- One row per UTC day. Stash the full sector-overview payload as JSONB so
+-- the Sector page reads off Neon (fast, ~1ms) instead of triggering live
+-- DefiLlama fetches on every request (slow + intermittent on Vercel cold
+-- starts). Refreshed daily by the Cloudflare Worker hitting
+-- /api/cron/sector-snapshot.
+--
+-- We keep historical rows for back-catalog reads (Reports, monthly /
+-- yearly comparisons). Pruning policy can come later — at ~30KB/row this
+-- is a few MB per year.
+CREATE TABLE IF NOT EXISTS sector_snapshots (
+  day DATE PRIMARY KEY,
+  payload JSONB NOT NULL,
+  fetched_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
+);
+CREATE INDEX IF NOT EXISTS sector_snapshots_fetched_idx ON sector_snapshots(fetched_at DESC);
+
 -- ─── Daily per-market metrics (Page 2 source) ──────────────────────────────
 -- Populated from on-chain scanners once those land in Phase 1.5.
 CREATE TABLE IF NOT EXISTS daily_market_metrics (

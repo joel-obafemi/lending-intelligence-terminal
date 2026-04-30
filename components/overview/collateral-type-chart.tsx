@@ -14,6 +14,7 @@ import { ASSET_TYPE_LABEL, ASSET_TYPE_COLOR, ASSET_TYPE_STACK_ORDER, type AssetT
 import { useThemeColors } from "../theme-provider"
 import { TimeToggle, type TimeRange } from "../time-toggle"
 import { ChartActions } from "../chart-actions"
+import { MethodologyTooltip } from "./methodology-tooltip"
 import {
   bucketSeries,
   formatBucketLabel,
@@ -26,6 +27,7 @@ interface Props {
   title: string
   data: AssetTypeTimeseriesPoint[]
   defaultRange?: TimeRange
+  methodologyKey?: string
 }
 
 function TypeTooltip({ active, payload, bucket }: any) {
@@ -68,7 +70,7 @@ function TypeTooltip({ active, payload, bucket }: any) {
   )
 }
 
-export function CollateralTypeChart({ title, data, defaultRange = 90 }: Props) {
+export function CollateralTypeChart({ title, data, defaultRange = 90, methodologyKey }: Props) {
   const [range, setRange] = useState<TimeRange>(defaultRange)
   const colors = useThemeColors()
   const cardRef = useRef<HTMLDivElement>(null)
@@ -89,10 +91,11 @@ export function CollateralTypeChart({ title, data, defaultRange = 90 }: Props) {
         style={{ padding: "10px 16px" }}
       >
         <span
-          className="text-accent"
+          className="text-accent flex items-center gap-1.5"
           style={{ fontSize: "11px", fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.1em" }}
         >
           {title}
+          <MethodologyTooltip methodologyKey={methodologyKey} />
         </span>
         <div className="flex items-center gap-2">
           <TimeToggle

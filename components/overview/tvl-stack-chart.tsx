@@ -16,6 +16,7 @@ import { formatUSD } from "@/lib/utils"
 import { useThemeColors } from "../theme-provider"
 import { TimeToggle, type TimeRange } from "../time-toggle"
 import { ChartActions } from "../chart-actions"
+import { MethodologyTooltip } from "./methodology-tooltip"
 import { usePermalinkRange } from "@/lib/use-permalink-range"
 import {
   bucketSeries,
@@ -40,6 +41,8 @@ interface Props {
    *  chart's W/M/Q/All state survives reload + can be linked. Distinct keys
    *  required when multiple TvlStackCharts share a page. */
   paramKey?: string
+  /** Lookup key for the methodology drawer. See `lib/methodology.ts`. */
+  methodologyKey?: string
 }
 
 function CustomTooltip({ active, payload, bucket, mode }: any) {
@@ -86,6 +89,7 @@ export function TvlStackChart({
   showAllOption = false,
   mode = "lines",
   paramKey,
+  methodologyKey,
 }: Props) {
   const [range, setRange] = usePermalinkRange(paramKey, 30)
   const colors = useThemeColors()
@@ -111,10 +115,11 @@ export function TvlStackChart({
         style={{ padding: "10px 16px" }}
       >
         <span
-          className="text-accent"
+          className="text-accent flex items-center gap-1.5"
           style={{ fontSize: "11px", fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.1em" }}
         >
           {title}
+          <MethodologyTooltip methodologyKey={methodologyKey} />
         </span>
         <div className="flex items-center gap-2">
           <TimeToggle

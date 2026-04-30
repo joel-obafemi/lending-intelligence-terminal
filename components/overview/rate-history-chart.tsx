@@ -14,6 +14,7 @@ import { formatPercent } from "@/lib/utils"
 import { useThemeColors } from "../theme-provider"
 import { TimeToggle, type TimeRange } from "../time-toggle"
 import { ChartActions } from "../chart-actions"
+import { MethodologyTooltip } from "./methodology-tooltip"
 import {
   bucketSeries,
   formatBucketLabel,
@@ -31,6 +32,7 @@ interface Props {
   defaultRange?: TimeRange
   /** Hint text shown next to the title (e.g. "snapshot-seeded") */
   subtitle?: string
+  methodologyKey?: string
 }
 
 /**
@@ -113,6 +115,7 @@ export function RateHistoryChart({
   fedFunds,
   defaultRange = 90,
   subtitle,
+  methodologyKey,
 }: Props) {
   const [range, setRange] = useState<TimeRange>(defaultRange)
   const colors = useThemeColors()
@@ -138,10 +141,11 @@ export function RateHistoryChart({
       >
         <div style={{ display: "flex", alignItems: "center", gap: "10px", overflow: "hidden" }}>
           <span
-            className="text-accent"
+            className="text-accent flex items-center gap-1.5"
             style={{ fontSize: "11px", fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.1em" }}
           >
             {title}
+            <MethodologyTooltip methodologyKey={methodologyKey} />
           </span>
           {subtitle && (
             <span className="text-[9px] text-text-muted" style={{ letterSpacing: "0.05em" }}>

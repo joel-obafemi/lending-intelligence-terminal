@@ -1,0 +1,4 @@
+{
+  "$schema": "Annotation events for chart overlays. See lib/annotations.ts for the schema. Add events as the Lending Pulse drafts surface them; charts opt in via the `chartKeys` filter.",
+  "events": []
+}

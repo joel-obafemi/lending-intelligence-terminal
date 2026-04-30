@@ -12,6 +12,7 @@ import {
 } from "recharts"
 import { useThemeColors } from "../theme-provider"
 import { ChartActions } from "../chart-actions"
+import { MethodologyTooltip } from "../overview/methodology-tooltip"
 
 interface Props {
   /** Per-utilization sample points. Utilization is 0-1; APYs are PERCENT. */
@@ -84,7 +85,7 @@ export function MarketIrmCurve({ curve, currentUtilizationPct, kink }: Props) {
         style={{ padding: "10px 16px" }}
       >
         <span
-          className="text-accent"
+          className="text-accent flex items-center gap-1.5"
           style={{
             fontSize: "11px",
             fontWeight: 700,
@@ -93,6 +94,7 @@ export function MarketIrmCurve({ curve, currentUtilizationPct, kink }: Props) {
           }}
         >
           Interest Rate Curve
+          <MethodologyTooltip methodologyKey="market-irm-curve" />
         </span>
         <div className="flex items-center gap-3">
           <div className="flex items-center gap-3 text-[10px]" style={{ color: "var(--text-muted)" }}>

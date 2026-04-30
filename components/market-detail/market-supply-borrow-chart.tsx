@@ -34,6 +34,7 @@ import {
 import { useThemeColors } from "../theme-provider"
 import { TimeToggle, type TimeRange } from "../time-toggle"
 import { ChartActions } from "../chart-actions"
+import { MethodologyTooltip } from "../overview/methodology-tooltip"
 import { usePermalinkRange } from "@/lib/use-permalink-range"
 import {
   bucketSeries,
@@ -245,7 +246,7 @@ export function MarketSupplyBorrowChart({
       >
         <div className="flex items-center gap-2 flex-wrap">
           <span
-            className="text-accent"
+            className="text-accent flex items-center gap-1.5"
             style={{
               fontSize: "11px",
               fontWeight: 700,
@@ -254,6 +255,7 @@ export function MarketSupplyBorrowChart({
             }}
           >
             {title}
+            <MethodologyTooltip methodologyKey="market-supply-borrow-vs-caps" />
           </span>
           {!hasAnyCap && (
             <span

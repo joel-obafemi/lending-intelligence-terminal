@@ -26,6 +26,7 @@ export default async function CollateralPage() {
       <CollateralTypeChart
         title="Total Collateral by Asset Type"
         data={data.collateralByTypeSeries}
+        methodologyKey="collateral-by-asset-type"
       />
 
       {/* Per-asset composition over time — Section 7.2 */}
@@ -34,11 +35,13 @@ export default async function CollateralPage() {
           title="Collateral Composition by Asset"
           data={data.supplyByAssetSeries}
           topAssets={data.topAssets}
+          methodologyKey="collateral-composition-by-asset"
         />
         <AssetStackChart
           title="Borrowed Composition by Asset"
           data={data.borrowedByAssetSeries}
           topAssets={data.topAssets}
+          methodologyKey="borrowed-composition-by-asset"
         />
       </div>
 
@@ -47,6 +50,7 @@ export default async function CollateralPage() {
         title="Utilization by Asset"
         data={data.utilizationByAssetSeries}
         topAssets={data.topAssets}
+        methodologyKey="utilization-by-asset"
       />
 
       {/* Top rankings — Sections 7.1 + 3.4 */}

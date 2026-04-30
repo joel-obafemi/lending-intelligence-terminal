@@ -12,6 +12,7 @@ import {
 import { useThemeColors } from "../theme-provider"
 import { TimeToggle, type TimeRange } from "../time-toggle"
 import { ChartActions } from "../chart-actions"
+import { MethodologyTooltip } from "../overview/methodology-tooltip"
 import {
   bucketSeries,
   formatBucketLabel,
@@ -39,6 +40,7 @@ interface Props {
   decimals?: number
   /** Override the default empty-state copy. */
   emptyMessage?: string
+  methodologyKey?: string
 }
 
 function formatValue(v: number, format: Format, decimals: number): string {
@@ -102,6 +104,7 @@ export function MarketMultiLineChart({
   bucketMode = "last",
   decimals = 2,
   emptyMessage,
+  methodologyKey,
 }: Props) {
   const [range, setRange] = useState<TimeRange>(30)
   const colors = useThemeColors()
@@ -137,7 +140,7 @@ export function MarketMultiLineChart({
         style={{ padding: "10px 16px" }}
       >
         <span
-          className="text-accent"
+          className="text-accent flex items-center gap-1.5"
           style={{
             fontSize: "11px",
             fontWeight: 700,
@@ -146,6 +149,7 @@ export function MarketMultiLineChart({
           }}
         >
           {title}
+          <MethodologyTooltip methodologyKey={methodologyKey} />
         </span>
         <div className="flex items-center gap-3">
           <div className="flex items-center gap-2 text-[10px]" style={{ color: "var(--text-muted)" }}>

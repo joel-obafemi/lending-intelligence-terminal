@@ -13,6 +13,7 @@ import {
 import { formatUSD } from "@/lib/utils"
 import { useThemeColors } from "../theme-provider"
 import { ChartActions } from "../chart-actions"
+import { MethodologyTooltip } from "../overview/methodology-tooltip"
 import type { MarketRow } from "@/lib/protocol-detail"
 
 interface Props {
@@ -21,6 +22,7 @@ interface Props {
   markets: MarketRow[]
   /** Number of markets to show in the bar chart (default 10). */
   topN?: number
+  methodologyKey?: string
 }
 
 function CustomTooltip({ active, payload }: any) {
@@ -60,7 +62,7 @@ function CustomTooltip({ active, payload }: any) {
   )
 }
 
-export function TopMarketsBarChart({ title, color, markets, topN = 10 }: Props) {
+export function TopMarketsBarChart({ title, color, markets, topN = 10, methodologyKey }: Props) {
   const colors = useThemeColors()
   const cardRef = useRef<HTMLDivElement>(null)
   const data = markets.slice(0, topN).slice().reverse() // reverse so biggest is at top of horizontal chart
@@ -75,10 +77,11 @@ export function TopMarketsBarChart({ title, color, markets, topN = 10 }: Props) 
         style={{ padding: "10px 16px" }}
       >
         <span
-          className="text-accent"
+          className="text-accent flex items-center gap-1.5"
           style={{ fontSize: "11px", fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.1em" }}
         >
           {title}
+          <MethodologyTooltip methodologyKey={methodologyKey} />
         </span>
         <div className="flex items-center gap-2">
           <span className="text-[10px] text-text-muted">

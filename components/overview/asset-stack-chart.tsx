@@ -13,6 +13,7 @@ import { formatUSD, getChartColor } from "@/lib/utils"
 import { useThemeColors } from "../theme-provider"
 import { TimeToggle, type TimeRange } from "../time-toggle"
 import { ChartActions } from "../chart-actions"
+import { MethodologyTooltip } from "./methodology-tooltip"
 import {
   bucketSeries,
   formatBucketLabel,
@@ -27,6 +28,8 @@ interface Props {
   /** Top asset symbols to render as named areas; rest fold into "Other" */
   topAssets: string[]
   defaultRange?: TimeRange
+  /** Methodology drawer lookup key. See `lib/methodology.ts`. */
+  methodologyKey?: string
 }
 
 function AssetTooltip({ active, payload, stackKeys, colorMap, bucket }: any) {
@@ -62,7 +65,7 @@ function AssetTooltip({ active, payload, stackKeys, colorMap, bucket }: any) {
   )
 }
 
-export function AssetStackChart({ title, data, topAssets, defaultRange = 30 }: Props) {
+export function AssetStackChart({ title, data, topAssets, defaultRange = 30, methodologyKey }: Props) {
   const [range, setRange] = useState<TimeRange>(defaultRange)
   const colors = useThemeColors()
   const cardRef = useRef<HTMLDivElement>(null)
@@ -97,10 +100,11 @@ export function AssetStackChart({ title, data, topAssets, defaultRange = 30 }: P
         style={{ padding: "10px 16px" }}
       >
         <span
-          className="text-accent"
+          className="text-accent flex items-center gap-1.5"
           style={{ fontSize: "11px", fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.1em" }}
         >
           {title}
+          <MethodologyTooltip methodologyKey={methodologyKey} />
         </span>
         <div className="flex items-center gap-2">
           <TimeToggle

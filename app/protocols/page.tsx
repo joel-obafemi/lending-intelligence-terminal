@@ -148,11 +148,13 @@ export default async function ProtocolsPage({ searchParams }: { searchParams: Se
           title={`${detail.name} · Total Supply by Asset`}
           data={detail.supplyByAssetSeries}
           topAssets={detail.topAssets}
+          methodologyKey="protocol-supply-by-asset"
         />
         <AssetStackChart
           title={`${detail.name} · Total Borrows by Asset`}
           data={detail.borrowedByAssetSeries}
           topAssets={detail.topAssets}
+          methodologyKey="protocol-borrows-by-asset"
         />
       </div>
 
@@ -162,6 +164,7 @@ export default async function ProtocolsPage({ searchParams }: { searchParams: Se
         color={detail.color}
         markets={detail.markets}
         topN={15}
+        methodologyKey="protocol-top-markets"
       />
 
       <MarketsTable

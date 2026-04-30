@@ -280,6 +280,7 @@ function MarketLayout({ detail }: { detail: MarketDetail }) {
             { key: "borrow", label: "Borrow APY", color: "#FF8A3D", data: detail.borrowApyHistory },
           ]}
           emptyMessage={borrowEmpty}
+          methodologyKey="market-rate-history"
         />
       </div>
 
@@ -293,6 +294,7 @@ function MarketLayout({ detail }: { detail: MarketDetail }) {
             { key: "util", label: "Utilization", color: "#8B5CF6", data: detail.utilizationHistory },
           ]}
           emptyMessage={borrowEmpty}
+          methodologyKey="market-utilization"
         />
         {/* When the source supplies an IRM curve (Aave V3 right now), render
             it here. Otherwise fall back to the cross-protocol comparison so

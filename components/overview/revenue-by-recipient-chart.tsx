@@ -13,6 +13,7 @@ import { formatUSD } from "@/lib/utils"
 import { useThemeColors } from "../theme-provider"
 import { TimeToggle, type TimeRange } from "../time-toggle"
 import { ChartActions } from "../chart-actions"
+import { MethodologyTooltip } from "./methodology-tooltip"
 import {
   bucketSeries,
   formatBucketLabel,
@@ -27,6 +28,7 @@ interface Props {
   color: string
   data: WeeklyRecipientPoint[]
   defaultRange?: TimeRange
+  methodologyKey?: string
 }
 
 const RECIPIENT_COLOR = {
@@ -83,7 +85,7 @@ function Tt({ active, payload, bucket }: any) {
   )
 }
 
-export function RevenueByRecipientChart({ title, subtitle, color, data, defaultRange = 90 }: Props) {
+export function RevenueByRecipientChart({ title, subtitle, color, data, defaultRange = 90, methodologyKey }: Props) {
   const [range, setRange] = useState<TimeRange>(defaultRange)
   const colors = useThemeColors()
   const cardRef = useRef<HTMLDivElement>(null)
@@ -110,9 +112,11 @@ export function RevenueByRecipientChart({ title, subtitle, color, data, defaultR
       >
         <div style={{ display: "flex", alignItems: "center", gap: "10px", overflow: "hidden" }}>
           <span
+            className="flex items-center gap-1.5"
             style={{ fontSize: "11px", fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.1em", color }}
           >
             {title}
+            <MethodologyTooltip methodologyKey={methodologyKey} />
           </span>
           {subtitle && (
             <span className="text-[9px] text-text-muted" style={{ letterSpacing: "0.05em" }}>

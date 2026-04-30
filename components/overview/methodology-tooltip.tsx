@@ -2,14 +2,21 @@
 
 import { useState } from "react"
 import { Info } from "lucide-react"
+import { getMethodology } from "@/lib/methodology"
 
 interface Props {
-  /** Plain-text definition of the metric / chart. Single sentence ideal. */
-  text: string
+  /** Plain-text definition of the metric / chart. Single sentence ideal.
+   *  Mutually exclusive with `methodologyKey`. */
+  text?: string
   /** Optional source attribution (e.g. "DefiLlama Yields", "rate_snapshots DB"). */
   source?: string
   /** Optional methodology link. */
   href?: string
+  /** Look up `text` / `source` / `href` from the central methodology config
+   *  in `lib/methodology.ts`. Lets every chart card just pass a stable key
+   *  rather than redeclare the copy inline. Returns null if the key isn't
+   *  in the config (so charts gracefully degrade — no broken tooltip). */
+  methodologyKey?: string
 }
 
 /**
@@ -17,7 +24,17 @@ interface Props {
  * second-click to close. Accessible via keyboard (Enter / Space). Used in
  * chart card headers next to the title.
  */
-export function MethodologyTooltip({ text, source, href }: Props) {
+export function MethodologyTooltip(props: Props) {
+  const { text: rawText, source: rawSource, href: rawHref, methodologyKey } = props
+  // Lookup wins over inline props when a key is provided. If the key isn't
+  // in the config, render nothing — chart still works, just without an
+  // info icon. (Keeps unwired chart cards from showing a broken tooltip.)
+  const fromKey = getMethodology(methodologyKey)
+  const text = rawText ?? fromKey?.text
+  if (!text) return null
+  const source = rawSource ?? fromKey?.source
+  const href = rawHref ?? fromKey?.href
+
   const [open, setOpen] = useState(false)
   return (
     <span style={{ position: "relative", display: "inline-flex", alignItems: "center" }}>

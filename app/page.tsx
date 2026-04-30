@@ -7,20 +7,22 @@ import { NetFlowChart } from "@/components/overview/net-flow-chart"
 import { ProtocolComparisonTable } from "@/components/overview/protocol-comparison-table"
 import { TopMarketsCrossProtocolTable } from "@/components/overview/top-markets-cross-protocol-table"
 import { RealYieldSpreadChart } from "@/components/overview/real-yield-spread-chart"
-import { loadOverview } from "@/lib/overview"
+import { loadSectorOverview } from "@/lib/sector-snapshot"
 import { loadTopMarketsAcrossProtocols } from "@/lib/cross-protocol-markets"
 import { loadRealYieldSpread } from "@/lib/real-yield"
 
 export const dynamic = "force-dynamic"
-// Heavy first render: 4 protocol histories + cross-protocol markets + real-yield + liquidations.
+// Heavy first render only on cache miss / stale snapshot. Hot path is a
+// single Neon SELECT (~5ms).
 export const maxDuration = 60
 
 export default async function OverviewPage() {
-  const [data, topMarkets, realYield] = await Promise.all([
-    loadOverview(),
+  const [overview, topMarkets, realYield] = await Promise.all([
+    loadSectorOverview(),
     loadTopMarketsAcrossProtocols(50),
     loadRealYieldSpread().catch(() => null),
   ])
+  const data = overview.payload
   const { snapshot, protocols, tvlSeries } = data
 
   return (
@@ -74,20 +76,48 @@ export default async function OverviewPage() {
 
       {/* Row 1: Supply + Borrows by protocol */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
-        <TvlStackChart title="Total Supply by Protocol" data={data.supplySeries} paramKey="supply" />
-        <TvlStackChart title="Total Borrows by Protocol" data={data.borrowedSeries} paramKey="borrow" />
+        <TvlStackChart
+          title="Total Supply by Protocol"
+          data={data.supplySeries}
+          paramKey="supply"
+          methodologyKey="sector-supply-by-protocol"
+        />
+        <TvlStackChart
+          title="Total Borrows by Protocol"
+          data={data.borrowedSeries}
+          paramKey="borrow"
+          methodologyKey="sector-borrows-by-protocol"
+        />
       </div>
 
       {/* Row 2: TVL + Utilization by protocol */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
-        <TvlStackChart title="TVL by Protocol" data={tvlSeries} showAllOption paramKey="tvl" />
-        <UtilizationChart title="Utilization by Protocol" data={data.utilizationSeries} />
+        <TvlStackChart
+          title="TVL by Protocol"
+          data={tvlSeries}
+          showAllOption
+          paramKey="tvl"
+          methodologyKey="sector-tvl-by-protocol"
+        />
+        <UtilizationChart
+          title="Utilization by Protocol"
+          data={data.utilizationSeries}
+          methodologyKey="sector-utilization"
+        />
       </div>
 
       {/* Row 3: Market share + Net flows */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
-        <MarketShareChart title="Market Share by TVL" data={data.marketShareSeries} />
-        <NetFlowChart title="Net Supply Flows" data={data.netFlowMonthlySeries} />
+        <MarketShareChart
+          title="Market Share by TVL"
+          data={data.marketShareSeries}
+          methodologyKey="sector-market-share-tvl"
+        />
+        <NetFlowChart
+          title="Net Supply Flows"
+          data={data.netFlowMonthlySeries}
+          methodologyKey="sector-net-supply-flows"
+        />
       </div>
 
       {/* Real Yield Spread (Tier 2 / Section 7.2 of the blueprint) */}
@@ -95,6 +125,7 @@ export default async function OverviewPage() {
         <RealYieldSpreadChart
           title="Real Yield Spread · Stablecoin Lending vs 4-week T-bill"
           data={realYield.history}
+          methodologyKey="sector-real-yield-spread"
         />
       )}
 

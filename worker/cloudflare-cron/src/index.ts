@@ -1,22 +1,36 @@
 /**
  * Lending Terminal — Cloudflare Worker cron.
  *
- * Does one thing: on a schedule, POST to our Next.js
- * `/api/cron/snapshot-rates` endpoint with the shared Bearer secret. Keeps
- * all business logic in the Next.js codebase; this Worker is pure scheduler.
+ * Pure scheduler: on each cron trigger, dispatch to the matching Next.js
+ * `/api/cron/<job>` endpoint with the shared Bearer secret. All business
+ * logic lives in the Next.js codebase; this Worker just fans schedules
+ * out to the right endpoints.
  *
- * Configure via `wrangler secret put` / `wrangler vars`:
- *   - CRON_SECRET     — must match the Next.js app's CRON_SECRET env var
- *   - ENDPOINT_URL    — full URL to the snapshot endpoint (prod deployment)
+ * Configure via `wrangler secret put`:
+ *   - CRON_SECRET   — must match the Next.js app's CRON_SECRET env var
+ *
+ * Configure via `[vars]` in wrangler.toml:
+ *   - BASE_URL      — production origin (e.g. https://lending-terminal.datumlabs.xyz)
+ *
+ * The cron-to-job mapping is defined inline below; add new jobs by adding
+ * a row + the matching cron string to wrangler.toml's `[triggers]`.
  */
 
 export interface Env {
   CRON_SECRET: string
-  ENDPOINT_URL: string
+  BASE_URL: string
 }
 
-async function postSnapshot(env: Env): Promise<{ status: number; body: string }> {
-  const res = await fetch(env.ENDPOINT_URL, {
+/** Cron string → endpoint path mapping. Keep schedules in sync with
+ *  wrangler.toml's `[triggers]` block. */
+const CRON_JOBS: Record<string, string> = {
+  // Daily 01:00 UTC — refresh sector overview snapshot.
+  "0 1 * * *": "/api/cron/sector-snapshot",
+}
+
+async function fireJob(env: Env, path: string): Promise<{ status: number; body: string }> {
+  const url = env.BASE_URL.replace(/\/$/, "") + path
+  const res = await fetch(url, {
     method: "POST",
     headers: {
       Authorization: `Bearer ${env.CRON_SECRET}`,
@@ -28,35 +42,47 @@ async function postSnapshot(env: Env): Promise<{ status: number; body: string }>
 }
 
 export default {
-  /** Runs on the cron trigger defined in wrangler.toml. */
+  /** Cron trigger handler. Cloudflare populates `controller.cron` with the
+   *  exact cron string from wrangler.toml that fired this run, so we use
+   *  it as the dispatch key. */
   async scheduled(
-    _controller: ScheduledController,
+    controller: ScheduledController,
     env: Env,
     _ctx: ExecutionContext,
   ): Promise<void> {
-    const { status, body } = await postSnapshot(env)
-    console.log(`[snapshot-rates cron] ${status} — ${body.slice(0, 400)}`)
+    const path = CRON_JOBS[controller.cron]
+    if (!path) {
+      console.error(`[cron] no job mapped to schedule: ${controller.cron}`)
+      return
+    }
+    const { status, body } = await fireJob(env, path)
+    console.log(
+      `[cron ${controller.cron} → ${path}] ${status} — ${body.slice(0, 400)}`,
+    )
     if (status < 200 || status >= 300) {
-      throw new Error(`snapshot-rates cron failed with ${status}`)
+      throw new Error(`${path} cron failed with ${status}`)
     }
   },
 
-  /**
-   * Manual trigger for testing:
-   *   curl https://<worker>.<account>.workers.dev/trigger
-   * Returns the Next.js route's response inline.
+  /** Manual trigger for testing:
+   *    /trigger                   — runs the FIRST job in CRON_JOBS
+   *    /trigger?path=/api/cron/x  — runs an arbitrary job
    */
   async fetch(req: Request, env: Env): Promise<Response> {
     const url = new URL(req.url)
     if (url.pathname === "/trigger") {
-      const { status, body } = await postSnapshot(env)
+      const path =
+        url.searchParams.get("path") ?? Object.values(CRON_JOBS)[0]
+      const { status, body } = await fireJob(env, path)
       return new Response(body, {
         status,
         headers: { "content-type": "application/json" },
       })
     }
     return new Response(
-      "lending-terminal cron worker\nPOST /trigger to run the snapshot immediately.\n",
+      "lending-terminal cron worker\n" +
+        "GET /trigger              — run the first scheduled job now\n" +
+        "GET /trigger?path=/api/.. — run a specific job now\n",
       { status: 200, headers: { "content-type": "text/plain" } },
     )
   },

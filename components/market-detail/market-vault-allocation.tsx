@@ -4,6 +4,7 @@ import { useRef } from "react"
 import { Cell, Pie, PieChart, ResponsiveContainer, Tooltip } from "recharts"
 import { formatPercent, formatUSD } from "@/lib/utils"
 import { ChartActions } from "../chart-actions"
+import { MethodologyTooltip } from "../overview/methodology-tooltip"
 import type { VaultAllocationRow } from "@/lib/market-detail"
 
 interface Props {
@@ -74,7 +75,7 @@ export function MarketVaultAllocation({ allocation, asset }: Props) {
         style={{ padding: "10px 16px" }}
       >
         <span
-          className="text-accent"
+          className="text-accent flex items-center gap-1.5"
           style={{
             fontSize: "11px",
             fontWeight: 700,
@@ -83,6 +84,7 @@ export function MarketVaultAllocation({ allocation, asset }: Props) {
           }}
         >
           Vault Allocation
+          <MethodologyTooltip methodologyKey="market-vault-allocation" />
         </span>
         <div className="flex items-center gap-2">
           <span className="text-[10px] text-text-muted">
