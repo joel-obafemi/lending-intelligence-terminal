@@ -61,6 +61,36 @@ export const METHODOLOGY: Record<string, MethodologyEntry> = {
       "% of total cross-protocol active borrows denominated in stablecoins (USDC / USDT / DAI / USDS / GHO / etc.). Rising share = the system is more rate-sensitive (borrowing dollars), falling share = more directional (borrowing against stables to leverage longs).",
     source: "DefiLlama-derived per-asset borrow USD.",
   },
+  "sector-take-rate": {
+    text:
+      "Sector take rate = annualized protocol revenue ÷ TVL. Sums each protocol's last-30-day fees, multiplies by 365/30, and divides by current TVL. A higher number means lenders/protocols are extracting more yield per dollar of deposits in the system.",
+    source: "DefiLlama /summary/fees + /protocol/<slug>.",
+  },
+  "sector-utilization-headline": {
+    text:
+      "Sector-wide utilization = total active borrows ÷ total supplied (TVL + borrows), aggregated across all four tracked protocols. Tracks how full the lending market is overall.",
+    source: "DefiLlama-derived.",
+  },
+  "sector-borrows-share": {
+    text:
+      "Share of total cross-protocol active borrows held by each protocol over time. 24-month stacked area, labelled annotations call out depegs, parameter changes, and liquidation cascades. Sums to 100% per day.",
+    source: "DefiLlama /protocol/<slug> Ethereum-borrowed.",
+  },
+  "sector-net-flows-30d": {
+    text:
+      "Trailing-30-day net change in supplied USD per protocol, decomposed into (a) interest accrual — mechanical growth from borrowers paying interest, sourced from DefiLlama's dailyUserFees (or dailyFees fallback) — and (b) organic deposits / withdrawals = total net flow − interest accrual. Negative organic = depositors are net withdrawing.",
+    source: "DefiLlama net-flow + dailyUserFees.",
+  },
+  "sector-collateral-mix-donut": {
+    text:
+      "Latest-day USD share of total supplied collateral across the four protocols, top-7 individual assets plus an 'Other' bucket.",
+    source: "DefiLlama /protocol/<slug>.",
+  },
+  "sector-borrow-mix-donut": {
+    text:
+      "Latest-day USD share of total active borrows across the four protocols, top-7 individual debt assets plus an 'Other' bucket.",
+    source: "DefiLlama /protocol/<slug>.",
+  },
 
   // ─── Collateral / composition ───────────────────────────────────────
   "collateral-by-asset-type": {

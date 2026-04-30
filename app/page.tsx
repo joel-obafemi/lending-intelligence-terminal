@@ -1,15 +1,26 @@
-import { TrendingUp, TrendingDown, Lock, Layers } from "lucide-react"
-import { MetricCard } from "@/components/metric-card"
-import { TvlStackChart } from "@/components/overview/tvl-stack-chart"
-import { UtilizationChart } from "@/components/overview/utilization-chart"
-import { MarketShareChart } from "@/components/overview/market-share-chart"
-import { NetFlowChart } from "@/components/overview/net-flow-chart"
-import { ProtocolComparisonTable } from "@/components/overview/protocol-comparison-table"
+import { VerdictStrip } from "@/components/overview/verdict-strip"
+import { MarketShareBorrowsHero } from "@/components/overview/market-share-borrows-hero"
+import { CompositionStrip } from "@/components/overview/composition-strip"
+import { NetFlows30d } from "@/components/overview/net-flows-30d"
+import { CompositionDonuts } from "@/components/overview/composition-donuts"
 import { TopMarketsCrossProtocolTable } from "@/components/overview/top-markets-cross-protocol-table"
-import { RealYieldSpreadChart } from "@/components/overview/real-yield-spread-chart"
+import { WatchList } from "@/components/overview/watch-list"
+import { ReportsFooter } from "@/components/overview/reports-footer"
+import { ProtocolComparisonTable } from "@/components/overview/protocol-comparison-table"
 import { loadSectorOverview } from "@/lib/sector-snapshot"
 import { loadTopMarketsAcrossProtocols } from "@/lib/cross-protocol-markets"
 import { loadRealYieldSpread } from "@/lib/real-yield"
+import { loadWatchList } from "@/lib/watch-list"
+import { sectorVerdictSentence } from "@/lib/headline-sentence"
+import {
+  biggestMover,
+  interestAccrual30dByProtocol,
+  marketShareByBorrowsSeries,
+  netDeposits30dByProtocol,
+  sectorTakeRatePct,
+  sectorUtilizationPct,
+  tvlMomChangeFraction,
+} from "@/lib/sector-derived"
 
 export const dynamic = "force-dynamic"
 // Heavy first render only on cache miss / stale snapshot. Hot path is a
@@ -17,16 +28,38 @@ export const dynamic = "force-dynamic"
 export const maxDuration = 60
 
 export default async function OverviewPage() {
-  const [overview, topMarkets, realYield] = await Promise.all([
+  const [overview, topMarkets, realYield, watchList] = await Promise.all([
     loadSectorOverview(),
     loadTopMarketsAcrossProtocols(50),
     loadRealYieldSpread().catch(() => null),
+    loadWatchList().catch(() => null),
   ])
   const data = overview.payload
-  const { snapshot, protocols, tvlSeries } = data
+  const { snapshot, protocols, revenueSnapshot } = data
+
+  // ─── Zone 1 inputs ────────────────────────────────────────────────────
+  const utilizationPct = sectorUtilizationPct(data)
+  const takeRatePct = sectorTakeRatePct(data)
+  const realYieldSpreadPct = realYield?.current.spreadPct ?? null
+  const verdictSummary = sectorVerdictSentence({
+    asOf: overview.fetchedAt,
+    totalTvlUsd: snapshot.totalTvl,
+    tvlMomChange: tvlMomChangeFraction(data),
+    protocolCount: snapshot.protocolCount,
+    realYieldSpreadPct,
+    sectorTakeRatePct: takeRatePct,
+  })
+
+  // ─── Zone 2 input ─────────────────────────────────────────────────────
+  const borrowsShareSeries = marketShareByBorrowsSeries(data.borrowedSeries)
+
+  // ─── Zone 3 / 4 inputs ────────────────────────────────────────────────
+  const netDeps30d = netDeposits30dByProtocol(data.netFlowWeeklySeries)
+  const interest30d = interestAccrual30dByProtocol(data.netInterestPaidDailySeries)
+  const mover = biggestMover(netDeps30d)
 
   return (
-    <div className="max-w-[1400px] mx-auto px-4 lg:px-6 py-5 space-y-5">
+    <div className="max-w-[1400px] mx-auto px-4 lg:px-6 py-5 space-y-6">
       <div>
         <h1 className="text-[13px] uppercase tracking-[0.15em] text-text-muted mb-1">
           Sector Overview
@@ -37,105 +70,59 @@ export default async function OverviewPage() {
         </p>
       </div>
 
-      {/* Tier 1 headline counters — 24h delta + sparkline on the three USD
-          totals; stablecoin debt share rides on the same row as a percentage. */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-        <MetricCard
-          label="Total Supplied"
-          value={snapshot.totalSupplied}
-          change24h={snapshot.suppliedDeltas.change24h}
-          sparkline={snapshot.suppliedDeltas.sparkline}
-          icon={<TrendingUp size={12} strokeWidth={2.5} />}
-          accentColor="#10B981"
-        />
-        <MetricCard
-          label="Total Borrows"
-          value={snapshot.totalBorrowed}
-          change24h={snapshot.borrowedDeltas.change24h}
-          sparkline={snapshot.borrowedDeltas.sparkline}
-          icon={<TrendingDown size={12} strokeWidth={2.5} />}
-          accentColor="#EC4899"
-        />
-        <MetricCard
-          label="Total Value Locked"
-          value={snapshot.totalTvl}
-          change24h={snapshot.tvlDeltas.change24h}
-          sparkline={snapshot.tvlDeltas.sparkline}
-          icon={<Lock size={12} strokeWidth={2.5} />}
-          accentColor="#B44AFF"
-        />
-        <MetricCard
-          label="Stablecoin Debt Share"
-          value={snapshot.stablecoinDebtSharePct}
-          format="percent"
-          caption="of cross-protocol borrows"
-          icon={<Layers size={12} strokeWidth={2.5} />}
-          accentColor="#F59E0B"
-        />
-      </div>
+      {/* Zone 1 — Verdict strip */}
+      <VerdictStrip
+        totalTvlUsd={snapshot.totalTvl}
+        totalBorrowedUsd={snapshot.totalBorrowed}
+        utilizationPct={utilizationPct}
+        realYieldSpreadPct={realYieldSpreadPct}
+        takeRatePct={takeRatePct}
+        summary={verdictSummary}
+      />
 
-      {/* Row 1: Supply + Borrows by protocol */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
-        <TvlStackChart
-          title="Total Supply by Protocol"
-          data={data.supplySeries}
-          paramKey="supply"
-          methodologyKey="sector-supply-by-protocol"
-        />
-        <TvlStackChart
-          title="Total Borrows by Protocol"
-          data={data.borrowedSeries}
-          paramKey="borrow"
-          methodologyKey="sector-borrows-by-protocol"
-        />
-      </div>
+      {/* Zone 2 — Hero: Market Share by Borrows, 24-month */}
+      <MarketShareBorrowsHero
+        title="Market Share by Borrows"
+        data={borrowsShareSeries}
+        methodologyKey="sector-borrows-share"
+      />
 
-      {/* Row 2: TVL + Utilization by protocol */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
-        <TvlStackChart
-          title="TVL by Protocol"
-          data={tvlSeries}
-          showAllOption
-          paramKey="tvl"
-          methodologyKey="sector-tvl-by-protocol"
-        />
-        <UtilizationChart
-          title="Utilization by Protocol"
-          data={data.utilizationSeries}
-          methodologyKey="sector-utilization"
-        />
-      </div>
+      {/* Zone 3 — Composition Strip (per-protocol) */}
+      <CompositionStrip
+        protocols={protocols}
+        revenueSnapshot={revenueSnapshot}
+        netDeposits30d={netDeps30d}
+        biggestMover={mover}
+      />
 
-      {/* Row 3: Market share + Net flows */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
-        <MarketShareChart
-          title="Market Share by TVL"
-          data={data.marketShareSeries}
-          methodologyKey="sector-market-share-tvl"
-        />
-        <NetFlowChart
-          title="Net Supply Flows"
-          data={data.netFlowMonthlySeries}
-          methodologyKey="sector-net-supply-flows"
-        />
-      </div>
+      {/* Zone 4 — Net Flows v1 (organic vs interest, trailing 30d) */}
+      <NetFlows30d
+        title="Net Supply Flows · Organic vs Interest"
+        netDeposits30d={netDeps30d}
+        interest30d={interest30d}
+        methodologyKey="sector-net-flows-30d"
+      />
 
-      {/* Real Yield Spread (Tier 2 / Section 7.2 of the blueprint) */}
-      {realYield && realYield.history.length > 0 && (
-        <RealYieldSpreadChart
-          title="Real Yield Spread · Stablecoin Lending vs 4-week T-bill"
-          data={realYield.history}
-          methodologyKey="sector-real-yield-spread"
-        />
-      )}
+      {/* Zone 5 — Composition donuts (collateral + borrow) */}
+      <CompositionDonuts
+        collateral={data.topCollateralAssets}
+        borrowed={data.topBorrowedAssets}
+      />
 
-      {/* Top 10 markets across all four protocols */}
+      {/* Zone 6 — Top 10 markets across protocols (freshened sort options) */}
       <TopMarketsCrossProtocolTable
         title="Top 10 Markets Across All Protocols"
         markets={topMarkets}
       />
 
+      {/* Zone 7 — Watch List (rendered from content/watch.md) */}
+      {watchList && watchList.items.length > 0 && <WatchList data={watchList} />}
+
+      {/* Protocol comparison table — kept as a familiar dense reference */}
       <ProtocolComparisonTable rows={protocols} />
+
+      {/* Zone 8 — Reports footer */}
+      <ReportsFooter pageUrl="https://lending-intelligence-terminal.vercel.app/" />
 
       {data.errors.length > 0 && (
         <div

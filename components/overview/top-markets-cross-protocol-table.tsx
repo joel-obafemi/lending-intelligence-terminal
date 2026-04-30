@@ -12,14 +12,15 @@ interface Props {
   topN?: number
 }
 
-type Mode = "supply" | "borrow" | "tvl" | "supplyApy" | "borrowApy"
+type Mode = "supply" | "borrow" | "utilization" | "supplyApy" | "borrowApy" | "tvl"
 
 const MODE_LABEL: Record<Mode, string> = {
-  supply: "By Supply",
-  borrow: "By Borrow",
-  tvl: "By TVL",
-  supplyApy: "By Supply APY",
-  borrowApy: "By Borrow APY",
+  supply: "Supply",
+  borrow: "Borrows",
+  utilization: "Utilization",
+  supplyApy: "Supply APY",
+  borrowApy: "Borrow APY",
+  tvl: "Free Liquidity",
 }
 
 function valueFor(m: CrossProtocolMarket, mode: Mode): number {
@@ -28,6 +29,8 @@ function valueFor(m: CrossProtocolMarket, mode: Mode): number {
       return m.totalSupplyUsd
     case "borrow":
       return m.totalBorrowUsd
+    case "utilization":
+      return m.utilizationPct ?? -Infinity
     case "tvl":
       return m.tvlUsd
     case "supplyApy":
@@ -49,12 +52,15 @@ export function TopMarketsCrossProtocolTable({ title, markets, topN = 10 }: Prop
         ? sorted.filter((m) => m.supplyApy != null)
         : mode === "borrowApy"
         ? sorted.filter((m) => m.borrowApy != null)
+        : mode === "utilization"
+        ? sorted.filter((m) => m.utilizationPct != null)
         : sorted
     return filtered.slice(0, topN)
   }, [markets, mode, topN])
 
   const top = rows[0] ? valueFor(rows[0], mode) : 0
   const isApyMode = mode === "supplyApy" || mode === "borrowApy"
+  const isUtilMode = mode === "utilization"
 
   return (
     <div className="tui-card bg-card-bg border border-card-border rounded overflow-hidden">
@@ -67,6 +73,10 @@ export function TopMarketsCrossProtocolTable({ title, markets, topN = 10 }: Prop
           style={{ fontSize: "11px", fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.1em" }}
         >
           {title}
+        </span>
+        <div className="flex items-center gap-2">
+        <span className="text-[10px] uppercase tracking-[0.08em]" style={{ color: "var(--text-muted)" }}>
+          Sort by
         </span>
         <div
           style={{
@@ -97,6 +107,7 @@ export function TopMarketsCrossProtocolTable({ title, markets, topN = 10 }: Prop
               {MODE_LABEL[m]}
             </button>
           ))}
+        </div>
         </div>
       </div>
       <div style={{ overflowX: "auto" }}>
@@ -157,7 +168,13 @@ export function TopMarketsCrossProtocolTable({ title, markets, topN = 10 }: Prop
                   >
                     {formatUSD(m.totalBorrowUsd)}
                   </td>
-                  <td className="text-right tabular-nums">
+                  <td
+                    className="text-right tabular-nums"
+                    style={{
+                      color: mode === "utilization" ? "var(--text-primary)" : undefined,
+                      fontWeight: mode === "utilization" ? 600 : 400,
+                    }}
+                  >
                     {m.utilizationPct != null ? formatPercent(m.utilizationPct, 1) : "—"}
                   </td>
                   <td
@@ -190,7 +207,7 @@ export function TopMarketsCrossProtocolTable({ title, markets, topN = 10 }: Prop
                         borderRadius: "2px",
                       }}
                       title={
-                        isApyMode
+                        isApyMode || isUtilMode
                           ? formatPercent(v as number, 2)
                           : formatUSD(v as number)
                       }
