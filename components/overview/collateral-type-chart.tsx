@@ -70,7 +70,7 @@ function TypeTooltip({ active, payload, bucket }: any) {
   )
 }
 
-export function CollateralTypeChart({ title, data, defaultRange = 90, methodologyKey }: Props) {
+export function CollateralTypeChart({ title, data, defaultRange = 30, methodologyKey }: Props) {
   const [range, setRange] = useState<TimeRange>(defaultRange)
   const colors = useThemeColors()
   const cardRef = useRef<HTMLDivElement>(null)

@@ -117,29 +117,32 @@ function DonutCard({ title, rows, methodologyKey }: DonutCardProps) {
                   <Cell key={i} fill={DONUT_COLORS[i % DONUT_COLORS.length]} />
                 ))}
               </Pie>
-              <Tooltip content={<DonutTooltip />} />
+              <Tooltip
+                content={<DonutTooltip />}
+                wrapperStyle={{ zIndex: 5 }}
+                position={{ x: 0, y: -6 }}
+              />
             </PieChart>
           </ResponsiveContainer>
+        </div>
+        <div className="flex flex-col justify-center gap-1.5 text-[11px]">
           <div
-            style={{
-              position: "absolute",
-              inset: 0,
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "center",
-              flexDirection: "column",
-              pointerEvents: "none",
-            }}
+            className="flex items-baseline justify-between gap-3 pb-1.5 mb-1"
+            style={{ borderBottom: "1px solid var(--card-border)" }}
           >
-            <span className="text-[9px] uppercase tracking-[0.08em]" style={{ color: "var(--text-muted)" }}>
+            <span
+              className="text-[9px] uppercase tracking-[0.08em]"
+              style={{ color: "var(--text-muted)" }}
+            >
               Total
             </span>
-            <span className="text-[14px] font-semibold tabular-nums" style={{ color: "var(--text-primary)" }}>
+            <span
+              className="text-[13px] font-semibold tabular-nums"
+              style={{ color: "var(--text-primary)" }}
+            >
               {formatUSD(total)}
             </span>
           </div>
-        </div>
-        <div className="flex flex-col justify-center gap-1.5 text-[11px]">
           {data.map((d, i) => (
             <div key={d.name} className="flex items-center justify-between gap-3">
               <div className="flex items-center gap-2 min-w-0">

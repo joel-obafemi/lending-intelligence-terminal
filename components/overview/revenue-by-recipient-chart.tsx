@@ -85,7 +85,7 @@ function Tt({ active, payload, bucket }: any) {
   )
 }
 
-export function RevenueByRecipientChart({ title, subtitle, color, data, defaultRange = 90, methodologyKey }: Props) {
+export function RevenueByRecipientChart({ title, subtitle, color, data, defaultRange = 30, methodologyKey }: Props) {
   const [range, setRange] = useState<TimeRange>(defaultRange)
   const colors = useThemeColors()
   const cardRef = useRef<HTMLDivElement>(null)

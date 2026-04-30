@@ -97,7 +97,7 @@ export function RevenueDecompTabs({ protocols }: Props) {
 
       {/* Active protocol's chart */}
       <RevenueByRecipientChart
-        title={`${current.name} · Weekly Revenue`}
+        title={`${current.name} · Revenue`}
         subtitle="Supply-side / Protocol / Holders"
         color={current.color}
         data={current.weekly}

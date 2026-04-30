@@ -113,7 +113,7 @@ export function RateHistoryChart({
   title,
   data,
   fedFunds,
-  defaultRange = 90,
+  defaultRange = 30,
   subtitle,
   methodologyKey,
 }: Props) {

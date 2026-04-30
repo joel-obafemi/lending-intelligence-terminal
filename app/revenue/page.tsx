@@ -43,7 +43,7 @@ export default async function RevenuePage() {
       {/* Two charts side-by-side: weekly fees + cumulative fees. */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
         <RevenueBarChart
-          title="Weekly Fees by Protocol"
+          title="Fees by Protocol"
           data={data.feesWeeklySeries}
           methodologyKey="revenue-weekly-fees"
         />
@@ -71,7 +71,7 @@ export default async function RevenuePage() {
           correlation in one chart. */}
       {liq.available && (
         <RevenueBarChart
-          title="Weekly Liquidation Volume by Protocol (for comparison)"
+          title="Liquidation Volume by Protocol · For Comparison"
           data={liq.weeklyVolume}
           methodologyKey="revenue-liquidation-volume"
         />
