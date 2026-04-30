@@ -10,10 +10,12 @@ compatibility_date = "2025-01-01"
 [triggers]
 crons = ["0 1 * * *"]
 
-# Production origin. Override with `wrangler secret put BASE_URL` if the
-# domain changes. Endpoint paths are appended in the worker.
+# Production origin — the canonical Vercel URL for the Next.js app.
+# Endpoint paths are appended by the worker. If the domain ever changes,
+# update here and re-run `wrangler deploy`, or override per-environment
+# via `wrangler secret put BASE_URL`.
 [vars]
-BASE_URL = "https://lending-terminal.datumlabs.xyz"
+BASE_URL = "https://lending-intelligence-terminal.vercel.app"
 
 # Observability — lightweight, free tier friendly.
 [observability]
