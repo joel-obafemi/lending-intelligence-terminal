@@ -25,6 +25,30 @@ interface CardProps {
   accent?: string
 }
 
+/** Shared E-Mode badge used wherever Aave-style protocols set their base
+ *  LTV / Collateral Factor to 0 — i.e. when an asset is borrowable only
+ *  inside an E-Mode category. Renders as a filled blue tag instead of
+ *  "0%", which would otherwise read like a data bug. */
+function EModeBadge({ size = "sm" }: { size?: "sm" | "lg" }) {
+  return (
+    <span
+      className="inline-block uppercase tracking-[0.05em]"
+      style={{
+        padding: size === "lg" ? "5px 12px" : "2px 8px",
+        fontSize: size === "lg" ? "13px" : "10px",
+        fontWeight: 600,
+        background: "rgba(91, 127, 255, 0.10)",
+        color: "var(--accent-blue)",
+        border: "1px solid rgba(91, 127, 255, 0.25)",
+        borderRadius: 4,
+      }}
+      title="Base LTV is 0 — this asset can only be used as collateral via E-Mode"
+    >
+      E-Mode
+    </span>
+  )
+}
+
 function Card({ label, children, accent }: CardProps) {
   return (
     <div
@@ -157,9 +181,13 @@ export function MarketKpiCards({
             <span className="text-[11px]" style={{ color: "var(--text-muted)" }}>
               Collateral Factor
             </span>
-            <span className="text-base font-semibold tabular-nums" style={{ color: "var(--text-primary)" }}>
-              {formatPercent((collateralFactor ?? 0) * 100, 0)}
-            </span>
+            {collateralFactor === 0 ? (
+              <EModeBadge />
+            ) : (
+              <span className="text-base font-semibold tabular-nums" style={{ color: "var(--text-primary)" }}>
+                {formatPercent((collateralFactor ?? 0) * 100, 0)}
+              </span>
+            )}
           </div>
           <div className="flex items-baseline justify-between mt-2">
             <span className="text-[11px]" style={{ color: "var(--text-muted)" }}>
@@ -173,12 +201,23 @@ export function MarketKpiCards({
       )}
       {riskKind === "ltv" && (
         <Card label="Collateral Factor" accent="#F59E0B">
-          <span className="text-3xl font-semibold tabular-nums" style={{ color: "var(--text-primary)" }}>
-            {formatPercent((collateralFactor ?? 0) * 100, 0)}
-          </span>
-          <span className="text-[10px] block mt-1" style={{ color: "var(--text-muted)" }}>
-            Reserve Factor coming with SDK
-          </span>
+          {collateralFactor === 0 ? (
+            <>
+              <EModeBadge size="lg" />
+              <span className="text-[10px] block mt-1" style={{ color: "var(--text-muted)" }}>
+                Borrowable only via E-Mode
+              </span>
+            </>
+          ) : (
+            <>
+              <span className="text-3xl font-semibold tabular-nums" style={{ color: "var(--text-primary)" }}>
+                {formatPercent((collateralFactor ?? 0) * 100, 0)}
+              </span>
+              <span className="text-[10px] block mt-1" style={{ color: "var(--text-muted)" }}>
+                Reserve Factor coming with SDK
+              </span>
+            </>
+          )}
         </Card>
       )}
       {riskKind === "rf" && (

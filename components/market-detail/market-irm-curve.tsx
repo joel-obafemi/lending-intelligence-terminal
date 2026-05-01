@@ -140,18 +140,22 @@ export function MarketIrmCurve({ curve, currentUtilizationPct, kink }: Props) {
             />
             {(() => {
               // Compute label positions so neither label clips at the edges
-              // and they don't stack on top of each other when current ≈ kink.
+              // and they don't stack on top of each other.
               const currentX = currentUtilizationPct != null ? currentUtilizationPct / 100 : null
-              // textAnchor: "start" pushes label right of the line, "end" pushes left,
-              // "middle" centers. Use the directional one when the line is near
-              // an axis; default to centered otherwise.
               const anchorFor = (x: number): "start" | "middle" | "end" =>
                 x <= 0.08 ? "start" : x >= 0.92 ? "end" : "middle"
-              // When kink and current are within 5% of each other their "top"
-              // labels would overlap. Push the second label up by `dy: -12`
-              // so it sits a row higher.
-              const close =
-                currentX != null && Math.abs(currentX - kink) < 0.05
+              // Two ways the labels collide horizontally:
+              //   (a) kink and current are at similar x (e.g. 89% vs 91%)
+              //   (b) both are in the right-edge zone (e.g. kink 90%, current
+              //       99.4% — common on heavily-borrowed reserves), where
+              //       both labels anchor toward the chart's right side and
+              //       end up overlapping even with different x positions.
+              // Treat both cases the same: stack the Current label one row
+              // higher than the Kink label so they don't fight.
+              const closeX = currentX != null && Math.abs(currentX - kink) < 0.10
+              const bothNearRight =
+                currentX != null && currentX >= 0.80 && kink >= 0.80
+              const stackVertically = closeX || bothNearRight
               return (
                 <>
                   {/* Kink marker — dashed amber vertical line where slope changes. */}
@@ -181,7 +185,7 @@ export function MarketIrmCurve({ curve, currentUtilizationPct, kink }: Props) {
                         fill: "#10B981",
                         fontSize: 10,
                         textAnchor: anchorFor(currentX),
-                        dy: close ? -14 : 0,
+                        dy: stackVertically ? -14 : 0,
                       }}
                     />
                   )}

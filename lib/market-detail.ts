@@ -341,6 +341,65 @@ function buildSiblings(
     seenProtocols.add(slug)
     const siblingCfg = PROTOCOL_BY_SLUG[slug]
     if (!siblingCfg) continue
+
+    // Morpho is per-market by design — the same loan asset can appear in
+    // many vaults / markets. Showing a single Morpho row was misleading
+    // ($4.4M for a vault when the aggregate WETH exposure is much
+    // larger). Aggregate across every Morpho candidate matching this
+    // symbol so the sibling row reads as total Morpho exposure.
+    if (slug === "morpho-blue") {
+      const morphoMatches = candidates.filter((c) => c.slug === "morpho-blue")
+      const totalSupply = morphoMatches.reduce((s, m) => s + m.supply, 0)
+      const totalBorrow = morphoMatches.reduce(
+        (s, m) => s + (m.p.totalBorrowUsd ?? 0),
+        0,
+      )
+      // TVL-weighted APYs across the matching vaults so the sibling row
+      // surfaces a representative blended yield.
+      const denom = morphoMatches.reduce(
+        (s, m) => s + (m.p.apyBase != null ? m.supply : 0),
+        0,
+      )
+      const supplyApyBlend =
+        denom > 0
+          ? morphoMatches.reduce(
+              (s, m) => s + (m.p.apyBase ?? 0) * (m.p.apyBase != null ? m.supply : 0),
+              0,
+            ) / denom
+          : null
+      const borrowDenom = morphoMatches.reduce(
+        (s, m) => s + (m.p.apyBaseBorrow != null ? m.supply : 0),
+        0,
+      )
+      const borrowApyBlend =
+        borrowDenom > 0
+          ? morphoMatches.reduce(
+              (s, m) =>
+                s +
+                (m.p.apyBaseBorrow ?? 0) *
+                  (m.p.apyBaseBorrow != null ? m.supply : 0),
+              0,
+            ) / borrowDenom
+          : null
+      const sUtilM = totalSupply > 0 ? (totalBorrow / totalSupply) * 100 : null
+      siblings.push({
+        poolId: morphoMatches[0]!.p.pool, // detail link goes to the largest matching market
+        protocolSlug: slug,
+        protocolName: siblingCfg.name,
+        protocolColor: siblingCfg.color,
+        asset: target,
+        subLabel: `Across ${morphoMatches.length} ${
+          morphoMatches.length === 1 ? "vault" : "vaults"
+        }`,
+        totalSupplyUsd: totalSupply,
+        totalBorrowUsd: totalBorrow,
+        utilizationPct: sUtilM,
+        supplyApy: supplyApyBlend,
+        borrowApy: borrowApyBlend,
+      })
+      continue
+    }
+
     const sUtil =
       supply > 0 && p.totalBorrowUsd != null ? (p.totalBorrowUsd / supply) * 100 : null
     siblings.push({

@@ -32,7 +32,7 @@ export function ProtocolStatCards({ detail }: Props) {
         accentColor="#EC4899"
       />
       <MetricCard
-        label="TVL"
+        label="Available Liquidity"
         value={detail.totalTvl}
         change24h={detail.tvlDelta.change24h}
         sparkline={detail.tvlDelta.sparkline}

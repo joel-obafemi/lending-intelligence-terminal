@@ -125,7 +125,26 @@ export function MarketsTable({ architecture, color, markets }: Props) {
                   {m.borrowApy != null ? formatPercent(m.borrowApy, 2) : "—"}
                 </td>
                 <td className="text-right tabular-nums" style={{ color: "var(--text-muted)" }}>
-                  {m.ltv != null ? formatPercent(m.ltv * 100, 0) : "—"}
+                  {m.ltv == null ? (
+                    "—"
+                  ) : m.ltv === 0 ? (
+                    // Aave-style protocols set baseLTVasCollateral to 0 when an
+                    // asset is only usable as collateral inside E-Mode. Render a
+                    // badge instead of "0%" so the page doesn't read as a bug.
+                    <span
+                      className="inline-block px-1.5 py-0.5 rounded text-[10px] uppercase tracking-[0.05em]"
+                      style={{
+                        background: "rgba(91, 127, 255, 0.10)",
+                        color: "var(--accent-blue)",
+                        border: "1px solid rgba(91, 127, 255, 0.25)",
+                      }}
+                      title="Base LTV is 0 — this asset can only be used as collateral via E-Mode"
+                    >
+                      E-Mode
+                    </span>
+                  ) : (
+                    formatPercent(m.ltv * 100, 0)
+                  )}
                 </td>
                 <td>
                   <div

@@ -45,7 +45,7 @@ function CustomTooltip({ active, payload }: any) {
         </span>
       </div>
       <div className="flex items-center justify-between gap-3 text-xs">
-        <span style={{ color: "var(--text-secondary)" }}>TVL (unborrowed)</span>
+        <span style={{ color: "var(--text-secondary)" }}>Available Liquidity</span>
         <span className="tabular-nums" style={{ color: "var(--text-muted)" }}>
           {formatUSD(row.tvlUsd)}
         </span>
@@ -66,6 +66,11 @@ export function TopMarketsBarChart({ title, color, markets, topN = 10, methodolo
   const colors = useThemeColors()
   const cardRef = useRef<HTMLDivElement>(null)
   const data = markets.slice(0, topN).slice().reverse() // reverse so biggest is at top of horizontal chart
+  // Dynamic chart height: ~28px per bar + 40px chrome. The fixed 340px the
+  // chart used previously was fine for ~10 bars but cut off rows past
+  // ~9 once we lifted topN to 15 — the bars don't disappear, but the
+  // y-axis labels stop rendering when barCategoryGap squeezes them out.
+  const chartHeight = Math.max(280, data.length * 28 + 40)
 
   return (
     <div
@@ -90,7 +95,7 @@ export function TopMarketsBarChart({ title, color, markets, topN = 10, methodolo
           <ChartActions cardRef={cardRef} title={title} />
         </div>
       </div>
-      <div className="p-4 h-[340px] chart-body">
+      <div className="p-4 chart-body" style={{ height: `${chartHeight}px` }}>
         <ResponsiveContainer width="100%" height="100%">
           <BarChart data={data} layout="vertical" margin={{ top: 5, right: 30, left: 10, bottom: 0 }}>
             <XAxis

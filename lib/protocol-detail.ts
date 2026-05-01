@@ -238,6 +238,52 @@ function morphoVaultSubLabel(symbol: string): string | undefined {
   return undefined
 }
 
+/** Aave V3 mainnet runs three separate Pool deployments — Core, Lido, and
+ *  EtherFi (formerly "Prime") — and DefiLlama lists each under the same
+ *  `aave-v3` project. The pool-meta string distinguishes them in DefiLlama's
+ *  data, but it's lower-cased and doesn't always render cleanly. We also
+ *  want the most-popular reserve (typically the Core deployment) to carry
+ *  an explicit "Core" tag so a reader scanning duplicate-asset rows knows
+ *  which deployment they're looking at.
+ *
+ *  Mutates `markets` in place: any asset symbol that appears more than once
+ *  gets a deployment tag added to its `subLabel`. Rows whose poolMeta
+ *  doesn't match a known tag default to "Core".
+ */
+function disambiguateDuplicateAssets(markets: MarketRow[]): void {
+  const counts = new Map<string, number>()
+  for (const m of markets) {
+    const key = m.asset.toUpperCase()
+    counts.set(key, (counts.get(key) ?? 0) + 1)
+  }
+  for (const m of markets) {
+    if ((counts.get(m.asset.toUpperCase()) ?? 0) <= 1) continue
+    const tag = inferDeploymentTag(m.subLabel)
+    m.subLabel = m.subLabel
+      ? // Preserve any existing detail (e.g. "E-mode: stablecoins") and
+        // prepend the deployment tag so it reads "Lido · E-mode: stablecoins".
+        m.subLabel.toLowerCase().includes(tag.toLowerCase())
+        ? capitalizeFirst(m.subLabel)
+        : `${tag} · ${m.subLabel}`
+      : tag
+  }
+}
+
+function inferDeploymentTag(subLabel: string | undefined): string {
+  if (!subLabel) return "Core"
+  const lower = subLabel.toLowerCase()
+  if (lower.includes("lido")) return "Lido"
+  if (lower.includes("etherfi") || lower.includes("ether-fi")) return "EtherFi"
+  if (lower.includes("prime")) return "Prime"
+  if (lower.includes("core")) return "Core"
+  return "Core"
+}
+
+function capitalizeFirst(s: string): string {
+  if (!s) return s
+  return s.charAt(0).toUpperCase() + s.slice(1)
+}
+
 function prettyCurator(prefix: string): string {
   const map: Record<string, string> = {
     STEAK: "Steakhouse",
@@ -292,6 +338,7 @@ export async function loadProtocolDetail(slug: string): Promise<ProtocolDetail |
     .sort((a, b) => totalSupplyOf(b) - totalSupplyOf(a))
 
   const markets = visible.slice(0, MAX_ROWS_PER_PROTOCOL).map((p) => toMarketRow(p, cfg.architecture))
+  disambiguateDuplicateAssets(markets)
 
   // `tvlUsd` in DefiLlama's /pools is UNBORROWED liquidity. Utilization
   // must therefore use supplied = unborrowed + borrowed as the denominator,

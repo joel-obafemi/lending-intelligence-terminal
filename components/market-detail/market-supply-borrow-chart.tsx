@@ -377,6 +377,75 @@ export function MarketSupplyBorrowChart({
           </ResponsiveContainer>
         )}
       </div>
+      {/* Cap headroom strip — surfaces "X% of Supply Cap used" / "Y% of
+          Borrow Cap used" so a reader doesn't have to compare the dashed
+          line to the area peak by eye. Renders only when the matching cap
+          is loaded AND we have a latest non-zero data point. */}
+      {hasAnyCap && !isEmpty && (() => {
+        const latest = data[data.length - 1]
+        const latestSupply = latest?.supply ?? 0
+        const latestBorrow = latest?.borrow ?? 0
+        return (
+          <div
+            className="grid grid-cols-1 sm:grid-cols-2 gap-2 px-4 pb-3 text-[11px]"
+            style={{ borderTop: "1px solid var(--card-border)", paddingTop: "10px" }}
+          >
+            {supplyCapUsd != null && supplyCapUsd > 0 && (
+              <CapHeadroomRow
+                label="Supply Cap used"
+                used={latestSupply}
+                cap={supplyCapUsd}
+                color={SUPPLY_CAP_COLOR}
+              />
+            )}
+            {borrowCapUsd != null && borrowCapUsd > 0 && (
+              <CapHeadroomRow
+                label="Borrow Cap used"
+                used={latestBorrow}
+                cap={borrowCapUsd}
+                color={BORROW_CAP_COLOR}
+              />
+            )}
+          </div>
+        )
+      })()}
+    </div>
+  )
+}
+
+interface CapHeadroomRowProps {
+  label: string
+  used: number
+  cap: number
+  color: string
+}
+
+function CapHeadroomRow({ label, used, cap, color }: CapHeadroomRowProps) {
+  const pct = cap > 0 ? Math.min(100, Math.max(0, (used / cap) * 100)) : 0
+  return (
+    <div className="flex flex-col gap-1">
+      <div className="flex items-baseline justify-between gap-2">
+        <span style={{ color: "var(--text-muted)" }}>{label}</span>
+        <span className="tabular-nums" style={{ color: "var(--text-primary)", fontWeight: 600 }}>
+          {pct.toFixed(0)}%
+        </span>
+      </div>
+      <div
+        className="w-full rounded overflow-hidden"
+        style={{ height: 4, background: "var(--card-border)" }}
+      >
+        <div
+          style={{
+            height: "100%",
+            width: `${pct}%`,
+            background: color,
+            opacity: 0.85,
+          }}
+        />
+      </div>
+      <span className="text-[10px] tabular-nums" style={{ color: "var(--text-muted)" }}>
+        {fmtUsd(used)} of {fmtUsd(cap)}
+      </span>
     </div>
   )
 }

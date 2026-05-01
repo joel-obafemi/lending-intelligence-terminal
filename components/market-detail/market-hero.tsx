@@ -141,7 +141,7 @@ export function MarketHero({
         <StatCell
           label="Total Supply"
           primary={formatUSD(totalSupplyUsd)}
-          secondary={`TVL ${formatUSD(tvlUsd)}`}
+          secondary={`Available ${formatUSD(tvlUsd)}`}
         />
         <StatCell
           label="Total Borrowed"
