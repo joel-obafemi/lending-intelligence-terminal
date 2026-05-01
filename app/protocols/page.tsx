@@ -9,6 +9,7 @@ import { ProtocolStatCards } from "@/components/protocols/protocol-stat-cards"
 import { MarketsTable } from "@/components/protocols/markets-table"
 import { TopMarketsBarChart } from "@/components/protocols/top-markets-bar-chart"
 import { CuratorLeaderboard } from "@/components/protocols/curator-leaderboard"
+import { MorphoCuratorConcentration } from "@/components/protocols/morpho-curator-concentration"
 import { FluidSmartStatsCard } from "@/components/protocols/fluid-smart-stats-card"
 import { AaveMultiChainFootprint } from "@/components/protocols/aave-multi-chain-footprint"
 import { AaveIsolationModeWatch } from "@/components/protocols/aave-isolation-mode-watch"
@@ -282,10 +283,14 @@ export default async function ProtocolsPage({ searchParams }: { searchParams: Se
         markets={detail.markets}
       />
 
-      {/* Morpho-only: who's running the capital. Shown beneath the markets
-          table since vaults are the unit Morpho displays elsewhere. */}
+      {/* Morpho-only: curator concentration first (the visual punchline —
+          HHI + a single stacked bar showing the top 5 curators), then the
+          full leaderboard table beneath it. */}
       {slug === "morpho-blue" && curators.length > 0 && (
-        <CuratorLeaderboard rows={curators} />
+        <>
+          <MorphoCuratorConcentration rows={curators} />
+          <CuratorLeaderboard rows={curators} />
+        </>
       )}
 
       {/* As-of footer — surfaces the live-load timestamp so a reader can

@@ -92,6 +92,19 @@ export function MarketsTable({ architecture, color, markets }: Props) {
   const pageRows = useMemo(() => markets.slice(start, end), [markets, start, end])
   const pages = pageList(safePage, totalPages)
 
+  // Morpho is a vault-aggregator architecture, not a single-pool lender.
+  // The "vault" rows here aggregate across underlying markets and don't
+  // expose borrow / utilization / LLTV at this layer (those properties
+  // live on the per-market detail). Render the table in vault mode for
+  // isolated-architecture protocols so the empty columns disappear and
+  // the title reads accurately.
+  const isVaultLayout = architecture === "isolated"
+  const tableTitle = isVaultLayout ? "Vaults" : "Markets"
+  const tableSummary =
+    markets.length === 0
+      ? `No ${isVaultLayout ? "vaults" : "markets"} above the threshold`
+      : `${start + 1}–${end} of ${markets.length}, sorted by Total Supply · click a row for details`
+
   return (
     <div className="tui-card bg-card-bg border border-card-border rounded overflow-hidden">
       <div
@@ -102,26 +115,22 @@ export function MarketsTable({ architecture, color, markets }: Props) {
           className="text-accent"
           style={{ fontSize: "11px", fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.1em" }}
         >
-          Markets
+          {tableTitle}
         </span>
-        <span className="text-[10px] text-text-muted">
-          {markets.length === 0
-            ? "No markets above the threshold"
-            : `${start + 1}–${end} of ${markets.length}, sorted by Total Supply · click a row for details`}
-        </span>
+        <span className="text-[10px] text-text-muted">{tableSummary}</span>
       </div>
       <div style={{ overflowX: "auto" }}>
         <table className="data-table">
           <thead>
             <tr>
               <th style={{ width: "32px" }}>#</th>
-              <th>Market</th>
+              <th>{isVaultLayout ? "Vault" : "Market"}</th>
               <th className="text-right">Total Supply</th>
-              <th className="text-right">Borrowed</th>
-              <th className="text-right">Util</th>
-              <th className="text-right">Supply APY</th>
-              <th className="text-right">Borrow APY</th>
-              <th className="text-right">{ltvLabel(architecture)}</th>
+              {!isVaultLayout && <th className="text-right">Borrowed</th>}
+              {!isVaultLayout && <th className="text-right">Util</th>}
+              <th className="text-right">{isVaultLayout ? "Net APY" : "Supply APY"}</th>
+              {!isVaultLayout && <th className="text-right">Borrow APY</th>}
+              {!isVaultLayout && <th className="text-right">{ltvLabel(architecture)}</th>}
               <th style={{ width: "16%" }}>Share</th>
             </tr>
           </thead>
@@ -190,12 +199,16 @@ export function MarketsTable({ architecture, color, markets }: Props) {
                   </div>
                 </td>
                 <td className="text-right tabular-nums">{formatUSD(m.totalSupplyUsd)}</td>
-                <td className="text-right tabular-nums" style={{ color: "var(--text-muted)" }}>
-                  {m.borrowedUsd != null ? formatUSD(m.borrowedUsd) : "—"}
-                </td>
-                <td className="text-right tabular-nums">
-                  {m.utilizationPct != null ? formatPercent(m.utilizationPct, 1) : "—"}
-                </td>
+                {!isVaultLayout && (
+                  <td className="text-right tabular-nums" style={{ color: "var(--text-muted)" }}>
+                    {m.borrowedUsd != null ? formatUSD(m.borrowedUsd) : "—"}
+                  </td>
+                )}
+                {!isVaultLayout && (
+                  <td className="text-right tabular-nums">
+                    {m.utilizationPct != null ? formatPercent(m.utilizationPct, 1) : "—"}
+                  </td>
+                )}
                 <td className="text-right tabular-nums" style={{ color: "var(--success)" }}>
                   {m.supplyApy != null ? (
                     <>
@@ -210,31 +223,36 @@ export function MarketsTable({ architecture, color, markets }: Props) {
                     "—"
                   )}
                 </td>
-                <td className="text-right tabular-nums" style={{ color: "var(--danger)" }}>
-                  {m.borrowApy != null ? formatPercent(m.borrowApy, 2) : "—"}
-                </td>
-                <td className="text-right tabular-nums" style={{ color: "var(--text-muted)" }}>
-                  {m.ltv == null ? (
-                    "—"
-                  ) : m.ltv === 0 ? (
-                    // Aave-style protocols set baseLTVasCollateral to 0 when an
-                    // asset is only usable as collateral inside E-Mode. Render a
-                    // badge instead of "0%" so the page doesn't read as a bug.
-                    <span
-                      className="inline-block px-1.5 py-0.5 rounded text-[10px] uppercase tracking-[0.05em]"
-                      style={{
-                        background: "rgba(91, 127, 255, 0.10)",
-                        color: "var(--accent-blue)",
-                        border: "1px solid rgba(91, 127, 255, 0.25)",
-                      }}
-                      title="Base LTV is 0 — this asset can only be used as collateral via E-Mode"
-                    >
-                      E-Mode
-                    </span>
-                  ) : (
-                    formatPercent(m.ltv * 100, 0)
-                  )}
-                </td>
+                {!isVaultLayout && (
+                  <td className="text-right tabular-nums" style={{ color: "var(--danger)" }}>
+                    {m.borrowApy != null ? formatPercent(m.borrowApy, 2) : "—"}
+                  </td>
+                )}
+                {!isVaultLayout && (
+                  <td className="text-right tabular-nums" style={{ color: "var(--text-muted)" }}>
+                    {m.ltv == null ? (
+                      "—"
+                    ) : m.ltv === 0 ? (
+                      // Aave-style protocols set baseLTVasCollateral to 0 when
+                      // an asset is only usable as collateral inside E-Mode.
+                      // Render a badge instead of "0%" so the page doesn't read
+                      // as a bug.
+                      <span
+                        className="inline-block px-1.5 py-0.5 rounded text-[10px] uppercase tracking-[0.05em]"
+                        style={{
+                          background: "rgba(91, 127, 255, 0.10)",
+                          color: "var(--accent-blue)",
+                          border: "1px solid rgba(91, 127, 255, 0.25)",
+                        }}
+                        title="Base LTV is 0 — this asset can only be used as collateral via E-Mode"
+                      >
+                        E-Mode
+                      </span>
+                    ) : (
+                      formatPercent(m.ltv * 100, 0)
+                    )}
+                  </td>
+                )}
                 <td>
                   <div
                     style={{
@@ -250,8 +268,11 @@ export function MarketsTable({ architecture, color, markets }: Props) {
             ))}
             {markets.length === 0 && (
               <tr>
-                <td colSpan={9} style={{ textAlign: "center", color: "var(--text-muted)" }}>
-                  No markets above the threshold.
+                <td
+                  colSpan={isVaultLayout ? 5 : 9}
+                  style={{ textAlign: "center", color: "var(--text-muted)" }}
+                >
+                  No {isVaultLayout ? "vaults" : "markets"} above the threshold.
                 </td>
               </tr>
             )}

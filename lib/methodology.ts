@@ -197,6 +197,13 @@ export const METHODOLOGY: Record<string, MethodologyEntry> = {
       "Every Aave V3 reserve currently configured with a non-zero debt ceiling (i.e. in isolation mode), with the on-chain ceiling, the current isolation-mode debt against that ceiling, and % used. Sorted by % used descending so reserves nearest a ceiling — the early-stress signals — surface first. Frozen / paused reserves are tagged but kept in the list so the reader can see the full isolation universe.",
     source: "On-chain UiPoolDataProviderV3 (debtCeiling + isolationModeTotalDebt).",
   },
+  // ─── Morpho protocol-specific lens ──────────────────────────────────
+  "morpho-curator-concentration": {
+    text:
+      "How concentrated the Morpho curator economy is right now. The horizontal bar shows the top 5 curators' shares of curated TVL plus an 'Other' segment. The HHI (Herfindahl-Hirschman Index) is the sum of squared market shares — antitrust convention treats <1,500 as competitive, 1,500-2,500 as moderately concentrated, and >2,500 as highly concentrated. The 'Uncurated' bucket of permissionless markets is excluded from this calculation; that's a separate long-tail story.",
+    source: "Morpho blue-api.morpho.org via lib/morpho-api.ts.",
+  },
+
   // ─── Spark protocol-specific lens ───────────────────────────────────
   "spark-yield-panel": {
     text:

@@ -24,6 +24,12 @@ type SortKey = "totalAssetsUsd" | "weightedNetApyPct" | "vaultCount" | "uniqueAs
 
 const TITLE = "Morpho Curator Leaderboard"
 
+/** Reported weighted APYs above this ceiling are treated as visual outliers
+ *  — usually a small vault whose APY computation is dominated by a single
+ *  underlying market with a temporary rate spike. Above the threshold we
+ *  hide the value rather than poison the table with 50,000%-style numbers. */
+const APY_OUTLIER_CEILING_PCT = 50
+
 export function CuratorLeaderboard({ rows, initial = 15 }: Props) {
   const cardRef = useRef<HTMLDivElement>(null)
   const [sortKey, setSortKey] = useState<SortKey>("totalAssetsUsd")
@@ -127,10 +133,30 @@ export function CuratorLeaderboard({ rows, initial = 15 }: Props) {
                   <td className="text-right tabular-nums">{row.vaultCount}</td>
                   <td className="text-right tabular-nums">{row.uniqueAssets}</td>
                   <td className="text-right tabular-nums">
-                    {row.weightedNetApyPct != null ? (
-                      formatPercent(row.weightedNetApyPct, 2)
-                    ) : (
+                    {row.weightedNetApyPct == null ? (
                       <span style={{ color: "var(--text-muted)" }}>—</span>
+                    ) : row.weightedNetApyPct > APY_OUTLIER_CEILING_PCT ? (
+                      // Outlier — typically a small vault dominated by one
+                      // funky underlying market (Uncurated 50,000% / Clearstar
+                      // 17,000%). Render an em-dash + asterisk and explain in
+                      // the table footnote so the leaderboard isn't poisoned
+                      // by visually nonsensical APYs.
+                      <span
+                        style={{ color: "var(--text-muted)" }}
+                        title={`Reported weighted APY ${formatPercent(
+                          row.weightedNetApyPct,
+                          0,
+                        )} is treated as an outlier — likely a small vault dominated by a single high-rate market. Excluded from rendering above ${APY_OUTLIER_CEILING_PCT}%.`}
+                      >
+                        —
+                        <span
+                          style={{ color: "var(--accent-yellow)", fontSize: 9, marginLeft: 1 }}
+                        >
+                          *
+                        </span>
+                      </span>
+                    ) : (
+                      formatPercent(row.weightedNetApyPct, 2)
                     )}
                   </td>
                   <td>
@@ -176,6 +202,20 @@ export function CuratorLeaderboard({ rows, initial = 15 }: Props) {
           </button>
         </div>
       )}
+      <div
+        className="text-[10px]"
+        style={{
+          padding: "8px 16px",
+          color: "var(--text-muted)",
+          background: "var(--panel-header)",
+          borderTop: "1px solid var(--card-border)",
+        }}
+      >
+        <span style={{ color: "var(--accent-yellow)" }}>*</span>{" "}
+        weighted APY above {APY_OUTLIER_CEILING_PCT}% hidden as a visual
+        outlier — typically a small vault whose APY computation is dominated
+        by a single underlying market with a transient rate spike.
+      </div>
     </div>
   )
 }
