@@ -261,6 +261,7 @@ function MarketLayout({ detail }: { detail: MarketDetail }) {
         availableLiquidityToken={detail.availableLiquidityToken}
         reservesUsd={detail.reservesUsd}
         reservesToken={detail.reservesToken}
+        reserveFactor={detail.reserveFactor}
       />
 
       <MarketKpiCards
@@ -442,6 +443,7 @@ function FluidLayout({ detail }: { detail: MarketDetail }) {
         availableLiquidityToken={detail.availableLiquidityToken}
         reservesUsd={detail.reservesUsd}
         reservesToken={detail.reservesToken}
+        reserveFactor={detail.reserveFactor}
       />
 
       <MarketKpiCards

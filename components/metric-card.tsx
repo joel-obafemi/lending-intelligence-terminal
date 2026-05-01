@@ -14,6 +14,15 @@ interface MetricCardProps {
   changeYoY?: number
   /** Optional sparkline series — last ~30 days of the metric */
   sparkline?: Array<{ timestamp: number; value: number }>
+  /** Optional longer history series used to compute peak-to-current
+   *  drawdown. Pass the same series the sparkline came from but extended
+   *  back further (e.g. 365 days). When set and the current value is
+   *  meaningfully below the peak, a small "↓ X% from peak (date)"
+   *  sub-line renders beneath the headline number. */
+  historyForDrawdown?: Array<{ timestamp: number; value: number }>
+  /** Drawdown threshold — only show the sub-line when current value is
+   *  this fraction or more below the peak. Default 0.10 (10%). */
+  drawdownThreshold?: number
   icon?: React.ReactNode
   accentColor?: string
   /** Display format for `value`. Defaults to USD. */
@@ -52,6 +61,8 @@ export function MetricCard({
   changeMoM,
   changeYoY,
   sparkline,
+  historyForDrawdown,
+  drawdownThreshold = 0.1,
   icon,
   accentColor,
   format = "usd",
@@ -65,6 +76,14 @@ export function MetricCard({
       : formatUSD(value)
   const accent = accentColor || "var(--accent)"
   const hasSpark = sparkline && sparkline.length > 1
+
+  // Compute the peak-to-current drawdown sub-line. Only USD-formatted
+  // metrics get this — drawdown on a percent (e.g. utilization) reads
+  // weirdly and is usually better expressed as MoM/YoY.
+  const drawdown =
+    format === "usd" && historyForDrawdown && historyForDrawdown.length > 1
+      ? computeDrawdown(value, historyForDrawdown, drawdownThreshold)
+      : null
 
   return (
     <div className="tui-card bg-card-bg border border-card-border rounded-lg p-4 flex flex-col gap-1.5 relative overflow-hidden">
@@ -112,6 +131,70 @@ export function MetricCard({
         <DeltaPill label="MoM" value={changeMoM} />
         <DeltaPill label="YoY" value={changeYoY} />
       </div>
+      {drawdown && (
+        <div
+          className="pl-2 text-[10px] leading-tight"
+          style={{ color: "var(--text-muted)" }}
+          title={`Peak: ${formatUSD(drawdown.peakValue)} on ${drawdown.peakDateLong}. Current: ${formatUSD(drawdown.currentValue)}.`}
+        >
+          <span style={{ color: "var(--accent-yellow)" }}>↓</span>{" "}
+          {(drawdown.fromPeakPct * 100).toFixed(0)}% from {drawdown.peakDateShort} peak ({formatUSD(drawdown.peakValue)})
+        </div>
+      )}
     </div>
   )
+}
+
+interface DrawdownInfo {
+  peakValue: number
+  peakDateShort: string
+  peakDateLong: string
+  currentValue: number
+  fromPeakPct: number
+}
+
+/**
+ * Compute peak-to-current drawdown for a USD time series.
+ *
+ * `currentValue` is the live snapshot (already shown as the headline);
+ * `series` is the history we walk to find the peak. Returns null if the
+ * peak is recent (within 7 days of `currentValue`'s implied timestamp)
+ * OR the drawdown is below `threshold` — both cases would just look like
+ * normal volatility rather than a meaningful peak-to-current story.
+ */
+function computeDrawdown(
+  currentValue: number,
+  series: Array<{ timestamp: number; value: number }>,
+  threshold: number,
+): DrawdownInfo | null {
+  if (currentValue <= 0 || series.length === 0) return null
+  // Find the global peak.
+  let peak = series[0]
+  for (const p of series) {
+    if (p.value > peak.value) peak = p
+  }
+  const fromPeakPct = (peak.value - currentValue) / peak.value
+  if (!Number.isFinite(fromPeakPct) || fromPeakPct < threshold) return null
+  // Skip when the peak is the most recent point in the series — that's
+  // just "we're at the peak right now", no drawdown story.
+  const lastTs = series[series.length - 1].timestamp
+  if (lastTs - peak.timestamp < 7 * 86400) return null
+  const dateShort = new Date(peak.timestamp * 1000).toLocaleDateString("en-US", {
+    month: "short",
+    year: "numeric",
+    timeZone: "UTC",
+  })
+  const dateLong = new Date(peak.timestamp * 1000).toLocaleDateString("en-US", {
+    month: "long",
+    day: "numeric",
+    year: "numeric",
+    timeZone: "UTC",
+  })
+  return {
+    peakValue: peak.value,
+    peakDateShort: dateShort,
+    peakDateLong: dateLong,
+    currentValue,
+    fromPeakPct,
+  }
 }

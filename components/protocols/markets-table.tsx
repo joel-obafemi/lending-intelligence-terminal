@@ -13,6 +13,49 @@ interface Props {
   markets: MarketRow[]
 }
 
+/** Per-row footnotes for known-good outliers that read like data errors at
+ *  first glance (incentive pools, collateral-only assets, etc.). Keyed by
+ *  asset symbol so the same row identity (`USDS · SPK Farming Pool`) is
+ *  detectable across protocols. */
+const ROW_FOOTNOTES: Record<string, { label: string; tooltip: string; tone: "info" | "warn" }> = {
+  // Spark's SPK farming pool — incentive program, no rates by design.
+  "USDS|spk farming pool": {
+    label: "Farming",
+    tooltip:
+      "Not a standard lending market. Spark's SPK token farming pool issues SPK incentives to USDS depositors. No supply/borrow APY because it's reward-based.",
+    tone: "info",
+  },
+}
+
+/** Per-row inline tags. Render next to the asset symbol where applicable.
+ *  Currently used to flag collateral-only assets that read confusingly
+ *  with a 0% utilization. */
+function inlineTagFor(m: MarketRow): { label: string; tooltip: string } | null {
+  // Heuristic: large supply (>= $500M) with effectively-zero utilization
+  // and zero borrow → almost certainly a collateral-only asset. Matches
+  // wstETH on Spark, weETH/rsETH/ezETH on Aave V3 (E-Mode collateral),
+  // and similar markets across deployments.
+  const util = m.utilizationPct ?? 0
+  const supply = m.totalSupplyUsd ?? 0
+  const borrowed = m.borrowedUsd ?? 0
+  if (supply >= 500_000_000 && util < 0.5 && borrowed < 1_000_000) {
+    return {
+      label: "Collateral-only",
+      tooltip:
+        "Used almost exclusively as collateral. Borrow demand is near zero, which is by design for this asset on this protocol.",
+    }
+  }
+  return null
+}
+
+function footnoteFor(m: MarketRow): { label: string; tooltip: string; tone: "info" | "warn" } | null {
+  // Match by asset + sub-label combination so we don't double-tag normal
+  // USDS markets that happen to share a symbol with the farming pool.
+  const sub = (m.subLabel ?? "").toLowerCase()
+  const key = `${m.asset.toUpperCase()}|${sub}`
+  return ROW_FOOTNOTES[key] ?? null
+}
+
 /** Pool-based: "LTV" — Aave V3/Spark. Isolated/vault: "LLTV" — Morpho, etc. */
 function ltvLabel(arch: ProtocolDetail["architecture"]): string {
   return arch === "isolated" ? "LLTV" : "LTV"
@@ -92,7 +135,53 @@ export function MarketsTable({ architecture, color, markets }: Props) {
                 <td style={{ color: "var(--text-muted)" }}>{start + i + 1}</td>
                 <td>
                   <div className="flex flex-col">
-                    <span style={{ fontWeight: 600 }}>{m.asset}</span>
+                    <div className="flex items-center gap-2 flex-wrap">
+                      <span style={{ fontWeight: 600 }}>{m.asset}</span>
+                      {(() => {
+                        const fn = footnoteFor(m)
+                        if (fn) {
+                          return (
+                            <span
+                              className="inline-block px-1.5 py-0.5 rounded text-[10px] uppercase tracking-[0.05em]"
+                              style={{
+                                background:
+                                  fn.tone === "warn"
+                                    ? "rgba(217, 119, 6, 0.10)"
+                                    : "rgba(91, 127, 255, 0.10)",
+                                color:
+                                  fn.tone === "warn"
+                                    ? "var(--accent-yellow)"
+                                    : "var(--accent-blue)",
+                                border:
+                                  fn.tone === "warn"
+                                    ? "1px solid rgba(217, 119, 6, 0.25)"
+                                    : "1px solid rgba(91, 127, 255, 0.25)",
+                              }}
+                              title={fn.tooltip}
+                            >
+                              {fn.label}
+                            </span>
+                          )
+                        }
+                        const tag = inlineTagFor(m)
+                        if (tag) {
+                          return (
+                            <span
+                              className="inline-block px-1.5 py-0.5 rounded text-[10px] uppercase tracking-[0.05em]"
+                              style={{
+                                background: "rgba(91, 127, 255, 0.08)",
+                                color: "var(--accent-blue)",
+                                border: "1px solid rgba(91, 127, 255, 0.20)",
+                              }}
+                              title={tag.tooltip}
+                            >
+                              {tag.label}
+                            </span>
+                          )
+                        }
+                        return null
+                      })()}
+                    </div>
                     {m.subLabel && (
                       <span className="text-[10px]" style={{ color: "var(--text-muted)" }}>
                         {m.subLabel}

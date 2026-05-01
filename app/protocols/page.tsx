@@ -13,6 +13,7 @@ import { FluidSmartStatsCard } from "@/components/protocols/fluid-smart-stats-ca
 import { AaveMultiChainFootprint } from "@/components/protocols/aave-multi-chain-footprint"
 import { AaveIsolationModeWatch } from "@/components/protocols/aave-isolation-mode-watch"
 import { AaveSafetyModule } from "@/components/protocols/aave-safety-module"
+import { SparkYieldPanel } from "@/components/protocols/spark-yield-panel"
 import { AssetStackChart } from "@/components/overview/asset-stack-chart"
 import { AsOfFooter } from "@/components/overview/as-of-footer"
 import {
@@ -20,6 +21,10 @@ import {
   type SafetyModuleStatus,
 } from "@/lib/aave-safety-module"
 import { loadAllAaveReservesLive } from "@/lib/aave-onchain"
+import {
+  loadSparkYieldPanel,
+  type SparkYieldPanelResponse,
+} from "@/lib/spark-yield-panel"
 
 export const dynamic = "force-dynamic"
 // Heavy first render: DefiLlama Yields snapshot + per-protocol history.
@@ -55,35 +60,47 @@ export default async function ProtocolsPage({ searchParams }: { searchParams: Se
   // Per-protocol extras run in parallel with the standard detail load. Each
   // one is failure-tolerant: a fetch error returns the empty/null shape and
   // the page just doesn't render that section.
-  const [detail, curators, fluidStats, safetyModule, aaveReservesForPrice] =
-    await Promise.all([
-      loadProtocolDetail(slug),
-      slug === "morpho-blue"
-        ? loadMorphoCuratorLeaderboard().catch((err) => {
-            console.error("[protocols] curator leaderboard failed:", err?.message ?? err)
-            return [] as CuratorLeaderboardRow[]
-          })
-        : Promise.resolve([] as CuratorLeaderboardRow[]),
-      slug === "fluid"
-        ? loadFluidSmartVaultStats().catch((err) => {
-            console.error("[protocols] fluid smart stats failed:", err?.message ?? err)
-            return null as FluidSmartVaultStats | null
-          })
-        : Promise.resolve(null as FluidSmartVaultStats | null),
-      slug === "aave-v3"
-        ? loadSafetyModuleStatus().catch((err) => {
-            console.error("[protocols] safety module load failed:", err?.message ?? err)
-            return null as SafetyModuleStatus | null
-          })
-        : Promise.resolve(null as SafetyModuleStatus | null),
-      // Pull AAVE's price from the live Aave reserves so the Safety Module
-      // can be denominated in USD. Aave V3 mainnet lists AAVE as collateral,
-      // so the price is already in the reserve struct we just fetched for
-      // the markets table — no extra DefiLlama hit required.
-      slug === "aave-v3"
-        ? loadAllAaveReservesLive().catch(() => [])
-        : Promise.resolve([]),
-    ])
+  const [
+    detail,
+    curators,
+    fluidStats,
+    safetyModule,
+    aaveReservesForPrice,
+    sparkYieldPanel,
+  ] = await Promise.all([
+    loadProtocolDetail(slug),
+    slug === "morpho-blue"
+      ? loadMorphoCuratorLeaderboard().catch((err) => {
+          console.error("[protocols] curator leaderboard failed:", err?.message ?? err)
+          return [] as CuratorLeaderboardRow[]
+        })
+      : Promise.resolve([] as CuratorLeaderboardRow[]),
+    slug === "fluid"
+      ? loadFluidSmartVaultStats().catch((err) => {
+          console.error("[protocols] fluid smart stats failed:", err?.message ?? err)
+          return null as FluidSmartVaultStats | null
+        })
+      : Promise.resolve(null as FluidSmartVaultStats | null),
+    slug === "aave-v3"
+      ? loadSafetyModuleStatus().catch((err) => {
+          console.error("[protocols] safety module load failed:", err?.message ?? err)
+          return null as SafetyModuleStatus | null
+        })
+      : Promise.resolve(null as SafetyModuleStatus | null),
+    // Pull AAVE's price from the live Aave reserves so the Safety Module
+    // can be denominated in USD. Aave V3 mainnet lists AAVE as collateral,
+    // so the price is already in the reserve struct we just fetched for
+    // the markets table — no extra DefiLlama hit required.
+    slug === "aave-v3"
+      ? loadAllAaveReservesLive().catch(() => [])
+      : Promise.resolve([]),
+    slug === "spark"
+      ? loadSparkYieldPanel().catch((err) => {
+          console.error("[protocols] spark yield panel failed:", err?.message ?? err)
+          return null as SparkYieldPanelResponse | null
+        })
+      : Promise.resolve(null as SparkYieldPanelResponse | null),
+  ])
 
   // Fold AAVE/USD into the safety-module status when we have it.
   const aavePriceUsd =
@@ -177,6 +194,13 @@ export default async function ProtocolsPage({ searchParams }: { searchParams: Se
           since this is the metric most Fluid pieces hinge on. */}
       {slug === "fluid" && fluidStats && (
         <FluidSmartStatsCard stats={fluidStats} />
+      )}
+
+      {/* Spark-only: Stablecoin Yield Cascade — captures the Sky → Spark
+          → T-bill story that's specific to Spark's role as Sky's
+          on-chain distribution arm. */}
+      {slug === "spark" && sparkYieldPanel && (
+        <SparkYieldPanel data={sparkYieldPanel} />
       )}
 
       {/* Aave V3 lens — Isolation Mode Watch sits up here as the

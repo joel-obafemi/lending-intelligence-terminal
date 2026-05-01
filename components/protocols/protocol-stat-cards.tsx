@@ -20,6 +20,7 @@ export function ProtocolStatCards({ detail }: Props) {
         value={detail.totalSupplied}
         change24h={detail.suppliedDelta.change24h}
         sparkline={detail.suppliedDelta.sparkline}
+        historyForDrawdown={detail.suppliedDelta.history}
         icon={<TrendingUp size={12} strokeWidth={2.5} />}
         accentColor="#10B981"
       />
@@ -28,6 +29,7 @@ export function ProtocolStatCards({ detail }: Props) {
         value={detail.totalBorrowed}
         change24h={detail.borrowedDelta.change24h}
         sparkline={detail.borrowedDelta.sparkline}
+        historyForDrawdown={detail.borrowedDelta.history}
         icon={<TrendingDown size={12} strokeWidth={2.5} />}
         accentColor="#EC4899"
       />
@@ -36,6 +38,7 @@ export function ProtocolStatCards({ detail }: Props) {
         value={detail.totalTvl}
         change24h={detail.tvlDelta.change24h}
         sparkline={detail.tvlDelta.sparkline}
+        historyForDrawdown={detail.tvlDelta.history}
         icon={<Lock size={12} strokeWidth={2.5} />}
         accentColor={detail.color}
       />

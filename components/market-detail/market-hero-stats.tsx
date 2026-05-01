@@ -19,6 +19,8 @@ interface Props {
   availableLiquidityToken: number | null
   reservesUsd: number | null
   reservesToken: number | null
+  /** Reserve factor 0-1 fraction, used to caption the Reserves card. */
+  reserveFactor: number | null
 }
 
 /** Compact token-amount formatter — "14.79M USDC", "2.13K WSTETH". */
@@ -46,9 +48,14 @@ interface StatProps {
   usd: number | null
   tokenAmount: string | null
   emptyHint?: string
+  /** Optional methodology line rendered as a small italic note beneath
+   *  the token amount. Used on the Reserves cell to frame reserve-factor
+   *  context — e.g. why Spark's reserves are tiny ($10K) compared to
+   *  Aave's ($500K+). */
+  context?: string
 }
 
-function Stat({ label, usd, tokenAmount, emptyHint }: StatProps) {
+function Stat({ label, usd, tokenAmount, emptyHint, context }: StatProps) {
   const hasValue = usd != null && Number.isFinite(usd) && usd > 0
   return (
     <div className="flex flex-col gap-1">
@@ -70,8 +77,35 @@ function Stat({ label, usd, tokenAmount, emptyHint }: StatProps) {
       >
         {hasValue && tokenAmount ? tokenAmount : (hasValue ? "" : emptyHint ?? "")}
       </span>
+      {context && hasValue && (
+        <span
+          className="text-[10px] leading-snug"
+          style={{ color: "var(--text-muted)", fontStyle: "italic" }}
+        >
+          {context}
+        </span>
+      )}
     </div>
   )
+}
+
+/** Build a one-line context note for the Reserves cell. Frames the
+ *  reserve-factor story so a reader doesn't read a small reserves USD as
+ *  a data bug — Spark's 5% reserve factor leaves only $10K in protocol
+ *  reserves on a $200M market, which is by design. */
+function reservesContext(reserveFactor: number | null): string | undefined {
+  if (reserveFactor == null || !Number.isFinite(reserveFactor)) return undefined
+  const pct = reserveFactor * 100
+  // Round to a clean integer when the on-chain value isn't perfectly
+  // round (Aave / Spark sometimes set 7.5% etc).
+  const display = pct.toFixed(pct < 10 && Math.abs(pct - Math.round(pct)) > 0.01 ? 1 : 0)
+  if (pct <= 5) {
+    return `${display}% reserve factor — most borrow interest flows to depositors.`
+  }
+  if (pct >= 25) {
+    return `${display}% reserve factor — protocol retains an above-average cut.`
+  }
+  return `${display}% reserve factor — protocol's cut of borrow interest.`
 }
 
 export function MarketHeroStats({
@@ -91,6 +125,7 @@ export function MarketHeroStats({
   availableLiquidityToken,
   reservesUsd,
   reservesToken,
+  reserveFactor,
 }: Props) {
   const typeColor = ASSET_TYPE_COLOR[assetType]
   const typeLabel = ASSET_TYPE_LABEL[assetType]
@@ -177,6 +212,7 @@ export function MarketHeroStats({
           usd={reservesUsd}
           tokenAmount={formatTokenAmount(reservesToken, asset)}
           emptyHint="Requires on-chain SDK"
+          context={reservesContext(reserveFactor)}
         />
       </div>
     </div>

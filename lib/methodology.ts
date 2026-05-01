@@ -197,6 +197,13 @@ export const METHODOLOGY: Record<string, MethodologyEntry> = {
       "Every Aave V3 reserve currently configured with a non-zero debt ceiling (i.e. in isolation mode), with the on-chain ceiling, the current isolation-mode debt against that ceiling, and % used. Sorted by % used descending so reserves nearest a ceiling — the early-stress signals — surface first. Frozen / paused reserves are tagged but kept in the list so the reader can see the full isolation universe.",
     source: "On-chain UiPoolDataProviderV3 (debtCeiling + isolationModeTotalDebt).",
   },
+  // ─── Spark protocol-specific lens ───────────────────────────────────
+  "spark-yield-panel": {
+    text:
+      "Three lines on the same axes: Sky Savings Rate (what USDS staked into Sky's sUSDS savings vault earns), sUSDS APY on Spark (what Spark depositors earn), and the 4-week T-bill (FRED TB4WK) as the risk-free benchmark. The wedge between the SSR and Spark lines is the captured passthrough — what Spark retains for the SSR-to-Spark intermediation. The wedge between Spark and T-bill is the depositor's risk premium for taking on smart-contract exposure over Treasuries.",
+    source: "DefiLlama Yields (Sky + Spark sUSDS pools) + FRED TB4WK.",
+  },
+
   "aave-safety-module": {
     text:
       "The Safety Module (SM) is the staked-AAVE pool that backstops Aave protocol insolvency risk. SM Size is the AAVE held by the stkAAVE contract × current AAVE/USD. Max Slashable is the on-chain governance-set portion (currently 30%) that can be drained to cover bad debt. Backing Ratio is AAVE balance ÷ stkAAVE supply — drift below 100% is the signature of a recent slash event. The newer Umbrella multi-asset SM rolls in here when its Ethereum deployment lands.",

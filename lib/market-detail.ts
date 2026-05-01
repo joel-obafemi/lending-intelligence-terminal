@@ -1178,8 +1178,21 @@ async function enrichWithCrossProtocolHistory(
   detail: MarketDetail,
 ): Promise<MarketDetail> {
   const cutoffTs = Math.floor(Date.now() / 1000) - 90 * 86400
+  // 50% supply APY is the noise floor — any single point above that is
+  // almost certainly a flash spike (utilization briefly hit 100% during a
+  // borrow surge, the IRM ran past its slope-2, then settled back within
+  // hours). Leaving them in turns the chart into a single tall spike that
+  // squashes the actual day-to-day variation across all four lines into
+  // an unreadable strip near zero. We drop them; the chart still tells
+  // the trend story.
+  const SPIKE_CEILING_PCT = 50
   const trim = (series: Array<{ timestamp: number; value: number }>) =>
-    series.filter((p) => p.timestamp >= cutoffTs && Number.isFinite(p.value))
+    series.filter(
+      (p) =>
+        p.timestamp >= cutoffTs &&
+        Number.isFinite(p.value) &&
+        p.value <= SPIKE_CEILING_PCT,
+    )
   const out: Record<string, Array<{ timestamp: number; value: number }>> = {}
 
   // Current market — use the supply APY history we already loaded so we

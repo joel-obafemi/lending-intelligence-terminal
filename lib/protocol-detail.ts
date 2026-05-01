@@ -38,6 +38,10 @@ export interface ProtocolDelta {
   change24h: number
   /** Last ~30 daily observations, used to draw the sparkline. */
   sparkline: Array<{ timestamp: number; value: number }>
+  /** Full daily history available for the metric. Used by the metric
+   *  card's peak-to-current drawdown sub-line, which needs a longer
+   *  window than the 30-day sparkline. Same data, deeper retention. */
+  history: Array<{ timestamp: number; value: number }>
 }
 
 export interface MarketRow {
@@ -134,7 +138,7 @@ export function marketColumnLabel(arch: ProtocolConfig["architecture"]): string 
  */
 function buildProtocolDelta(series: DayPoint[]): ProtocolDelta {
   if (series.length === 0) {
-    return { current: 0, change24h: 0, sparkline: [] }
+    return { current: 0, change24h: 0, sparkline: [], history: [] }
   }
   const sorted = [...series].sort((a, b) => a.timestamp - b.timestamp)
   const latest = sorted[sorted.length - 1]
@@ -155,7 +159,12 @@ function buildProtocolDelta(series: DayPoint[]): ProtocolDelta {
   const sparkline = sorted
     .filter((p) => p.timestamp >= sparkCutoff)
     .map((p) => ({ timestamp: p.timestamp, value: p.usd }))
-  return { current: latest.usd, change24h, sparkline }
+  // Full history for downstream peak-to-current drawdown computation —
+  // same shape as `sparkline` but every point, not just the trailing 30
+  // days. The metric card needs depth to find a meaningful peak (rsETH
+  // week happened in early 2025; 30 days isn't enough).
+  const history = sorted.map((p) => ({ timestamp: p.timestamp, value: p.usd }))
+  return { current: latest.usd, change24h, sparkline, history }
 }
 
 /** Per-day supplied = tvl + borrowed. Aligns the two daily series by timestamp. */
