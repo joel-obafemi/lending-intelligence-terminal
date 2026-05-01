@@ -13,6 +13,7 @@ interface Props {
 }
 
 type Mode = "supply" | "borrow" | "utilization" | "supplyApy" | "borrowApy" | "tvl"
+type Diversity = "all" | "perProtocol"
 
 const MODE_LABEL: Record<Mode, string> = {
   supply: "Supply",
@@ -20,7 +21,23 @@ const MODE_LABEL: Record<Mode, string> = {
   utilization: "Utilization",
   supplyApy: "Supply APY",
   borrowApy: "Borrow APY",
-  tvl: "Free Liquidity",
+  tvl: "Available Liquidity",
+}
+
+/**
+ * Asset / protocol pairs that earn an asterisk + footnote in the table:
+ * known-good outliers that read like data errors at first glance. Keep
+ * this list short — it's "facts a careful reader needs", not a glossary.
+ */
+const FOOTNOTE_FOR: Record<string, string> = {
+  "USDS|Spark": "SPK farming pool · 0% util by design (incentive program, not a borrow market).",
+  "WEETH|Aave V3": "E-Mode collateral · borrowing disabled for most users by design.",
+  "RSETH|Aave V3": "E-Mode collateral · borrowing disabled for most users by design.",
+  "EZETH|Aave V3": "E-Mode collateral · borrowing disabled for most users by design.",
+}
+
+function footnoteFor(m: CrossProtocolMarket): string | undefined {
+  return FOOTNOTE_FOR[`${m.asset.toUpperCase()}|${m.protocolName}`]
 }
 
 function valueFor(m: CrossProtocolMarket, mode: Mode): number {
@@ -42,6 +59,7 @@ function valueFor(m: CrossProtocolMarket, mode: Mode): number {
 
 export function TopMarketsCrossProtocolTable({ title, markets, topN = 10 }: Props) {
   const [mode, setMode] = useState<Mode>("supply")
+  const [diversity, setDiversity] = useState<Diversity>("all")
   // Sort the universe by selected mode; APY modes naturally exclude null rows
   // by ranking them at the bottom.
   const rows = useMemo(() => {
@@ -55,12 +73,34 @@ export function TopMarketsCrossProtocolTable({ title, markets, topN = 10 }: Prop
         : mode === "utilization"
         ? sorted.filter((m) => m.utilizationPct != null)
         : sorted
+    if (diversity === "perProtocol") {
+      // Cap at 5 markets per protocol so a single dominant protocol doesn't
+      // crowd the table. Preserves the sort order within each protocol.
+      const perProto: Record<string, number> = {}
+      const out: CrossProtocolMarket[] = []
+      for (const m of filtered) {
+        const slug = m.protocolSlug
+        if ((perProto[slug] ?? 0) >= 5) continue
+        perProto[slug] = (perProto[slug] ?? 0) + 1
+        out.push(m)
+        if (out.length >= topN) break
+      }
+      return out
+    }
     return filtered.slice(0, topN)
-  }, [markets, mode, topN])
+  }, [markets, mode, topN, diversity])
 
   const top = rows[0] ? valueFor(rows[0], mode) : 0
   const isApyMode = mode === "supplyApy" || mode === "borrowApy"
   const isUtilMode = mode === "utilization"
+  const visibleFootnotes = useMemo(() => {
+    const seen = new Map<string, string>()
+    for (const m of rows) {
+      const note = footnoteFor(m)
+      if (note) seen.set(`${m.asset.toUpperCase()}|${m.protocolName}`, note)
+    }
+    return [...seen.entries()].map(([k, note]) => ({ key: k, note }))
+  }, [rows])
 
   return (
     <div className="tui-card bg-card-bg border border-card-border rounded overflow-hidden">
@@ -74,40 +114,58 @@ export function TopMarketsCrossProtocolTable({ title, markets, topN = 10 }: Prop
         >
           {title}
         </span>
-        <div className="flex items-center gap-2">
-        <span className="text-[10px] uppercase tracking-[0.08em]" style={{ color: "var(--text-muted)" }}>
-          Sort by
-        </span>
-        <div
-          style={{
-            display: "inline-flex",
-            border: "1px solid var(--card-border)",
-            borderRadius: "4px",
-            overflow: "hidden",
-            background: "var(--background)",
-          }}
-        >
-          {(Object.keys(MODE_LABEL) as Mode[]).map((m) => (
-            <button
-              key={m}
-              onClick={() => setMode(m)}
+        <div className="flex items-center gap-3 flex-wrap">
+          <div className="flex items-center gap-2">
+            <span className="text-[10px] uppercase tracking-[0.08em]" style={{ color: "var(--text-muted)" }}>
+              View
+            </span>
+            <div
               style={{
-                padding: "4px 10px",
-                fontSize: "11px",
-                fontWeight: 500,
-                cursor: "pointer",
-                border: "none",
-                fontFamily: "inherit",
-                backgroundColor: mode === m ? "var(--card-border)" : "transparent",
-                color: mode === m ? "var(--text-primary)" : "var(--text-muted)",
-                textTransform: "uppercase",
-                letterSpacing: "0.05em",
+                display: "inline-flex",
+                border: "1px solid var(--card-border)",
+                borderRadius: "4px",
+                overflow: "hidden",
+                background: "var(--background)",
               }}
             >
-              {MODE_LABEL[m]}
-            </button>
-          ))}
-        </div>
+              <button
+                onClick={() => setDiversity("all")}
+                style={pillStyle(diversity === "all")}
+              >
+                Top 10 sector
+              </button>
+              <button
+                onClick={() => setDiversity("perProtocol")}
+                style={pillStyle(diversity === "perProtocol")}
+              >
+                Max 5 / protocol
+              </button>
+            </div>
+          </div>
+          <div className="flex items-center gap-2">
+            <span className="text-[10px] uppercase tracking-[0.08em]" style={{ color: "var(--text-muted)" }}>
+              Sort by
+            </span>
+            <div
+              style={{
+                display: "inline-flex",
+                border: "1px solid var(--card-border)",
+                borderRadius: "4px",
+                overflow: "hidden",
+                background: "var(--background)",
+              }}
+            >
+              {(Object.keys(MODE_LABEL) as Mode[]).map((m) => (
+                <button
+                  key={m}
+                  onClick={() => setMode(m)}
+                  style={pillStyle(mode === m)}
+                >
+                  {MODE_LABEL[m]}
+                </button>
+              ))}
+            </div>
+          </div>
         </div>
       </div>
       <div style={{ overflowX: "auto" }}>
@@ -118,7 +176,7 @@ export function TopMarketsCrossProtocolTable({ title, markets, topN = 10 }: Prop
               <th>Asset</th>
               <th>Protocol</th>
               <th className="text-right">Total Supply</th>
-              <th className="text-right">TVL</th>
+              <th className="text-right">Available Liquidity</th>
               <th className="text-right">Borrowed</th>
               <th className="text-right">Util</th>
               <th className="text-right">Supply APY</th>
@@ -135,6 +193,15 @@ export function TopMarketsCrossProtocolTable({ title, markets, topN = 10 }: Prop
                   <td style={{ color: "var(--text-muted)" }}>{i + 1}</td>
                   <td style={{ fontWeight: 600 }}>
                     {m.asset}
+                    {footnoteFor(m) && (
+                      <span
+                        className="ml-1 text-[10px]"
+                        style={{ color: "var(--accent-yellow)" }}
+                        title={footnoteFor(m)}
+                      >
+                        *
+                      </span>
+                    )}
                     {m.poolMeta && (
                       <div className="text-[10px]" style={{ color: "var(--text-muted)" }}>
                         {m.poolMeta}
@@ -226,6 +293,38 @@ export function TopMarketsCrossProtocolTable({ title, markets, topN = 10 }: Prop
           </tbody>
         </table>
       </div>
+      {visibleFootnotes.length > 0 && (
+        <div
+          className="px-4 py-2 text-[10px] space-y-0.5"
+          style={{
+            background: "var(--panel-header)",
+            color: "var(--text-muted)",
+            borderTop: "1px solid var(--card-border)",
+          }}
+        >
+          {visibleFootnotes.map(({ key, note }) => (
+            <div key={key}>
+              <span style={{ color: "var(--accent-yellow)", marginRight: 4 }}>*</span>
+              {note}
+            </div>
+          ))}
+        </div>
+      )}
     </div>
   )
+}
+
+function pillStyle(active: boolean): React.CSSProperties {
+  return {
+    padding: "4px 10px",
+    fontSize: "11px",
+    fontWeight: 500,
+    cursor: "pointer",
+    border: "none",
+    fontFamily: "inherit",
+    backgroundColor: active ? "var(--card-border)" : "transparent",
+    color: active ? "var(--text-primary)" : "var(--text-muted)",
+    textTransform: "uppercase",
+    letterSpacing: "0.05em",
+  }
 }

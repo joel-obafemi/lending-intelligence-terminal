@@ -107,6 +107,16 @@ export function CompositionStrip({
                   value={formatPercent(row?.utilizationPct ?? 0, 1)}
                 />
                 <MetricRow
+                  label="Fees 24h"
+                  value={formatUSD(row?.fees24h ?? 0)}
+                  tone="muted"
+                />
+                <MetricRow
+                  label="Fees 7d"
+                  value={formatUSD(row?.fees7d ?? 0)}
+                  tone="muted"
+                />
+                <MetricRow
                   label="Revenue 30d"
                   value={formatUSD(rev?.fees30d ?? 0)}
                 />

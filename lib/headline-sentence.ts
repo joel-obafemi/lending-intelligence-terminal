@@ -59,8 +59,9 @@ export function formatSpreadBpsPhrase(spreadPct: number, vs: string): string {
 
 export interface SectorVerdictInput {
   asOf: number  // unix seconds
-  totalTvlUsd: number
-  tvlMomChange: number | null  // 0-1 fraction (e.g. -0.123 = -12.3%)
+  totalSuppliedUsd: number
+  /** MoM change in TOTAL SUPPLY as a fraction (e.g. -0.123 = -12.3%). */
+  suppliedMomChange: number | null
   protocolCount: number
   realYieldSpreadPct: number | null  // current pp spread; null if missing
   sectorTakeRatePct: number | null  // annualized revenue ÷ TVL, in %
@@ -68,9 +69,14 @@ export interface SectorVerdictInput {
 
 /** Sector Overview Verdict band sentence (Zone 1).
  *
- *  "As of {date}, Ethereum lending sits at {$X} of TVL across {N} protocols,
- *   {trend phrase}. Depositors are earning {Y bps} {over/under} T-bills. The
- *   sector take rate is {Z}%."
+ *  "As of {date}, Ethereum lending holds {$X} of total supply across {N}
+ *   protocols, {trend phrase}. Depositors are earning {Y bps} {over/under}
+ *   T-bills. The sector take rate is {Z}%."
+ *
+ *  We measure trend on TOTAL SUPPLY (deposits + active borrows), not on
+ *  DefiLlama's net-liquidity TVL. The latter inverts when borrow demand
+ *  rises — supply can be flat while net-liquidity TVL falls — and that
+ *  inversion ends up in headlines as a phantom outflow signal.
  */
 export function sectorVerdictSentence(d: SectorVerdictInput): string {
   const date = new Date(d.asOf * 1000).toLocaleDateString("en-US", {
@@ -79,8 +85,8 @@ export function sectorVerdictSentence(d: SectorVerdictInput): string {
     year: "numeric",
     timeZone: "UTC",
   })
-  const tvl = formatUsdShort(d.totalTvlUsd)
-  const trend = formatDeltaPhrase(d.tvlMomChange, "last month")
+  const supplied = formatUsdShort(d.totalSuppliedUsd)
+  const trend = formatDeltaPhrase(d.suppliedMomChange, "last month")
   const yieldPhrase =
     d.realYieldSpreadPct != null
       ? `Depositors are earning ${formatSpreadBpsPhrase(d.realYieldSpreadPct, "T-bills")}.`
@@ -90,7 +96,7 @@ export function sectorVerdictSentence(d: SectorVerdictInput): string {
       ? ` The sector take rate is ${formatPercent(d.sectorTakeRatePct, 1)}.`
       : ""
   return (
-    `As of ${date}, Ethereum lending sits at ${tvl} of TVL across ` +
+    `As of ${date}, Ethereum lending holds ${supplied} of total supply across ` +
     `${d.protocolCount} protocols, ${trend}. ${yieldPhrase}${takeRatePhrase}`
   ).trim()
 }

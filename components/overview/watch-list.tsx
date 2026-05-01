@@ -63,12 +63,6 @@ export function WatchList({ data }: Props) {
           </div>
         ))}
       </div>
-      <div
-        className="px-4 py-2 text-[10px]"
-        style={{ background: "var(--panel-header)", color: "var(--text-muted)", borderTop: "1px solid var(--card-border)" }}
-      >
-        Edit <code style={{ fontFamily: "JetBrains Mono, monospace" }}>content/watch.md</code> before each edition.
-      </div>
     </div>
   )
 }

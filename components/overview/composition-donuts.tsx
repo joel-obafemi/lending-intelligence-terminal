@@ -4,9 +4,14 @@
  * Composition Donuts — Zone 5 of the Sector Overview rebuild.
  *
  * Two donut charts side by side: latest-day collateral mix and borrow mix
- * across the four protocols. Top-7 individual assets plus an "Other" bucket
- * (the data layer already trimmed to that shape via `topCollateralAssets`
- * and `topBorrowedAssets`). Donut center prints the total USD.
+ * across the four protocols. The donut renders the top-7 individual assets
+ * by USD plus an "Other" bucket; the "Other" bucket is forced to capture
+ * everything beyond top-7 (including assets ranked outside the loader's
+ * top-10) so the donut total reconciles against the Verdict-card supply /
+ * borrow numbers.
+ *
+ * Each donut also gets an auto insight line beneath it stating the lead
+ * asset's share of the sector total.
  */
 
 import { useMemo, useRef } from "react"
@@ -20,12 +25,22 @@ import {
 import { ChartActions } from "../chart-actions"
 import { MethodologyTooltip } from "./methodology-tooltip"
 import { formatUSD, formatPercent } from "@/lib/utils"
+import { classifyAsset } from "@/lib/assets"
 import type { RankedAssetRow } from "@/lib/overview"
 
 interface DonutCardProps {
   title: string
   rows: RankedAssetRow[]
+  /** Authoritative sector total — usually `snapshot.totalSupplied` or
+   *  `snapshot.totalBorrowed`. We use this to back-fill the Other slice
+   *  with everything ranked beyond the loader's top-10, so the donut total
+   *  matches the Verdict cards exactly. */
+  authoritativeTotal: number
+  /** "borrow" / "collateral" — used for the auto insight line phrasing. */
+  kind: "collateral" | "borrow"
   methodologyKey?: string
+  /** Footnote shown beneath the legend when present (e.g. asset-tax notes). */
+  footnote?: string
 }
 
 const DONUT_COLORS = [
@@ -64,22 +79,75 @@ function DonutTooltip({ active, payload }: any) {
   )
 }
 
-function DonutCard({ title, rows, methodologyKey }: DonutCardProps) {
+interface Wedge {
+  name: string
+  value: number
+  sharePct: number
+}
+
+function buildInsight(rows: Wedge[], total: number, kind: "collateral" | "borrow"): string {
+  if (rows.length === 0 || total <= 0) return ""
+  const top = rows[0]
+  const isCollateral = kind === "collateral"
+  const noun = isCollateral ? "collateral USD" : "active borrows"
+  // Surface the broader class story: ETH-family share for collateral,
+  // stablecoin share for borrows.
+  let secondary = ""
+  if (isCollateral) {
+    const ethFamily = rows
+      .filter((r) => {
+        const t = classifyAsset(r.name)
+        return t === "native" || t === "lst" || t === "lrt"
+      })
+      .reduce((s, r) => s + r.value, 0)
+    if (ethFamily > 0) {
+      secondary = ` ETH-family assets (ETH, LSTs, LRTs) make up ${formatPercent((ethFamily / total) * 100, 0)} of the deposit base.`
+    }
+  } else {
+    const stables = rows
+      .filter((r) => classifyAsset(r.name) === "stable")
+      .reduce((s, r) => s + r.value, 0)
+    if (stables > 0) {
+      secondary = ` Stablecoins account for ${formatPercent((stables / total) * 100, 0)} of all on-chain credit.`
+    }
+  }
+  return `${top.name} is the largest ${noun} at ${formatPercent(top.sharePct, 1)} of the sector total.${secondary}`
+}
+
+function DonutCard({
+  title,
+  rows,
+  authoritativeTotal,
+  kind,
+  methodologyKey,
+  footnote,
+}: DonutCardProps) {
   const cardRef = useRef<HTMLDivElement>(null)
 
-  // Group everything past the top-7 into a single "Other" wedge so the donut
-  // doesn't end up with a long tail of slivers.
-  const data = useMemo(() => {
+  // Build wedges so the donut total = `authoritativeTotal`. The top-7 wedges
+  // are the loader's ranked entries; "Other" absorbs everything else
+  // (long-tail assets + the rounding gap between the loader's top-10 sum
+  // and the protocol-level totalBorrowed/totalSupplied).
+  const wedges: Wedge[] = useMemo(() => {
     const top = rows.slice(0, 7)
-    const tail = rows.slice(7)
-    const tailSum = tail.reduce((s, r) => s + r.usd, 0)
-    const tailShare = tail.reduce((s, r) => s + r.sharePct, 0)
-    const out = top.map((r) => ({ name: r.symbol, value: r.usd, sharePct: r.sharePct }))
-    if (tailSum > 0) out.push({ name: "Other", value: tailSum, sharePct: tailShare })
+    const accountedTop = top.reduce((s, r) => s + r.usd, 0)
+    const otherUsd = Math.max(0, authoritativeTotal - accountedTop)
+    const out: Wedge[] = top.map((r) => ({
+      name: r.symbol,
+      value: r.usd,
+      sharePct: authoritativeTotal > 0 ? (r.usd / authoritativeTotal) * 100 : 0,
+    }))
+    if (otherUsd > 0) {
+      out.push({
+        name: "Other",
+        value: otherUsd,
+        sharePct: authoritativeTotal > 0 ? (otherUsd / authoritativeTotal) * 100 : 0,
+      })
+    }
     return out
-  }, [rows])
+  }, [rows, authoritativeTotal])
 
-  const total = data.reduce((s, r) => s + r.value, 0)
+  const insight = buildInsight(wedges, authoritativeTotal, kind)
 
   return (
     <div
@@ -104,7 +172,7 @@ function DonutCard({ title, rows, methodologyKey }: DonutCardProps) {
           <ResponsiveContainer width="100%" height="100%">
             <PieChart>
               <Pie
-                data={data}
+                data={wedges}
                 dataKey="value"
                 nameKey="name"
                 innerRadius={50}
@@ -113,7 +181,7 @@ function DonutCard({ title, rows, methodologyKey }: DonutCardProps) {
                 stroke="var(--card-bg)"
                 strokeWidth={2}
               >
-                {data.map((_, i) => (
+                {wedges.map((_, i) => (
                   <Cell key={i} fill={DONUT_COLORS[i % DONUT_COLORS.length]} />
                 ))}
               </Pie>
@@ -140,10 +208,10 @@ function DonutCard({ title, rows, methodologyKey }: DonutCardProps) {
               className="text-[13px] font-semibold tabular-nums"
               style={{ color: "var(--text-primary)" }}
             >
-              {formatUSD(total)}
+              {formatUSD(authoritativeTotal)}
             </span>
           </div>
-          {data.map((d, i) => (
+          {wedges.map((d, i) => (
             <div key={d.name} className="flex items-center justify-between gap-3">
               <div className="flex items-center gap-2 min-w-0">
                 <span
@@ -161,6 +229,26 @@ function DonutCard({ title, rows, methodologyKey }: DonutCardProps) {
           ))}
         </div>
       </div>
+      {insight && (
+        <p
+          className="text-[11px] leading-relaxed px-4 pb-3"
+          style={{ color: "var(--text-secondary)" }}
+        >
+          {insight}
+        </p>
+      )}
+      {footnote && (
+        <div
+          className="px-4 py-2 text-[10px]"
+          style={{
+            background: "var(--panel-header)",
+            color: "var(--text-muted)",
+            borderTop: "1px solid var(--card-border)",
+          }}
+        >
+          {footnote}
+        </div>
+      )}
     </div>
   )
 }
@@ -168,20 +256,34 @@ function DonutCard({ title, rows, methodologyKey }: DonutCardProps) {
 interface Props {
   collateral: RankedAssetRow[]
   borrowed: RankedAssetRow[]
+  /** Sector totals from `snapshot.totalSupplied` / `snapshot.totalBorrowed`,
+   *  used to make the donut totals reconcile with the Verdict cards. */
+  totalSuppliedUsd: number
+  totalBorrowedUsd: number
 }
 
-export function CompositionDonuts({ collateral, borrowed }: Props) {
+export function CompositionDonuts({
+  collateral,
+  borrowed,
+  totalSuppliedUsd,
+  totalBorrowedUsd,
+}: Props) {
   return (
     <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
       <DonutCard
         title="Collateral Mix"
         rows={collateral}
+        authoritativeTotal={totalSuppliedUsd}
+        kind="collateral"
         methodologyKey="sector-collateral-mix-donut"
       />
       <DonutCard
         title="Borrow Mix"
         rows={borrowed}
+        authoritativeTotal={totalBorrowedUsd}
+        kind="borrow"
         methodologyKey="sector-borrow-mix-donut"
+        footnote="DefiLlama returns USDS borrows under DAI for some Spark markets; that share is folded into the DAI wedge here."
       />
     </div>
   )
