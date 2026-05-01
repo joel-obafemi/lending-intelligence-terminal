@@ -42,6 +42,7 @@ import {
   deriveBorrowApyHistory,
 } from "./derived-rates"
 import { loadAllSparkReservesLive } from "./spark-onchain"
+import { loadSkySavingsRate } from "./sky-onchain"
 
 export interface YieldPanelPoint {
   timestamp: number
@@ -103,10 +104,11 @@ function pickLargestSavingsMatch(
       symSet.has(p.symbol.toUpperCase()) &&
       p.apyBase != null &&
       p.apyBase > 0 &&
-      // Savings vaults are supply-only — no borrow side. A pool that
-      // exposes `apyBaseBorrow` is a lending market, not a savings vault,
-      // and we don't want it in the SSR slot.
-      p.apyBaseBorrow == null,
+      // Savings vaults are supply-only. The lending-market USDS pool will
+      // have a non-trivial borrow APY (typically 4-8%); the savings vault
+      // either reports null or 0 there. Accept both so we don't drop sUSDS
+      // when DefiLlama publishes a literal 0 instead of null.
+      (p.apyBaseBorrow == null || p.apyBaseBorrow === 0),
   )
   if (candidates.length === 0) return null
   return candidates.reduce((best, p) =>
@@ -145,13 +147,17 @@ function findSparkUsdsLendingPool(pools: YieldPool[]): YieldPool | null {
 
 export async function loadSparkYieldPanel(): Promise<SparkYieldPanelResponse> {
   // Pull every input in parallel. Each one is failure-tolerant — a missing
-  // line just drops cleanly rather than failing the panel.
-  const [pools, tBills, sparkProtocolHistory, sparkReserves] = await Promise.all([
-    fetchAllYieldPools().catch(() => [] as YieldPool[]),
-    fetchFredSeries("TB4WK", 400).catch(() => [] as FredPoint[]),
-    fetchProtocolHistory("sparklend").catch(() => null),
-    loadAllSparkReservesLive().catch(() => []),
-  ])
+  // line just drops cleanly rather than failing the panel. The on-chain
+  // SSR read is the canonical fallback when DefiLlama hasn't indexed the
+  // sUSDS pool cleanly.
+  const [pools, tBills, sparkProtocolHistory, sparkReserves, onchainSsr] =
+    await Promise.all([
+      fetchAllYieldPools().catch(() => [] as YieldPool[]),
+      fetchFredSeries("TB4WK", 400).catch(() => [] as FredPoint[]),
+      fetchProtocolHistory("sparklend").catch(() => null),
+      loadAllSparkReservesLive().catch(() => []),
+      loadSkySavingsRate().catch(() => null),
+    ])
 
   const ssrPool = findSsrPool(pools)
   const lendingPool = findSparkUsdsLendingPool(pools)
@@ -194,9 +200,11 @@ export async function loadSparkYieldPanel(): Promise<SparkYieldPanelResponse> {
     byTs.set(ts, fresh)
     return fresh
   }
+  let yieldsSsrPointCount = 0
   for (const pt of ssrChart) {
     if (pt.apyBase == null || !Number.isFinite(pt.apyBase)) continue
     seed(pt.timestamp).ssrPct = pt.apyBase
+    yieldsSsrPointCount++
   }
   for (const pt of sparkBorrowApyHistory) {
     if (!Number.isFinite(pt.value)) continue
@@ -206,6 +214,17 @@ export async function loadSparkYieldPanel(): Promise<SparkYieldPanelResponse> {
   for (const pt of [...tBills].sort((a, b) => a.timestamp - b.timestamp)) {
     lastTbill = pt.rate
     seed(pt.timestamp).tBillPct = pt.rate
+  }
+
+  // SSR fallback: when DefiLlama gave us nothing useful for the SSR line
+  // (or only a couple of points), back-fill the entire window with the
+  // on-chain SSR rate. The SSR moves in discrete governance steps — a
+  // flat extrapolation is honest at chart-level granularity, and it
+  // saves a reader from staring at an empty chart slot.
+  if (yieldsSsrPointCount < 5 && onchainSsr) {
+    for (const row of byTs.values()) {
+      if (row.ssrPct == null) row.ssrPct = onchainSsr.apyPct
+    }
   }
 
   // Walk forward and carry-forward T-bill across weekend / holiday gaps so
@@ -220,8 +239,13 @@ export async function loadSparkYieldPanel(): Promise<SparkYieldPanelResponse> {
     }
   }
 
-  // Current snapshot — most recent value per line that exists.
-  const lastSsr = [...history].reverse().find((p) => p.ssrPct != null)?.ssrPct ?? null
+  // Current snapshot — prefer the on-chain SSR for the live number since
+  // it's the canonical source. Fall back to DefiLlama-history's last point
+  // when the on-chain read failed.
+  const lastSsr =
+    onchainSsr?.apyPct ??
+    [...history].reverse().find((p) => p.ssrPct != null)?.ssrPct ??
+    null
   const lastSparkBorrow =
     [...history].reverse().find((p) => p.sparkBorrowPct != null)?.sparkBorrowPct ??
     lendingPool?.apyBaseBorrow ??
