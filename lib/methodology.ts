@@ -94,10 +94,18 @@ export const METHODOLOGY: Record<string, MethodologyEntry> = {
       "Share of total cross-protocol active borrows held by each protocol over time. 24-month stacked area, labelled annotations call out depegs, parameter changes, and liquidation cascades. Sums to 100% per day.",
     source: "DefiLlama /protocol/<slug> Ethereum-borrowed.",
   },
+  "sector-net-flows": {
+    text:
+      "Per-bucket change in supplied USD per protocol over the last 24 months, stacked vertically. Default bucket is monthly; the toggle re-aggregates into weekly or quarterly. Daily flows are price-stripped (token-quantity deltas valued at the latest observed price) so the chart isolates real flow from price moves. Bars above zero are net deposits, below zero are net withdrawals; the stack height is the protocols' summed contribution for that period.",
+    source: "DefiLlama /protocol/<slug> token-quantity deltas, weekly bucketed, re-aggregated to W / M / Q.",
+  },
+  /** @deprecated Use sector-net-flows. The previous trailing-30d
+   *  Organic-vs-Interest split was retired when the chart moved to a
+   *  time-series view. */
   "sector-net-flows-30d": {
     text:
-      "Trailing-30-day net change in supplied USD per protocol, broken into two parts. Interest accrual is the mechanical growth from borrowers paying interest, taken from DefiLlama's dailyUserFees (or dailyFees as a fallback). Organic deposits is the rest: total net flow minus interest accrual. A negative organic slice means depositors were net withdrawing.",
-    source: "DefiLlama net-flow + dailyUserFees.",
+      "Per-protocol net change in supplied USD over the selected window. The chart now shows the trend over time (W / M / Q toggle) rather than a single trailing-30d snapshot.",
+    source: "DefiLlama /protocol/<slug>.",
   },
   "sector-collateral-mix-donut": {
     text:

@@ -1,7 +1,7 @@
 import { VerdictStrip } from "@/components/overview/verdict-strip"
 import { MarketShareHero } from "@/components/overview/market-share-hero"
 import { CompositionStrip } from "@/components/overview/composition-strip"
-import { NetFlowBarChart } from "@/components/overview/net-flow-bar-chart"
+import { NetFlowStackedBarChart } from "@/components/overview/net-flow-stacked-bar-chart"
 import { CompositionDonuts } from "@/components/overview/composition-donuts"
 import { TopMarketsCrossProtocolTable } from "@/components/overview/top-markets-cross-protocol-table"
 import { WatchList } from "@/components/overview/watch-list"
@@ -15,7 +15,6 @@ import {
   biggestMover,
   buildDailyDeltaTriple,
   buildHeroLenses,
-  interestAccrual30dByProtocol,
   netDeposits30dByProtocol,
   sectorTakeRatePct,
   sectorUtilizationDailySeries,
@@ -67,9 +66,11 @@ export default async function OverviewPage() {
   // ─── Hero lens series + insight ───────────────────────────────────────
   const hero = buildHeroLenses(data)
 
-  // ─── Net Flows v2 + Composition strip mover line ──────────────────────
+  // ─── Composition strip mover line ─────────────────────────────────────
+  // Net Flows now charts the full 24-month time series (see Zone 4 below);
+  // the trailing-30d aggregate stays only as input to the Composition
+  // strip's "biggest mover" line.
   const netDeps30d = netDeposits30dByProtocol(data.netFlowWeeklySeries)
-  const interest30d = interestAccrual30dByProtocol(data.netInterestPaidDailySeries)
   const mover = biggestMover(netDeps30d)
 
   return (
@@ -129,13 +130,12 @@ export default async function OverviewPage() {
         biggestMover={mover}
       />
 
-      {/* Zone 4 — Net Supply Flows vertical bar chart (replaces the v1
-          horizontal-bar chart and the v2 summary table). */}
-      <NetFlowBarChart
-        netDeposits30d={netDeps30d}
-        interest30d={interest30d}
-        protocols={protocols}
-        methodologyKey="sector-net-flows-30d"
+      {/* Zone 4 — Net Supply Flows · 24-month stacked bars by protocol
+          with W / M / Q toggle. */}
+      <NetFlowStackedBarChart
+        title="Net Supply Flows"
+        data={data.netFlowWeeklySeries}
+        methodologyKey="sector-net-flows"
       />
 
       {/* Zone 5 — Composition donuts (totals reconciled to Verdict cards) */}
