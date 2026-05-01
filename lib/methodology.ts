@@ -193,14 +193,34 @@ export const METHODOLOGY: Record<string, MethodologyEntry> = {
   },
 
   // ─── Risk page ──────────────────────────────────────────────────────
+  "risk-stablecoin-debt-share": {
+    text:
+      "Share of total cross-protocol active borrows denominated in stablecoins (USDC, USDT, DAI, USDS, GHO, PYUSD, USDe, etc.). A higher number means the system is more rate-sensitive and less directional. A drop usually signals leverage-on, with traders borrowing volatile assets against stables.",
+    source: "DefiLlama-derived per-asset borrow USD.",
+  },
   "risk-stablecoin-debt-share-trend": {
     text:
-      "% of total sector borrows that are stablecoin-denominated, monthly history. Same metric as the Sector Verdict card; this view shows the trajectory.",
+      "Stablecoin debt share over the last 24 months, monthly. Same metric as the Verdict card; this view shows the trajectory and the 50% midpoint as a visual anchor.",
     source: "DefiLlama-derived.",
+  },
+  "risk-oracle-concentration": {
+    text:
+      "Share of cross-protocol priced collateral that depends on a single oracle vendor. Computed by walking the latest-day top collateral assets and attributing each to its primary oracle in the curated map. A high number means a single price-feed outage or manipulation can hit a large slice of the sector at once.",
+    source: "Curated lib/oracles.ts × DefiLlama topCollateralAssets.",
+  },
+  "risk-oracle-map": {
+    text:
+      "Per-protocol per-asset oracle assignments across Aave V3, Spark, Morpho, and Fluid. Assets not yet in the curated map render as 'Other'. Composite feeds (e.g. wstETH = Lido exchange rate × Chainlink ETH/USD) are attributed to their root price source.",
+    source: "Curated lib/oracles.ts.",
+  },
+  "risk-liquidation-intensity": {
+    text:
+      "Per-protocol 90-day liquidation volume divided by current TVL. Reads as 'how much of this protocol's deposit base went through forced liquidation in the last quarter'. Fluid typically runs hotter than Aave V3 here because of how its smart-collateral mechanics interact with volatile pairs.",
+    source: "Liquidator Economy DB · liquidation_events ÷ DefiLlama TVL.",
   },
   "risk-liquidation-volume-weekly": {
     text:
-      "Weekly liquidation volume per protocol over the trailing window. Stacked bars; spike correlation across protocols indicates systemic stress.",
+      "Weekly liquidation volume per protocol over the trailing 90 days. Stacked bars; correlation across protocols on the same week is a systemic-stress fingerprint.",
     source: "Liquidator Economy DB · liquidation_events.",
   },
   "risk-bad-debt-time": {

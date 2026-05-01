@@ -99,21 +99,27 @@ export interface RiskVerdictInput {
   stablecoinDebtSharePct: number  // 0-100
   topOraclePct: number  // 0-100; e.g. Chainlink share of $-priced collateral
   topOracleName: string
-  top10BorrowerSharePct: number  // 0-100
+  /** Peak protocol's 90-day liquidation intensity (volume / TVL %). */
+  peakIntensityPct: number
+  peakIntensityProtocol: string
 }
 
-/** Risk page Verdict band sentence (Zone 1, post-Days-Since drop).
+/** Risk page Verdict band sentence (no-wallet scope).
  *
- *  "{X}% of all on-chain credit is denominated in stablecoins. {Y}% of
- *   collateral is priced by {oracle}. The 10 largest wallets hold {Z}% of
- *   total debt."
+ *  "{X}% of all on-chain credit is in stablecoins. {Y}% of collateral is
+ *   priced by {oracle}. {Protocol} has been the most stress-prone over
+ *   the past 90 days, liquidating {Z}% of its TVL."
+ *
+ *  Wallet concentration (Top-10 borrower share) lights up in a later pass
+ *  once the borrower-discovery data layer ships.
  */
 export function riskVerdictSentence(d: RiskVerdictInput): string {
   return (
-    `${formatPercent(d.stablecoinDebtSharePct, 0)} of all on-chain credit is ` +
-    `denominated in stablecoins. ${formatPercent(d.topOraclePct, 0)} of ` +
-    `collateral is priced by ${d.topOracleName}. The 10 largest wallets hold ` +
-    `${formatPercent(d.top10BorrowerSharePct, 0)} of total debt.`
+    `${formatPercent(d.stablecoinDebtSharePct, 0)} of all on-chain credit ` +
+    `is in stablecoins. ${formatPercent(d.topOraclePct, 0)} of collateral ` +
+    `is priced by ${d.topOracleName}. ${d.peakIntensityProtocol} has been ` +
+    `the most stress-prone over the past 90 days, liquidating ` +
+    `${formatPercent(d.peakIntensityPct, 1)} of its TVL.`
   )
 }
 

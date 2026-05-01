@@ -22,6 +22,7 @@ const navItems = [
   { href: "/rates", label: "Rates" },
   { href: "/revenue", label: "Revenue" },
   { href: "/collateral", label: "Collateral" },
+  { href: "/risk", label: "Risk" },
   { href: "/events", label: "Events" },
 ]
 
