@@ -228,6 +228,11 @@ export interface AaveStyleReserve {
 
   borrowingEnabled: boolean
   flashLoanEnabled: boolean
+  /** Oracle address used to price this reserve (typically Chainlink, but the
+   *  protocol can swap it per asset — Spark uses Maker for some stables, etc). */
+  priceOracle: string
+  /** Isolation-mode debt ceiling in USD. 0 if the asset is not isolated. */
+  debtCeilingUsd: number
   /** V3.3+ field; undefined for older deployments (Spark). */
   deficitToken: number | null
   deficitUsd: number | null
@@ -319,6 +324,13 @@ export async function loadReservesViaProvider(
     const supplyCapToken = Number(r.supplyCap)
     const borrowCapToken = Number(r.borrowCap)
 
+    // debtCeiling is denominated in USD with `debtCeilingDecimals` (typically
+    // 2 — i.e. cents). Convert to plain USD; 0 means the asset isn't isolated.
+    const debtCeilingRaw = Number(r.debtCeiling ?? 0)
+    const debtCeilingDecimals = Number(r.debtCeilingDecimals ?? 0)
+    const debtCeilingUsd =
+      debtCeilingRaw > 0 ? debtCeilingRaw / Math.pow(10, debtCeilingDecimals) : 0
+
     const utilization = totalSupplyToken > 0 ? totalBorrowToken / totalSupplyToken : 0
 
     // `deficit` only exists on V3.3+ (Aave). Spark won't have it.
@@ -359,6 +371,8 @@ export async function loadReservesViaProvider(
       borrowCapUsd: borrowCapToken > 0 ? borrowCapToken * priceUsd : null,
       borrowingEnabled: r.borrowingEnabled,
       flashLoanEnabled: r.flashLoanEnabled,
+      priceOracle: r.priceOracle,
+      debtCeilingUsd,
       deficitToken,
       deficitUsd,
     }

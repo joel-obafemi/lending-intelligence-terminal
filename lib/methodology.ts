@@ -223,6 +223,45 @@ export const METHODOLOGY: Record<string, MethodologyEntry> = {
       "Weekly liquidation volume per protocol over the trailing 90 days. Stacked bars; correlation across protocols on the same week is a systemic-stress fingerprint.",
     source: "Liquidator Economy DB · liquidation_events.",
   },
+
+  // ─── Compare page ───────────────────────────────────────────────────
+  "compare-supply-history": {
+    text:
+      "Daily base supply APY for the selected asset on each tracked protocol over the last 90 days. Reward APYs (incentive programs) are excluded so the line reads as pure interest yield. The dashed Fed Funds (DFF) overlay only appears for stablecoins, where it's the right risk-free benchmark.",
+    source: "DefiLlama Yields /chart/{poolId} + FRED DFF.",
+  },
+  "compare-supply-spread": {
+    text:
+      "Cross-protocol dispersion in base supply APY for the selected asset, day by day. Computed as max minus min across the four protocols. Wider dispersion means an arbitrage gap is opening; tighter means the market has converged.",
+    source: "DefiLlama Yields /chart/{poolId}.",
+  },
+  "compare-parameters": {
+    text:
+      "Side-by-side risk parameter snapshot for the selected asset. Aave V3 + Spark numbers come from the live UiPoolDataProviderV3 reads; Fluid from on-chain vault reads; Morpho parameters vary per market and surface here as 'varies by market' until the Compare page's Pass B adds a per-market range view.",
+    source: "On-chain UiPoolDataProviderV3 + DefiLlama Yields.",
+  },
+  "compare-ltv": {
+    text:
+      "Maximum loan-to-value at which a position can be opened against this asset, in percent. The cell with the highest LTV gets an ↑ badge.",
+  },
+  "compare-liq-threshold": {
+    text:
+      "The LTV at which a position becomes eligible for liquidation. The gap between Max LTV and Liquidation Threshold is the natural buffer a borrower has before forced liquidation.",
+  },
+  "compare-liq-bonus": {
+    text:
+      "Discount that liquidators receive on seized collateral, relative to oracle price. Lower is better for borrowers. Aave-style protocols quote this as a multiplier minus 1 (e.g. 1.05 → 5% bonus); Fluid quotes the penalty directly.",
+  },
+  "compare-oracle": {
+    text:
+      "The price feed each protocol uses to price this asset. Vendor color matches the curated Oracle Map on the Risk page. Where the on-chain reads expose an oracle address (Aave, Spark), the row links to Etherscan; otherwise the vendor classification comes from the curated map.",
+    source: "On-chain UiPoolDataProviderV3 + curated lib/oracles.ts.",
+  },
+  "compare-capital-efficiency": {
+    text:
+      "Each bar is the maximum dollar of borrow that $1 of the selected collateral asset supports on that protocol — i.e. its Max LTV at face value. The leverage stat below each bar is 1 / (1 − LTV), the corresponding maximum recursive-loop leverage. E-Mode (Aave) / Smart Collateral (Fluid) lift these numbers on specific paired-asset tracks; that lens lands in Pass B.",
+    source: "On-chain UiPoolDataProviderV3 + Fluid / Morpho APIs.",
+  },
   "risk-bad-debt-time": {
     text:
       "Cumulative bad debt accrued per protocol over time. Currently driven by Morpho only. Aave V3, Spark, and Fluid don't surface bad-debt rows in our DB consistently.",
