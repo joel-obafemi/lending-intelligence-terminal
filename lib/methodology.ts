@@ -200,8 +200,8 @@ export const METHODOLOGY: Record<string, MethodologyEntry> = {
   // ─── Spark protocol-specific lens ───────────────────────────────────
   "spark-yield-panel": {
     text:
-      "Three lines on the same axes: Sky Savings Rate (what USDS staked into Sky's sUSDS savings vault earns), sUSDS APY on Spark (what Spark depositors earn), and the 4-week T-bill (FRED TB4WK) as the risk-free benchmark. The wedge between the SSR and Spark lines is the captured passthrough — what Spark retains for the SSR-to-Spark intermediation. The wedge between Spark and T-bill is the depositor's risk premium for taking on smart-contract exposure over Treasuries.",
-    source: "DefiLlama Yields (Sky + Spark sUSDS pools) + FRED TB4WK.",
+      "Three rates that map Spark's role as Sky's on-chain distribution arm. (1) Sky Savings Rate (SSR) — what USDS savers earn parking into Sky's sUSDS vault, identical to the headline rate on app.spark.fi/savings. Sourced from DefiLlama Yields' largest sUSDS pool. (2) Spark USDS Borrow APY — what borrowers pay on Spark's USDS LENDING market (a different product from the savings vault). Supply APY history comes from DefiLlama; borrow APY is derived via the standard pool-based identity (lib/derived-rates.ts) from utilization + the on-chain reserve factor. (3) 4-week T-bill (FRED TB4WK). The wedge between Borrow and SSR is the captured spread funding Spark's revenue; the wedge between SSR and T-bill is the depositor's premium over Treasuries.",
+    source: "DefiLlama Yields (sUSDS savings + Spark USDS lending pool) + FRED TB4WK + lib/derived-rates.",
   },
 
   "aave-safety-module": {

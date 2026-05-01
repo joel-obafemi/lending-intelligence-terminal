@@ -1,25 +1,23 @@
 "use client"
 
 /**
- * Spark Stablecoin Yield Panel — Spark protocol-specific lens, Module B.
+ * Spark USDS Yield Panel — three-line chart that maps Spark's role as
+ * Sky's on-chain distribution arm.
  *
- * Three lines on one chart over the available DefiLlama window:
- *   - Sky Savings Rate (SSR)         — green
- *   - sUSDS APY on Spark             — Spark orange (brand)
- *   - 4-week T-bill (FRED TB4WK)     — muted dashed grey
+ *   - Sky Savings Rate (SSR)         — depositor base rate (Sky's sUSDS)
+ *   - Spark USDS Borrow APY          — what Spark borrowers pay
+ *   - 4-week T-bill (FRED TB4WK)     — risk-free benchmark
  *
- * The wedge between SSR and "sUSDS on Spark" is the captured-yield
- * story: it's how much Sky retains for the SSR-to-Spark passthrough.
- * The wedge between Spark and T-bill is the depositor's risk premium
- * for taking on smart-contract exposure instead of T-bills.
- *
- * Auto insight beneath summarises the latest values in plain English.
+ * The wedge between Borrow and SSR is the captured spread that funds
+ * Spark's protocol revenue. The wedge between SSR and T-bill is the
+ * depositor's premium for taking on smart-contract exposure over
+ * Treasuries. Auto insight beneath summarises both spreads in basis
+ * points so the reader gets the captured-yield story without prose.
  */
 
 import { useRef } from "react"
 import {
   Area,
-  AreaChart,
   Line,
   ResponsiveContainer,
   Tooltip,
@@ -38,15 +36,14 @@ interface Props {
 }
 
 const SSR_COLOR = "#0F9D58"          // Sky / savings green
-const SPARK_COLOR = "#FF6B35"        // Spark brand orange
-const TBILL_COLOR = "var(--text-muted)"
+const BORROW_COLOR = "#FF6B35"       // Spark brand orange (= borrow side)
 
 function tooltipFormatter(value: number, name: string): [string, string] {
   const label =
     name === "ssrPct"
       ? "Sky Savings Rate"
-      : name === "susdsSparkPct"
-      ? "sUSDS APY on Spark"
+      : name === "sparkBorrowPct"
+      ? "Spark USDS Borrow APY"
       : name === "tBillPct"
       ? "4-week T-bill"
       : name
@@ -54,28 +51,26 @@ function tooltipFormatter(value: number, name: string): [string, string] {
 }
 
 function buildInsight(d: SparkYieldPanelResponse): string {
-  const { ssrPct, susdsSparkPct, tBillPct, sparkSpreadPct, skyToSparkLossPct } = d.current
-  if (susdsSparkPct == null) {
-    return "DefiLlama hasn't indexed sUSDS on Spark yet."
+  const { ssrPct, sparkBorrowPct, tBillPct, capturedSpreadPct, onchainPremiumPct } = d.current
+  const parts: string[] = []
+  if (ssrPct != null) {
+    parts.push(`Sky Savings Rate: ${ssrPct.toFixed(2)}% — what USDS savers earn`)
   }
-  const parts: string[] = [
-    `Spark depositors are earning ${susdsSparkPct.toFixed(2)}% on sUSDS`,
-  ]
-  if (sparkSpreadPct != null && tBillPct != null) {
-    const bps = Math.round(sparkSpreadPct * 100)
+  if (sparkBorrowPct != null) {
+    const tail =
+      capturedSpreadPct != null
+        ? ` (a ${Math.round(capturedSpreadPct * 100)}-bp spread Spark captures from borrowers)`
+        : ""
+    parts.push(`Spark USDS borrowers pay ${sparkBorrowPct.toFixed(2)}%${tail}`)
+  }
+  if (tBillPct != null && onchainPremiumPct != null) {
+    const bps = Math.round(onchainPremiumPct * 100)
     const verb = bps >= 0 ? "over" : "under"
     parts.push(
-      `${Math.abs(bps)} bps ${verb} the 4-week T-bill (${tBillPct.toFixed(2)}%)`,
+      `T-bills are at ${tBillPct.toFixed(2)}% — savers earn ${Math.abs(bps)} bps ${verb} the risk-free rate`,
     )
   }
-  let line = parts.join(", ") + "."
-  if (skyToSparkLossPct != null && ssrPct != null) {
-    const lossBps = Math.round(skyToSparkLossPct * 100)
-    line += lossBps > 0
-      ? ` The Sky Savings Rate is ${ssrPct.toFixed(2)}% — Spark passes through ${(susdsSparkPct / ssrPct * 100).toFixed(0)}% of that, retaining ${lossBps} bps for the protocol.`
-      : ` Spark depositors are earning at par with the Sky Savings Rate (${ssrPct.toFixed(2)}%).`
-  }
-  return line
+  return parts.join(". ") + (parts.length > 0 ? "." : "")
 }
 
 export function SparkYieldPanel({ data }: Props) {
@@ -83,16 +78,15 @@ export function SparkYieldPanel({ data }: Props) {
   const cardRef = useRef<HTMLDivElement>(null)
   const insight = buildInsight(data)
   const hasSsr = data.history.some((p) => p.ssrPct != null)
-  const hasSpark = data.history.some((p) => p.susdsSparkPct != null)
+  const hasBorrow = data.history.some((p) => p.sparkBorrowPct != null)
   const hasTbill = data.history.some((p) => p.tBillPct != null)
 
-  if (!hasSpark && !hasSsr) {
-    // Shouldn't happen often — DefiLlama indexes at least one of these
-    // — but degrade cleanly when neither is available.
+  if (!hasSsr && !hasBorrow) {
+    // Nothing useful to render — degrade silently.
     return null
   }
 
-  const title = "Stablecoin Yield Cascade · Sky → Spark → T-bills"
+  const title = "USDS Yield · Sky vs Spark vs T-bill"
 
   return (
     <div className="space-y-2">
@@ -119,10 +113,10 @@ export function SparkYieldPanel({ data }: Props) {
                   <span>Sky Savings Rate</span>
                 </div>
               )}
-              {hasSpark && (
+              {hasBorrow && (
                 <div className="flex items-center gap-1">
-                  <span className="w-2 h-2 rounded-full" style={{ background: SPARK_COLOR }} />
-                  <span>sUSDS on Spark</span>
+                  <span className="w-2 h-2 rounded-full" style={{ background: BORROW_COLOR }} />
+                  <span>Spark USDS Borrow</span>
                 </div>
               )}
               {hasTbill && (
@@ -138,13 +132,29 @@ export function SparkYieldPanel({ data }: Props) {
             <ChartActions cardRef={cardRef} title={title} />
           </div>
         </div>
+        {/* One-paragraph plain-English explainer so a reader who lands on
+            this chart understands what each line is before they see numbers. */}
+        <p
+          className="text-[11px] leading-relaxed px-4 py-2"
+          style={{
+            color: "var(--text-muted)",
+            background: "var(--panel-header)",
+            borderBottom: "1px solid var(--card-border)",
+          }}
+        >
+          What USDS savers earn (Sky), what Spark borrowers pay (lending market),
+          and what Treasuries pay (FRED) — three rates that map Spark's role as
+          Sky's on-chain distribution arm. The wedge between borrow and SSR is
+          Spark's captured spread; the wedge between SSR and T-bill is the
+          depositor's on-chain premium.
+        </p>
         <div className="relative p-4 h-[280px] chart-body">
           <ResponsiveContainer width="100%" height="100%">
             <ComposedChart data={data.history} margin={{ top: 10, right: 16, left: 5, bottom: 0 }}>
               <defs>
-                <linearGradient id="sparkSusds" x1="0" y1="0" x2="0" y2="1">
-                  <stop offset="0%" stopColor={SPARK_COLOR} stopOpacity={0.25} />
-                  <stop offset="100%" stopColor={SPARK_COLOR} stopOpacity={0.02} />
+                <linearGradient id="sparkSsrFill" x1="0" y1="0" x2="0" y2="1">
+                  <stop offset="0%" stopColor={SSR_COLOR} stopOpacity={0.25} />
+                  <stop offset="100%" stopColor={SSR_COLOR} stopOpacity={0.02} />
                 </linearGradient>
               </defs>
               <XAxis
@@ -173,25 +183,26 @@ export function SparkYieldPanel({ data }: Props) {
                 labelFormatter={(ts) => formatDate(ts as number)}
                 formatter={tooltipFormatter}
               />
-              {/* Spark deposit APY rendered as a soft area to anchor the eye —
-                  this is the metric on the page-protocol's own yield. */}
-              {hasSpark && (
+              {/* SSR rendered as a soft area to anchor the reader's eye —
+                  this is the headline depositor rate Spark surfaces on
+                  app.spark.fi/savings. */}
+              {hasSsr && (
                 <Area
                   type="monotone"
-                  dataKey="susdsSparkPct"
-                  stroke={SPARK_COLOR}
+                  dataKey="ssrPct"
+                  stroke={SSR_COLOR}
                   strokeWidth={2}
-                  fill="url(#sparkSusds)"
+                  fill="url(#sparkSsrFill)"
                   fillOpacity={1}
                   connectNulls
                   isAnimationActive={false}
                 />
               )}
-              {hasSsr && (
+              {hasBorrow && (
                 <Line
                   type="monotone"
-                  dataKey="ssrPct"
-                  stroke={SSR_COLOR}
+                  dataKey="sparkBorrowPct"
+                  stroke={BORROW_COLOR}
                   strokeWidth={2}
                   dot={false}
                   connectNulls
@@ -214,12 +225,14 @@ export function SparkYieldPanel({ data }: Props) {
           </ResponsiveContainer>
         </div>
       </div>
-      <p
-        className="text-[12px] leading-relaxed px-1"
-        style={{ color: "var(--text-secondary)" }}
-      >
-        {insight}
-      </p>
+      {insight && (
+        <p
+          className="text-[12px] leading-relaxed px-1"
+          style={{ color: "var(--text-secondary)" }}
+        >
+          {insight}
+        </p>
+      )}
     </div>
   )
 }
