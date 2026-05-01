@@ -61,9 +61,20 @@ interface Props {
   borrowsShare: OverviewTimeseriesPoint[]
   supplyShare: OverviewTimeseriesPoint[]
   availableShare: OverviewTimeseriesPoint[]
-  /** YoY-style insight built off the Borrows lens (it's the canonical default). */
-  insight: HeroInsight | null
-  methodologyKey?: string
+  /** One insight per lens — the chart picks the matching one based on the
+   *  active toggle so the sentence beneath always describes the current
+   *  view. */
+  insights: {
+    borrows: HeroInsight | null
+    supply: HeroInsight | null
+    available: HeroInsight | null
+  }
+}
+
+const METHODOLOGY_KEY_BY_LENS: Record<Lens, string> = {
+  borrows: "sector-share-borrows",
+  supply: "sector-share-supply",
+  available: "sector-share-available",
 }
 
 function ShareTooltip({ active, payload }: any) {
@@ -104,14 +115,19 @@ export function MarketShareHero({
   borrowsShare,
   supplyShare,
   availableShare,
-  insight,
-  methodologyKey,
+  insights,
 }: Props) {
   const [lens, setLens] = useState<Lens>("borrows")
   const colors = useThemeColors()
   const cardRef = useRef<HTMLDivElement>(null)
+  // Annotations are still keyed under "sector-borrows-share" (the data
+  // file written before we added lens toggles). They only render on the
+  // Borrows view because the events curated there — depegs, liquidation
+  // cascades, parameter changes — read against the borrow stack.
   const annotations = useAnnotations("sector-borrows-share")
   const showAnnotations = lens === "borrows"
+  const methodologyKey = METHODOLOGY_KEY_BY_LENS[lens]
+  const insight = insights[lens]
 
   const data = lens === "borrows" ? borrowsShare : lens === "supply" ? supplyShare : availableShare
   const bucketed = useMemo(
@@ -121,16 +137,17 @@ export function MarketShareHero({
 
   const insightLine = useMemo(() => {
     if (!insight) return null
+    const noun = LENS_NOUN[lens]
     const topPhrase =
       insight.yoyDeltaPp == null
-        ? `${insight.topProtocolName} holds ${formatPercent(insight.topSharePct, 1)} of ${LENS_NOUN.borrows}.`
-        : `${insight.topProtocolName} holds ${formatPercent(insight.topSharePct, 1)} of ${LENS_NOUN.borrows}, ${insight.yoyDeltaPp >= 0 ? "up" : "down"} ${Math.abs(insight.yoyDeltaPp).toFixed(1)} pp from a year ago.`
+        ? `${insight.topProtocolName} holds ${formatPercent(insight.topSharePct, 1)} of ${noun}.`
+        : `${insight.topProtocolName} holds ${formatPercent(insight.topSharePct, 1)} of ${noun}, ${insight.yoyDeltaPp >= 0 ? "up" : "down"} ${Math.abs(insight.yoyDeltaPp).toFixed(1)} pp from a year ago.`
     const gainerPhrase =
       insight.gainerYoyPp != null && insight.gainerSlug !== insight.topProtocolSlug && insight.gainerYoyPp >= 0.5
         ? ` ${insight.gainerName} has gained ${insight.gainerYoyPp.toFixed(1)} pp over the same window.`
         : ""
     return topPhrase + gainerPhrase
-  }, [insight])
+  }, [insight, lens])
 
   return (
     <div className="space-y-2">

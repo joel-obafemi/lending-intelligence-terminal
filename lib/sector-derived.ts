@@ -244,9 +244,14 @@ export interface HeroLensData {
   borrowsShare: OverviewTimeseriesPoint[]
   supplyShare: OverviewTimeseriesPoint[]
   availableShare: OverviewTimeseriesPoint[]
-  /** 12-month delta in pp share for the dominant protocol — used for the
-   *  Hero chart's auto insight line. */
-  insight: HeroInsight | null
+  /** One auto-generated insight per lens — the chart picks the matching
+   *  one when the user toggles, so the sentence beneath always describes
+   *  the active view. */
+  insights: {
+    borrows: HeroInsight | null
+    supply: HeroInsight | null
+    available: HeroInsight | null
+  }
 }
 
 export interface HeroInsight {
@@ -260,15 +265,22 @@ export interface HeroInsight {
   gainerYoyPp: number | null
 }
 
-/** Build the lens series + an insight derived from the borrows-share series
- *  (the canonical Hero default). Insight returns null if the series is too
- *  short to compute YoY. */
+/** Build the lens series + one insight per lens. Each insight returns null
+ *  when its underlying series is too short to compute YoY. */
 export function buildHeroLenses(d: OverviewResponse): HeroLensData {
   const borrowsShare = marketShareSeries(d.borrowedSeries)
   const supplyShare = marketShareSeries(d.supplySeries)
   const availableShare = marketShareSeries(d.tvlSeries)
-  const insight = buildHeroInsight(borrowsShare)
-  return { borrowsShare, supplyShare, availableShare, insight }
+  return {
+    borrowsShare,
+    supplyShare,
+    availableShare,
+    insights: {
+      borrows: buildHeroInsight(borrowsShare),
+      supply: buildHeroInsight(supplyShare),
+      available: buildHeroInsight(availableShare),
+    },
+  }
 }
 
 function buildHeroInsight(

@@ -71,6 +71,24 @@ export const METHODOLOGY: Record<string, MethodologyEntry> = {
       "Sector-wide utilization = total active borrows ÷ total supplied (TVL + borrows), aggregated across all four tracked protocols. Tracks how full the lending market is overall.",
     source: "DefiLlama-derived.",
   },
+  "sector-share-borrows": {
+    text:
+      "Share of total cross-protocol active borrows held by each protocol over time. 24-month stacked area, labelled annotations call out depegs, parameter changes, and liquidation cascades. Sums to 100% per day. Borrows is the most direct read on which protocol is doing the actual lending business.",
+    source: "DefiLlama /protocol/<slug> Ethereum-borrowed.",
+  },
+  "sector-share-supply": {
+    text:
+      "Share of total cross-protocol supply (deposits + active borrows) held by each protocol over time. 24-month stacked area; sums to 100% per day. Wider than the Borrows view because it includes idle deposit capacity that hasn't been borrowed against yet.",
+    source: "DefiLlama /protocol/<slug>: chainTvls.Ethereum + Ethereum-borrowed.",
+  },
+  "sector-share-available": {
+    text:
+      "Share of available liquidity (DefiLlama's net-liquidity TVL — deposits minus active borrows) held by each protocol over time. 24-month stacked area; sums to 100% per day. Reads as the unborrowed-capacity slice the protocols are competing on; can shift with borrow demand even when deposits don't move.",
+    source: "DefiLlama /protocol/<slug>.chainTvls.Ethereum.tvl.",
+  },
+  /** @deprecated Use sector-share-borrows. Retained as an alias so any
+   *  outside link to the old key still resolves to the (now lens-specific)
+   *  borrows methodology. */
   "sector-borrows-share": {
     text:
       "Share of total cross-protocol active borrows held by each protocol over time. 24-month stacked area, labelled annotations call out depegs, parameter changes, and liquidation cascades. Sums to 100% per day.",

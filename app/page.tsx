@@ -1,7 +1,7 @@
 import { VerdictStrip } from "@/components/overview/verdict-strip"
 import { MarketShareHero } from "@/components/overview/market-share-hero"
 import { CompositionStrip } from "@/components/overview/composition-strip"
-import { NetFlowSummaryTable } from "@/components/overview/net-flow-summary-table"
+import { NetFlowBarChart } from "@/components/overview/net-flow-bar-chart"
 import { CompositionDonuts } from "@/components/overview/composition-donuts"
 import { TopMarketsCrossProtocolTable } from "@/components/overview/top-markets-cross-protocol-table"
 import { WatchList } from "@/components/overview/watch-list"
@@ -112,13 +112,13 @@ export default async function OverviewPage() {
         summary={verdictSummary}
       />
 
-      {/* Zone 2 — Hero: Market Share with Borrows / Supply / Available toggle */}
+      {/* Zone 2 — Hero: Market Share with Borrows / Supply / Available
+          toggle. Methodology key + insight line both swap with the lens. */}
       <MarketShareHero
         borrowsShare={hero.borrowsShare}
         supplyShare={hero.supplyShare}
         availableShare={hero.availableShare}
-        insight={hero.insight}
-        methodologyKey="sector-borrows-share"
+        insights={hero.insights}
       />
 
       {/* Zone 3 — Composition Strip (per-protocol cards w/ Fees + biggest mover) */}
@@ -129,8 +129,9 @@ export default async function OverviewPage() {
         biggestMover={mover}
       />
 
-      {/* Zone 4 — Net Flow Summary table (replaces the broken stacked-bar chart) */}
-      <NetFlowSummaryTable
+      {/* Zone 4 — Net Supply Flows vertical bar chart (replaces the v1
+          horizontal-bar chart and the v2 summary table). */}
+      <NetFlowBarChart
         netDeposits30d={netDeps30d}
         interest30d={interest30d}
         protocols={protocols}
