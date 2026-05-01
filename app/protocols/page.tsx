@@ -1,7 +1,14 @@
 import { Suspense } from "react"
 import Link from "next/link"
 import { loadProtocolDetail } from "@/lib/protocol-detail"
-import { loadMorphoCuratorLeaderboard, type CuratorLeaderboardRow } from "@/lib/morpho-api"
+import {
+  loadMorphoCuratorLeaderboard,
+  loadMorphoVaultIndex,
+  loadMorphoMarketsList,
+  type CuratorLeaderboardRow,
+  type MorphoVaultIndexEntry,
+  type MorphoMarketRow,
+} from "@/lib/morpho-api"
 import { loadFluidSmartVaultStats, type FluidSmartVaultStats } from "@/lib/fluid-stats"
 import { PROTOCOLS, PROTOCOL_BY_SLUG } from "@/lib/protocols"
 import { ProtocolTabs } from "@/components/protocols/protocol-tabs"
@@ -10,6 +17,8 @@ import { MarketsTable } from "@/components/protocols/markets-table"
 import { TopMarketsBarChart } from "@/components/protocols/top-markets-bar-chart"
 import { CuratorLeaderboard } from "@/components/protocols/curator-leaderboard"
 import { MorphoCuratorConcentration } from "@/components/protocols/morpho-curator-concentration"
+import { MorphoUncuratedCallout } from "@/components/protocols/morpho-uncurated-callout"
+import { MorphoMarketsTable } from "@/components/protocols/morpho-markets-table"
 import { FluidSmartStatsCard } from "@/components/protocols/fluid-smart-stats-card"
 import { AaveMultiChainFootprint } from "@/components/protocols/aave-multi-chain-footprint"
 import { AaveIsolationModeWatch } from "@/components/protocols/aave-isolation-mode-watch"
@@ -68,6 +77,8 @@ export default async function ProtocolsPage({ searchParams }: { searchParams: Se
     safetyModule,
     aaveReservesForPrice,
     sparkYieldPanel,
+    morphoVaultIndex,
+    morphoMarkets,
   ] = await Promise.all([
     loadProtocolDetail(slug),
     slug === "morpho-blue"
@@ -101,6 +112,18 @@ export default async function ProtocolsPage({ searchParams }: { searchParams: Se
           return null as SparkYieldPanelResponse | null
         })
       : Promise.resolve(null as SparkYieldPanelResponse | null),
+    slug === "morpho-blue"
+      ? loadMorphoVaultIndex().catch((err) => {
+          console.error("[protocols] morpho vault index failed:", err?.message ?? err)
+          return new Map<string, MorphoVaultIndexEntry>()
+        })
+      : Promise.resolve(new Map<string, MorphoVaultIndexEntry>()),
+    slug === "morpho-blue"
+      ? loadMorphoMarketsList(50).catch((err) => {
+          console.error("[protocols] morpho markets list failed:", err?.message ?? err)
+          return [] as MorphoMarketRow[]
+        })
+      : Promise.resolve([] as MorphoMarketRow[]),
   ])
 
   // Fold AAVE/USD into the safety-module status when we have it.
@@ -281,16 +304,26 @@ export default async function ProtocolsPage({ searchParams }: { searchParams: Se
         architecture={detail.architecture}
         color={detail.color}
         markets={detail.markets}
+        vaultIndex={slug === "morpho-blue" ? morphoVaultIndex : undefined}
       />
 
       {/* Morpho-only: curator concentration first (the visual punchline —
           HHI + a single stacked bar showing the top 5 curators), then the
-          full leaderboard table beneath it. */}
+          full leaderboard table, then the long-tail callout for the
+          Uncurated bucket. */}
       {slug === "morpho-blue" && curators.length > 0 && (
         <>
           <MorphoCuratorConcentration rows={curators} />
           <CuratorLeaderboard rows={curators} />
+          <MorphoUncuratedCallout rows={curators} />
         </>
+      )}
+
+      {/* Morpho-only: the underlying isolated markets, separate from the
+          Vaults table above. Each row is a single (loan, collateral,
+          LLTV, oracle, IRM) tuple — Morpho's lending primitive. */}
+      {slug === "morpho-blue" && morphoMarkets.length > 0 && (
+        <MorphoMarketsTable markets={morphoMarkets} />
       )}
 
       {/* As-of footer — surfaces the live-load timestamp so a reader can

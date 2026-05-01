@@ -111,10 +111,18 @@ function shortAddr(addr: string): string {
 
 function VaultLayout({ detail }: { detail: MarketDetail }) {
   // Build a lookup of collateral logo URIs from the allocation rows so the
-  // hero "Exposure" pills can render the real token icons.
+  // hero "Exposure" pills can render the real token icons. Also derive a
+  // symbol → share-of-vault % map by aggregating per-market allocations
+  // by collateral asset — that powers the new stacked-bar treatment of
+  // the Exposure card.
   const exposureLogoMap: Record<string, string | null> = {}
+  const exposureSharePctMap: Record<string, number> = {}
   for (const a of detail.vaultAllocation ?? []) {
-    if (a.collateralSymbol) exposureLogoMap[a.collateralSymbol] = a.collateralLogoURI
+    if (a.collateralSymbol) {
+      exposureLogoMap[a.collateralSymbol] = a.collateralLogoURI
+      exposureSharePctMap[a.collateralSymbol] =
+        (exposureSharePctMap[a.collateralSymbol] ?? 0) + a.sharePct
+    }
   }
   const exposureSymbols = detail.exposureSymbols ?? []
 
@@ -127,6 +135,7 @@ function VaultLayout({ detail }: { detail: MarketDetail }) {
         liquidityUsd={detail.availableLiquidityUsd}
         exposureSymbols={exposureSymbols}
         exposureLogoMap={exposureLogoMap}
+        exposureSharePctMap={exposureSharePctMap}
         netApy={detail.netSupplyApy}
       />
 

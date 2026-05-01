@@ -11,6 +11,13 @@ interface Props {
   architecture: ProtocolDetail["architecture"]
   color: string
   markets: MarketRow[]
+  /** Optional symbol → display-name lookup. Used on the Morpho page to
+   *  swap bare DefiLlama symbols (STEAKUSDC) for human-readable vault
+   *  names ("Steakhouse USDC") + a curator sub-label. */
+  vaultIndex?: Map<
+    string,
+    { name: string; curatorName: string | null }
+  >
 }
 
 /** Per-row footnotes for known-good outliers that read like data errors at
@@ -81,7 +88,7 @@ function pageList(current: number, total: number): Array<number | "…"> {
   return out
 }
 
-export function MarketsTable({ architecture, color, markets }: Props) {
+export function MarketsTable({ architecture, color, markets, vaultIndex }: Props) {
   const router = useRouter()
   const [page, setPage] = useState(1)
   const topSupply = markets[0]?.totalSupplyUsd ?? 0
@@ -145,7 +152,38 @@ export function MarketsTable({ architecture, color, markets }: Props) {
                 <td>
                   <div className="flex flex-col">
                     <div className="flex items-center gap-2 flex-wrap">
-                      <span style={{ fontWeight: 600 }}>{m.asset}</span>
+                      {(() => {
+                        // Vault rows on the Morpho page show DefiLlama's
+                        // bare symbol (STEAKUSDC) by default. When the
+                        // vault index is available, swap in the readable
+                        // name ("Steakhouse USDC") and surface the
+                        // curator on a sub-label below.
+                        const idxEntry =
+                          isVaultLayout && vaultIndex
+                            ? vaultIndex.get(m.asset.toUpperCase())
+                            : null
+                        const primary =
+                          idxEntry?.name && idxEntry.name.trim().length > 0
+                            ? idxEntry.name
+                            : m.asset
+                        return (
+                          <>
+                            <span style={{ fontWeight: 600 }}>{primary}</span>
+                            {idxEntry?.name && idxEntry.name !== m.asset && (
+                              <span
+                                className="text-[9px] uppercase tracking-[0.05em]"
+                                style={{
+                                  color: "var(--text-muted)",
+                                  fontFamily: "JetBrains Mono, monospace",
+                                }}
+                                title={`Vault token symbol: ${m.asset}`}
+                              >
+                                {m.asset}
+                              </span>
+                            )}
+                          </>
+                        )
+                      })()}
                       {(() => {
                         const fn = footnoteFor(m)
                         if (fn) {
@@ -191,11 +229,23 @@ export function MarketsTable({ architecture, color, markets }: Props) {
                         return null
                       })()}
                     </div>
-                    {m.subLabel && (
-                      <span className="text-[10px]" style={{ color: "var(--text-muted)" }}>
-                        {m.subLabel}
-                      </span>
-                    )}
+                    {(() => {
+                      // Prefer the canonical curator name from the Morpho
+                      // index when available (vault-mode only). Falls back
+                      // to whatever the loader already inferred from the
+                      // vault ticker prefix (subLabel).
+                      const idxEntry =
+                        isVaultLayout && vaultIndex
+                          ? vaultIndex.get(m.asset.toUpperCase())
+                          : null
+                      const curatorLabel = idxEntry?.curatorName?.trim() || m.subLabel
+                      if (!curatorLabel) return null
+                      return (
+                        <span className="text-[10px]" style={{ color: "var(--text-muted)" }}>
+                          {idxEntry?.curatorName ? `Curator · ${curatorLabel}` : curatorLabel}
+                        </span>
+                      )
+                    })()}
                   </div>
                 </td>
                 <td className="text-right tabular-nums">{formatUSD(m.totalSupplyUsd)}</td>

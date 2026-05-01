@@ -198,6 +198,11 @@ export const METHODOLOGY: Record<string, MethodologyEntry> = {
     source: "On-chain UiPoolDataProviderV3 (debtCeiling + isolationModeTotalDebt).",
   },
   // ─── Morpho protocol-specific lens ──────────────────────────────────
+  "morpho-markets-table": {
+    text:
+      "Morpho's underlying isolated markets — the lending primitive itself, separate from the MetaMorpho vaults that aggregate across them. Each row is a single (loan asset, collateral asset, LLTV, oracle, IRM) tuple. We surface the top 50 by supply USD; the full universe is ~545 on Ethereum mainnet. Sortable on every numeric column. Click a row for the per-market detail page (cap utilization, IRM curve, etc).",
+    source: "Morpho blue-api.morpho.org · markets query.",
+  },
   "morpho-curator-concentration": {
     text:
       "How concentrated the Morpho curator economy is right now. The horizontal bar shows the top 5 curators' shares of curated TVL plus an 'Other' segment. The HHI (Herfindahl-Hirschman Index) is the sum of squared market shares — antitrust convention treats <1,500 as competitive, 1,500-2,500 as moderately concentrated, and >2,500 as highly concentrated. The 'Uncurated' bucket of permissionless markets is excluded from this calculation; that's a separate long-tail story.",

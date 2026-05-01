@@ -6,6 +6,10 @@ interface Props {
   liquidityUsd: number
   exposureSymbols: string[]
   exposureLogoMap: Record<string, string | null>
+  /** symbol → share-of-vault percent (0-100). When provided the Exposure
+   *  card renders a small horizontal stacked bar + legend with allocation
+   *  percentages, replacing the previous decorative icon row. */
+  exposureSharePctMap?: Record<string, number>
   netApy: number | null            // Already in percent
 }
 
@@ -95,14 +99,52 @@ function ExposurePill({ symbol, logoURI }: { symbol: string; logoURI: string | n
   )
 }
 
+const EXPOSURE_COLORS = [
+  "#5B7FFF",  // blue
+  "#FF6B35",  // accent orange
+  "#10B981",  // green
+  "#B44AFF",  // purple
+  "#F59E0B",  // amber
+  "rgba(91, 99, 115, 0.5)", // muted "Other"
+]
+
 export function VaultHeroCards({
   totalDepositsUsd,
   totalDeposits24hChangeUsd,
   liquidityUsd,
   exposureSymbols,
   exposureLogoMap,
+  exposureSharePctMap,
   netApy,
 }: Props) {
+  // Build the Exposure breakdown when share% is available — sorted, capped
+  // at top 5 with an "Other" bucket so the bar reads cleanly.
+  interface ExpEntry {
+    symbol: string
+    sharePct: number
+    color: string
+  }
+  let exposureBreakdown: ExpEntry[] | null = null
+  if (exposureSharePctMap && Object.keys(exposureSharePctMap).length > 0) {
+    const entries = Object.entries(exposureSharePctMap)
+      .filter(([, v]) => v > 0)
+      .sort(([, a], [, b]) => b - a)
+    const top = entries.slice(0, 5)
+    const tail = entries.slice(5)
+    const tailShare = tail.reduce((s, [, v]) => s + v, 0)
+    exposureBreakdown = top.map(([sym, share], i) => ({
+      symbol: sym,
+      sharePct: share,
+      color: EXPOSURE_COLORS[i % (EXPOSURE_COLORS.length - 1)],
+    }))
+    if (tailShare > 0.5) {
+      exposureBreakdown.push({
+        symbol: `Other (${tail.length})`,
+        sharePct: tailShare,
+        color: EXPOSURE_COLORS[EXPOSURE_COLORS.length - 1],
+      })
+    }
+  }
   return (
     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
       <Card label="Total Deposits" accent="#5B7FFF">
@@ -122,8 +164,53 @@ export function VaultHeroCards({
       </Card>
 
       <Card label="Exposure" accent="#F59E0B">
-        {exposureSymbols.length > 0 ? (
+        {exposureBreakdown && exposureBreakdown.length > 0 ? (
           <>
+            {/* Stacked bar — segments sized by share-of-vault. Hover any
+                segment to see the exact allocation. */}
+            <div
+              className="flex w-full rounded overflow-hidden"
+              style={{ height: 8, background: "var(--card-border)" }}
+            >
+              {exposureBreakdown.map((e) => (
+                <div
+                  key={e.symbol}
+                  title={`${e.symbol} — ${e.sharePct.toFixed(1)}%`}
+                  style={{
+                    width: `${e.sharePct}%`,
+                    background: e.color,
+                    opacity: 0.9,
+                  }}
+                />
+              ))}
+            </div>
+            {/* Legend — top entries with explicit %. */}
+            <div className="flex flex-col gap-0.5 mt-1">
+              {exposureBreakdown.slice(0, 4).map((e) => (
+                <div
+                  key={e.symbol}
+                  className="flex items-center justify-between gap-2 text-[10px]"
+                >
+                  <div className="flex items-center gap-1.5 min-w-0">
+                    <span
+                      className="inline-block w-2 h-2 rounded-sm flex-shrink-0"
+                      style={{ background: e.color }}
+                    />
+                    <span className="truncate" style={{ color: "var(--text-secondary)" }}>
+                      {e.symbol}
+                    </span>
+                  </div>
+                  <span className="tabular-nums" style={{ color: "var(--text-primary)" }}>
+                    {e.sharePct.toFixed(1)}%
+                  </span>
+                </div>
+              ))}
+            </div>
+          </>
+        ) : exposureSymbols.length > 0 ? (
+          <>
+            {/* Fallback for cases where the loader gave us symbols but no
+                allocation %s — keep the original icon row treatment. */}
             <div className="flex items-center gap-1.5 flex-wrap">
               {exposureSymbols.slice(0, 8).map((sym) => (
                 <ExposurePill key={sym} symbol={sym} logoURI={exposureLogoMap[sym] ?? null} />

@@ -26,6 +26,8 @@ import {
 import { useThemeColors } from "../theme-provider"
 import { ChartActions } from "../chart-actions"
 import { MethodologyTooltip } from "../overview/methodology-tooltip"
+import { ChartAnnotations } from "../overview/chart-annotations"
+import { useAnnotations } from "@/lib/annotations"
 import { PROTOCOL_BY_SLUG } from "@/lib/protocols"
 import { formatDate } from "@/lib/utils"
 
@@ -94,6 +96,13 @@ export function MarketCrossProtocolRateChart({
   const slugs = Object.keys(history)
   const data = useMemo(() => mergeHistories(history), [history])
   const insight = useMemo(() => buildInsight(history, asset), [history, asset])
+  // Per-asset annotation channel — events keyed
+  // `market-cross-protocol-rate-<asset>` (lowercase) opt in here. PYUSD
+  // and other assets get a dashed reference line at the event timestamp
+  // with the curated label rendered above the chart.
+  const annotations = useAnnotations(
+    `market-cross-protocol-rate-${asset.toLowerCase()}`,
+  )
 
   if (slugs.length < 2 || data.length < 2) {
     // No siblings (or insufficient data) — the existing per-market
@@ -185,6 +194,7 @@ export function MarketCrossProtocolRateChart({
                   return [`${v.toFixed(2)}%`, cfg?.name ?? name]
                 }}
               />
+              <ChartAnnotations events={annotations} bucket="day" />
               {slugs.map((slug) => {
                 const cfg = PROTOCOL_BY_SLUG[slug]
                 const isCurrent = slug === currentProtocolSlug

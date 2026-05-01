@@ -976,7 +976,21 @@ export interface CuratorLeaderboardRow {
  *  Pages through Morpho's `vaults` query — they cap `first` at ~100 per call,
  *  so we paginate until we've drained the list. There are typically 200-600
  *  active Ethereum vaults so 2-7 calls. */
-export async function loadMorphoCuratorLeaderboard(): Promise<CuratorLeaderboardRow[]> {
+/** Module-level cache of the paginated MetaMorpho vault list. The curator
+ *  leaderboard and the vault index both build off the same data; sharing a
+ *  cache avoids hitting Morpho's API twice per page render. 5-min TTL. */
+const RAW_VAULTS_TTL_MS = 5 * 60_000
+let rawVaultsCache: {
+  value: CuratorLeaderboardRaw["vaults"]["items"]
+  fetchedAt: number
+} | null = null
+
+async function fetchAllMetaMorphoVaultsRaw(): Promise<
+  CuratorLeaderboardRaw["vaults"]["items"]
+> {
+  if (rawVaultsCache && Date.now() - rawVaultsCache.fetchedAt < RAW_VAULTS_TTL_MS) {
+    return rawVaultsCache.value
+  }
   const PAGE_SIZE = 100
   const MAX_PAGES = 10  // Hard ceiling — Morpho is well under 1k vaults today.
   const all: CuratorLeaderboardRaw["vaults"]["items"] = []
@@ -990,6 +1004,44 @@ export async function loadMorphoCuratorLeaderboard(): Promise<CuratorLeaderboard
     all.push(...items)
     if (items.length < PAGE_SIZE) break
   }
+  rawVaultsCache = { value: all, fetchedAt: Date.now() }
+  return all
+}
+
+/** symbol-keyed (uppercase) lookup for vault display name + curator. Used
+ *  by the protocols page to enrich the Vaults table with human-readable
+ *  names like "Steakhouse USDC" instead of bare DefiLlama symbols like
+ *  STEAKUSDC. */
+export interface MorphoVaultIndexEntry {
+  address: string
+  name: string
+  symbol: string
+  curatorName: string | null
+  totalAssetsUsd: number
+}
+
+export async function loadMorphoVaultIndex(): Promise<
+  Map<string, MorphoVaultIndexEntry>
+> {
+  const all = await fetchAllMetaMorphoVaultsRaw()
+  const out = new Map<string, MorphoVaultIndexEntry>()
+  for (const v of all) {
+    if (!v.symbol) continue
+    const tvl = v.state?.totalAssetsUsd ?? 0
+    const primary = v.metadata?.curators?.[0] ?? null
+    out.set(v.symbol.toUpperCase(), {
+      address: v.address,
+      name: v.name,
+      symbol: v.symbol,
+      curatorName: primary?.name?.trim() || null,
+      totalAssetsUsd: tvl,
+    })
+  }
+  return out
+}
+
+export async function loadMorphoCuratorLeaderboard(): Promise<CuratorLeaderboardRow[]> {
+  const all = await fetchAllMetaMorphoVaultsRaw()
 
   // Group by curator name (case-insensitive). Vaults without a curator land
   // under "Uncurated".
@@ -1063,6 +1115,110 @@ export async function loadMorphoCuratorLeaderboard(): Promise<CuratorLeaderboard
   }
 
   rows.sort((a, b) => b.totalAssetsUsd - a.totalAssetsUsd)
+  return rows
+}
+
+// ─────────────────────────────────────────────────────────────────────────
+// Markets list — the underlying isolated markets, separate from the
+// MetaMorpho vault aggregators. Powers the Morpho protocol page's
+// "Markets" table (the 545-market story).
+// ─────────────────────────────────────────────────────────────────────────
+
+const MARKETS_LIST_QUERY = /* GraphQL */ `
+  query MarketsList($chainId: Int!, $first: Int!) {
+    markets(
+      first: $first
+      where: { chainId_in: [$chainId] }
+      orderBy: SupplyAssetsUsd
+      orderDirection: Desc
+    ) {
+      items {
+        uniqueKey
+        lltv
+        collateralAsset { symbol address logoURI }
+        loanAsset { symbol address logoURI }
+        state {
+          supplyAssetsUsd
+          borrowAssetsUsd
+          liquidityAssetsUsd
+          utilization
+          supplyApy
+          borrowApy
+        }
+      }
+    }
+  }
+`
+
+interface MarketsListRaw {
+  markets: {
+    items: Array<{
+      uniqueKey: string
+      lltv: string
+      collateralAsset: { symbol: string; address: string; logoURI: string | null } | null
+      loanAsset: { symbol: string; address: string; logoURI: string | null }
+      state: {
+        supplyAssetsUsd: number
+        borrowAssetsUsd: number
+        liquidityAssetsUsd: number
+        utilization: number
+        supplyApy: number
+        borrowApy: number
+      } | null
+    }>
+  }
+}
+
+/** Flat shape consumed by the Morpho Markets table on the protocols page. */
+export interface MorphoMarketRow {
+  uniqueKey: string
+  collateralSymbol: string
+  loanSymbol: string
+  /** LLTV 0-1 fraction. */
+  lltv: number
+  supplyUsd: number
+  borrowUsd: number
+  liquidityUsd: number
+  /** 0-100 fraction. */
+  utilizationPct: number
+  /** Already in percent (0-100). */
+  supplyApy: number
+  borrowApy: number
+}
+
+/** Top N Ethereum-mainnet Morpho-Blue markets by supply USD. The full
+ *  universe is ~545; the page caps at 50 by default to keep the table
+ *  readable. Excludes empty markets (supplyAssetsUsd <= 0). */
+export async function loadMorphoMarketsList(
+  topN = 50,
+): Promise<MorphoMarketRow[]> {
+  const data = await gql<MarketsListRaw>(MARKETS_LIST_QUERY, {
+    chainId: ETH_CHAIN_ID,
+    first: Math.min(topN * 2, 200), // overfetch a bit so we can drop empties
+  }).catch((err) => {
+    console.error("[morpho-api] loadMorphoMarketsList failed:", err?.message ?? err)
+    return null
+  })
+  if (!data) return []
+  const rows: MorphoMarketRow[] = []
+  for (const m of data.markets.items) {
+    const s = m.state
+    if (!s || (s.supplyAssetsUsd ?? 0) <= 0) continue
+    rows.push({
+      uniqueKey: m.uniqueKey,
+      collateralSymbol: m.collateralAsset?.symbol ?? "—",
+      loanSymbol: m.loanAsset.symbol,
+      lltv: lltvToFraction(m.lltv),
+      supplyUsd: s.supplyAssetsUsd,
+      borrowUsd: s.borrowAssetsUsd ?? 0,
+      liquidityUsd: s.liquidityAssetsUsd ?? 0,
+      // Morpho returns utilization + APYs as 0-1 fractions; convert to %.
+      utilizationPct: (s.utilization ?? 0) * 100,
+      supplyApy: (s.supplyApy ?? 0) * 100,
+      borrowApy: (s.borrowApy ?? 0) * 100,
+    })
+    if (rows.length >= topN) break
+  }
   return rows
 }
 
