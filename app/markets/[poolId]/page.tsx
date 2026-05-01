@@ -17,6 +17,8 @@ import { VaultActivityTable } from "@/components/market-detail/vault-activity-ta
 import { VaultLiquidationEventsTable } from "@/components/market-detail/vault-liquidation-events-table"
 import { VaultTopDepositorsList } from "@/components/market-detail/vault-top-depositors-list"
 import { FluidVaultInfoCard } from "@/components/market-detail/fluid-vault-info-card"
+import { MarketSpikeCallout } from "@/components/market-detail/market-spike-callout"
+import { MarketCrossProtocolRateChart } from "@/components/market-detail/market-cross-protocol-rate-chart"
 
 export const dynamic = "force-dynamic"
 // First-render cold load can hit 15-20s (DefiLlama Yields full pool list +
@@ -213,6 +215,17 @@ function VaultLayout({ detail }: { detail: MarketDetail }) {
         }}
         siblings={detail.siblings}
       />
+
+      {/* Cross-protocol rate history — same chart as the MarketLayout uses,
+          rendered after the snapshot table so vaults get the historical
+          context too. */}
+      {detail.crossProtocolSupplyApyHistory && (
+        <MarketCrossProtocolRateChart
+          asset={detail.underlyingAssetSymbol}
+          currentProtocolSlug={detail.protocolSlug}
+          history={detail.crossProtocolSupplyApyHistory}
+        />
+      )}
     </>
   )
 }
@@ -263,6 +276,18 @@ function MarketLayout({ detail }: { detail: MarketDetail }) {
         reserveFactor={detail.reserveFactor}
       />
 
+      {/* Rate-spike callout — only renders when current supply APY is at
+          least 100 bps above the 30-day mean. Quiet most months, loud
+          when the market is in stress (the moments the page is most
+          visited). */}
+      <MarketSpikeCallout
+        asset={detail.asset}
+        protocolName={detail.protocolName}
+        supplyApy={detail.supplyApy}
+        supplyApy30d={detail.apyMean30d}
+        utilizationPct={detail.utilizationPct}
+      />
+
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
         <MarketSupplyBorrowChart
           supplyHistory={detail.supplyUsdHistory}
@@ -283,6 +308,17 @@ function MarketLayout({ detail }: { detail: MarketDetail }) {
           methodologyKey="market-rate-history"
         />
       </div>
+
+      {/* Historical cross-protocol supply APY for the same asset — answers
+          "where has the best yield been over the last 90 days?". Renders
+          only when at least one sibling has chart data. */}
+      {detail.crossProtocolSupplyApyHistory && (
+        <MarketCrossProtocolRateChart
+          asset={detail.underlyingAssetSymbol}
+          currentProtocolSlug={detail.protocolSlug}
+          history={detail.crossProtocolSupplyApyHistory}
+        />
+      )}
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
         <MarketMultiLineChart
@@ -460,6 +496,15 @@ function FluidLayout({ detail }: { detail: MarketDetail }) {
           siblings={detail.siblings}
         />
       </div>
+
+      {/* Cross-protocol rate history — same chart as the other layouts. */}
+      {detail.crossProtocolSupplyApyHistory && (
+        <MarketCrossProtocolRateChart
+          asset={detail.underlyingAssetSymbol}
+          currentProtocolSlug={detail.protocolSlug}
+          history={detail.crossProtocolSupplyApyHistory}
+        />
+      )}
 
       <MarketParametersCard
         protocolName={detail.protocolName}

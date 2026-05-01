@@ -181,6 +181,13 @@ export interface MarketDetail {
 
   // ─── Cross-protocol siblings (always from DefiLlama snapshot) ──
   siblings: MarketSibling[]
+  /** Daily supply APY history per protocol slug (current market + every
+   *  sibling) over the last ~90 days. Powers the cross-protocol rate
+   *  history chart on the market detail page. Populated by
+   *  `enrichWithCrossProtocolHistory` at the end of `loadMarketDetail`;
+   *  the upstream per-protocol builders leave this off and the enricher
+   *  fills it in. */
+  crossProtocolSupplyApyHistory?: Record<string, Array<{ timestamp: number; value: number }>>
 
   // ─── Provenance ────────────────────────────────────────
   dataSources: DataSourceProvenance
@@ -1126,33 +1133,91 @@ export async function loadMarketDetail(poolId: string): Promise<MarketDetail | n
 
   // Per-protocol enrichment. Each branch falls back to DefiLlama on failure
   // so the page never errors just because a third party is down.
+  let detail: MarketDetail | null = null
   if (protocolSlug === "morpho-blue") {
-    const enriched = await loadFromMorpho(pool, cfg, allPools).catch((err) => {
+    detail = await loadFromMorpho(pool, cfg, allPools).catch((err) => {
       console.error("[market-detail] morpho enrichment failed, falling back:", err?.message)
       return null
     })
-    if (enriched) return enriched
   }
-  if (protocolSlug === "aave-v3") {
-    const enriched = await loadFromAave(pool, cfg, allPools).catch((err) => {
+  if (!detail && protocolSlug === "aave-v3") {
+    detail = await loadFromAave(pool, cfg, allPools).catch((err) => {
       console.error("[market-detail] aave enrichment failed, falling back:", err?.message)
       return null
     })
-    if (enriched) return enriched
   }
-  if (protocolSlug === "spark") {
-    const enriched = await loadFromSpark(pool, cfg, allPools).catch((err) => {
+  if (!detail && protocolSlug === "spark") {
+    detail = await loadFromSpark(pool, cfg, allPools).catch((err) => {
       console.error("[market-detail] spark enrichment failed, falling back:", err?.message)
       return null
     })
-    if (enriched) return enriched
   }
-  if (protocolSlug === "fluid") {
-    const enriched = await loadFromFluid(pool, cfg, allPools).catch((err) => {
+  if (!detail && protocolSlug === "fluid") {
+    detail = await loadFromFluid(pool, cfg, allPools).catch((err) => {
       console.error("[market-detail] fluid enrichment failed, falling back:", err?.message)
       return null
     })
-    if (enriched) return enriched
   }
-  return loadFromDefillama(pool, cfg, allPools)
+  if (!detail) {
+    detail = await loadFromDefillama(pool, cfg, allPools)
+  }
+  return enrichWithCrossProtocolHistory(detail)
+}
+
+/**
+ * Fetch supply APY history for every sibling pool (and stitch in the
+ * current market's own history) so the cross-protocol rate chart on the
+ * market detail page can render a single line per protocol over the last
+ * 90 days.
+ *
+ * Sibling fetches go in parallel and are individually failure-tolerant —
+ * a single failed chart returns an empty series rather than killing the
+ * whole enrichment.
+ */
+async function enrichWithCrossProtocolHistory(
+  detail: MarketDetail,
+): Promise<MarketDetail> {
+  const cutoffTs = Math.floor(Date.now() / 1000) - 90 * 86400
+  const trim = (series: Array<{ timestamp: number; value: number }>) =>
+    series.filter((p) => p.timestamp >= cutoffTs && Number.isFinite(p.value))
+  const out: Record<string, Array<{ timestamp: number; value: number }>> = {}
+
+  // Current market — use the supply APY history we already loaded so we
+  // don't refetch the same pool's chart twice.
+  if (detail.supplyApyHistory.length > 0) {
+    out[detail.protocolSlug] = trim(detail.supplyApyHistory)
+  }
+
+  if (detail.siblings.length > 0) {
+    const charts = await Promise.all(
+      detail.siblings.map(async (s) => {
+        try {
+          const points = await fetchYieldChart(s.poolId)
+          return {
+            slug: s.protocolSlug,
+            points: trim(
+              points
+                .filter((p) => p.apyBase != null && Number.isFinite(p.apyBase))
+                .map((p) => ({ timestamp: p.timestamp, value: p.apyBase as number })),
+            ),
+          }
+        } catch (err: any) {
+          console.error(
+            `[market-detail] sibling chart ${s.protocolSlug} (${s.poolId}) failed:`,
+            err?.message ?? err,
+          )
+          return { slug: s.protocolSlug, points: [] }
+        }
+      }),
+    )
+    for (const { slug, points } of charts) {
+      // Only assign once per slug — siblings are already deduped per protocol
+      // by buildSiblings, so the first hit wins.
+      if (!out[slug] && points.length > 0) {
+        out[slug] = points
+      }
+    }
+  }
+
+  return { ...detail, crossProtocolSupplyApyHistory: out }
 }

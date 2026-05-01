@@ -6,6 +6,7 @@ import { CompositionDonuts } from "@/components/overview/composition-donuts"
 import { TopMarketsCrossProtocolTable } from "@/components/overview/top-markets-cross-protocol-table"
 import { WatchList } from "@/components/overview/watch-list"
 import { CiteThisPage } from "@/components/overview/cite-this-page"
+import { AsOfFooter } from "@/components/overview/as-of-footer"
 import { loadSectorOverview } from "@/lib/sector-snapshot"
 import { loadTopMarketsAcrossProtocols } from "@/lib/cross-protocol-markets"
 import { loadRealYieldSpread } from "@/lib/real-yield"
@@ -160,6 +161,20 @@ export default async function OverviewPage() {
       <CiteThisPage
         pageTitle="Sector Overview"
         pageUrl="https://lending-intelligence-terminal.vercel.app/"
+      />
+
+      {/* As-of footer — Sector Overview reads from the daily snapshot
+          (refresh: 01:00 UTC via Cloudflare Worker), so this timestamp
+          tells a reader how stale the page is vs a freshly-loaded
+          /protocols page. The two pages occasionally drift; this is the
+          reconciliation signal. */}
+      <AsOfFooter
+        timestamp={overview.fetchedAt}
+        source={
+          overview.source === "snapshot"
+            ? "daily snapshot · sector_snapshots"
+            : "live load · DefiLlama"
+        }
       />
 
       {data.errors.length > 0 && (

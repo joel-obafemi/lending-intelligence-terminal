@@ -197,6 +197,11 @@ export const METHODOLOGY: Record<string, MethodologyEntry> = {
       "Every Aave V3 reserve currently configured with a non-zero debt ceiling (i.e. in isolation mode), with the on-chain ceiling, the current isolation-mode debt against that ceiling, and % used. Sorted by % used descending so reserves nearest a ceiling — the early-stress signals — surface first. Frozen / paused reserves are tagged but kept in the list so the reader can see the full isolation universe.",
     source: "On-chain UiPoolDataProviderV3 (debtCeiling + isolationModeTotalDebt).",
   },
+  "aave-safety-module": {
+    text:
+      "The Safety Module (SM) is the staked-AAVE pool that backstops Aave protocol insolvency risk. SM Size is the AAVE held by the stkAAVE contract × current AAVE/USD. Max Slashable is the on-chain governance-set portion (currently 30%) that can be drained to cover bad debt. Backing Ratio is AAVE balance ÷ stkAAVE supply — drift below 100% is the signature of a recent slash event. The newer Umbrella multi-asset SM rolls in here when its Ethereum deployment lands.",
+    source: "On-chain stkAAVE.totalSupply + AAVE.balanceOf(stkAAVE) + AAVE/USD via Aave V3 reserve price feed.",
+  },
 
   // ─── Per-protocol pages ─────────────────────────────────────────────
   "protocol-supply-by-asset": {
@@ -230,6 +235,11 @@ export const METHODOLOGY: Record<string, MethodologyEntry> = {
     text:
       "Total supplied and borrowed USD over time for this market, with the on-chain supply / borrow caps drawn as dashed reference lines when available. Aave and Spark expose caps via UiPoolDataProviderV3; some Spark stablecoins are uncapped on-chain.",
     source: "DefiLlama + on-chain UiPoolDataProviderV3.",
+  },
+  "market-cross-protocol-rate": {
+    text:
+      "Daily supply APY for the same underlying asset on every protocol that lists it, over the last 90 days. Reads as 'where has the best yield been historically?' — a question the snapshot table beneath answers for today only. The current market's protocol line is drawn at full saturation; siblings get a faded variant so visual focus stays on the page the reader came from. Rewards are excluded so the line is pure interest yield.",
+    source: "DefiLlama Yields /chart/{poolId} for each sibling pool.",
   },
   "market-rate-history": {
     text:

@@ -12,7 +12,14 @@ import { CuratorLeaderboard } from "@/components/protocols/curator-leaderboard"
 import { FluidSmartStatsCard } from "@/components/protocols/fluid-smart-stats-card"
 import { AaveMultiChainFootprint } from "@/components/protocols/aave-multi-chain-footprint"
 import { AaveIsolationModeWatch } from "@/components/protocols/aave-isolation-mode-watch"
+import { AaveSafetyModule } from "@/components/protocols/aave-safety-module"
 import { AssetStackChart } from "@/components/overview/asset-stack-chart"
+import { AsOfFooter } from "@/components/overview/as-of-footer"
+import {
+  loadSafetyModuleStatus,
+  type SafetyModuleStatus,
+} from "@/lib/aave-safety-module"
+import { loadAllAaveReservesLive } from "@/lib/aave-onchain"
 
 export const dynamic = "force-dynamic"
 // Heavy first render: DefiLlama Yields snapshot + per-protocol history.
@@ -48,21 +55,49 @@ export default async function ProtocolsPage({ searchParams }: { searchParams: Se
   // Per-protocol extras run in parallel with the standard detail load. Each
   // one is failure-tolerant: a fetch error returns the empty/null shape and
   // the page just doesn't render that section.
-  const [detail, curators, fluidStats] = await Promise.all([
-    loadProtocolDetail(slug),
-    slug === "morpho-blue"
-      ? loadMorphoCuratorLeaderboard().catch((err) => {
-          console.error("[protocols] curator leaderboard failed:", err?.message ?? err)
-          return [] as CuratorLeaderboardRow[]
-        })
-      : Promise.resolve([] as CuratorLeaderboardRow[]),
-    slug === "fluid"
-      ? loadFluidSmartVaultStats().catch((err) => {
-          console.error("[protocols] fluid smart stats failed:", err?.message ?? err)
-          return null as FluidSmartVaultStats | null
-        })
-      : Promise.resolve(null as FluidSmartVaultStats | null),
-  ])
+  const [detail, curators, fluidStats, safetyModule, aaveReservesForPrice] =
+    await Promise.all([
+      loadProtocolDetail(slug),
+      slug === "morpho-blue"
+        ? loadMorphoCuratorLeaderboard().catch((err) => {
+            console.error("[protocols] curator leaderboard failed:", err?.message ?? err)
+            return [] as CuratorLeaderboardRow[]
+          })
+        : Promise.resolve([] as CuratorLeaderboardRow[]),
+      slug === "fluid"
+        ? loadFluidSmartVaultStats().catch((err) => {
+            console.error("[protocols] fluid smart stats failed:", err?.message ?? err)
+            return null as FluidSmartVaultStats | null
+          })
+        : Promise.resolve(null as FluidSmartVaultStats | null),
+      slug === "aave-v3"
+        ? loadSafetyModuleStatus().catch((err) => {
+            console.error("[protocols] safety module load failed:", err?.message ?? err)
+            return null as SafetyModuleStatus | null
+          })
+        : Promise.resolve(null as SafetyModuleStatus | null),
+      // Pull AAVE's price from the live Aave reserves so the Safety Module
+      // can be denominated in USD. Aave V3 mainnet lists AAVE as collateral,
+      // so the price is already in the reserve struct we just fetched for
+      // the markets table — no extra DefiLlama hit required.
+      slug === "aave-v3"
+        ? loadAllAaveReservesLive().catch(() => [])
+        : Promise.resolve([]),
+    ])
+
+  // Fold AAVE/USD into the safety-module status when we have it.
+  const aavePriceUsd =
+    aaveReservesForPrice.find((r) => r.symbol.toUpperCase() === "AAVE")?.priceUsd ?? null
+  const safetyModuleWithPrice =
+    safetyModule && aavePriceUsd != null
+      ? {
+          ...safetyModule,
+          aavePriceUsd,
+          smTotalUsd: safetyModule.aaveBacking * aavePriceUsd,
+          maxSlashableUsd:
+            safetyModule.aaveBacking * aavePriceUsd * (30 / 100),
+        }
+      : safetyModule
 
   if (!detail) {
     return (
@@ -154,6 +189,16 @@ export default async function ProtocolsPage({ searchParams }: { searchParams: Se
         />
       )}
 
+      {/* Aave V3 lens — Safety Module status. The on-chain stkAAVE pool
+          backstops bad debt; this surface answers "how much capital is
+          actually backing the protocol right now". */}
+      {slug === "aave-v3" && safetyModuleWithPrice && (
+        <AaveSafetyModule
+          status={safetyModuleWithPrice}
+          protocolColor={detail.color}
+        />
+      )}
+
       {/* Total Supply + Total Borrows by asset for this protocol */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
         <AssetStackChart
@@ -218,6 +263,16 @@ export default async function ProtocolsPage({ searchParams }: { searchParams: Se
       {slug === "morpho-blue" && curators.length > 0 && (
         <CuratorLeaderboard rows={curators} />
       )}
+
+      {/* As-of footer — surfaces the live-load timestamp so a reader can
+          see how stale this page is vs the Sector Overview snapshot
+          (which refreshes once daily at 01:00 UTC). The two pages don't
+          share a snapshot; this footer is the lightweight reconciliation
+          signal. */}
+      <AsOfFooter
+        timestamp={Math.floor(Date.now() / 1000)}
+        source="DefiLlama + on-chain · live load"
+      />
     </div>
   )
 }
