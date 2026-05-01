@@ -175,9 +175,21 @@ export const METHODOLOGY: Record<string, MethodologyEntry> = {
   },
 
   // ─── Aave V3 protocol-specific lens ─────────────────────────────────
+  "aave-multi-chain-available": {
+    text:
+      "Aave V3's Available Liquidity (DefiLlama net-liquidity TVL = deposits minus active borrows) on every chain it's deployed on. The story this view answers is 'where is unborrowed capacity sitting' — the supply-side competition between deployments. Long tail past the top 7 individual chains is folded into 'Other (N chains)'.",
+    source: "DefiLlama /protocol/aave-v3 currentChainTvls.",
+  },
+  "aave-multi-chain-borrows": {
+    text:
+      "Aave V3's active Borrows (outstanding debt principal in USD) on every chain it's deployed on. The story this view answers is 'where is the actual lending business happening' — borrows are the truer read on a deployment's economic activity than headline TVL. Long tail past the top 7 individual chains is folded into 'Other (N chains)'.",
+    source: "DefiLlama /protocol/aave-v3 chainTvls.<chain>-borrowed.",
+  },
+  /** @deprecated Use `aave-multi-chain-available`. Retained as an alias so
+   *  any external link to the original methodology key still resolves. */
   "aave-multi-chain-footprint": {
     text:
-      "Aave V3's Available Liquidity (DefiLlama net-liquidity TVL) on every chain it's deployed on. Sourced from /protocol/aave-v3 currentChainTvls. The chart's job is to show whether Aave's center of gravity is shifting off mainnet — track this monthly. The long tail past the top 7 is folded into 'Other chains'.",
+      "Aave V3's Available Liquidity (DefiLlama net-liquidity TVL) on every chain it's deployed on. The chart's job is to show whether Aave's center of gravity is shifting off mainnet — track this monthly. Long tail past the top 7 is folded into 'Other chains'.",
     source: "DefiLlama /protocol/aave-v3 currentChainTvls.",
   },
   "aave-isolation-mode-watch": {
@@ -199,8 +211,18 @@ export const METHODOLOGY: Record<string, MethodologyEntry> = {
   },
   "protocol-top-markets": {
     text:
-      "Top markets in this protocol ranked by total supply (TVL + borrowed). Bars are colored on a gradient so the dominant market is unmistakable.",
+      "Top markets in this protocol ranked by total supply (Available Liquidity + active Borrows). Bars are colored on a gradient so the dominant market is unmistakable. Toggle the filter to see the ranking by Available Liquidity or by Borrows instead.",
     source: "DefiLlama Yields /pools.",
+  },
+  "protocol-top-markets-available": {
+    text:
+      "Top markets in this protocol ranked by Available Liquidity (DefiLlama's `tvlUsd`, the unborrowed deposit balance). Reads as 'where is the most idle supply sitting' — the markets a fresh borrower could draw from without crowding the rate.",
+    source: "DefiLlama Yields /pools.tvlUsd.",
+  },
+  "protocol-top-markets-borrows": {
+    text:
+      "Top markets in this protocol ranked by active Borrows. Reads as 'where is the actual lending business happening' — the markets driving most of the protocol's interest revenue.",
+    source: "DefiLlama Yields /pools.totalBorrowUsd.",
   },
 
   // ─── Market detail ──────────────────────────────────────────────────

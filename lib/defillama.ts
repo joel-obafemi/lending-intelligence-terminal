@@ -49,6 +49,11 @@ export interface ProtocolHistory {
    *  `borrowed`, `staking`) and per-chain `-borrowed` siblings are filtered
    *  out. Used by the Aave V3 Multi-Chain Footprint module. */
   multiChainTvl: Record<string, number>
+  /** Current per-chain active Borrows from DefiLlama's
+   *  `chainTvls.<chain>-borrowed`. Same chain key shape as `multiChainTvl`
+   *  so the two dictionaries pair up cleanly when the Multi-Chain
+   *  Footprint chart toggles between Available Liquidity and Borrows. */
+  multiChainBorrowed: Record<string, number>
 }
 
 const LLAMA_BASE = "https://api.llama.fi"
@@ -161,18 +166,23 @@ export async function fetchProtocolHistory(slug: string): Promise<ProtocolHistor
     userFeePoints = feePoints
   }
 
-  // Build the per-chain Available Liquidity dictionary from
-  // `currentChainTvls`. Filter out the aggregate / non-chain keys DefiLlama
-  // mixes in here:
+  // Build per-chain dictionaries from `currentChainTvls`. DefiLlama mixes in
+  // aggregate / non-chain keys we filter out:
   //   - "borrowed"            — global borrowed across all chains
   //   - "staking" / "pool2"   — non-lending categories the protocol opts in to
-  //   - "<Chain>-borrowed"    — per-chain borrowed (we only want per-chain TVL)
+  // Per-chain `<Chain>-borrowed` keys go into `multiChainBorrowed`; the rest
+  // (per-chain available liquidity) go into `multiChainTvl`.
   const multiChainTvl: Record<string, number> = {}
+  const multiChainBorrowed: Record<string, number> = {}
   for (const [k, v] of Object.entries(protocol.currentChainTvls ?? {})) {
     if (typeof v !== "number" || !Number.isFinite(v) || v <= 0) continue
     if (k === "borrowed" || k === "staking" || k === "pool2") continue
-    if (k.endsWith("-borrowed")) continue
-    multiChainTvl[k] = v
+    if (k.endsWith("-borrowed")) {
+      const chain = k.slice(0, -"-borrowed".length)
+      multiChainBorrowed[chain] = v
+    } else {
+      multiChainTvl[k] = v
+    }
   }
 
   return {
@@ -190,6 +200,7 @@ export async function fetchProtocolHistory(slug: string): Promise<ProtocolHistor
     fees24h,
     fees7d,
     multiChainTvl,
+    multiChainBorrowed,
   }
 }
 

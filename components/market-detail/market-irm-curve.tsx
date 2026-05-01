@@ -115,7 +115,7 @@ export function MarketIrmCurve({ curve, currentUtilizationPct, kink }: Props) {
           {/* `top: 28` reserves headroom for two stacked reference-line labels
               (e.g. when current util sits right on the kink, both labels live
               above the chart and need vertical room). */}
-          <LineChart data={data} margin={{ top: 28, right: 5, left: 5, bottom: 5 }}>
+          <LineChart data={data} margin={{ top: 28, right: 30, left: 5, bottom: 5 }}>
             <XAxis
               dataKey="utilization"
               type="number"
@@ -144,6 +144,14 @@ export function MarketIrmCurve({ curve, currentUtilizationPct, kink }: Props) {
               const currentX = currentUtilizationPct != null ? currentUtilizationPct / 100 : null
               const anchorFor = (x: number): "start" | "middle" | "end" =>
                 x <= 0.08 ? "start" : x >= 0.92 ? "end" : "middle"
+              // When anchor is "end", Recharts places the text's right edge at
+              // the line's x-coordinate. Recharts can extend the label past the
+              // SVG's plot area though, and the parent `tui-card` clips with
+              // overflow-hidden, which is why "Current 99.4%" was rendering as
+              // "Current 9". Pull anchor-end labels 4px left of the line so
+              // they always sit fully inside the plot region.
+              const dxFor = (x: number): number =>
+                x <= 0.08 ? 4 : x >= 0.92 ? -4 : 0
               // Two ways the labels collide horizontally:
               //   (a) kink and current are at similar x (e.g. 89% vs 91%)
               //   (b) both are in the right-edge zone (e.g. kink 90%, current
@@ -170,6 +178,7 @@ export function MarketIrmCurve({ curve, currentUtilizationPct, kink }: Props) {
                       fill: "#F59E0B",
                       fontSize: 10,
                       textAnchor: anchorFor(kink),
+                      dx: dxFor(kink),
                     }}
                   />
                   {/* Current util marker — dashed green vertical line. */}
@@ -185,6 +194,7 @@ export function MarketIrmCurve({ curve, currentUtilizationPct, kink }: Props) {
                         fill: "#10B981",
                         fontSize: 10,
                         textAnchor: anchorFor(currentX),
+                        dx: dxFor(currentX),
                         dy: stackVertically ? -14 : 0,
                       }}
                     />

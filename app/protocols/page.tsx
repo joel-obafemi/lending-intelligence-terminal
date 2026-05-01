@@ -144,17 +144,9 @@ export default async function ProtocolsPage({ searchParams }: { searchParams: Se
         <FluidSmartStatsCard stats={fluidStats} />
       )}
 
-      {/* Aave V3 lens — the modules that make this page feel Aave-specific
-          rather than generic. Multi-Chain Footprint surfaces Ethereum's
-          share of Aave's deposits across all chains; Isolation Mode Watch
-          surfaces every reserve under an on-chain debt ceiling. */}
-      {slug === "aave-v3" && Object.keys(detail.multiChainTvl).length > 0 && (
-        <AaveMultiChainFootprint
-          multiChainTvl={detail.multiChainTvl}
-          color={detail.color}
-          protocolName={detail.name}
-        />
-      )}
+      {/* Aave V3 lens — Isolation Mode Watch sits up here as the
+          early-stress signal lens; Multi-Chain Footprint goes side-by-side
+          with the Top Markets chart further down. */}
       {slug === "aave-v3" && detail.isolationReserves.length > 0 && (
         <AaveIsolationModeWatch
           rows={detail.isolationReserves}
@@ -178,14 +170,42 @@ export default async function ProtocolsPage({ searchParams }: { searchParams: Se
         />
       </div>
 
-      {/* Top markets chart + full table */}
-      <TopMarketsBarChart
-        title={`${detail.name} · Top Markets by Total Supply`}
-        color={detail.color}
-        markets={detail.markets}
-        topN={15}
-        methodologyKey="protocol-top-markets"
-      />
+      {/* Top markets chart + (Aave-only) Multi-Chain Footprint side-by-side.
+          For non-Aave protocols the Top Markets chart spans the full row.
+          The shared layout lets both charts breathe; the filter pills on
+          each one let the reader frame the same data three ways. */}
+      {slug === "aave-v3" && Object.keys(detail.multiChainTvl).length > 0 ? (
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+          <TopMarketsBarChart
+            protocolName={detail.name}
+            color={detail.color}
+            markets={detail.markets}
+            topN={15}
+            defaultView="supply"
+            views={["supply", "available", "borrows"]}
+          />
+          <AaveMultiChainFootprint
+            multiChainAvailable={detail.multiChainTvl}
+            multiChainBorrowed={detail.multiChainBorrowed}
+            color={detail.color}
+            protocolName={detail.name}
+          />
+        </div>
+      ) : (
+        <TopMarketsBarChart
+          protocolName={detail.name}
+          color={detail.color}
+          markets={detail.markets}
+          topN={15}
+          defaultView="supply"
+          views={
+            // Morpho's vault rows on DefiLlama Yields don't carry borrowed
+            // USD, so the Borrows view would be empty. Limit Morpho to the
+            // supply / available filters.
+            slug === "morpho-blue" ? ["supply", "available"] : ["supply", "available", "borrows"]
+          }
+        />
+      )}
 
       <MarketsTable
         architecture={detail.architecture}

@@ -86,6 +86,9 @@ export interface ProtocolDetail {
    *  deployed on. Powers the Multi-Chain Footprint module on the Aave V3
    *  page (and any other multi-chain protocol that ships there later). */
   multiChainTvl: Record<string, number>
+  /** Per-chain active Borrows in USD. Same key shape as `multiChainTvl` so
+   *  the Multi-Chain Footprint toggle pairs them cleanly. */
+  multiChainBorrowed: Record<string, number>
   /** Aave V3-style isolation-mode reserves with their on-chain debt
    *  ceiling and current isolation-mode debt. Empty for protocols that
    *  don't expose UiPoolDataProviderV3 (Morpho / Fluid). */
@@ -478,6 +481,7 @@ export async function loadProtocolDetail(slug: string): Promise<ProtocolDetail |
     borrowedByAssetSeries,
     topAssets,
     multiChainTvl: history?.multiChainTvl ?? {},
+    multiChainBorrowed: history?.multiChainBorrowed ?? {},
     isolationReserves,
   }
 }
