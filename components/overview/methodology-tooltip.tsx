@@ -1,6 +1,7 @@
 "use client"
 
-import { useState } from "react"
+import { useEffect, useLayoutEffect, useRef, useState } from "react"
+import { createPortal } from "react-dom"
 import { Info } from "lucide-react"
 import { getMethodology } from "@/lib/methodology"
 
@@ -19,30 +20,79 @@ interface Props {
   methodologyKey?: string
 }
 
+const TOOLTIP_WIDTH = 320
+const VIEWPORT_PADDING = 8
+
 /**
  * Inline info icon → tooltip popover. Click to toggle, click-outside or
- * second-click to close. Accessible via keyboard (Enter / Space). Used in
- * chart card headers next to the title.
+ * second-click to close. The popover renders via a React portal so it is
+ * never clipped by an `overflow: hidden` parent (the dense Verdict cards
+ * use clipped overflow for their accent strip), and its position is clamped
+ * inside the viewport so it never spills off the right or left edge.
  */
 export function MethodologyTooltip(props: Props) {
   const { text: rawText, source: rawSource, href: rawHref, methodologyKey } = props
-  // Lookup wins over inline props when a key is provided. If the key isn't
-  // in the config, render nothing — chart still works, just without an
-  // info icon. (Keeps unwired chart cards from showing a broken tooltip.)
   const fromKey = getMethodology(methodologyKey)
   const text = rawText ?? fromKey?.text
-  if (!text) return null
   const source = rawSource ?? fromKey?.source
   const href = rawHref ?? fromKey?.href
 
   const [open, setOpen] = useState(false)
+  const [coords, setCoords] = useState<{ left: number; top: number; width: number } | null>(null)
+  const buttonRef = useRef<HTMLButtonElement | null>(null)
+  const popoverRef = useRef<HTMLDivElement | null>(null)
+  const [mounted, setMounted] = useState(false)
+
+  useEffect(() => setMounted(true), [])
+
+  // Close on outside click + Escape, and recompute position on scroll / resize.
+  useEffect(() => {
+    if (!open) return
+    function handleClick(e: MouseEvent) {
+      if (
+        buttonRef.current?.contains(e.target as Node) ||
+        popoverRef.current?.contains(e.target as Node)
+      ) {
+        return
+      }
+      setOpen(false)
+    }
+    function handleKey(e: KeyboardEvent) {
+      if (e.key === "Escape") setOpen(false)
+    }
+    function handleReposition() {
+      const rect = buttonRef.current?.getBoundingClientRect()
+      if (!rect) return
+      setCoords(computeCoords(rect))
+    }
+    document.addEventListener("mousedown", handleClick)
+    document.addEventListener("keydown", handleKey)
+    window.addEventListener("scroll", handleReposition, true)
+    window.addEventListener("resize", handleReposition)
+    return () => {
+      document.removeEventListener("mousedown", handleClick)
+      document.removeEventListener("keydown", handleKey)
+      window.removeEventListener("scroll", handleReposition, true)
+      window.removeEventListener("resize", handleReposition)
+    }
+  }, [open])
+
+  useLayoutEffect(() => {
+    if (!open) return
+    const rect = buttonRef.current?.getBoundingClientRect()
+    if (!rect) return
+    setCoords(computeCoords(rect))
+  }, [open])
+
+  if (!text) return null
+
   return (
     <span style={{ position: "relative", display: "inline-flex", alignItems: "center" }}>
       <button
+        ref={buttonRef}
         type="button"
         aria-label="Methodology"
         onClick={() => setOpen((v) => !v)}
-        onBlur={() => setTimeout(() => setOpen(false), 150)}
         style={{
           background: "transparent",
           border: "none",
@@ -53,16 +103,16 @@ export function MethodologyTooltip(props: Props) {
       >
         <Info size={11} strokeWidth={2.25} />
       </button>
-      {open && (
-        <span
+      {mounted && open && coords && createPortal(
+        <div
+          ref={popoverRef}
           role="tooltip"
           style={{
-            position: "absolute",
-            top: "100%",
-            left: 0,
-            marginTop: "6px",
-            zIndex: 10,
-            width: "min(320px, 80vw)",
+            position: "fixed",
+            left: coords.left,
+            top: coords.top,
+            width: coords.width,
+            zIndex: 100,
             background: "var(--tooltip-bg)",
             border: "1px solid var(--card-border)",
             borderRadius: "4px",
@@ -99,8 +149,25 @@ export function MethodologyTooltip(props: Props) {
               </a>
             </div>
           )}
-        </span>
+        </div>,
+        document.body,
       )}
     </span>
   )
+}
+
+/** Compute viewport-aware fixed coords from the icon's bounding rect.
+ *  Anchors directly under the icon, then clamps inside the viewport so the
+ *  popover can never spill off either edge. Width caps at the available
+ *  horizontal space when the viewport is narrower than TOOLTIP_WIDTH. */
+function computeCoords(rect: DOMRect): { left: number; top: number; width: number } {
+  const vw = typeof window !== "undefined" ? window.innerWidth : TOOLTIP_WIDTH
+  const width = Math.min(TOOLTIP_WIDTH, vw - VIEWPORT_PADDING * 2)
+  let left = rect.left
+  if (left + width + VIEWPORT_PADDING > vw) {
+    left = vw - width - VIEWPORT_PADDING
+  }
+  if (left < VIEWPORT_PADDING) left = VIEWPORT_PADDING
+  const top = rect.bottom + 6
+  return { left, top, width }
 }

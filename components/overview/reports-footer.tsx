@@ -41,7 +41,7 @@ const PLACEHOLDER_BACK_ISSUES: BackIssue[] = [
 ]
 
 const LATEST_ISSUE = {
-  title: "The Lending Pulse — April 2026",
+  title: "The Lending Pulse · April 2026",
   blurb:
     "Our monthly read of Aave V3, Spark, Morpho and Fluid on Ethereum. Sector TVL, real yield, liquidations, and the events the data flagged.",
   cta: "Read on /reports",

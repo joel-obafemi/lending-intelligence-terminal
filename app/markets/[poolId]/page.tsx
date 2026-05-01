@@ -85,7 +85,7 @@ function Breadcrumb({ detail, isVault }: { detail: MarketDetail; isVault: boolea
         {detail.asset}
       </span>
       {detail.subLabel && (
-        <span style={{ color: "var(--text-muted)" }}>— {detail.subLabel}</span>
+        <span style={{ color: "var(--text-muted)" }}>· {detail.subLabel}</span>
       )}
       {isVault && detail.vaultMeta && (
         <span
@@ -224,7 +224,7 @@ function VaultLayout({ detail }: { detail: MarketDetail }) {
 function MarketLayout({ detail }: { detail: MarketDetail }) {
   const borrowEmpty =
     detail.borrowApy == null && detail.totalBorrowUsd === 0
-      ? "This market has no borrow side — supply only."
+      ? "This market has no borrow side. It's supply only."
       : "Borrow APY and utilization history accumulates daily for the 10 major " +
         "assets (USDC/USDT/DAI/USDS/GHO/WETH/WSTETH/WEETH/WBTC/CBBTC). Coverage " +
         "for this pool will appear here as it builds up."

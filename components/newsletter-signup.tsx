@@ -19,7 +19,7 @@ interface Props {
 
 export function NewsletterSignup({
   heading = "The monthly Lending Pulse",
-  body = "Sector TVL, rates, risk, liquidations — straight to your inbox once a month.",
+  body = "Sector TVL, rates, risk, and liquidations, straight to your inbox once a month.",
 }: Props) {
   return (
     <div

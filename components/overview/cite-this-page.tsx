@@ -24,7 +24,7 @@ export function CiteThisPage({ pageTitle, pageUrl }: Props) {
     day: "numeric",
     year: "numeric",
   })
-  const citation = `Datum Labs. (${new Date().getUTCFullYear()}). Lending Intelligence Terminal — ${pageTitle}. Retrieved ${todayLong} from ${pageUrl}.`
+  const citation = `Datum Labs. (${new Date().getUTCFullYear()}). Lending Intelligence Terminal: ${pageTitle}. Retrieved ${todayLong} from ${pageUrl}.`
 
   function handleCopy() {
     if (typeof navigator === "undefined" || !navigator.clipboard) return

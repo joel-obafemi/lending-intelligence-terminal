@@ -177,7 +177,7 @@ export function MarketMultiLineChart({
                 switch to a finer view; (b) we have no data at all → show the
                 caller-supplied hint about the source. */}
             {hasAnyData && !enoughBuckets
-              ? "Only a few days of samples so far — switch to the All toggle to see them at daily resolution."
+              ? "Only a few days of samples so far. Switch to the All toggle to see them at daily resolution."
               : emptyMessage ?? "Not enough history yet."}
           </div>
         ) : (

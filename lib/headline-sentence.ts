@@ -124,5 +124,5 @@ export function topMarketsConcentrationSentence(
   totalSectorTvlUsd: number,
 ): string {
   const sharePct = totalSectorTvlUsd > 0 ? (top10TvlUsd / totalSectorTvlUsd) * 100 : 0
-  return `The top 10 markets on Ethereum hold ${formatUsdShort(top10TvlUsd)} of deposits — ${formatPercent(sharePct, 0)} of the sector total.`
+  return `The top 10 markets on Ethereum hold ${formatUsdShort(top10TvlUsd)} of deposits, or ${formatPercent(sharePct, 0)} of the sector total.`
 }

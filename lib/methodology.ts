@@ -63,7 +63,7 @@ export const METHODOLOGY: Record<string, MethodologyEntry> = {
   },
   "sector-take-rate": {
     text:
-      "Sector take rate = annualized protocol revenue ÷ TVL. Sums each protocol's last-30-day fees, multiplies by 365/30, and divides by current TVL. A higher number means lenders/protocols are extracting more yield per dollar of deposits in the system.",
+      "How much yield the sector is producing per dollar of TVL, annualized. We sum each protocol's last 30 days of gross fees, scale that up to a year (×365/30), then divide by current TVL. A higher take rate means deposits are working harder across the system.",
     source: "DefiLlama /summary/fees + /protocol/<slug>.",
   },
   "sector-utilization-headline": {
@@ -78,7 +78,7 @@ export const METHODOLOGY: Record<string, MethodologyEntry> = {
   },
   "sector-net-flows-30d": {
     text:
-      "Trailing-30-day net change in supplied USD per protocol, decomposed into (a) interest accrual — mechanical growth from borrowers paying interest, sourced from DefiLlama's dailyUserFees (or dailyFees fallback) — and (b) organic deposits / withdrawals = total net flow − interest accrual. Negative organic = depositors are net withdrawing.",
+      "Trailing-30-day net change in supplied USD per protocol, broken into two parts. Interest accrual is the mechanical growth from borrowers paying interest, taken from DefiLlama's dailyUserFees (or dailyFees as a fallback). Organic deposits is the rest: total net flow minus interest accrual. A negative organic slice means depositors were net withdrawing.",
     source: "DefiLlama net-flow + dailyUserFees.",
   },
   "sector-collateral-mix-donut": {
@@ -122,7 +122,7 @@ export const METHODOLOGY: Record<string, MethodologyEntry> = {
   },
   "rate-history": {
     text:
-      "Three-year supply APY history per protocol for this asset (DefiLlama Yields /chart endpoint). The dashed line is the daily Federal Funds Rate (FRED DFF) for cross-reference — it sets the floor depositors are competing against.",
+      "Three-year supply APY history per protocol for this asset (DefiLlama Yields /chart endpoint). The dashed line is the daily Federal Funds Rate (FRED DFF) for cross-reference. It sets the floor depositors are competing against.",
     source: "DefiLlama Yields + FRED DFF.",
   },
 
@@ -205,7 +205,7 @@ export const METHODOLOGY: Record<string, MethodologyEntry> = {
   },
   "risk-bad-debt-time": {
     text:
-      "Cumulative bad debt accrued per protocol over time. Currently driven by Morpho only — Aave V3, Spark, and Fluid don't surface bad-debt rows in our DB consistently.",
+      "Cumulative bad debt accrued per protocol over time. Currently driven by Morpho only. Aave V3, Spark, and Fluid don't surface bad-debt rows in our DB consistently.",
     source: "Liquidator Economy DB · liquidation_events (bad_debt > 0).",
   },
 }
