@@ -233,6 +233,9 @@ export interface AaveStyleReserve {
   priceOracle: string
   /** Isolation-mode debt ceiling in USD. 0 if the asset is not isolated. */
   debtCeilingUsd: number
+  /** Outstanding isolation-mode debt against this reserve in USD. Always 0
+   *  when `debtCeilingUsd` is 0 (i.e. asset isn't in isolation mode). */
+  isolationModeTotalDebtUsd: number
   /** V3.3+ field; undefined for older deployments (Spark). */
   deficitToken: number | null
   deficitUsd: number | null
@@ -331,6 +334,15 @@ export async function loadReservesViaProvider(
     const debtCeilingUsd =
       debtCeilingRaw > 0 ? debtCeilingRaw / Math.pow(10, debtCeilingDecimals) : 0
 
+    // isolationModeTotalDebt uses the same `debtCeilingDecimals` scaling as
+    // the ceiling itself. Aave V3.3+ deployments populate this; older forks
+    // (Spark) leave it as 0.
+    const isolationDebtRaw = Number(r.isolationModeTotalDebt ?? 0)
+    const isolationModeTotalDebtUsd =
+      debtCeilingUsd > 0 && isolationDebtRaw > 0
+        ? isolationDebtRaw / Math.pow(10, debtCeilingDecimals)
+        : 0
+
     const utilization = totalSupplyToken > 0 ? totalBorrowToken / totalSupplyToken : 0
 
     // `deficit` only exists on V3.3+ (Aave). Spark won't have it.
@@ -373,6 +385,7 @@ export async function loadReservesViaProvider(
       flashLoanEnabled: r.flashLoanEnabled,
       priceOracle: r.priceOracle,
       debtCeilingUsd,
+      isolationModeTotalDebtUsd,
       deficitToken,
       deficitUsd,
     }

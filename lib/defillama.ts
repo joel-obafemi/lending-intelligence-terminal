@@ -44,6 +44,11 @@ export interface ProtocolHistory {
   /** 24h and 7d fee sums */
   fees24h: number
   fees7d: number
+  /** Current per-chain Available Liquidity (DefiLlama's `chainTvls.<chain>.tvl`)
+   *  for every chain the protocol is deployed on. Aggregate keys (e.g.
+   *  `borrowed`, `staking`) and per-chain `-borrowed` siblings are filtered
+   *  out. Used by the Aave V3 Multi-Chain Footprint module. */
+  multiChainTvl: Record<string, number>
 }
 
 const LLAMA_BASE = "https://api.llama.fi"
@@ -156,6 +161,20 @@ export async function fetchProtocolHistory(slug: string): Promise<ProtocolHistor
     userFeePoints = feePoints
   }
 
+  // Build the per-chain Available Liquidity dictionary from
+  // `currentChainTvls`. Filter out the aggregate / non-chain keys DefiLlama
+  // mixes in here:
+  //   - "borrowed"            — global borrowed across all chains
+  //   - "staking" / "pool2"   — non-lending categories the protocol opts in to
+  //   - "<Chain>-borrowed"    — per-chain borrowed (we only want per-chain TVL)
+  const multiChainTvl: Record<string, number> = {}
+  for (const [k, v] of Object.entries(protocol.currentChainTvls ?? {})) {
+    if (typeof v !== "number" || !Number.isFinite(v) || v <= 0) continue
+    if (k === "borrowed" || k === "staking" || k === "pool2") continue
+    if (k.endsWith("-borrowed")) continue
+    multiChainTvl[k] = v
+  }
+
   return {
     slug,
     tvl: ethTvl,
@@ -170,6 +189,7 @@ export async function fetchProtocolHistory(slug: string): Promise<ProtocolHistor
     currentBorrowed,
     fees24h,
     fees7d,
+    multiChainTvl,
   }
 }
 

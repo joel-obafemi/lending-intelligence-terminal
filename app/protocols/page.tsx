@@ -10,6 +10,8 @@ import { MarketsTable } from "@/components/protocols/markets-table"
 import { TopMarketsBarChart } from "@/components/protocols/top-markets-bar-chart"
 import { CuratorLeaderboard } from "@/components/protocols/curator-leaderboard"
 import { FluidSmartStatsCard } from "@/components/protocols/fluid-smart-stats-card"
+import { AaveMultiChainFootprint } from "@/components/protocols/aave-multi-chain-footprint"
+import { AaveIsolationModeWatch } from "@/components/protocols/aave-isolation-mode-watch"
 import { AssetStackChart } from "@/components/overview/asset-stack-chart"
 
 export const dynamic = "force-dynamic"
@@ -140,6 +142,24 @@ export default async function ProtocolsPage({ searchParams }: { searchParams: Se
           since this is the metric most Fluid pieces hinge on. */}
       {slug === "fluid" && fluidStats && (
         <FluidSmartStatsCard stats={fluidStats} />
+      )}
+
+      {/* Aave V3 lens — the modules that make this page feel Aave-specific
+          rather than generic. Multi-Chain Footprint surfaces Ethereum's
+          share of Aave's deposits across all chains; Isolation Mode Watch
+          surfaces every reserve under an on-chain debt ceiling. */}
+      {slug === "aave-v3" && Object.keys(detail.multiChainTvl).length > 0 && (
+        <AaveMultiChainFootprint
+          multiChainTvl={detail.multiChainTvl}
+          color={detail.color}
+          protocolName={detail.name}
+        />
+      )}
+      {slug === "aave-v3" && detail.isolationReserves.length > 0 && (
+        <AaveIsolationModeWatch
+          rows={detail.isolationReserves}
+          color={detail.color}
+        />
       )}
 
       {/* Total Supply + Total Borrows by asset for this protocol */}

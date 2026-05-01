@@ -27,6 +27,8 @@ import {
 } from "./defillama"
 import { YIELDS_PROJECT_BY_PROTOCOL } from "./rates"
 import type { AssetTimeseriesPoint } from "./overview"
+import { loadAllAaveReservesLive, type AaveReserveLive } from "./aave-onchain"
+import { loadAllSparkReservesLive } from "./spark-onchain"
 
 /** 24h-delta + 30d sparkline for the four headline counters. */
 export interface ProtocolDelta {
@@ -80,6 +82,29 @@ export interface ProtocolDetail {
   borrowedByAssetSeries: AssetTimeseriesPoint[]
   /** Top asset symbols included as named series. */
   topAssets: string[]
+  /** Per-chain Available Liquidity in USD across every chain the protocol is
+   *  deployed on. Powers the Multi-Chain Footprint module on the Aave V3
+   *  page (and any other multi-chain protocol that ships there later). */
+  multiChainTvl: Record<string, number>
+  /** Aave V3-style isolation-mode reserves with their on-chain debt
+   *  ceiling and current isolation-mode debt. Empty for protocols that
+   *  don't expose UiPoolDataProviderV3 (Morpho / Fluid). */
+  isolationReserves: IsolationReserveRow[]
+}
+
+export interface IsolationReserveRow {
+  symbol: string
+  underlyingAsset: string
+  /** Isolation-mode debt ceiling in USD. */
+  debtCeilingUsd: number
+  /** Outstanding isolation-mode debt in USD. */
+  isolationDebtUsd: number
+  /** % of ceiling used (0-100). */
+  ceilingUsedPct: number
+  /** Total supplied USD on this reserve (for context). */
+  totalSupplyUsd: number
+  /** True if `isFrozen` or `isPaused` — reserve isn't actively borrowable. */
+  inactive: boolean
 }
 
 /** Table column label for the "market" column, varies by architecture. */
@@ -310,9 +335,23 @@ export async function loadProtocolDetail(slug: string): Promise<ProtocolDetail |
   const validProjects = YIELDS_PROJECT_BY_PROTOCOL[slug] ?? []
   // Pull the DefiLlama Yields snapshot AND the protocol's per-asset history
   // (for the Supply / Borrows by Asset charts on the deep-dive page).
-  const [allPools, history] = await Promise.all([
+  // For Aave V3 + Spark we also pull live UiPoolDataProviderV3 reads so the
+  // Isolation Mode Watch module on the Aave page has on-chain debt-ceiling
+  // and isolation-debt numbers to render.
+  const [allPools, history, aaveStyleReserves] = await Promise.all([
     fetchAllYieldPools(),
     fetchProtocolHistory(cfg.defillamaSlug).catch(() => null),
+    slug === "aave-v3"
+      ? loadAllAaveReservesLive().catch((err) => {
+          console.error("[protocol-detail] aave reserves load failed:", err?.message ?? err)
+          return [] as AaveReserveLive[]
+        })
+      : slug === "spark"
+      ? loadAllSparkReservesLive().catch((err) => {
+          console.error("[protocol-detail] spark reserves load failed:", err?.message ?? err)
+          return [] as AaveReserveLive[]
+        })
+      : Promise.resolve([] as AaveReserveLive[]),
   ])
   const pools = allPools.filter(
     (p) => p.chain === "Ethereum" && validProjects.includes(p.project),
@@ -400,6 +439,25 @@ export async function loadProtocolDetail(slug: string): Promise<ProtocolDetail |
     ? buildProtocolDelta(buildSuppliedSeries(history.tvl, history.borrowed))
     : buildProtocolDelta([])
 
+  // Project the live Aave-style reserves into the isolation-mode shape the
+  // page renders. Filter to reserves with a non-zero debt ceiling — that's
+  // the on-chain signal the asset is in isolation mode.
+  const isolationReserves: IsolationReserveRow[] = aaveStyleReserves
+    .filter((r) => r.debtCeilingUsd > 0)
+    .map((r) => ({
+      symbol: r.symbol,
+      underlyingAsset: r.underlyingAsset,
+      debtCeilingUsd: r.debtCeilingUsd,
+      isolationDebtUsd: r.isolationModeTotalDebtUsd,
+      ceilingUsedPct:
+        r.debtCeilingUsd > 0
+          ? Math.min(100, (r.isolationModeTotalDebtUsd / r.debtCeilingUsd) * 100)
+          : 0,
+      totalSupplyUsd: r.totalSupplyUsd,
+      inactive: r.isFrozen || r.isPaused,
+    }))
+    .sort((a, b) => b.ceilingUsedPct - a.ceilingUsedPct)
+
   return {
     slug: cfg.slug,
     name: cfg.name,
@@ -419,6 +477,8 @@ export async function loadProtocolDetail(slug: string): Promise<ProtocolDetail |
     supplyByAssetSeries,
     borrowedByAssetSeries,
     topAssets,
+    multiChainTvl: history?.multiChainTvl ?? {},
+    isolationReserves,
   }
 }
 

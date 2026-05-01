@@ -174,6 +174,18 @@ export const METHODOLOGY: Record<string, MethodologyEntry> = {
     source: "Liquidator Economy DB · liquidation_events.",
   },
 
+  // ─── Aave V3 protocol-specific lens ─────────────────────────────────
+  "aave-multi-chain-footprint": {
+    text:
+      "Aave V3's Available Liquidity (DefiLlama net-liquidity TVL) on every chain it's deployed on. Sourced from /protocol/aave-v3 currentChainTvls. The chart's job is to show whether Aave's center of gravity is shifting off mainnet — track this monthly. The long tail past the top 7 is folded into 'Other chains'.",
+    source: "DefiLlama /protocol/aave-v3 currentChainTvls.",
+  },
+  "aave-isolation-mode-watch": {
+    text:
+      "Every Aave V3 reserve currently configured with a non-zero debt ceiling (i.e. in isolation mode), with the on-chain ceiling, the current isolation-mode debt against that ceiling, and % used. Sorted by % used descending so reserves nearest a ceiling — the early-stress signals — surface first. Frozen / paused reserves are tagged but kept in the list so the reader can see the full isolation universe.",
+    source: "On-chain UiPoolDataProviderV3 (debtCeiling + isolationModeTotalDebt).",
+  },
+
   // ─── Per-protocol pages ─────────────────────────────────────────────
   "protocol-supply-by-asset": {
     text:
