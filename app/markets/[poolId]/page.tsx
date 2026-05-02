@@ -17,6 +17,7 @@ import { VaultActivityTable } from "@/components/market-detail/vault-activity-ta
 import { VaultLiquidationEventsTable } from "@/components/market-detail/vault-liquidation-events-table"
 import { VaultTopDepositorsList } from "@/components/market-detail/vault-top-depositors-list"
 import { FluidVaultInfoCard } from "@/components/market-detail/fluid-vault-info-card"
+import { FluidPenaltyCallout } from "@/components/market-detail/fluid-penalty-callout"
 import { MarketSpikeCallout } from "@/components/market-detail/market-spike-callout"
 import { MarketCrossProtocolRateChart } from "@/components/market-detail/market-cross-protocol-rate-chart"
 
@@ -64,6 +65,16 @@ export default async function MarketDetailPage({ params }: PageProps) {
 
 function Breadcrumb({ detail, isVault }: { detail: MarketDetail; isVault: boolean }) {
   const rootLabel = isVault ? "Vaults" : "Protocols"
+  // Cross-asset Fluid vaults read as the (collateral / loan) pair plus
+  // the vault id — matches what the Fluid UI shows above the supplied /
+  // borrow tiles. Same-asset markets keep the bare symbol.
+  const isCrossAsset =
+    !!detail.loanAssetSymbol &&
+    detail.loanAssetSymbol.toUpperCase() !== detail.asset.toUpperCase()
+  const identityLabel = isCrossAsset
+    ? `${detail.asset} / ${detail.loanAssetSymbol}`
+    : detail.asset
+  const fluidVaultId = detail.fluidVaultInfo?.vaultId ?? null
   return (
     <nav className="flex items-center gap-2 text-[11px] flex-wrap">
       <Link
@@ -84,9 +95,17 @@ function Breadcrumb({ detail, isVault }: { detail: MarketDetail; isVault: boolea
         style={{ color: "var(--text-primary)", fontWeight: 600 }}
         className="uppercase tracking-[0.1em]"
       >
-        {detail.asset}
+        {identityLabel}
       </span>
-      {detail.subLabel && (
+      {fluidVaultId != null && (
+        <span
+          className="tabular-nums"
+          style={{ color: "var(--text-muted)" }}
+        >
+          #{fluidVaultId}
+        </span>
+      )}
+      {detail.subLabel && !isCrossAsset && (
         <span style={{ color: "var(--text-muted)" }}>· {detail.subLabel}</span>
       )}
       {isVault && detail.vaultMeta && (
@@ -453,6 +472,9 @@ function FluidLayout({ detail }: { detail: MarketDetail }) {
         reservesUsd={detail.reservesUsd}
         reservesToken={detail.reservesToken}
         reserveFactor={detail.reserveFactor}
+        loanSymbol={detail.loanAssetSymbol}
+        loanPriceUsd={detail.loanAssetPriceUsd}
+        vaultId={detail.fluidVaultInfo?.vaultId ?? null}
       />
 
       <MarketKpiCards
@@ -467,6 +489,16 @@ function FluidLayout({ detail }: { detail: MarketDetail }) {
         fee={detail.fee}
         reserveFactor={detail.reserveFactor}
       />
+
+      {/* Liquidation Penalty stat card — Fluid's most quotable single
+          number. Sits between the KPI cards and the supply APY chart so
+          a reader scanning vertically encounters it before the IRM /
+          parameter detail rows below. */}
+      {detail.fluidVaultInfo && (
+        <FluidPenaltyCallout
+          liquidationPenalty={detail.fluidVaultInfo.liquidationPenalty}
+        />
+      )}
 
       {/* Single chart row — supply APY history (DefiLlama, pool-specific).
           Borrow APY history isn't reliably derivable for Fluid because per-

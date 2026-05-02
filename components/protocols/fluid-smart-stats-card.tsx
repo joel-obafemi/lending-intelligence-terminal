@@ -23,11 +23,17 @@ const TITLE = "Smart Vault Adoption"
 
 export function FluidSmartStatsCard({ stats }: Props) {
   const cardRef = useRef<HTMLDivElement>(null)
-  const breakdown: Array<{ label: string; tvl: number; count: number; tone: string }> = [
-    { label: "Smart Collateral + Smart Debt", tvl: stats.smartBothTvlUsd, count: stats.smartBothCount, tone: "var(--accent-orange)" },
-    { label: "Smart Collateral only", tvl: stats.smartColTvlUsd, count: stats.smartColCount, tone: "var(--accent-purple)" },
-    { label: "Smart Debt only", tvl: stats.smartDebtTvlUsd, count: stats.smartDebtCount, tone: "var(--accent-blue)" },
-    { label: "Regular vaults", tvl: stats.regularTvlUsd, count: stats.regularCount, tone: "var(--text-muted)" },
+  // Four vault categories (denom = matchedTvlUsd) plus a fifth row for
+  // the lending-pool TVL that doesn't belong to a vault. Adding the row
+  // lets the reader reconcile the breakdown to the protocol-level Total
+  // Supply at the top of the page — without it the numbers stop short.
+  type Row = { label: string; tvl: number; count: number; tone: string; denom: "vault" | "total" }
+  const breakdown: Row[] = [
+    { label: "Smart Collateral + Smart Debt", tvl: stats.smartBothTvlUsd, count: stats.smartBothCount, tone: "var(--accent-orange)", denom: "vault" },
+    { label: "Smart Collateral only", tvl: stats.smartColTvlUsd, count: stats.smartColCount, tone: "var(--accent-purple)", denom: "vault" },
+    { label: "Smart Debt only", tvl: stats.smartDebtTvlUsd, count: stats.smartDebtCount, tone: "var(--accent-blue)", denom: "vault" },
+    { label: "Regular vaults", tvl: stats.regularTvlUsd, count: stats.regularCount, tone: "var(--text-muted)", denom: "vault" },
+    { label: "Lending pools (non-vault)", tvl: stats.lendingOnlyTvlUsd, count: stats.lendingOnlyPoolCount, tone: "var(--text-muted)", denom: "total" },
   ]
 
   return (
@@ -52,7 +58,7 @@ export function FluidSmartStatsCard({ stats }: Props) {
             {TITLE}
           </span>
           <span className="text-[9px] text-text-muted" style={{ letterSpacing: "0.05em" }}>
-            · share of Fluid TVL using Smart Collateral / Smart Debt
+            · share of Fluid VAULT TVL using Smart Collateral / Smart Debt
           </span>
         </div>
         <ChartActions cardRef={cardRef} title={TITLE} />
@@ -63,7 +69,7 @@ export function FluidSmartStatsCard({ stats }: Props) {
             className="text-[10px] uppercase tracking-[0.1em]"
             style={{ color: "var(--text-muted)" }}
           >
-            Smart-vault share of TVL
+            Smart-vault share of vault TVL
           </div>
           <div
             className="text-3xl font-semibold tabular-nums mt-1"
@@ -75,8 +81,16 @@ export function FluidSmartStatsCard({ stats }: Props) {
             className="text-[10px] tabular-nums mt-1"
             style={{ color: "var(--text-muted)" }}
           >
-            {formatUSD(stats.smartColTvlUsd + stats.smartDebtTvlUsd + stats.smartBothTvlUsd)} of {formatUSD(stats.totalTvlUsd)}
+            {formatUSD(stats.smartColTvlUsd + stats.smartDebtTvlUsd + stats.smartBothTvlUsd)} of {formatUSD(stats.matchedTvlUsd)} vault TVL
           </div>
+          {stats.lendingOnlyTvlUsd > 0 && (
+            <div
+              className="text-[10px] tabular-nums mt-0.5"
+              style={{ color: "var(--text-muted)" }}
+            >
+              + {formatUSD(stats.lendingOnlyTvlUsd)} in lending pools
+            </div>
+          )}
         </div>
         <div style={{ overflowX: "auto" }}>
           <table className="data-table">
@@ -84,14 +98,17 @@ export function FluidSmartStatsCard({ stats }: Props) {
               <tr>
                 <th>Category</th>
                 <th className="text-right">TVL</th>
-                <th className="text-right">Vaults</th>
+                <th className="text-right">Pools</th>
                 <th className="text-right">Share</th>
               </tr>
             </thead>
             <tbody>
               {breakdown.map((r) => {
-                const share =
-                  stats.totalTvlUsd > 0 ? (r.tvl / stats.totalTvlUsd) * 100 : 0
+                // Vault categories share-of-vault-TVL; the lending-pool
+                // row uses share-of-protocol-TVL so the column reads
+                // sensibly across both denominators.
+                const denomBase = r.denom === "vault" ? stats.matchedTvlUsd : stats.totalTvlUsd
+                const share = denomBase > 0 ? (r.tvl / denomBase) * 100 : 0
                 return (
                   <tr key={r.label}>
                     <td>
@@ -107,6 +124,11 @@ export function FluidSmartStatsCard({ stats }: Props) {
                     <td className="text-right tabular-nums">{r.count}</td>
                     <td className="text-right tabular-nums" style={{ color: r.tone }}>
                       {formatPercent(share, 1)}
+                      {r.denom === "total" && (
+                        <span className="text-[8px] ml-1" style={{ color: "var(--text-muted)" }}>
+                          of total
+                        </span>
+                      )}
                     </td>
                   </tr>
                 )

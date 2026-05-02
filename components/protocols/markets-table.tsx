@@ -68,6 +68,15 @@ function ltvLabel(arch: ProtocolDetail["architecture"]): string {
   return arch === "isolated" ? "LLTV" : "LTV"
 }
 
+/** Fluid lending-pool rows have no per-pool borrow data — borrowing happens
+ *  at the vault layer that draws from these pools. The protocol-detail
+ *  loader tags them with a "Lending pool" sub-label; we use that as the
+ *  signal to substitute "Lending only" for the otherwise-blank borrow
+ *  columns so a reader doesn't read missing data as a bug. */
+function isFluidLendingOnly(m: MarketRow): boolean {
+  return m.subLabel === "Lending pool"
+}
+
 /**
  * Build a compact list of page numbers to render in the pager. For ≤7 pages
  * show all of them; otherwise show first, last, current ±1, and ellipses.
@@ -99,17 +108,20 @@ export function MarketsTable({ architecture, color, markets, vaultIndex }: Props
   const pageRows = useMemo(() => markets.slice(start, end), [markets, start, end])
   const pages = pageList(safePage, totalPages)
 
-  // Morpho is a vault-aggregator architecture, not a single-pool lender.
-  // The "vault" rows here aggregate across underlying markets and don't
-  // expose borrow / utilization / LLTV at this layer (those properties
-  // live on the per-market detail). Render the table in vault mode for
-  // isolated-architecture protocols so the empty columns disappear and
-  // the title reads accurately.
+  // Morpho is a vault-aggregator architecture (isolated): vault rows
+  // aggregate across underlying markets, no per-row borrow / util / LLTV.
+  // Fluid is a vault-pair architecture (vault): rows are (collateral,
+  // loan) pairs and DO expose borrow + util + LLTV. Both should read as
+  // "Vaults" in the table title — only the column shape differs.
+  const isVaultLabel = architecture === "isolated" || architecture === "vault"
+  // Column layout still keys off `isolated` since that's the only one
+  // where the borrow-side columns are empty by design.
   const isVaultLayout = architecture === "isolated"
-  const tableTitle = isVaultLayout ? "Vaults" : "Markets"
+  const tableTitle = isVaultLabel ? "Vaults" : "Markets"
+  const noun = isVaultLabel ? "vaults" : "markets"
   const tableSummary =
     markets.length === 0
-      ? `No ${isVaultLayout ? "vaults" : "markets"} above the threshold`
+      ? `No ${noun} above the threshold`
       : `${start + 1}–${end} of ${markets.length}, sorted by Total Supply · click a row for details`
 
   return (
@@ -131,7 +143,7 @@ export function MarketsTable({ architecture, color, markets, vaultIndex }: Props
           <thead>
             <tr>
               <th style={{ width: "32px" }}>#</th>
-              <th>{isVaultLayout ? "Vault" : "Market"}</th>
+              <th>{isVaultLabel ? "Vault" : "Market"}</th>
               <th className="text-right">Total Supply</th>
               {!isVaultLayout && <th className="text-right">Borrowed</th>}
               {!isVaultLayout && <th className="text-right">Util</th>}
@@ -275,7 +287,19 @@ export function MarketsTable({ architecture, color, markets, vaultIndex }: Props
                 </td>
                 {!isVaultLayout && (
                   <td className="text-right tabular-nums" style={{ color: "var(--danger)" }}>
-                    {m.borrowApy != null ? formatPercent(m.borrowApy, 2) : "—"}
+                    {m.borrowApy != null ? (
+                      formatPercent(m.borrowApy, 2)
+                    ) : isFluidLendingOnly(m) ? (
+                      <span
+                        className="text-[10px] uppercase tracking-[0.05em]"
+                        style={{ color: "var(--text-muted)" }}
+                        title="Borrowing happens at the vault layer that draws from this pool, not at this row."
+                      >
+                        Lending only
+                      </span>
+                    ) : (
+                      "—"
+                    )}
                   </td>
                 )}
                 {!isVaultLayout && (

@@ -301,12 +301,28 @@ export async function fetchAllYieldPools(): Promise<YieldPool[]> {
     const lb = lbByPool.get(p.pool)
     const supplyUsd = p.totalSupplyUsd ?? lb?.totalSupplyUsd ?? null
     const borrowUsd = p.totalBorrowUsd ?? lb?.totalBorrowUsd ?? null
+    // The convention here (and everywhere downstream) is that `tvlUsd`
+    // means *unborrowed* liquidity — Available Liquidity. DefiLlama
+    // honours that for Aave V3 / Spark, but for Fluid vault pools
+    // `tvlUsd` is reported equal to `totalSupplyUsd` (i.e. it includes
+    // borrowed amounts). When we detect that shape — supply matches
+    // tvl AND there's a non-zero borrow — recompute tvlUsd as
+    // supply − borrow so Available Liquidity is consistent across
+    // protocols (bar-chart tooltips, vault detail, stat cards).
+    const rawTvlUsd = p.tvlUsd
+    const tvlUsd =
+      supplyUsd != null &&
+      borrowUsd != null &&
+      borrowUsd > 0 &&
+      Math.abs(supplyUsd - rawTvlUsd) <= Math.max(1, rawTvlUsd * 0.001)
+        ? Math.max(0, supplyUsd - borrowUsd)
+        : rawTvlUsd
     return {
       pool: p.pool,
       chain: p.chain,
       project: p.project,
       symbol: (p.symbol || "").toUpperCase(),
-      tvlUsd: p.tvlUsd,
+      tvlUsd,
       apy: p.apy,
       apyBase: p.apyBase,
       apyReward: p.apyReward,
@@ -325,6 +341,89 @@ export async function fetchAllYieldPools(): Promise<YieldPool[]> {
       underlyingTokens: p.underlyingTokens ?? null,
     }
   })
+}
+
+/**
+ * DefiLlama Coins API — instant USD price + decimals for any ERC20 by
+ * chain:address.
+ *
+ * Used by per-market detail pages that need a price but don't have one
+ * from their own on-chain reserves struct (e.g. Fluid vaults — Fluid's
+ * `oraclePriceOperate` is per-vault and needs careful interpretation per
+ * vault type, so we use DefiLlama's index price instead).
+ *
+ * Returns null when DefiLlama doesn't index the token or the request
+ * fails — callers should fall back to "—" rather than rendering 0.
+ */
+export interface TokenInfo {
+  priceUsd: number
+  decimals: number
+  symbol: string
+}
+
+/** Native-ETH placeholder address used by Fluid (ERC-7528) and the
+ *  zero-address convention used by some other protocols. We treat both
+ *  as native ETH and route to WETH for pricing. */
+const ETH_SENTINELS = new Set([
+  "0x0000000000000000000000000000000000000000",
+  "0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee",
+])
+const WETH_ADDRESS = "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2"
+
+export async function fetchTokenInfo(
+  chain: string,
+  address: string,
+): Promise<TokenInfo | null> {
+  if (!address) return null
+  const lower = address.toLowerCase()
+  // Map ETH sentinels to WETH so the Coins API resolves the price.
+  // Decimals match (18 / 18) so the returned info is correct for native
+  // ETH on the consumer side too.
+  const lookupAddr = ETH_SENTINELS.has(lower) ? WETH_ADDRESS : lower
+  const key = `${chain.toLowerCase()}:${lookupAddr}`
+  try {
+    const res = await fetch(
+      `https://coins.llama.fi/prices/current/${encodeURIComponent(key)}`,
+      { cache: "no-store" },
+    )
+    if (!res.ok) return null
+    const json = (await res.json()) as {
+      coins?: Record<string, { price?: number; decimals?: number; symbol?: string }>
+    }
+    const entry = json.coins?.[key]
+    if (!entry) return null
+    const price = entry.price
+    const decimals = entry.decimals
+    if (
+      typeof price !== "number" ||
+      !Number.isFinite(price) ||
+      price <= 0 ||
+      typeof decimals !== "number" ||
+      !Number.isFinite(decimals) ||
+      decimals < 0
+    ) {
+      return null
+    }
+    return {
+      priceUsd: price,
+      decimals: Math.floor(decimals),
+      symbol: entry.symbol ?? "",
+    }
+  } catch (err: any) {
+    console.error("[defillama] fetchTokenInfo failed for", key, ":", err?.message ?? err)
+    return null
+  }
+}
+
+/** Convenience: USD price only. Backwards-compatible with the previous
+ *  `fetchTokenPriceUsd` shape — callers that don't need decimals can
+ *  use this. */
+export async function fetchTokenPriceUsd(
+  chain: string,
+  address: string,
+): Promise<number | null> {
+  const info = await fetchTokenInfo(chain, address)
+  return info?.priceUsd ?? null
 }
 
 export async function fetchYieldChart(poolId: string): Promise<YieldChartPoint[]> {

@@ -73,17 +73,35 @@ function buildInsight(
     const latest = points[points.length - 1]
     if (Number.isFinite(latest.value)) latestBySlug.push({ slug, value: latest.value })
   }
-  if (latestBySlug.length < 2) return null
+  if (latestBySlug.length === 0) return null
   latestBySlug.sort((a, b) => b.value - a.value)
   const top = latestBySlug[0]
-  const second = latestBySlug[1]
   const topName = PROTOCOL_BY_SLUG[top.slug]?.name ?? top.slug
+
+  // Single-protocol fallback — still useful: tells the reader nobody else
+  // lists this asset right now.
+  if (latestBySlug.length === 1) {
+    return `${topName} is the only protocol with ${asset} supply data right now (${top.value.toFixed(2)}%).`
+  }
+
+  const second = latestBySlug[1]
   const secondName = PROTOCOL_BY_SLUG[second.slug]?.name ?? second.slug
   const spreadBps = Math.round((top.value - second.value) * 100)
+
   if (spreadBps < 1) {
     return `${asset} supply rates are converged across protocols — within 1 bp at the latest read.`
   }
-  return `Best supply venue right now: ${topName} at ${top.value.toFixed(2)}% (+${spreadBps} bps over ${secondName}).`
+
+  // When the leader's APY is at least 5× the runner-up AND the runner-up is
+  // effectively zero (<5 bps), surface the "only meaningful APY" callout.
+  // Catches the wstETH case where Fluid actively pays for borrowed
+  // collateral and others sit at parking-lot rates.
+  const baseInsight = `Best supply venue right now: ${topName} at ${top.value.toFixed(2)}% (+${spreadBps} bps over ${secondName} at ${second.value.toFixed(2)}%).`
+  const meaningfullyAhead = top.value > 0 && top.value >= second.value * 5 && second.value < 0.05
+  if (meaningfullyAhead) {
+    return `${baseInsight} ${topName} is the only protocol where ${asset} lenders earn meaningful APY — a function of being one of the few venues where ${asset} is actively borrowed.`
+  }
+  return baseInsight
 }
 
 export function MarketCrossProtocolRateChart({
@@ -105,9 +123,20 @@ export function MarketCrossProtocolRateChart({
   )
 
   if (slugs.length < 2 || data.length < 2) {
-    // No siblings (or insufficient data) — the existing per-market
-    // history chart already shows the current protocol's rate. Render
-    // nothing rather than a single-line dupe of that view.
+    // No siblings (or insufficient data) — the chart itself would just
+    // dupe the per-market supply history above. Skip the chart but keep
+    // the insight line if we have one ("Fluid is the only protocol with
+    // wstETH supply data" still informs the reader).
+    if (insight) {
+      return (
+        <p
+          className="text-[12px] leading-relaxed px-1"
+          style={{ color: "var(--text-secondary)" }}
+        >
+          {insight}
+        </p>
+      )
+    }
     return null
   }
 

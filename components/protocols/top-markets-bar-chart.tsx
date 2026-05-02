@@ -45,6 +45,10 @@ interface Props {
    *  Aave V3 / Spark / Fluid pages use ["available", "borrows"]; Morpho
    *  uses just ["supply"] since vault rows don't expose borrowed USD. */
   views?: View[]
+  /** Architecture-aware noun for chart title and bar tooltip. Defaults
+   *  to "Markets" — Morpho / Fluid pass "Vaults" so a Fluid reader
+   *  doesn't see "Top Markets" right above a "Vaults" table. */
+  itemNoun?: "Markets" | "Vaults"
 }
 
 function valueFor(m: MarketRow, view: View): number {
@@ -117,6 +121,7 @@ export function TopMarketsBarChart({
   topN = 10,
   defaultView = "supply",
   views = ["supply", "available", "borrows"],
+  itemNoun = "Markets",
 }: Props) {
   const [view, setView] = useState<View>(defaultView)
   const colors = useThemeColors()
@@ -137,7 +142,7 @@ export function TopMarketsBarChart({
   // Dynamic chart height — same trick as the multi-chain footprint chart so
   // y-axis labels don't get squeezed when topN is large.
   const chartHeight = Math.max(280, data.length * 28 + 40)
-  const title = `${protocolName} · Top Markets by ${VIEW_LABEL[view]}`
+  const title = `${protocolName} · Top ${itemNoun} by ${VIEW_LABEL[view]}`
 
   return (
     <div

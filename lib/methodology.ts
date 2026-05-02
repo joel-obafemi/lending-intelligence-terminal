@@ -209,6 +209,18 @@ export const METHODOLOGY: Record<string, MethodologyEntry> = {
     source: "Morpho blue-api.morpho.org via lib/morpho-api.ts.",
   },
 
+  // ─── Fluid protocol-specific lens ───────────────────────────────────
+  "fluid-capital-efficiency": {
+    text:
+      "Total active borrows ÷ total supplied (TVL + borrows) per protocol on Ethereum. Reads as 'cents of debt supported per dollar of capital deposited'. Fluid's higher LLTVs and smart-collateral mechanic typically push this ratio above peers. Excludes wrapped lending-pool fTokens that aren't pair-borrowable.",
+    source: "DefiLlama /protocol/<slug> chainTvls.Ethereum + Ethereum-borrowed.",
+  },
+  "fluid-liquidation-penalty": {
+    text:
+      "Effective liquidation penalty paid out per protocol over the lookback window: Σ(collateral_seized − debt_repaid) ÷ Σ(debt_repaid), weighted by event size. This is what borrowers actually paid when liquidated — strictly empirical, not the headline parameter. Fluid advertises ~0.10%; this chart makes the gap to other protocols measurable.",
+    source: "Liquidator-economy DB · liquidation_events table.",
+  },
+
   // ─── Spark protocol-specific lens ───────────────────────────────────
   "spark-yield-panel": {
     text:

@@ -10,6 +10,10 @@ import {
   type MorphoMarketRow,
 } from "@/lib/morpho-api"
 import { loadFluidSmartVaultStats, type FluidSmartVaultStats } from "@/lib/fluid-stats"
+import {
+  loadFluidComparisons,
+  type FluidComparisonResponse,
+} from "@/lib/fluid-comparisons"
 import { PROTOCOLS, PROTOCOL_BY_SLUG } from "@/lib/protocols"
 import { ProtocolTabs } from "@/components/protocols/protocol-tabs"
 import { ProtocolStatCards } from "@/components/protocols/protocol-stat-cards"
@@ -20,6 +24,7 @@ import { MorphoCuratorConcentration } from "@/components/protocols/morpho-curato
 import { MorphoUncuratedCallout } from "@/components/protocols/morpho-uncurated-callout"
 import { MorphoMarketsTable } from "@/components/protocols/morpho-markets-table"
 import { FluidSmartStatsCard } from "@/components/protocols/fluid-smart-stats-card"
+import { FluidComparisons } from "@/components/protocols/fluid-comparisons"
 import { AaveMultiChainFootprint } from "@/components/protocols/aave-multi-chain-footprint"
 import { AaveIsolationModeWatch } from "@/components/protocols/aave-isolation-mode-watch"
 import { AaveSafetyModule } from "@/components/protocols/aave-safety-module"
@@ -74,6 +79,7 @@ export default async function ProtocolsPage({ searchParams }: { searchParams: Se
     detail,
     curators,
     fluidStats,
+    fluidComparisons,
     safetyModule,
     aaveReservesForPrice,
     sparkYieldPanel,
@@ -93,6 +99,12 @@ export default async function ProtocolsPage({ searchParams }: { searchParams: Se
           return null as FluidSmartVaultStats | null
         })
       : Promise.resolve(null as FluidSmartVaultStats | null),
+    slug === "fluid"
+      ? loadFluidComparisons().catch((err) => {
+          console.error("[protocols] fluid comparisons failed:", err?.message ?? err)
+          return null as FluidComparisonResponse | null
+        })
+      : Promise.resolve(null as FluidComparisonResponse | null),
     slug === "aave-v3"
       ? loadSafetyModuleStatus().catch((err) => {
           console.error("[protocols] safety module load failed:", err?.message ?? err)
@@ -220,6 +232,17 @@ export default async function ProtocolsPage({ searchParams }: { searchParams: Se
         <FluidSmartStatsCard stats={fluidStats} />
       )}
 
+      {/* Fluid-only: Capital Efficiency + Liquidation Penalty cross-protocol
+          comparison. Both modules anchor Fluid's pitch in numbers measurable
+          against Aave V3 / Spark / Morpho. */}
+      {slug === "fluid" && fluidComparisons && (
+        <FluidComparisons
+          efficiency={fluidComparisons.efficiency}
+          liquidationPenalty={fluidComparisons.liquidationPenalty}
+          liquidationPeriodDays={fluidComparisons.liquidationPeriodDays}
+        />
+      )}
+
       {/* Spark-only: Stablecoin Yield Cascade — captures the Sky → Spark
           → T-bill story that's specific to Spark's role as Sky's
           on-chain distribution arm. */}
@@ -296,6 +319,13 @@ export default async function ProtocolsPage({ searchParams }: { searchParams: Se
             // USD, so the Borrows view would be empty. Limit Morpho to the
             // supply / available filters.
             slug === "morpho-blue" ? ["supply", "available"] : ["supply", "available", "borrows"]
+          }
+          // Fluid + Morpho rows are vaults, not markets — keep the
+          // chart's noun consistent with the table beneath it.
+          itemNoun={
+            detail.architecture === "isolated" || detail.architecture === "vault"
+              ? "Vaults"
+              : "Markets"
           }
         />
       )}

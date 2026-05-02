@@ -200,15 +200,25 @@ function utilization(totalSupplyUsd: number | null | undefined, totalBorrowUsd: 
   return (totalBorrowUsd / totalSupplyUsd) * 100
 }
 
-function toMarketRow(p: YieldPool, arch: ProtocolConfig["architecture"]): MarketRow {
+function toMarketRow(
+  p: YieldPool,
+  arch: ProtocolConfig["architecture"],
+  slug: string,
+  allPools: YieldPool[],
+): MarketRow {
   // Some Fluid pools have reward APY (e.g. FLUID-token incentives); display both.
   const hasRewards = (p.apyReward ?? 0) > 0
   // Sub-label: for Morpho the symbol IS the vault name (e.g. steakUSDC); try
   // to infer the underlying loan asset from the ticker prefix. For pool-based
-  // protocols, fall back to `poolMeta` (e.g. "E-mode: stablecoins").
+  // protocols, fall back to `poolMeta` (e.g. "E-mode: stablecoins"). For
+  // Fluid (vaults), surface the loan asset and a "Lending pool" tag for
+  // single-underlying lending-layer fTokens — so duplicate symbols
+  // disambiguate by what they're actually paired with.
   let subLabel: string | undefined
   if (arch === "isolated") {
     subLabel = morphoVaultSubLabel(p.symbol)
+  } else if (slug === "fluid") {
+    subLabel = fluidPoolSubLabel(p, allPools)
   } else if (p.poolMeta && p.poolMeta.length > 0) {
     subLabel = p.poolMeta
   }
@@ -287,7 +297,11 @@ function morphoVaultSubLabel(symbol: string): string | undefined {
  *  gets a deployment tag added to its `subLabel`. Rows whose poolMeta
  *  doesn't match a known tag default to "Core".
  */
-function disambiguateDuplicateAssets(markets: MarketRow[]): void {
+function disambiguateDuplicateAssets(markets: MarketRow[], slug: string): void {
+  // Fluid rows are already sub-labelled with their loan asset / lending-
+  // pool tag via `fluidPoolSubLabel` — Aave V3's deployment-tag heuristic
+  // doesn't apply.
+  if (slug === "fluid") return
   const counts = new Map<string, number>()
   for (const m of markets) {
     const key = m.asset.toUpperCase()
@@ -304,6 +318,47 @@ function disambiguateDuplicateAssets(markets: MarketRow[]): void {
         : `${tag} · ${m.subLabel}`
       : tag
   }
+}
+
+/** Build a Fluid-specific row sub-label.
+ *
+ *  Two cases:
+ *   - **Two underlyings** (vault): the row is a `(collateral, loan)` pair.
+ *     Render the loan symbol so duplicate "WSTETH" rows distinguish by
+ *     what they're borrowing against.
+ *   - **One underlying** (lending pool): the row is a Liquidity Layer
+ *     fToken — supplying only, no per-vault borrow side. Tag as
+ *     "Lending pool" so the missing borrow columns aren't mistaken for
+ *     a data error.
+ */
+function fluidPoolSubLabel(p: YieldPool, allPools: YieldPool[]): string | undefined {
+  const tokens = p.underlyingTokens ?? []
+  if (tokens.length >= 2) {
+    const loanAddr = tokens[1]
+    const loanSym = resolveLoanSymbol(loanAddr, allPools)
+    return loanSym ? `vs ${loanSym}` : undefined
+  }
+  if (tokens.length === 1) return "Lending pool"
+  return undefined
+}
+
+/** Look up an asset symbol by its address by scanning DefiLlama pools where
+ *  it appears as `underlyingTokens[0]` (the primary underlying). This is a
+ *  zero-cost reverse lookup that doesn't need an ERC20 metadata call. */
+function resolveLoanSymbol(address: string, allPools: YieldPool[]): string | null {
+  if (!address) return null
+  const target = address.toLowerCase()
+  if (
+    target === "0x0000000000000000000000000000000000000000" ||
+    target === "0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee"
+  )
+    return "ETH"
+  for (const p of allPools) {
+    if (p.chain !== "Ethereum") continue
+    const primary = p.underlyingTokens?.[0]?.toLowerCase()
+    if (primary === target) return p.symbol
+  }
+  return null
 }
 
 function inferDeploymentTag(subLabel: string | undefined): string {
@@ -388,8 +443,10 @@ export async function loadProtocolDetail(slug: string): Promise<ProtocolDetail |
     .filter((p) => totalSupplyOf(p) >= minTvl)
     .sort((a, b) => totalSupplyOf(b) - totalSupplyOf(a))
 
-  const markets = visible.slice(0, MAX_ROWS_PER_PROTOCOL).map((p) => toMarketRow(p, cfg.architecture))
-  disambiguateDuplicateAssets(markets)
+  const markets = visible
+    .slice(0, MAX_ROWS_PER_PROTOCOL)
+    .map((p) => toMarketRow(p, cfg.architecture, slug, allPools))
+  disambiguateDuplicateAssets(markets, slug)
 
   // `tvlUsd` in DefiLlama's /pools is UNBORROWED liquidity. Utilization
   // must therefore use supplied = unborrowed + borrowed as the denominator,

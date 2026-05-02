@@ -21,6 +21,17 @@ interface Props {
   reservesToken: number | null
   /** Reserve factor 0-1 fraction, used to caption the Reserves card. */
   reserveFactor: number | null
+  /** Optional loan asset for cross-asset vaults (Fluid wstETH/ETH etc).
+   *  When set AND different from `asset`, the hero swaps to a paired
+   *  layout: identity reads "<collateral> / <loan>", borrow tokens are
+   *  denominated in `loanSymbol`, and the third stat becomes "Net
+   *  Collateral" (supply USD − borrow USD) since "Available Liquidity"
+   *  doesn't apply when supply and borrow are different assets. */
+  loanSymbol?: string | null
+  loanPriceUsd?: number | null
+  /** Optional vault id to show next to the pair (Fluid vaults are
+   *  numbered: #13, #14…). Surfaced after the pair when set. */
+  vaultId?: number | null
 }
 
 /** Compact token-amount formatter — "14.79M USDC", "2.13K WSTETH". */
@@ -126,12 +137,31 @@ export function MarketHeroStats({
   reservesUsd,
   reservesToken,
   reserveFactor,
+  loanSymbol,
+  loanPriceUsd,
+  vaultId,
 }: Props) {
   const typeColor = ASSET_TYPE_COLOR[assetType]
   const typeLabel = ASSET_TYPE_LABEL[assetType]
+  // Cross-asset vault when caller provides a loan asset distinct from
+  // the collateral. Fluid wstETH/ETH lands here; same-asset Fluid vaults
+  // (USDC supplied, USDC borrowed) take the standard layout.
+  const isCrossAsset = !!loanSymbol && loanSymbol.toUpperCase() !== asset.toUpperCase()
   // For vaults, "Total Borrowed" really means "Currently Deployed into markets".
   // Keep the label uniform but disambiguate via the secondary line if needed.
-  const borrowLabel = protocolArchitecture === "isolated" ? "Currently Deployed" : "Total Borrow"
+  const borrowLabel =
+    protocolArchitecture === "isolated"
+      ? "Currently Deployed"
+      : isCrossAsset
+      ? "Loan Borrowed"
+      : "Total Borrow"
+  const supplyLabel = isCrossAsset ? "Collateral Supplied" : "Total Supply"
+  const thirdLabel = isCrossAsset ? "Net Collateral" : "Available Liquidity"
+  const thirdValueUsd = isCrossAsset
+    ? Math.max(0, totalSupplyUsd - totalBorrowUsd)
+    : availableLiquidityUsd
+  // Token amount for borrow side: use loan symbol on cross-asset vaults.
+  const borrowSymbol = isCrossAsset && loanSymbol ? loanSymbol : asset
 
   return (
     <div className="tui-card bg-card-bg border border-card-border rounded overflow-hidden">
@@ -142,9 +172,18 @@ export function MarketHeroStats({
       >
         <div className="flex items-center gap-3 flex-wrap">
           <span className="text-2xl font-semibold" style={{ color: "var(--text-primary)" }}>
-            {asset}
+            {isCrossAsset ? `${asset} / ${loanSymbol}` : asset}
           </span>
-          {subLabel && (
+          {vaultId != null && (
+            <span
+              className="text-[11px] tabular-nums"
+              style={{ color: "var(--text-muted)" }}
+              title={`Fluid vault id ${vaultId}`}
+            >
+              #{vaultId}
+            </span>
+          )}
+          {subLabel && !isCrossAsset && (
             <span className="text-[11px]" style={{ color: "var(--text-muted)" }}>
               {subLabel}
             </span>
@@ -182,7 +221,11 @@ export function MarketHeroStats({
             {chain}
           </span>
           <span className="text-[11px] tabular-nums" style={{ color: "var(--text-muted)" }}>
-            {formatPrice(underlyingPriceUsd)}
+            {/* On cross-asset vaults show both prices (collateral / loan)
+                so a reader can see the per-side oracle price. */}
+            {isCrossAsset && loanPriceUsd != null
+              ? `${formatPrice(underlyingPriceUsd)} / ${formatPrice(loanPriceUsd)}`
+              : formatPrice(underlyingPriceUsd)}
           </span>
         </div>
       </div>
@@ -193,19 +236,28 @@ export function MarketHeroStats({
         style={{ padding: "20px" }}
       >
         <Stat
-          label="Total Supply"
+          label={supplyLabel}
           usd={totalSupplyUsd}
           tokenAmount={formatTokenAmount(totalSupplyToken, asset)}
         />
         <Stat
           label={borrowLabel}
           usd={totalBorrowUsd}
-          tokenAmount={formatTokenAmount(totalBorrowToken, asset)}
+          tokenAmount={formatTokenAmount(totalBorrowToken, borrowSymbol)}
         />
         <Stat
-          label="Available Liquidity"
-          usd={availableLiquidityUsd}
-          tokenAmount={formatTokenAmount(availableLiquidityToken, asset)}
+          label={thirdLabel}
+          usd={thirdValueUsd}
+          tokenAmount={
+            isCrossAsset
+              ? null
+              : formatTokenAmount(availableLiquidityToken, asset)
+          }
+          context={
+            isCrossAsset
+              ? "Supplied USD − Borrowed USD. Available borrow capacity is rate-limit gated by the Liquidity Layer; see Vault Info."
+              : undefined
+          }
         />
         <Stat
           label="Reserves"

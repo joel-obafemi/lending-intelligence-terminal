@@ -22,6 +22,7 @@ import {
   fetchAllYieldPools,
   fetchProtocolHistory,
   fetchYieldChart,
+  fetchTokenInfo,
   type YieldPool,
   type YieldChartPoint,
 } from "./defillama"
@@ -99,6 +100,12 @@ export interface MarketDetail {
   availableLiquidityToken: number | null
   underlyingPriceUsd: number | null
   underlyingDecimals: number | null
+  /** Loan-side asset symbol/price for cross-asset vaults (Fluid wstETH/
+   *  ETH etc.). Null on same-asset markets. The hero uses these to flip
+   *  to a paired layout where Borrow tokens are denominated in the loan
+   *  asset rather than the supply asset. */
+  loanAssetSymbol: string | null
+  loanAssetPriceUsd: number | null
   /** Reserves (supply-side fee accrual): Morpho exposes via `fee`-derived
    *  computation; Aave needs on-chain reads. Null when unavailable. */
   reservesUsd: number | null
@@ -557,6 +564,8 @@ async function loadFromDefillama(
     availableLiquidityToken: null,
     underlyingPriceUsd: null,
     underlyingDecimals: null,
+    loanAssetSymbol: null,
+    loanAssetPriceUsd: null,
     reservesUsd: null,
     reservesToken: null,
 
@@ -771,14 +780,24 @@ async function loadFromFluid(
   })
   if (!vault) return null
 
-  // DefiLlama is still authoritative for live USD totals + APYs. We only
-  // overlay risk params + caps from on-chain.
-  const base = await loadFromDefillama(pool, cfg, allPools)
+  // DefiLlama gives us the supply APY chart + a baseline snapshot, but
+  // for Fluid the on-chain `getVaultsEntireData()` is fresher than
+  // DefiLlama's pool-summary index — borrowed amount in particular can
+  // drift 5%+. Pull collateral + loan token info (price + decimals)
+  // from DefiLlama Coins so we can re-denominate raw on-chain totals
+  // into accurate USD that matches Fluid's own UI within rounding.
+  const [base, collateralInfo, loanInfo] = await Promise.all([
+    loadFromDefillama(pool, cfg, allPools),
+    fetchTokenInfo("ethereum", collateral).catch(() => null),
+    fetchTokenInfo("ethereum", loan).catch(() => null),
+  ])
   // Resolve the loan-asset symbol for the Vault Info panel by matching the
   // loan-token address against any DefiLlama pool that has that as its
-  // PRIMARY underlying. This avoids a separate ERC20 metadata call.
-  const loanSymbol = resolveSymbolFromPools(allPools, loan) ?? "?"
-  return applyFluidVault(base, vault, pool.symbol, loanSymbol)
+  // PRIMARY underlying. Falls back to the Coins-API symbol when nothing
+  // in DefiLlama Yields holds the address as a primary underlying.
+  const loanSymbol =
+    resolveSymbolFromPools(allPools, loan) ?? loanInfo?.symbol ?? "?"
+  return applyFluidVault(base, vault, pool.symbol, loanSymbol, collateralInfo, loanInfo)
 }
 
 /** Look up an asset symbol by its address by scanning DefiLlama pools where
@@ -803,25 +822,55 @@ function applyFluidVault(
   vault: FluidVaultLive,
   collateralSymbol: string,
   loanSymbol: string,
+  collateralInfo: { priceUsd: number; decimals: number; symbol: string } | null,
+  loanInfo: { priceUsd: number; decimals: number; symbol: string } | null,
 ): MarketDetail {
-  // Caps in USD: derive by ratio against DefiLlama's total. If `totalSupplyRaw`
-  // is 0, we can't infer USD, so leave caps as null even when raw>0.
-  const supplyRatio =
-    vault.totalSupplyRaw > 0n
-      ? Number(vault.supplyCapRaw) / Number(vault.totalSupplyRaw)
+  // Re-denominate the on-chain raw totals into USD using fresh prices.
+  // When either side fails to load (rare — token not indexed by
+  // DefiLlama Coins) we keep DefiLlama's pool-summary number for that
+  // side, since that's still better than zero.
+  function toTokens(raw: bigint, decimals: number): number {
+    // Raw values can exceed Number.MAX_SAFE_INTEGER; convert via string
+    // and divide as a float so we don't lose precision on >2^53.
+    return Number(raw) / 10 ** decimals
+  }
+  const onChainSupplyToken =
+    collateralInfo != null ? toTokens(vault.totalSupplyRaw, collateralInfo.decimals) : null
+  const onChainBorrowToken =
+    loanInfo != null ? toTokens(vault.totalBorrowRaw, loanInfo.decimals) : null
+  const onChainSupplyUsd =
+    onChainSupplyToken != null && collateralInfo
+      ? onChainSupplyToken * collateralInfo.priceUsd
       : null
-  const borrowRatio =
-    vault.totalBorrowRaw > 0n
-      ? Number(vault.borrowCapRaw) / Number(vault.totalBorrowRaw)
+  const onChainBorrowUsd =
+    onChainBorrowToken != null && loanInfo
+      ? onChainBorrowToken * loanInfo.priceUsd
       : null
-  const supplyCapUsd =
-    vault.supplyCapRaw > 0n && supplyRatio != null && base.totalSupplyUsd > 0
-      ? supplyRatio * base.totalSupplyUsd
+  // Withdrawable / borrowable token amounts come from the Liquidity Layer
+  // rate-limit. Convert to USD with the same fresh prices when available.
+  const withdrawableToken =
+    collateralInfo != null
+      ? toTokens(vault.withdrawableRaw, collateralInfo.decimals)
       : null
-  const borrowCapUsd =
-    vault.borrowCapRaw > 0n && borrowRatio != null && base.totalBorrowUsd > 0
-      ? borrowRatio * base.totalBorrowUsd
+  const withdrawableUsd =
+    withdrawableToken != null && collateralInfo
+      ? withdrawableToken * collateralInfo.priceUsd
       : null
+  const totalSupplyUsd = onChainSupplyUsd ?? base.totalSupplyUsd
+  const totalBorrowUsd = onChainBorrowUsd ?? base.totalBorrowUsd
+  const utilizationPct =
+    totalSupplyUsd > 0 ? (totalBorrowUsd / totalSupplyUsd) * 100 : null
+  // Fluid's `withdrawLimit` / `borrowLimit` from the Liquidity Layer are
+  // *rate-limit throttles* (how much can be withdrawn or borrowed before
+  // the layer throttles further activity), NOT absolute caps in the Aave
+  // sense. Surfacing them as "Supply Cap" / "Borrow Cap" produces nonsense
+  // readings — e.g. a vault with $140M supply showing a $70M "cap" because
+  // the current throttle window is half its supply.
+  //
+  // Until we expose a Fluid-native "rate-limit" view, leave caps null so
+  // the parameters card renders "—" rather than mislabelling.
+  const supplyCapUsd: number | null = null
+  const borrowCapUsd: number | null = null
 
   // NOTE: We deliberately do NOT use the derived borrow-APY history for
   // Fluid. The derivation assumes supplyAPY ≈ borrowAPY × util × (1−RF),
@@ -841,11 +890,26 @@ function applyFluidVault(
     // Fluid's `borrowFee` is the protocol cut on borrow interest — same role
     // as Aave's reserve factor. Map directly.
     reserveFactor: vault.borrowFee > 0 ? vault.borrowFee : null,
-    // Caps — token units come straight from on-chain; USD is the derived ratio.
-    supplyCapToken: vault.supplyCapRaw > 0n ? Number(vault.supplyCapRaw) : null,
-    borrowCapToken: vault.borrowCapRaw > 0n ? Number(vault.borrowCapRaw) : null,
+    // Fluid's on-chain "limits" are rate-throttles, not absolute caps;
+    // null both the token and USD shapes (see comment above).
+    supplyCapToken: null,
+    borrowCapToken: null,
     supplyCapUsd,
     borrowCapUsd,
+    // Re-denominated live snapshot — match Fluid's own UI within
+    // rounding. Falls back to DefiLlama's index value when the Coins
+    // lookup fails (rare — usually only for brand-new isolated assets).
+    totalSupplyUsd,
+    totalBorrowUsd,
+    availableLiquidityUsd: withdrawableUsd ?? base.availableLiquidityUsd,
+    totalSupplyToken: onChainSupplyToken,
+    totalBorrowToken: onChainBorrowToken,
+    availableLiquidityToken: withdrawableToken,
+    utilizationPct,
+    underlyingPriceUsd: collateralInfo?.priceUsd ?? null,
+    underlyingDecimals: collateralInfo?.decimals ?? null,
+    loanAssetSymbol: loanSymbol,
+    loanAssetPriceUsd: loanInfo?.priceUsd ?? null,
     borrowApyHistory: [],
     utilizationHistory: [],
     hasBorrowHistory: false,
@@ -990,6 +1054,8 @@ function morphoVaultToDetail(
     availableLiquidityToken: priceUsd && priceUsd > 0 ? v.liquidityUsd / priceUsd : null,
     underlyingPriceUsd: priceUsd,
     underlyingDecimals: v.asset.decimals,
+    loanAssetSymbol: null,
+    loanAssetPriceUsd: null,
     reservesUsd,
     reservesToken: priceUsd && priceUsd > 0 ? reservesUsd / priceUsd : null,
 

@@ -27,12 +27,19 @@ function normalize(addr: string | undefined): string {
 export interface FluidSmartVaultStats {
   /** Number of vaults that returned from `getVaultsEntireData()`. */
   totalVaults: number
-  /** USD TVL we successfully matched between DefiLlama + on-chain. */
+  /** USD TVL we successfully matched between DefiLlama + on-chain
+   *  (i.e. vault-based TVL — the smart-vault headline denominator). */
   matchedTvlUsd: number
-  /** Total Fluid TVL per DefiLlama (used as the denominator when one or two
-   *  vaults didn't match). Falls back to `matchedTvlUsd` when DefiLlama has
-   *  the same coverage as on-chain. */
+  /** Total Fluid TVL across every DefiLlama Fluid pool on Ethereum,
+   *  including the lending-pool side that isn't vault-classified. Equal
+   *  to `matchedTvlUsd + lendingOnlyTvlUsd` (modulo rounding). Use this
+   *  when reconciling against the protocol-page Total Supply. */
   totalTvlUsd: number
+  /** Residual TVL on DefiLlama Fluid pools that don't pair to a vault
+   *  on-chain — i.e. Liquidity Layer / DEX-mode lending pools. */
+  lendingOnlyTvlUsd: number
+  /** Number of DefiLlama Fluid pools without an on-chain vault pair. */
+  lendingOnlyPoolCount: number
 
   /** TVL in vaults flagged `isSmartCol`. */
   smartColTvlUsd: number
@@ -49,11 +56,12 @@ export interface FluidSmartVaultStats {
   smartBothCount: number
   regularCount: number
 
-  /** % of Fluid TVL in vaults with at least one smart flag. */
+  /** % of vault TVL in vaults with at least one smart flag (denom =
+   *  matchedTvlUsd, i.e. vault-based TVL only). */
   smartAnyPct: number
-  /** % of Fluid TVL in pure smart-collateral vaults. */
+  /** % of vault TVL in pure smart-collateral vaults. */
   smartColPct: number
-  /** % of Fluid TVL in pure smart-debt vaults. */
+  /** % of vault TVL in pure smart-debt vaults. */
   smartDebtPct: number
 }
 
@@ -119,13 +127,21 @@ export async function loadFluidSmartVaultStats(): Promise<FluidSmartVaultStats |
   let smartBothTvlUsd = 0
   let regularTvlUsd = 0
   let matchedTvlUsd = 0
+  let lendingOnlyTvlUsd = 0
+  let lendingOnlyPoolCount = 0
 
   for (const p of fluidPools) {
     const col = p.underlyingTokens?.[0] ?? ""
     const loan = p.underlyingTokens?.[1] ?? ""
     const flags = flagsByPair.get(pairKey(col, loan))
-    if (!flags) continue  // Unmatched — typically a Liquidity-Layer-only fToken.
     const tvl = poolTvl(p)
+    if (!flags) {
+      // Unmatched — typically a Liquidity-Layer-only fToken (lending
+      // pool deposits that vaults borrow from).
+      lendingOnlyTvlUsd += tvl
+      lendingOnlyPoolCount += 1
+      continue
+    }
     matchedTvlUsd += tvl
     if (flags.isSmartCol && flags.isSmartDebt) smartBothTvlUsd += tvl
     else if (flags.isSmartCol) smartColTvlUsd += tvl
@@ -145,18 +161,21 @@ export async function loadFluidSmartVaultStats(): Promise<FluidSmartVaultStats |
     else regularCount += 1
   }
 
-  // Use the LARGER of (DefiLlama total, matched total) as the denominator —
-  // matched ≤ total, but DefiLlama's pool list can include rows we couldn't
-  // join (Liquidity-Layer-only fTokens). Either way we're showing the share
-  // of Fluid TVL that's verifiably smart vs. the rest.
-  const denom = Math.max(totalTvlUsd, matchedTvlUsd)
+  // Smart-vault percentage uses VAULT TVL as the denominator (matched
+  // vault pools only) so the headline reads "of vault-based capital, X%
+  // is in smart vaults". The lending-pool residual is exposed
+  // separately so the table reconciles to the protocol-level total.
+  const vaultDenom = matchedTvlUsd
   const smartAnyTvl = smartColTvlUsd + smartDebtTvlUsd + smartBothTvlUsd
-  const pct = (n: number) => (denom > 0 ? (n / denom) * 100 : 0)
+  const pct = (n: number) => (vaultDenom > 0 ? (n / vaultDenom) * 100 : 0)
+  const total = matchedTvlUsd + lendingOnlyTvlUsd
 
   return {
     totalVaults: vaults.length,
     matchedTvlUsd,
-    totalTvlUsd: denom,
+    totalTvlUsd: total > 0 ? total : totalTvlUsd,
+    lendingOnlyTvlUsd,
+    lendingOnlyPoolCount,
     smartColTvlUsd,
     smartDebtTvlUsd,
     smartBothTvlUsd,
