@@ -20,6 +20,7 @@ import {
   formatBucketLabel,
   formatBucketTooltipLabel,
   rangeToBucket,
+  type BucketType,
 } from "@/lib/time-bucketing"
 import type { OverviewTimeseriesPoint } from "@/lib/overview"
 
@@ -28,18 +29,36 @@ interface Props {
   data: OverviewTimeseriesPoint[]
   defaultRange?: TimeRange
   methodologyKey?: string
+  /** Optional override on the per-bucket display limit. Default month
+   *  view shows 24 buckets — pass `{ month: 12 }` to render the trailing
+   *  12 months instead. Only the keys listed are overridden; others keep
+   *  the global default. */
+  bucketLimits?: Partial<Record<BucketType, number>>
+  /** When true, the chart header shows a Dollars ⇄ Share-of-sector toggle
+   *  that renormalizes each bucket so protocol values sum to 100%. Useful
+   *  on protocol-stacked charts dominated by one party (Aave V3 in fees).
+   *  Defaults to dollars; the user picks Share when they want share
+   *  dynamics. */
+  enableShareToggle?: boolean
 }
 
-function RevenueTooltip({ active, payload, bucket }: any) {
+function RevenueTooltip({ active, payload, bucket, shareMode, originals }: any) {
   if (!active || !payload?.length) return null
   const point = payload[0]?.payload as OverviewTimeseriesPoint | undefined
   if (!point) return null
 
+  // In share-mode the rendered bars are percentages, but the tooltip
+  // should still show the underlying dollar values (looked up from the
+  // pre-renormalization series).
+  const orig = (originals as Map<number, OverviewTimeseriesPoint> | undefined)?.get(
+    point.timestamp,
+  )
+  const source = orig ?? point
   const rows = PROTOCOLS.map((p) => ({
     slug: p.slug,
     name: p.name,
     color: p.color,
-    value: (point[p.slug] as number) || 0,
+    value: (source[p.slug] as number) || 0,
   }))
     .filter((r) => r.value > 0)
     .sort((a, b) => b.value - a.value)
@@ -57,7 +76,14 @@ function RevenueTooltip({ active, payload, bucket }: any) {
               <span className="w-2 h-2 rounded-full flex-shrink-0" style={{ backgroundColor: r.color }} />
               <span className="text-xs text-text-secondary">{r.name}</span>
             </div>
-            <span className="text-xs font-medium text-text-primary">{formatUSD(r.value)}</span>
+            <span className="text-xs font-medium text-text-primary">
+              {formatUSD(r.value)}
+              {shareMode && total > 0 && (
+                <span className="text-text-muted ml-1.5">
+                  {((r.value / total) * 100).toFixed(0)}%
+                </span>
+              )}
+            </span>
           </div>
         ))}
       </div>
@@ -69,16 +95,59 @@ function RevenueTooltip({ active, payload, bucket }: any) {
   )
 }
 
-export function RevenueBarChart({ title, data, defaultRange = 30, methodologyKey }: Props) {
+export function RevenueBarChart({
+  title,
+  data,
+  defaultRange = 30,
+  methodologyKey,
+  bucketLimits,
+  enableShareToggle = false,
+}: Props) {
   const [range, setRange] = useState<TimeRange>(defaultRange)
+  const [shareMode, setShareMode] = useState(false)
   const colors = useThemeColors()
   const cardRef = useRef<HTMLDivElement>(null)
   const bucket = rangeToBucket(range)
   // Revenue is flow data — sum daily/weekly values within each bucket.
-  const bucketed = useMemo(
-    () => bucketSeries(data, bucket, "sum", PROTOCOLS.map((p) => p.slug)),
-    [data, bucket],
+  // Pull the per-bucket display limit from caller overrides first; fall
+  // back to the lib default when not specified for this bucket type.
+  const limit = bucketLimits?.[bucket]
+  const bucketedRaw = useMemo(
+    () =>
+      bucketSeries(
+        data,
+        bucket,
+        "sum",
+        PROTOCOLS.map((p) => p.slug),
+        limit,
+      ),
+    [data, bucket, limit],
   )
+
+  // In share mode each bucket is renormalized so the protocol values
+  // sum to 100. The tooltip still shows dollars by looking the bucket
+  // up in `originalsByTs` below.
+  const bucketed = useMemo(() => {
+    if (!shareMode) return bucketedRaw
+    return bucketedRaw.map((pt) => {
+      const total = PROTOCOLS.reduce(
+        (s, p) => s + ((pt[p.slug] as number) ?? 0),
+        0,
+      )
+      const next: OverviewTimeseriesPoint = { timestamp: pt.timestamp }
+      for (const p of PROTOCOLS) {
+        const v = (pt[p.slug] as number) ?? 0
+        next[p.slug] = total > 0 ? (v / total) * 100 : 0
+      }
+      return next
+    })
+  }, [bucketedRaw, shareMode])
+
+  const originalsByTs = useMemo(() => {
+    const map = new Map<number, OverviewTimeseriesPoint>()
+    for (const pt of bucketedRaw) map.set(pt.timestamp, pt)
+    return map
+  }, [bucketedRaw])
 
   return (
     <div
@@ -97,6 +166,9 @@ export function RevenueBarChart({ title, data, defaultRange = 30, methodologyKey
           <MethodologyTooltip methodologyKey={methodologyKey} />
         </span>
         <div className="flex items-center gap-2">
+          {enableShareToggle && (
+            <ShareToggle shareMode={shareMode} setShareMode={setShareMode} />
+          )}
           <TimeToggle
             selected={range}
             onChange={setRange}
@@ -122,11 +194,20 @@ export function RevenueBarChart({ title, data, defaultRange = 30, methodologyKey
               axisLine={false}
               tickLine={false}
               tick={{ fontSize: 10, fill: colors.textMuted }}
-              tickFormatter={(v) => formatUSD(v)}
-              width={70}
+              tickFormatter={(v) =>
+                shareMode ? `${v.toFixed(0)}%` : formatUSD(v)
+              }
+              width={shareMode ? 42 : 70}
+              domain={shareMode ? [0, 100] : undefined}
             />
             <Tooltip
-              content={<RevenueTooltip bucket={bucket} />}
+              content={
+                <RevenueTooltip
+                  bucket={bucket}
+                  shareMode={shareMode}
+                  originals={originalsByTs}
+                />
+              }
               cursor={{ fill: "rgba(255, 255, 255, 0.03)" }}
             />
             {PROTOCOLS.map((p) => (
@@ -152,6 +233,61 @@ export function RevenueBarChart({ title, data, defaultRange = 30, methodologyKey
           </div>
         ))}
       </div>
+    </div>
+  )
+}
+
+function ShareToggle({
+  shareMode,
+  setShareMode,
+}: {
+  shareMode: boolean
+  setShareMode: (v: boolean) => void
+}) {
+  return (
+    <div
+      style={{
+        display: "inline-flex",
+        border: "1px solid var(--card-border)",
+        borderRadius: "4px",
+        overflow: "hidden",
+        background: "var(--background)",
+      }}
+    >
+      {(
+        [
+          { value: false, label: "Dollars" },
+          { value: true, label: "Share" },
+        ] as const
+      ).map((opt) => (
+        <button
+          key={String(opt.value)}
+          onClick={() => setShareMode(opt.value)}
+          style={{
+            padding: "4px 10px",
+            fontSize: "10px",
+            fontWeight: 500,
+            cursor: "pointer",
+            border: "none",
+            fontFamily: "inherit",
+            backgroundColor:
+              shareMode === opt.value ? "var(--card-border)" : "transparent",
+            color:
+              shareMode === opt.value
+                ? "var(--text-primary)"
+                : "var(--text-muted)",
+            textTransform: "uppercase",
+            letterSpacing: "0.05em",
+          }}
+          title={
+            opt.value
+              ? "Renormalize each bucket to 100% so the share dynamics across protocols are visible."
+              : "Show absolute fee dollars per protocol per bucket."
+          }
+        >
+          {opt.label}
+        </button>
+      ))}
     </div>
   )
 }

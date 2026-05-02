@@ -79,13 +79,19 @@ export interface ProtocolRevenueBreakdown {
   estLiquidationFees: number
   /** Fraction of totalFees attributable to liquidation (0-1). */
   liquidationShare: number
-  /** Weekly stacked series for charting. */
+  /** Weekly stacked series for charting. Spans `historyDays` (default
+   *  365 — 12 months) so a reader can see the full trend rather than
+   *  just three-month snapshots. */
   weekly: WeeklyRecipientPoint[]
 }
 
 export interface RevenueDecompResponse {
-  /** Rolling window used for aggregates (days). */
+  /** Rolling window used for the per-protocol aggregates (days). */
   windowDays: number
+  /** Window used for the per-protocol weekly chart series. Independent
+   *  of `windowDays` so the cards stay 90d while the chart shows 12+
+   *  months. */
+  historyDays: number
   protocols: ProtocolRevenueBreakdown[]
   /** Human-readable methodology note for the estimated source split. */
   methodology: string
@@ -148,33 +154,44 @@ async function liquidationVolumeByProtocol(
   return out
 }
 
-export async function loadRevenueDecomp(windowDays = 90): Promise<RevenueDecompResponse> {
+export async function loadRevenueDecomp(
+  windowDays = 90,
+  historyDays = 365,
+): Promise<RevenueDecompResponse> {
+  // Pull DefiLlama fees + liquidation volumes in parallel. The liquidation
+  // volume aggregate is keyed off the (shorter) windowDays — that's what
+  // feeds the per-protocol cards' liquidation-share number.
   const [breakdowns, liqVolumes] = await Promise.all([
     Promise.all(PROTOCOLS.map((p) => fetchFeeBreakdown(p.defillamaSlug))),
     liquidationVolumeByProtocol(windowDays),
   ])
 
-  const cutoff = Math.floor(Date.now() / 1000) - windowDays * 86400
+  const cardCutoff = Math.floor(Date.now() / 1000) - windowDays * 86400
+  const chartCutoff = Math.floor(Date.now() / 1000) - historyDays * 86400
 
   const protocols: ProtocolRevenueBreakdown[] = PROTOCOLS.map((p, i) => {
     const bd = breakdowns[i]
-    const inRange = (pt: { timestamp: number }) => pt.timestamp >= cutoff
+    const inCardWindow = (pt: { timestamp: number }) => pt.timestamp >= cardCutoff
+    const inChartWindow = (pt: { timestamp: number }) =>
+      pt.timestamp >= chartCutoff
 
-    const feesWindow = bd.fees.filter(inRange)
-    const supplyWindow = bd.supplySideRevenue.filter(inRange)
-    const protocolWindow = bd.protocolRevenue.filter(inRange)
-    const holdersWindow = bd.holdersRevenue.filter(inRange)
+    // Card-side aggregates use the shorter rolling window (default 90d).
+    const feesWindow = bd.fees.filter(inCardWindow)
+    const supplyWindow = bd.supplySideRevenue.filter(inCardWindow)
+    const protocolWindow = bd.protocolRevenue.filter(inCardWindow)
+    const holdersWindow = bd.holdersRevenue.filter(inCardWindow)
 
     const totalFees = feesWindow.reduce((s, pt) => s + pt.usd, 0)
     const supplySide = supplyWindow.reduce((s, pt) => s + pt.usd, 0)
     const protocol = protocolWindow.reduce((s, pt) => s + pt.usd, 0)
     const holders = holdersWindow.reduce((s, pt) => s + pt.usd, 0)
 
+    // Chart series uses the longer history window so the trend is visible.
     const weekly = alignWeekly(
-      bucketWeekly(feesWindow),
-      bucketWeekly(supplyWindow),
-      bucketWeekly(protocolWindow),
-      bucketWeekly(holdersWindow),
+      bucketWeekly(bd.fees.filter(inChartWindow)),
+      bucketWeekly(bd.supplySideRevenue.filter(inChartWindow)),
+      bucketWeekly(bd.protocolRevenue.filter(inChartWindow)),
+      bucketWeekly(bd.holdersRevenue.filter(inChartWindow)),
     )
 
     const liqVolumeUsd = liqVolumes[p.slug] ?? 0
@@ -199,6 +216,7 @@ export async function loadRevenueDecomp(windowDays = 90): Promise<RevenueDecompR
 
   return {
     windowDays,
+    historyDays,
     protocols,
     methodology:
       "Revenue by recipient is the authoritative DefiLlama split " +

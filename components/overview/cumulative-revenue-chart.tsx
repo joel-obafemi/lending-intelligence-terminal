@@ -20,6 +20,7 @@ import {
   formatBucketLabel,
   formatBucketTooltipLabel,
   rangeToBucket,
+  type BucketType,
 } from "@/lib/time-bucketing"
 import type { OverviewTimeseriesPoint } from "@/lib/overview"
 
@@ -28,6 +29,8 @@ interface Props {
   data: OverviewTimeseriesPoint[]
   defaultRange?: TimeRange
   methodologyKey?: string
+  /** Optional override on the per-bucket display limit. */
+  bucketLimits?: Partial<Record<BucketType, number>>
 }
 
 function CumulativeTooltip({ active, payload, bucket }: any) {
@@ -62,16 +65,24 @@ function CumulativeTooltip({ active, payload, bucket }: any) {
   )
 }
 
-export function CumulativeRevenueChart({ title, data, defaultRange = 30, methodologyKey }: Props) {
+export function CumulativeRevenueChart({
+  title,
+  data,
+  defaultRange = 30,
+  methodologyKey,
+  bucketLimits,
+}: Props) {
   const [range, setRange] = useState<TimeRange>(defaultRange)
   const colors = useThemeColors()
   const cardRef = useRef<HTMLDivElement>(null)
   const bucket = rangeToBucket(range)
+  const limit = bucketLimits?.[bucket]
   // Cumulative is monotonic — take the last value within each bucket as the
   // running-total snapshot at that bucket's end.
   const bucketed = useMemo(
-    () => bucketSeries(data, bucket, "last", PROTOCOLS.map((p) => p.slug)),
-    [data, bucket],
+    () =>
+      bucketSeries(data, bucket, "last", PROTOCOLS.map((p) => p.slug), limit),
+    [data, bucket, limit],
   )
 
   return (

@@ -19,6 +19,7 @@ import {
   formatBucketLabel,
   formatBucketTooltipLabel,
   rangeToBucket,
+  type BucketType,
 } from "@/lib/time-bucketing"
 import type { WeeklyRecipientPoint } from "@/lib/revenue-decomp"
 
@@ -29,6 +30,8 @@ interface Props {
   data: WeeklyRecipientPoint[]
   defaultRange?: TimeRange
   methodologyKey?: string
+  /** Optional override on the per-bucket display limit. */
+  bucketLimits?: Partial<Record<BucketType, number>>
 }
 
 const RECIPIENT_COLOR = {
@@ -85,20 +88,31 @@ function Tt({ active, payload, bucket }: any) {
   )
 }
 
-export function RevenueByRecipientChart({ title, subtitle, color, data, defaultRange = 30, methodologyKey }: Props) {
+export function RevenueByRecipientChart({
+  title,
+  subtitle,
+  color,
+  data,
+  defaultRange = 30,
+  methodologyKey,
+  bucketLimits,
+}: Props) {
   const [range, setRange] = useState<TimeRange>(defaultRange)
   const colors = useThemeColors()
   const cardRef = useRef<HTMLDivElement>(null)
   const bucket = rangeToBucket(range)
+  const limit = bucketLimits?.[bucket]
   // Recipient revenue is flow data — sum daily/weekly values within each bucket.
   const bucketed = useMemo(
     () =>
-      bucketSeries<WeeklyRecipientPoint>(data, bucket, "sum", [
-        "supplySide",
-        "protocol",
-        "holders",
-      ]),
-    [data, bucket],
+      bucketSeries<WeeklyRecipientPoint>(
+        data,
+        bucket,
+        "sum",
+        ["supplySide", "protocol", "holders"],
+        limit,
+      ),
+    [data, bucket, limit],
   )
 
   return (

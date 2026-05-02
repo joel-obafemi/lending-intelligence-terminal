@@ -95,13 +95,15 @@ export function RevenueDecompTabs({ protocols }: Props) {
         })}
       </div>
 
-      {/* Active protocol's chart */}
+      {/* Active protocol's chart — 12-month default so the recipient-mix
+          trend is visible (audit's #1 quick win for this page). */}
       <RevenueByRecipientChart
         title={`${current.name} · Revenue`}
         subtitle="Supply-side / Protocol / Holders"
         color={current.color}
         data={current.weekly}
         methodologyKey="revenue-by-recipient"
+        bucketLimits={{ month: 12, week: 12, quarter: 4 }}
       />
     </div>
   )

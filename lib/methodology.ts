@@ -209,6 +209,18 @@ export const METHODOLOGY: Record<string, MethodologyEntry> = {
     source: "Morpho blue-api.morpho.org via lib/morpho-api.ts.",
   },
 
+  // ─── Revenue page ───────────────────────────────────────────────────
+  "revenue-take-rate-comparison": {
+    text:
+      "Per-protocol annualized Rev/TVL on a trailing-30-day rolling basis, plotted across the trailing 12 months. Each day's reading is sum of the prior 30 days of fees ÷ that day's TVL × 365/30. Smoothes weekly noise without losing recent dynamics. Reads as 'how efficiently is each protocol extracting from depositors?' — a sentence the per-card snapshot can't tell.",
+    source: "DefiLlama /protocol/<slug> daily fees + chainTvls.Ethereum.tvl.",
+  },
+  "revenue-source-split-row": {
+    text:
+      "Per-protocol gross fees (90d) decomposed into Interest + other (residual) and Liquidation-driven (estimated). Bar width = gross fees so a reader can see absolute scale and split simultaneously. Liquidation share is sum(debt_amount_usd) × weighted bonus rate (Aave V3 / Spark / Morpho: 8%; Fluid: 5%) ÷ gross fees.",
+    source: "DefiLlama /summary/fees + Liquidator Economy DB.",
+  },
+
   // ─── Rate Monitor ───────────────────────────────────────────────────
   "rates-real-yield-spread-hero": {
     text:
