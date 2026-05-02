@@ -209,6 +209,23 @@ export const METHODOLOGY: Record<string, MethodologyEntry> = {
     source: "Morpho blue-api.morpho.org via lib/morpho-api.ts.",
   },
 
+  // ─── Rate Monitor ───────────────────────────────────────────────────
+  "rates-real-yield-spread-hero": {
+    text:
+      "Blended stablecoin supply APY (USDC + USDT + DAI + USDS, TVL-weighted across the four protocols) minus the FRED 4-week T-bill yield (TB4WK), daily over the trailing 18 months. Above zero = stablecoin lenders are earning a premium to short Treasuries; below zero = parking capital in T-bills pays better. Excludes incentive token rewards so the line is the pure interest spread.",
+    source: "DefiLlama Yields /chart/{poolId} per stablecoin pool + FRED TB4WK.",
+  },
+  "rates-dispersion": {
+    text:
+      "Cross-protocol max-minus-min supply APY for the selected asset, plotted weekly over the trailing 18 months. Reads as 'how much arbitrage opportunity is there?' Wide dispersion = capital movement across protocols is paying off; narrow dispersion = the market is pricing the asset uniformly. Filters out timestamps where fewer than two protocols have data.",
+    source: "DefiLlama Yields /chart/{poolId} per (asset × protocol).",
+  },
+  "rates-matrix": {
+    text:
+      "Live supply / borrow APY for every (protocol, asset) pair we cover. Aave V3 + Spark cells come from on-chain UiPoolDataProviderV3 reads; Morpho cells are TVL-weighted blends across MetaMorpho vaults that hold the asset; Fluid cells use DefiLlama Yields. The 30d-avg row beneath each cell is DefiLlama's apyMean30d. Spread = borrow − supply. Toggle Reward-adjusted to fold incentive APYs into the base rates and re-rank the Best Supply / Best Borrow columns.",
+    source: "On-chain UiPoolDataProviderV3 + DefiLlama Yields + DefiLlama Coins.",
+  },
+
   // ─── Fluid protocol-specific lens ───────────────────────────────────
   "fluid-capital-efficiency": {
     text:
