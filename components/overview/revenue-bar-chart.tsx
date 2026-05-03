@@ -22,6 +22,8 @@ import {
   rangeToBucket,
   type BucketType,
 } from "@/lib/time-bucketing"
+import { useAnnotations } from "@/lib/annotations"
+import { ChartAnnotations } from "./chart-annotations"
 import type { OverviewTimeseriesPoint } from "@/lib/overview"
 
 interface Props {
@@ -40,6 +42,11 @@ interface Props {
    *  Defaults to dollars; the user picks Share when they want share
    *  dynamics. */
   enableShareToggle?: boolean
+  /** Optional annotation channel — renders curated events from
+   *  `content/annotations.json` whose `chartKeys` array contains this
+   *  key. Used on the Risk page's liquidation-volume chart for the
+   *  rsETH contagion overlay. */
+  annotationKey?: string
 }
 
 function RevenueTooltip({ active, payload, bucket, shareMode, originals }: any) {
@@ -102,6 +109,7 @@ export function RevenueBarChart({
   methodologyKey,
   bucketLimits,
   enableShareToggle = false,
+  annotationKey,
 }: Props) {
   const [range, setRange] = useState<TimeRange>(defaultRange)
   const [shareMode, setShareMode] = useState(false)
@@ -148,6 +156,10 @@ export function RevenueBarChart({
     for (const pt of bucketedRaw) map.set(pt.timestamp, pt)
     return map
   }, [bucketedRaw])
+
+  // No-op when caller doesn't pass a key — the annotation channel
+  // pulls zero events and ChartAnnotations renders nothing.
+  const annotations = useAnnotations(annotationKey ?? "")
 
   return (
     <div
@@ -210,6 +222,7 @@ export function RevenueBarChart({
               }
               cursor={{ fill: "rgba(255, 255, 255, 0.03)" }}
             />
+            <ChartAnnotations events={annotations} bucket={bucket} />
             {PROTOCOLS.map((p) => (
               <Bar
                 key={p.slug}

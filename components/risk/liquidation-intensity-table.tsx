@@ -15,9 +15,11 @@ interface Props {
   title: string
   rows: LiquidationIntensityRow[]
   methodologyKey?: string
+  /** Optional auto-generated insight rendered beneath the table. */
+  insight?: string | null
 }
 
-export function LiquidationIntensityTable({ title, rows, methodologyKey }: Props) {
+export function LiquidationIntensityTable({ title, rows, methodologyKey, insight }: Props) {
   const sorted = [...rows].sort((a, b) => b.intensityPct - a.intensityPct)
   const maxPct = Math.max(...sorted.map((r) => r.intensityPct), 0.0001)
   return (
@@ -95,6 +97,14 @@ export function LiquidationIntensityTable({ title, rows, methodologyKey }: Props
           </tbody>
         </table>
       </div>
+      {insight && (
+        <p
+          className="px-4 pb-3 pt-2 text-[11px] leading-relaxed border-t border-card-border"
+          style={{ color: "var(--text-muted)" }}
+        >
+          {insight}
+        </p>
+      )}
     </div>
   )
 }

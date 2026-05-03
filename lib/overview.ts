@@ -78,6 +78,10 @@ export interface RankedAssetRow {
   usd: number
   sharePct: number
   type: AssetType
+  /** Per-protocol breakdown of `usd` for this asset, keyed by canonical
+   *  dash-form slug. Sum approximately equals `usd` (rounding aside).
+   *  Empty record when per-protocol data isn't available. */
+  byProtocol: Record<string, number>
 }
 
 export interface ProtocolRevenueSnapshot {
@@ -509,8 +513,44 @@ export async function loadOverview(): Promise<OverviewResponse> {
     collateralByTypeSeries.pop()
   }
 
+  // Per-protocol per-asset latest snapshot. Used to populate the
+  // `byProtocol` field on RankedAssetRow so the Top Collateral /
+  // Top Borrowed tables can render protocol-stacked breakdown bars.
+  // For the supplied side, "supply" = unborrowed + borrowed per asset
+  // per protocol, mirroring what `totalSuppliedAssetByDay` aggregates.
+  const latestSupByProtocol = new Map<string, Record<string, number>>()
+  const latestBorByProtocol = new Map<string, Record<string, number>>()
+  histories.forEach((h, i) => {
+    if (!h) return
+    const slug = PROTOCOLS[i].slug
+    const supPt = h.suppliedByAsset.at(-1)
+    const borPt = h.borrowedByAsset.at(-1)
+    function bump(
+      map: Map<string, Record<string, number>>,
+      tokens: Record<string, number> | undefined,
+    ) {
+      if (!tokens) return
+      for (const [rawSym, usd] of Object.entries(tokens)) {
+        if (!Number.isFinite(usd) || usd <= 0) continue
+        const sym = rawSym.toUpperCase()
+        const cur = map.get(sym) ?? {}
+        cur[slug] = (cur[slug] ?? 0) + usd
+        map.set(sym, cur)
+      }
+    }
+    // Supplied = unborrowed + borrowed (matches totalSuppliedAssetByDay).
+    bump(latestSupByProtocol, supPt?.tokens)
+    bump(latestSupByProtocol, borPt?.tokens)
+    // Borrowed = the borrowed slice only.
+    bump(latestBorByProtocol, borPt?.tokens)
+  })
+
   // Top asset rankings (rows for a table). Snapshot values from latest day.
-  function rankLatest(byDay: Map<number, Map<string, number>>, limit = 10): RankedAssetRow[] {
+  function rankLatest(
+    byDay: Map<number, Map<string, number>>,
+    perProtocolBySym: Map<string, Record<string, number>>,
+    limit = 10,
+  ): RankedAssetRow[] {
     const latest = [...byDay.entries()].sort(([a], [b]) => b - a)[0]?.[1]
     if (!latest) return []
     const entries = [...latest.entries()].sort(([, a], [, b]) => b - a)
@@ -520,10 +560,11 @@ export async function loadOverview(): Promise<OverviewResponse> {
       usd,
       sharePct: total > 0 ? (usd / total) * 100 : 0,
       type: classifyAsset(symbol),
+      byProtocol: perProtocolBySym.get(symbol.toUpperCase()) ?? {},
     }))
   }
-  const topCollateralAssets = rankLatest(totalSuppliedAssetByDay, 10)
-  const topBorrowedAssets = rankLatest(borrowedAssetByDay, 10)
+  const topCollateralAssets = rankLatest(totalSuppliedAssetByDay, latestSupByProtocol, 10)
+  const topBorrowedAssets = rankLatest(borrowedAssetByDay, latestBorByProtocol, 10)
 
   // ─── Net supply flows per protocol (Section 2.2 of The Lending Pulse) ──
   // We isolate flows from price swings by valuing each day's token quantity

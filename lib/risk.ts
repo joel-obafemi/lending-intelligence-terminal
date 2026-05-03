@@ -15,13 +15,23 @@
  * No new I/O — both upstream loaders cache through their own paths.
  */
 import { loadOverview, type OverviewResponse } from "./overview"
-import { loadLiquidations, type LiquidationResponse } from "./liquidations"
+import {
+  loadLiquidations,
+  loadLiquidatorLeaderboard,
+  type LiquidationResponse,
+  type LiquidatorLeaderboardRow,
+} from "./liquidations"
 import {
   oracleFor,
   oracleNotes,
   type OracleVendor,
 } from "./oracles"
 import { PROTOCOLS } from "./protocols"
+import { loadBadDebtSummary, type BadDebtSummary } from "./bad-debt"
+import {
+  loadLiquidationPenaltyByProtocol,
+  type ProtocolLiquidationPenaltyRow,
+} from "./fluid-comparisons"
 
 export interface OracleConcentration {
   /** Top oracle vendor by USD of priced collateral. */
@@ -74,6 +84,18 @@ export interface RiskResponse {
   oracleMap: OracleMapRow[]
   /** Stablecoin-debt-share daily history, for the trend chart. */
   stablecoinDebtShareHistory: Array<{ timestamp: number; sharePct: number }>
+  /** Bad-debt incident summary derived from
+   *  `content/bad-debt-incidents.json`. Powers the 4th stat card. */
+  badDebt: BadDebtSummary
+  /** Per-protocol effective liquidation penalty (90d, weighted by
+   *  event size). Powers the Liquidation Efficiency comparison
+   *  module — empirical version of "Fluid pays the lowest penalty". */
+  liquidationEfficiency: ProtocolLiquidationPenaltyRow[]
+  /** Window used for `liquidationEfficiency` (days). */
+  liquidationEfficiencyPeriodDays: number
+  /** Top 10 liquidator wallets by 90-day gross profit. Empty when the
+   *  liquidator-economy DB isn't configured. */
+  liquidatorLeaderboard: LiquidatorLeaderboardRow[]
   fetchedAt: number
 }
 
@@ -193,11 +215,23 @@ function buildStablecoinShareHistory(
   })
 }
 
+const LIQ_EFFICIENCY_DAYS = 90
+
 export async function loadRisk(): Promise<RiskResponse> {
-  const [overview, liq] = await Promise.all([
-    loadOverview(),
-    loadLiquidations(90),
-  ])
+  const [overview, liq, badDebt, liquidationEfficiency, liquidatorLeaderboard] =
+    await Promise.all([
+      loadOverview(),
+      loadLiquidations(90),
+      loadBadDebtSummary(),
+      loadLiquidationPenaltyByProtocol(LIQ_EFFICIENCY_DAYS).catch((err) => {
+        console.error("[risk] liquidation efficiency load failed:", err?.message ?? err)
+        return [] as ProtocolLiquidationPenaltyRow[]
+      }),
+      loadLiquidatorLeaderboard(LIQ_EFFICIENCY_DAYS, 10).catch((err) => {
+        console.error("[risk] liquidator leaderboard load failed:", err?.message ?? err)
+        return [] as LiquidatorLeaderboardRow[]
+      }),
+    ])
   const oracle = computeOracleConcentration(overview)
   const intensity = computeIntensity(overview, liq)
   const peakIntensity =
@@ -213,6 +247,10 @@ export async function loadRisk(): Promise<RiskResponse> {
     liquidationsAvailable: liq.available,
     oracleMap: buildOracleMap(overview),
     stablecoinDebtShareHistory: buildStablecoinShareHistory(overview),
+    badDebt,
+    liquidationEfficiency,
+    liquidationEfficiencyPeriodDays: LIQ_EFFICIENCY_DAYS,
+    liquidatorLeaderboard,
     fetchedAt: Math.floor(Date.now() / 1000),
   }
 }

@@ -15,6 +15,8 @@ import { useThemeColors } from "../theme-provider"
 import { TimeToggle, type TimeRange } from "../time-toggle"
 import { ChartActions } from "../chart-actions"
 import { MethodologyTooltip } from "./methodology-tooltip"
+import { ChartAnnotations } from "./chart-annotations"
+import { useAnnotations } from "@/lib/annotations"
 import {
   bucketSeries,
   formatBucketLabel,
@@ -71,6 +73,10 @@ function TypeTooltip({ active, payload, bucket }: any) {
 }
 
 export function CollateralTypeChart({ title, data, defaultRange = 30, methodologyKey }: Props) {
+  // Annotations for the Total Collateral by Asset Type chart — keyed
+  // "collateral-by-asset-type". Currently carries the Aug/Sep 2025
+  // sector peak callout (~$80B).
+  const annotations = useAnnotations("collateral-by-asset-type")
   const [range, setRange] = useState<TimeRange>(defaultRange)
   const colors = useThemeColors()
   const cardRef = useRef<HTMLDivElement>(null)
@@ -138,6 +144,7 @@ export function CollateralTypeChart({ title, data, defaultRange = 30, methodolog
               content={<TypeTooltip bucket={bucket} />}
               cursor={{ stroke: colors.textMuted, strokeWidth: 1, strokeDasharray: "4 4" }}
             />
+            <ChartAnnotations events={annotations} bucket={bucket} />
             {ASSET_TYPE_STACK_ORDER.map((t) => (
               <Area
                 key={t}

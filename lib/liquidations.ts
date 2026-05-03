@@ -9,6 +9,7 @@
  */
 import { PROTOCOLS, PROTOCOL_BY_LIQUIDATOR_SLUG } from "./protocols"
 import { liquidatorSql, hasLiquidatorDb } from "./liquidator-db"
+import { getEthClient } from "./eth-rpc"
 
 export interface LiquidationPeriodSnapshot {
   /** Unix seconds — inclusive lower bound */
@@ -59,6 +60,22 @@ export interface CollateralRankRow {
   sharePct: number
   /** Per-protocol volume breakdown */
   byProtocol: Record<string, number>
+}
+
+export interface LiquidatorLeaderboardRow {
+  /** Liquidator wallet (lowercase 0x). */
+  liquidator: string
+  /** Best-effort ENS name for the wallet, null when unset. */
+  ensName: string | null
+  /** Trailing-window debt repaid USD (sum across events). */
+  debtRepaidUsd: number
+  /** Trailing-window gross profit USD (collat seized − debt repaid). */
+  grossProfitUsd: number
+  /** Event count in the window. */
+  eventCount: number
+  /** Distinct protocols this liquidator was active on (canonical
+   *  dash-separated slugs). */
+  protocols: string[]
 }
 
 export interface LiquidationResponse {
@@ -273,4 +290,101 @@ export async function loadLiquidations(periodDays: number = 90): Promise<Liquida
     topCollateralAssets,
     fetchedAt: Math.floor(Date.now() / 1000),
   }
+}
+
+/**
+ * Top liquidator wallets ranked by trailing-window gross profit.
+ *
+ * Pulls from the same `liquidation_events` table the rest of this
+ * file uses; reads gross_profit_usd directly when populated, falls
+ * back to (collateral_amount_usd − debt_amount_usd) otherwise.
+ *
+ * Best-effort ENS lookup via the public RPC client. Each ENS lookup
+ * is wrapped in a try/catch — wallets without ENS, or RPC blips,
+ * just resolve to null and fall through to the truncated address.
+ */
+export async function loadLiquidatorLeaderboard(
+  periodDays: number = 90,
+  limit: number = 10,
+): Promise<LiquidatorLeaderboardRow[]> {
+  if (!hasLiquidatorDb()) return []
+  const periodStart =
+    periodDays <= 0 ? 0 : Math.floor(Date.now() / 1000) - periodDays * 86400
+
+  const rows = await liquidatorSql<{
+    liquidator: string
+    debt: number
+    profit: number
+    n: string
+    protocols: string[]
+  }>`
+    SELECT
+      lower(liquidator) AS liquidator,
+      COALESCE(SUM(debt_amount_usd), 0) AS debt,
+      COALESCE(
+        SUM(
+          COALESCE(
+            gross_profit_usd,
+            collateral_amount_usd - debt_amount_usd
+          )
+        ),
+        0
+      ) AS profit,
+      COUNT(*)::bigint AS n,
+      array_agg(DISTINCT protocol) AS protocols
+    FROM liquidation_events
+    WHERE block_timestamp >= ${periodStart}
+      AND liquidator IS NOT NULL
+    GROUP BY lower(liquidator)
+    HAVING COALESCE(
+      SUM(
+        COALESCE(
+          gross_profit_usd,
+          collateral_amount_usd - debt_amount_usd
+        )
+      ),
+      0
+    ) > 0
+    ORDER BY profit DESC
+    LIMIT ${limit}
+  `
+
+  // Map liquidator-DB protocol slugs back to canonical dash-form, then
+  // dedupe + filter unmapped.
+  const base: LiquidatorLeaderboardRow[] = rows.map((r) => ({
+    liquidator: r.liquidator,
+    ensName: null,
+    debtRepaidUsd: Number(r.debt ?? 0),
+    grossProfitUsd: Number(r.profit ?? 0),
+    eventCount: Number(r.n ?? 0),
+    protocols: Array.from(
+      new Set(
+        (r.protocols ?? [])
+          .map((p) => PROTOCOL_BY_LIQUIDATOR_SLUG[p])
+          .filter((p): p is string => !!p),
+      ),
+    ).sort(),
+  }))
+
+  // Best-effort ENS resolution. Run in parallel with a per-call
+  // try/catch so a single rate-limited / unmapped wallet doesn't
+  // poison the whole batch.
+  try {
+    const client = getEthClient()
+    await Promise.all(
+      base.map(async (row, i) => {
+        try {
+          const name = await client.getEnsName({
+            address: row.liquidator as `0x${string}`,
+          })
+          if (name) base[i].ensName = name
+        } catch {
+          /* leave ensName null */
+        }
+      }),
+    )
+  } catch (err: any) {
+    console.error("[liquidations] ENS lookup batch failed:", err?.message ?? err)
+  }
+  return base
 }

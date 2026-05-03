@@ -16,6 +16,7 @@ import { RevenueSourceSplitRow } from "@/components/overview/revenue-source-spli
 import { TakeRateComparisonChart } from "@/components/overview/take-rate-comparison-chart"
 import { MethodologyTooltip } from "@/components/overview/methodology-tooltip"
 import { AsOfFooter } from "@/components/overview/as-of-footer"
+import { CiteThisPage } from "@/components/overview/cite-this-page"
 
 export const dynamic = "force-dynamic"
 export const maxDuration = 60
@@ -137,6 +138,10 @@ export default async function RevenuePage() {
         {decomp.methodology}
       </div>
 
+      <CiteThisPage
+        pageTitle="Revenue & Protocol Economics"
+        pageUrl="https://lending-intelligence-terminal.vercel.app/revenue"
+      />
       <AsOfFooter
         timestamp={decomp.fetchedAt}
         source="DefiLlama /summary/fees + Liquidator Economy DB · live load"

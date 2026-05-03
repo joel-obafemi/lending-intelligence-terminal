@@ -31,6 +31,8 @@ interface Props {
   /** Daily series: { timestamp, sharePct } */
   data: Array<{ timestamp: number; sharePct: number }>
   methodologyKey?: string
+  /** Optional auto-generated insight rendered beneath the chart. */
+  insight?: string | null
 }
 
 const BUCKET: BucketType = "month"
@@ -56,7 +58,7 @@ function ShareTooltip({ active, payload }: any) {
   )
 }
 
-export function StablecoinDebtShareTrend({ title, data, methodologyKey }: Props) {
+export function StablecoinDebtShareTrend({ title, data, methodologyKey, insight }: Props) {
   const colors = useThemeColors()
   const cardRef = useRef<HTMLDivElement>(null)
   const bucketed = useMemo(
@@ -135,6 +137,14 @@ export function StablecoinDebtShareTrend({ title, data, methodologyKey }: Props)
           </AreaChart>
         </ResponsiveContainer>
       </div>
+      {insight && (
+        <p
+          className="px-4 pb-3 pt-1 text-[11px] leading-relaxed"
+          style={{ color: "var(--text-muted)" }}
+        >
+          {insight}
+        </p>
+      )}
     </div>
   )
 }

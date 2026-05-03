@@ -28,6 +28,8 @@ import {
 import { useThemeColors } from "@/components/theme-provider"
 import { ChartActions } from "@/components/chart-actions"
 import { MethodologyTooltip } from "@/components/overview/methodology-tooltip"
+import { ChartAnnotations } from "@/components/overview/chart-annotations"
+import { useAnnotations } from "@/lib/annotations"
 import { formatPercent, formatUSD, formatDate } from "@/lib/utils"
 import { PROTOCOL_BY_SLUG } from "@/lib/protocols"
 import type {
@@ -238,7 +240,7 @@ function SupplyHistoryChart({
           className="text-accent flex items-center gap-1.5"
           style={{ fontSize: "11px", fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.1em" }}
         >
-          {symbol} · Supply APY · 90 days
+          {symbol} · Supply APY · 12 months
           <MethodologyTooltip methodologyKey="compare-supply-history" />
         </span>
         <ChartActions cardRef={cardRef} title={`${symbol} supply APY 90d`} />
@@ -347,17 +349,24 @@ function SpreadSubChart({
 }) {
   const colors = useThemeColors()
   const cardRef = useRef<HTMLDivElement>(null)
+  // Curated annotations for the dispersion chart — keyed
+  // "compare-cross-protocol-dispersion". Currently carries the
+  // Apr 17-21 USDC spike. Annotation timestamps land at day-bucket
+  // boundaries so a single dashed line + label renders.
+  const annotations = useAnnotations("compare-cross-protocol-dispersion")
+  // Verb carries its own preposition so the sentence stays grammatical
+  // for every branch ("tighter than the …", "in line with the …").
   const verb =
     current != null && avg90d != null
       ? current < avg90d
-        ? "tighter"
+        ? "tighter than"
         : current > avg90d
-        ? "wider"
+        ? "wider than"
         : "in line with"
       : "n/a vs"
   const insight =
     current != null && avg90d != null
-      ? `Current dispersion across protocols on ${symbol} supply APY is ${(current * 100).toFixed(0)} bps, ${verb} the 90-day average of ${(avg90d * 100).toFixed(0)} bps.`
+      ? `Current dispersion across protocols on ${symbol} supply APY is ${(current * 100).toFixed(0)} bps, ${verb} the 12-month average of ${(avg90d * 100).toFixed(0)} bps.`
       : `Insufficient data to compute cross-protocol dispersion for ${symbol}.`
 
   return (
@@ -421,6 +430,7 @@ function SpreadSubChart({
               fill="url(#spreadFill)"
               fillOpacity={1}
             />
+            <ChartAnnotations events={annotations} bucket="day" />
           </AreaChart>
         </ResponsiveContainer>
       </div>

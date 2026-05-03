@@ -13,6 +13,7 @@
 import { loadCompareForAsset, loadCompareHistory, COMPARE_ASSETS, type CompareView } from "@/lib/compare"
 import { QuickCompareBar } from "@/components/compare/quick-compare-bar"
 import { YieldComparator } from "@/components/compare/yield-comparator"
+import { BestVenueHistory } from "@/components/compare/best-venue-history"
 import { ParameterComparator } from "@/components/compare/parameter-comparator"
 import { CapitalEfficiencyComparator } from "@/components/compare/capital-efficiency-comparator"
 import { CiteThisPage } from "@/components/overview/cite-this-page"
@@ -49,9 +50,11 @@ export default async function ComparePage({
   const response = await loadCompareForAsset(asset)
   // History only needed for the Yields view; load it conditionally so the
   // Parameters / Efficiency views skip the FRED + chart fetches.
+  // 365d window powers both the per-protocol APY history chart and the
+  // cross-protocol dispersion chart at 12-month resolution.
   const history =
     view === "yields"
-      ? await loadCompareHistory(asset, response.cells, 90)
+      ? await loadCompareHistory(asset, response.cells, 365)
       : null
 
   return (
@@ -69,7 +72,13 @@ export default async function ComparePage({
       <QuickCompareBar asset={asset} view={view} />
 
       {view === "yields" && history && (
-        <YieldComparator response={response} history={history} />
+        <>
+          <YieldComparator response={response} history={history} />
+          <BestVenueHistory
+            symbol={asset}
+            supplyHistory={history.supplyHistory}
+          />
+        </>
       )}
       {view === "parameters" && (
         <ParameterComparator symbol={asset} cells={response.cells} />

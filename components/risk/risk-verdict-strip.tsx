@@ -1,19 +1,22 @@
 /**
  * Risk Verdict Strip — Zone 1 of the Risk page foundation.
  *
- * Three-card row + auto-generated summary line. Cards:
+ * Four-card row + auto-generated summary line. Cards:
  *   - Stablecoin Debt Share (have it from sector overview)
  *   - Oracle Concentration (top vendor + share)
  *   - Liquidation Intensity 90d (max protocol volume / TVL)
+ *   - Days Since Last Bad Debt (curated registry; the longer the
+ *     counter runs the stronger the protocol-level safety story)
  *
  * The Top-10 Borrower Share card is intentionally not here yet. It lands
  * once the borrower-discovery data layer ships — until then we don't have
  * wallet-level data and would be guessing.
  */
-import { Layers, Eye, Activity } from "lucide-react"
+import { Layers, Eye, Activity, ShieldCheck } from "lucide-react"
 import { formatPercent } from "@/lib/utils"
 import { MethodologyTooltip } from "@/components/overview/methodology-tooltip"
 import { ORACLE_COLOR, type OracleVendor } from "@/lib/oracles"
+import type { BadDebtSummary } from "@/lib/bad-debt"
 
 interface CardProps {
   label: string
@@ -60,6 +63,18 @@ interface Props {
   peakIntensityName: string
   peakIntensityPct: number
   summary: string
+  badDebt: BadDebtSummary
+}
+
+function badDebtCaption(bd: BadDebtSummary): string {
+  if (bd.daysSince == null || bd.latest == null) {
+    return "no protocol-level incident on file"
+  }
+  const date = new Date(`${bd.latest.date}T00:00:00Z`).toLocaleDateString(
+    "en-US",
+    { month: "short", day: "numeric", year: "numeric", timeZone: "UTC" },
+  )
+  return `last incident ${date} · ${bd.latest.protocol} ${bd.latest.asset}`
 }
 
 export function RiskVerdictStrip({
@@ -70,15 +85,33 @@ export function RiskVerdictStrip({
   peakIntensityName,
   peakIntensityPct,
   summary,
+  badDebt,
 }: Props) {
   const oracleColor = ORACLE_COLOR[topOracleVendor]
   const unclassifiedCaption =
     unclassifiedPct > 1
       ? `top vendor on priced collateral · ${unclassifiedPct.toFixed(0)}% unclassified`
       : "top vendor on priced collateral"
+  const badDebtValue =
+    badDebt.daysSince == null
+      ? "—"
+      : badDebt.daysSince === 0
+      ? "today"
+      : `${badDebt.daysSince}`
+  // Tone: green when the streak is long (>180 days), yellow under a
+  // month, neutral otherwise. Counter increments daily; tone updates
+  // automatically on subsequent renders.
+  const badDebtAccent =
+    badDebt.daysSince == null
+      ? "var(--text-muted)"
+      : badDebt.daysSince > 180
+      ? "var(--success)"
+      : badDebt.daysSince < 30
+      ? "var(--accent-yellow)"
+      : "#5B7FFF"
   return (
     <div className="space-y-2">
-      <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
         <VerdictCard
           label="Stablecoin Debt Share"
           value={formatPercent(stablecoinDebtSharePct, 1)}
@@ -102,6 +135,18 @@ export function RiskVerdictStrip({
           accent="#D6322E"
           icon={<Activity size={12} strokeWidth={2.5} />}
           methodologyKey="risk-liquidation-intensity"
+        />
+        <VerdictCard
+          label="Days Since Last Bad Debt"
+          value={
+            badDebt.daysSince == null
+              ? "—"
+              : `${badDebtValue}${badDebt.daysSince === 0 ? "" : badDebt.daysSince === 1 ? " day" : " days"}`
+          }
+          caption={badDebtCaption(badDebt)}
+          accent={badDebtAccent}
+          icon={<ShieldCheck size={12} strokeWidth={2.5} />}
+          methodologyKey="risk-days-since-bad-debt"
         />
       </div>
       <p

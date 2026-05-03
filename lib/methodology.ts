@@ -350,8 +350,33 @@ export const METHODOLOGY: Record<string, MethodologyEntry> = {
   },
   "risk-liquidation-volume-weekly": {
     text:
-      "Weekly liquidation volume per protocol over the trailing 90 days. Stacked bars; correlation across protocols on the same week is a systemic-stress fingerprint.",
+      "Weekly liquidation volume per protocol over the trailing 12 months. Stacked bars; correlation across protocols on the same week is a systemic-stress fingerprint.",
     source: "Liquidator Economy DB · liquidation_events.",
+  },
+  "risk-days-since-bad-debt": {
+    text:
+      "Days elapsed since the most recent recorded bad-debt incident across the four protocols. Source is a curated registry (content/bad-debt-incidents.json) — append a row when an incident occurs and the next render picks it up. Counter increments daily. The streak length is the empirical part of the protocol-level safety story; longer is better.",
+    source: "Curated content/bad-debt-incidents.json + lib/bad-debt.ts.",
+  },
+  "risk-liquidation-efficiency": {
+    text:
+      "Effective dollars of collateral seized per dollar of debt repaid on each protocol over the trailing 90 days, weighted by event size. Lower = cheaper liquidation for borrowers. Fluid's smart-collateral mechanic targets near-1.0; Aave V3 / Spark sit ~1.05-1.08 (the standard liquidation bonus).",
+    source: "Liquidator Economy DB · liquidation_events.",
+  },
+  "risk-liquidator-leaderboard": {
+    text:
+      "Top 10 liquidator wallets ranked by trailing-90-day gross profit (collateral_amount_usd − debt_amount_usd, summed). Wallets show as truncated addresses; events count is the number of liquidations the wallet executed in the window.",
+    source: "Liquidator Economy DB · liquidation_events.",
+  },
+  "compare-best-venue-history": {
+    text:
+      "For each day in the trailing 12 months, the protocol with the highest supply APY for the selected asset 'wins' that day. The stripe colors each day by the winning protocol; the readout below sums days won. Days without cross-protocol data render as a neutral gap. Reads as 'where has the best supply yield been over the past year?' — a different lens from the level chart above and the dispersion chart below.",
+    source: "DefiLlama Yields /chart/{poolId} per (asset × protocol).",
+  },
+  "compare-emode": {
+    text:
+      "Curated registry (lib/emode-registry.ts) of E-Mode / Smart Collateral / max-LLTV-mode eligibility per protocol per asset. Aave V3 / Spark have stable / ETH-correlated / BTC-correlated E-Mode categories that lift LTV above the per-reserve baseline. Fluid's Smart Collateral mechanic targets ~95% on supported pairs. Morpho's per-market LLTV varies by isolated market — the registry surfaces 'highest LLTV market' as the theoretical ceiling.",
+    source: "Curated lib/emode-registry.ts.",
   },
 
   // ─── Compare page ───────────────────────────────────────────────────

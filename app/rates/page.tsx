@@ -1,4 +1,5 @@
 import { loadRates } from "@/lib/rates"
+import { loadOverview } from "@/lib/overview"
 import { computeRateKpis } from "@/lib/rates-kpi"
 import { ratesInsightSentence } from "@/lib/rates-insight"
 import { RateMatrixTable } from "@/components/overview/rate-matrix-table"
@@ -6,8 +7,10 @@ import { RatesKpiCards } from "@/components/overview/rates-kpi-cards"
 import { RateHistorySelector } from "@/components/overview/rate-history-selector"
 import { RateDispersionChart } from "@/components/overview/rate-dispersion-chart"
 import { RealYieldSpreadChart } from "@/components/overview/real-yield-spread-chart"
+import { UtilizationByAssetChart } from "@/components/overview/utilization-by-asset-chart"
 import { MethodologyTooltip } from "@/components/overview/methodology-tooltip"
 import { AsOfFooter } from "@/components/overview/as-of-footer"
+import { CiteThisPage } from "@/components/overview/cite-this-page"
 
 export const dynamic = "force-dynamic"
 export const maxDuration = 60
@@ -17,7 +20,7 @@ export const maxDuration = 60
 const CHART_ASSETS = ["USDC", "USDT", "DAI", "USDS", "WETH", "WSTETH", "WBTC"]
 
 export default async function RatesPage() {
-  const data = await loadRates()
+  const [data, overview] = await Promise.all([loadRates(), loadOverview()])
   const kpis = computeRateKpis(data.matrix)
   const onChainCells = data.matrix.filter((c) => c.liveSource === "on-chain").length
 
@@ -108,6 +111,17 @@ export default async function RatesPage() {
         dispersionByAsset={data.dispersionByAsset}
       />
 
+      {/* Utilization by Asset — relocated from /collateral. It's a
+          rate-related metric and reads more naturally next to the
+          dispersion chart than alongside the collateral composition
+          tables. */}
+      <UtilizationByAssetChart
+        title="Utilization by Asset"
+        data={overview.utilizationByAssetSeries}
+        topAssets={overview.topAssets}
+        methodologyKey="utilization-by-asset"
+      />
+
       {/* Per-asset supply APY history with Fed Funds overlay. */}
       <RateHistorySelector
         assets={CHART_ASSETS}
@@ -115,6 +129,10 @@ export default async function RatesPage() {
         fedFunds={data.fedFundsHistory}
       />
 
+      <CiteThisPage
+        pageTitle="Rate Monitor · DeFi vs T-bill"
+        pageUrl="https://lending-intelligence-terminal.vercel.app/rates"
+      />
       <AsOfFooter
         timestamp={data.fetchedAt}
         source="DefiLlama Yields + on-chain UiPoolDataProviderV3 + FRED · live load"

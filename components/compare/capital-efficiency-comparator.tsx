@@ -5,14 +5,17 @@
  *
  * Horizontal bar chart, four bars, showing the borrowing power per $1 of
  * the selected asset as collateral on each protocol — i.e. the max LTV
- * surfaced as `$borrow_supported / $collateral`. Below the chart, a small
- * companion view shows the corresponding max leverage (1 / (1 − LTV)) as
- * the "what's the headroom" answer.
+ * surfaced as `$borrow_supported / $collateral`. Below the chart, a
+ * companion row shows two leverage numbers per protocol:
  *
- * Pass A note: this is the baseline LTV view. The "max leverage under
- * E-Mode (Aave) / Smart Collateral (Fluid) / highest-LLTV (Morpho)" lens
- * mentioned in the spec lands when the per-protocol E-Mode / Smart-Vault
- * data layers ship.
+ *   1. Standard leverage  = 1 / (1 − base LTV)
+ *   2. Max-mode leverage  = 1 / (1 − liftedLtv)  where the lift comes
+ *      from the curated lib/emode-registry.ts (E-Mode for Aave / Spark,
+ *      Smart Collateral for Fluid, highest-LLTV market for Morpho).
+ *
+ * The max-mode number is the headline "max theoretical" leverage the
+ * audit asked for. When an asset isn't eligible for any lift on a
+ * protocol, the max-mode column reads "—".
  */
 
 import { useRef } from "react"
@@ -29,6 +32,7 @@ import { useThemeColors } from "@/components/theme-provider"
 import { ChartActions } from "@/components/chart-actions"
 import { MethodologyTooltip } from "@/components/overview/methodology-tooltip"
 import { formatPercent } from "@/lib/utils"
+import { eModeFor } from "@/lib/emode-registry"
 import type { CompareCell } from "@/lib/compare"
 
 interface Props {
@@ -42,6 +46,12 @@ interface BarRow {
   color: string
   ltv: number
   leverage: number
+  /** Curated max-mode lift label (E-Mode / Smart Col / Per-market). */
+  maxModeLabel: string
+  /** Max-mode LTV from the emode registry, null when not eligible. */
+  maxModeLtv: number | null
+  /** Leverage at max-mode LTV. Null when no lift available. */
+  maxModeLeverage: number | null
 }
 
 function leverageFor(ltv: number): number {
@@ -81,13 +91,24 @@ export function CapitalEfficiencyComparator({ symbol, cells }: Props) {
 
   const rows: BarRow[] = cells
     .filter((c) => c.available && c.ltv != null)
-    .map((c) => ({
-      slug: c.protocolSlug,
-      name: c.protocolName,
-      color: c.protocolColor,
-      ltv: c.ltv!,
-      leverage: leverageFor(c.ltv!),
-    }))
+    .map((c) => {
+      const e = eModeFor(symbol, c.protocolSlug)
+      // Effective max-mode LTV is the larger of the lifted value and
+      // the base LTV — protects against a curated lift accidentally
+      // being lower than the live reserve config.
+      const maxLtv =
+        e.liftedLtv != null && e.liftedLtv > (c.ltv ?? 0) ? e.liftedLtv : null
+      return {
+        slug: c.protocolSlug,
+        name: c.protocolName,
+        color: c.protocolColor,
+        ltv: c.ltv!,
+        leverage: leverageFor(c.ltv!),
+        maxModeLabel: e.label,
+        maxModeLtv: maxLtv,
+        maxModeLeverage: maxLtv != null ? leverageFor(maxLtv) : null,
+      }
+    })
     .sort((a, b) => b.ltv - a.ltv)
 
   // Auto insight: highest LTV vs lowest among available cells.
@@ -167,25 +188,67 @@ export function CapitalEfficiencyComparator({ symbol, cells }: Props) {
           )}
         </div>
         <div
-          className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-2 px-4 pb-3"
-          style={{ borderTop: "1px solid var(--card-border)", paddingTop: "12px" }}
+          className="px-4 pb-3 pt-3"
+          style={{ borderTop: "1px solid var(--card-border)" }}
         >
-          {rows.map((r) => (
-            <div key={r.slug} className="flex items-baseline justify-between gap-2">
-              <span
-                className="text-[10px] uppercase tracking-[0.06em]"
-                style={{ color: r.color }}
+          <div
+            className="text-[10px] uppercase tracking-[0.08em] mb-2"
+            style={{ color: "var(--text-muted)" }}
+          >
+            Max theoretical leverage · base / max-mode (E-Mode · Smart Col · highest LLTV)
+          </div>
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
+            {rows.map((r) => (
+              <div
+                key={r.slug}
+                className="flex flex-col gap-0.5 px-2 py-1.5 rounded"
+                style={{ background: "var(--card-hover)" }}
               >
-                {r.name}
-              </span>
-              <span
-                className="text-[12px] tabular-nums"
-                style={{ color: "var(--text-primary)", fontWeight: 600 }}
-              >
-                {Number.isFinite(r.leverage) ? `${r.leverage.toFixed(2)}× max` : "∞"}
-              </span>
-            </div>
-          ))}
+                <span
+                  className="text-[10px] uppercase tracking-[0.06em]"
+                  style={{ color: r.color, fontWeight: 600 }}
+                >
+                  {r.name}
+                </span>
+                <div className="flex items-baseline gap-2">
+                  <span
+                    className="text-[12px] tabular-nums"
+                    style={{ color: "var(--text-secondary)" }}
+                    title="Standard LTV leverage"
+                  >
+                    {Number.isFinite(r.leverage) ? `${r.leverage.toFixed(2)}×` : "∞"}
+                  </span>
+                  <span className="text-[10px]" style={{ color: "var(--text-muted)" }}>
+                    /
+                  </span>
+                  <span
+                    className="text-[12px] tabular-nums"
+                    style={{
+                      color:
+                        r.maxModeLeverage != null
+                          ? "var(--success)"
+                          : "var(--text-muted)",
+                      fontWeight: r.maxModeLeverage != null ? 700 : 400,
+                    }}
+                    title={`Max-mode leverage (${r.maxModeLabel})`}
+                  >
+                    {r.maxModeLeverage == null
+                      ? "—"
+                      : Number.isFinite(r.maxModeLeverage)
+                      ? `${r.maxModeLeverage.toFixed(2)}×`
+                      : "∞"}
+                  </span>
+                </div>
+                <span
+                  className="text-[9px] truncate"
+                  style={{ color: "var(--text-muted)" }}
+                  title={r.maxModeLabel}
+                >
+                  {r.maxModeLabel}
+                </span>
+              </div>
+            ))}
+          </div>
         </div>
       </div>
       {insight && (

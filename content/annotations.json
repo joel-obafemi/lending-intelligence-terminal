@@ -8,6 +8,27 @@
       "description": "Morpho PYUSD utilization briefly spiked above 95% as a single MetaMorpho allocator rotated capital between markets, lifting supply APY into double digits for ~3 days.",
       "chartKeys": ["market-cross-protocol-rate-pyusd"],
       "protocolSlug": "morpho-blue"
+    },
+    {
+      "id": "rseth-contagion-2026-02",
+      "timestamp": 1771027200,
+      "label": "rsETH contagion",
+      "description": "Mid-Feb 2026 rsETH redemption queue extended past several positions' liquidation windows, triggering forced liquidations across Aave V3 and Spark and curator-vault losses on Morpho. Sector liquidation volume ~5× the trailing-90d weekly mean.",
+      "chartKeys": ["risk-liquidation-volume-weekly"]
+    },
+    {
+      "id": "compare-aave-usdc-spike-2026-04",
+      "timestamp": 1776384000,
+      "label": "Aave V3 USDC spike",
+      "description": "Apr 17-21 cross-protocol dispersion peaked at 833 bps as Aave V3 USDC supply APY jumped on a borrow surge while the other three protocols stayed inside their 90d range.",
+      "chartKeys": ["compare-cross-protocol-dispersion"]
+    },
+    {
+      "id": "collateral-sector-peak-2025-08",
+      "timestamp": 1756080000,
+      "label": "Sector peak ~$80B",
+      "description": "Late August 2025 marked the all-time-high for cross-protocol lending collateral on Ethereum, driven by LRT inflows on Aave V3 + Spark and the rsETH growth wave that later contracted in early 2026.",
+      "chartKeys": ["collateral-by-asset-type"]
     }
   ]
 }

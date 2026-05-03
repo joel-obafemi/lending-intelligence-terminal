@@ -16,6 +16,11 @@ import { usePathname } from "next/navigation"
 
 const DASHBOARD_TITLE = "Lending Intelligence Terminal"
 
+// /events was decommissioned in v1; its two retained modules
+// (Liquidation Concentration by Collateral + Largest 20 Liquidation
+// Events) migrated onto /risk where they sit alongside the existing
+// Liquidation Intensity table. The MetricCards + Volume-vs-TVL panel
+// were dropped — they duplicated Risk's verdict strip + intensity row.
 const navItems = [
   { href: "/", label: "Overview" },
   { href: "/protocols", label: "Protocols" },
@@ -23,7 +28,6 @@ const navItems = [
   { href: "/revenue", label: "Revenue" },
   { href: "/collateral", label: "Collateral" },
   { href: "/risk", label: "Risk" },
-  { href: "/events", label: "Events" },
   { href: "/compare", label: "Compare" },
 ]
 

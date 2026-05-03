@@ -4,7 +4,8 @@
  * One side-by-side table for the selected asset. Four columns (one per
  * protocol). Rows are the configurable risk + listing parameters: LTV,
  * Liquidation Threshold, Liquidation Bonus, Reserve Factor, Debt Ceiling,
- * Supply Cap, Borrow Cap, Oracle, status flags.
+ * Supply Cap, Borrow Cap, Oracle, E-Mode / Smart Collateral eligibility,
+ * status flags.
  *
  * Visual cues:
  *   - "↑" badge on the cell with the highest LTV
@@ -19,6 +20,7 @@ import { ORACLE_COLOR } from "@/lib/oracles"
 import { MethodologyTooltip } from "@/components/overview/methodology-tooltip"
 import { formatPercent, formatUSD } from "@/lib/utils"
 import { PROTOCOL_BY_SLUG } from "@/lib/protocols"
+import { eModeFor } from "@/lib/emode-registry"
 import type { CompareCell } from "@/lib/compare"
 
 interface Props {
@@ -290,6 +292,51 @@ export function ParameterComparator({ symbol, cells }: Props) {
                   </tr>
                 )
               })}
+              {/* E-Mode / Smart Collateral row — curated lookup, see
+                  lib/emode-registry.ts. Surfaces each protocol's
+                  max-LTV-mode eligibility for the selected asset. */}
+              <tr>
+                <td style={{ color: "var(--text-secondary)" }}>
+                  <span className="inline-flex items-center gap-1.5">
+                    E-Mode / Smart Collateral
+                    <MethodologyTooltip methodologyKey="compare-emode" />
+                  </span>
+                </td>
+                {cells.map((c) => {
+                  const e = eModeFor(symbol, c.protocolSlug)
+                  return (
+                    <td
+                      key={c.protocolSlug + "-emode"}
+                      className="text-right tabular-nums"
+                      style={{
+                        color:
+                          e.liftedLtv != null
+                            ? "var(--text-primary)"
+                            : "var(--text-muted)",
+                      }}
+                      title={e.tooltip}
+                    >
+                      <span className="inline-flex items-center justify-end gap-1.5">
+                        <span style={{ fontWeight: e.liftedLtv != null ? 600 : 400 }}>
+                          {e.label}
+                        </span>
+                        {e.liftedLtv != null && (
+                          <span
+                            className="text-[9px] px-1.5 py-0.5 rounded"
+                            style={{
+                              background: "rgba(16, 185, 129, 0.10)",
+                              color: "var(--success)",
+                              border: "1px solid rgba(16, 185, 129, 0.25)",
+                            }}
+                          >
+                            ≤{formatPercent(e.liftedLtv * 100, 0)}
+                          </span>
+                        )}
+                      </span>
+                    </td>
+                  )
+                })}
+              </tr>
               {/* Oracle row gets a custom render with vendor color + Etherscan link. */}
               <tr>
                 <td style={{ color: "var(--text-secondary)" }}>

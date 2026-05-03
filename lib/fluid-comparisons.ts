@@ -81,7 +81,10 @@ export async function loadFluidComparisons(
   }
 }
 
-async function loadLiquidationPenaltyByProtocol(
+/** Per-protocol effective liquidation penalty over the lookback window.
+ *  Exported so the Risk page can reuse it for the cross-protocol
+ *  Liquidation Efficiency comparison without re-querying the DB. */
+export async function loadLiquidationPenaltyByProtocol(
   periodDays: number,
 ): Promise<ProtocolLiquidationPenaltyRow[]> {
   const blank: ProtocolLiquidationPenaltyRow[] = PROTOCOLS.map((p) => ({

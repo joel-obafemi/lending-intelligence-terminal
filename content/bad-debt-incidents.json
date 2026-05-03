@@ -1,0 +1,9 @@
+[
+  {
+    "date": "2025-04-20",
+    "protocol": "morpho-blue",
+    "asset": "RSETH",
+    "amountUsd": 2500000,
+    "note": "Bad debt on rsETH-collateralized Morpho vaults during the April 2025 rsETH contagion week. Several uncurated MetaMorpho vaults absorbed losses when rsETH redemption queue extended past the position's liquidation window."
+  }
+]

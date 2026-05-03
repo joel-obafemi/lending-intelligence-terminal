@@ -208,7 +208,10 @@ function applyYieldsLayer(cell: CompareCell, pool: YieldPool): void {
     pool.apyBase != null && pool.apyBaseBorrow != null
       ? pool.apyBaseBorrow - pool.apyBase
       : null
-  cell.utilization = pool.utilization != null ? pool.utilization * 100 : null
+  // `pool.utilization` from fetchAllYieldPools is already 0-100 (computed
+  // as borrowed / supplied × 100 in lib/defillama.ts). The earlier × 100
+  // here was a double-multiplication producing 9,221% instead of 92.2%.
+  cell.utilization = pool.utilization
   cell.totalSupplyUsd = pool.totalSupplyUsd ?? ((pool.tvlUsd ?? 0) + (pool.totalBorrowUsd ?? 0))
   cell.totalBorrowUsd = pool.totalBorrowUsd
   cell.freeLiquidityUsd = pool.tvlUsd
