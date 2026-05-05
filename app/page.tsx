@@ -4,13 +4,11 @@ import { CompositionStrip } from "@/components/overview/composition-strip"
 import { NetFlowStackedBarChart } from "@/components/overview/net-flow-stacked-bar-chart"
 import { CompositionDonuts } from "@/components/overview/composition-donuts"
 import { TopMarketsCrossProtocolTable } from "@/components/overview/top-markets-cross-protocol-table"
-import { WatchList } from "@/components/overview/watch-list"
 import { CiteThisPage } from "@/components/overview/cite-this-page"
 import { AsOfFooter } from "@/components/overview/as-of-footer"
 import { loadSectorOverview } from "@/lib/sector-snapshot"
 import { loadTopMarketsAcrossProtocols } from "@/lib/cross-protocol-markets"
 import { loadRealYieldSpread } from "@/lib/real-yield"
-import { loadWatchList } from "@/lib/watch-list"
 import { sectorVerdictSentence } from "@/lib/headline-sentence"
 import {
   biggestMover,
@@ -29,11 +27,10 @@ export const dynamic = "force-dynamic"
 export const maxDuration = 60
 
 export default async function OverviewPage() {
-  const [overview, topMarkets, realYield, watchList] = await Promise.all([
+  const [overview, topMarkets, realYield] = await Promise.all([
     loadSectorOverview(),
     loadTopMarketsAcrossProtocols(50),
     loadRealYieldSpread().catch(() => null),
-    loadWatchList().catch(() => null),
   ])
   const data = overview.payload
   const { snapshot, protocols, revenueSnapshot } = data
@@ -139,24 +136,24 @@ export default async function OverviewPage() {
         methodologyKey="sector-net-flows"
       />
 
-      {/* Zone 5 — Composition donuts (totals reconciled to Verdict cards) */}
+      {/* Zone 5 — Composition donuts (totals reconciled to Verdict cards;
+          period picker drives both donuts off historicalBuckets) */}
       <CompositionDonuts
         collateral={data.topCollateralAssets}
         borrowed={data.topBorrowedAssets}
         totalSuppliedUsd={snapshot.totalSupplied}
         totalBorrowedUsd={snapshot.totalBorrowed}
+        historicalBuckets={data.historicalBuckets}
       />
 
       {/* Zone 6 — Top 10 markets across protocols */}
       <TopMarketsCrossProtocolTable
         title="Top 10 Markets Across All Protocols"
         markets={topMarkets}
+        historicalBuckets={data.historicalBuckets}
       />
 
-      {/* Zone 7 — Watch List */}
-      {watchList && watchList.items.length > 0 && <WatchList data={watchList} />}
-
-      {/* Zone 8 — Cite this page (the rest of the reports footer is removed
+      {/* Zone 7 — Cite this page (the rest of the reports footer is removed
           until a real issue is ready to publish). */}
       <CiteThisPage
         pageTitle="Sector Overview"

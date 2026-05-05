@@ -3,18 +3,19 @@
 /**
  * Composition Donuts — Zone 5 of the Sector Overview rebuild.
  *
- * Two donut charts side by side: latest-day collateral mix and borrow mix
- * across the four protocols. The donut renders the top-7 individual assets
- * by USD plus an "Other" bucket; the "Other" bucket is forced to capture
- * everything beyond top-7 (including assets ranked outside the loader's
- * top-10) so the donut total reconciles against the Verdict-card supply /
- * borrow numbers.
+ * Two donut charts side by side: collateral mix and borrow mix across the
+ * four protocols, with a period picker that lets the reader pick Current
+ * / Week / Month / Quarter. Each donut renders the top-7 individual assets
+ * by USD plus an "Other" bucket; "Other" absorbs everything beyond top-7
+ * (including the rounding gap below the loader's top-10) so the donut
+ * total reconciles against the period's authoritative supply / borrow
+ * totals.
  *
  * Each donut also gets an auto insight line beneath it stating the lead
- * asset's share of the sector total.
+ * asset's share.
  */
 
-import { useMemo, useRef } from "react"
+import { useMemo, useRef, useState } from "react"
 import {
   PieChart,
   Pie,
@@ -24,23 +25,34 @@ import {
 } from "recharts"
 import { ChartActions } from "../chart-actions"
 import { MethodologyTooltip } from "./methodology-tooltip"
+import { PeriodPicker, type PeriodSelection } from "./period-picker"
 import { formatUSD, formatPercent } from "@/lib/utils"
-import { classifyAsset } from "@/lib/assets"
+import { classifyAsset, type AssetType } from "@/lib/assets"
 import type { RankedAssetRow } from "@/lib/overview"
+import type {
+  HistoricalBuckets,
+  HistoricalRankedAsset,
+  HistoricalBucket,
+} from "@/lib/historical-buckets"
+
+interface AssetRowLite {
+  symbol: string
+  usd: number
+  type: AssetType
+}
 
 interface DonutCardProps {
   title: string
-  rows: RankedAssetRow[]
-  /** Authoritative sector total — usually `snapshot.totalSupplied` or
-   *  `snapshot.totalBorrowed`. We use this to back-fill the Other slice
-   *  with everything ranked beyond the loader's top-10, so the donut total
-   *  matches the Verdict cards exactly. */
+  rows: AssetRowLite[]
+  /** Authoritative sector total — sum we make the donut reconcile to. */
   authoritativeTotal: number
   /** "borrow" / "collateral" — used for the auto insight line phrasing. */
   kind: "collateral" | "borrow"
   methodologyKey?: string
   /** Footnote shown beneath the legend when present (e.g. asset-tax notes). */
   footnote?: string
+  /** "current" / "Apr 2026" / etc — surfaced under the title for context. */
+  asOfLabel: string
 }
 
 const DONUT_COLORS = [
@@ -90,8 +102,6 @@ function buildInsight(rows: Wedge[], total: number, kind: "collateral" | "borrow
   const top = rows[0]
   const isCollateral = kind === "collateral"
   const noun = isCollateral ? "collateral USD" : "active borrows"
-  // Surface the broader class story: ETH-family share for collateral,
-  // stablecoin share for borrows.
   let secondary = ""
   if (isCollateral) {
     const ethFamily = rows
@@ -121,13 +131,10 @@ function DonutCard({
   kind,
   methodologyKey,
   footnote,
+  asOfLabel,
 }: DonutCardProps) {
   const cardRef = useRef<HTMLDivElement>(null)
 
-  // Build wedges so the donut total = `authoritativeTotal`. The top-7 wedges
-  // are the loader's ranked entries; "Other" absorbs everything else
-  // (long-tail assets + the rounding gap between the loader's top-10 sum
-  // and the protocol-level totalBorrowed/totalSupplied).
   const wedges: Wedge[] = useMemo(() => {
     const top = rows.slice(0, 7)
     const accountedTop = top.reduce((s, r) => s + r.usd, 0)
@@ -155,7 +162,7 @@ function DonutCard({
       className="tui-card bg-card-bg border border-card-border rounded overflow-hidden flex flex-col"
     >
       <div
-        className="border-b border-card-border flex items-center justify-between"
+        className="border-b border-card-border flex items-center justify-between gap-2"
         style={{ padding: "10px 16px" }}
       >
         <span
@@ -165,7 +172,15 @@ function DonutCard({
           {title}
           <MethodologyTooltip methodologyKey={methodologyKey} />
         </span>
-        <ChartActions cardRef={cardRef} title={title} />
+        <div className="flex items-center gap-2">
+          <span
+            className="text-[10px] uppercase tracking-[0.08em]"
+            style={{ color: "var(--text-muted)" }}
+          >
+            {asOfLabel}
+          </span>
+          <ChartActions cardRef={cardRef} title={title} />
+        </div>
       </div>
       <div className="grid grid-cols-1 sm:grid-cols-[1fr_1fr] gap-3 p-4">
         <div className="relative h-[220px] chart-body">
@@ -257,9 +272,31 @@ interface Props {
   collateral: RankedAssetRow[]
   borrowed: RankedAssetRow[]
   /** Sector totals from `snapshot.totalSupplied` / `snapshot.totalBorrowed`,
-   *  used to make the donut totals reconcile with the Verdict cards. */
+   *  used to make the current-period donut totals reconcile with the
+   *  Verdict cards. Historical periods compute their own totals from the
+   *  shipped buckets. */
   totalSuppliedUsd: number
   totalBorrowedUsd: number
+  /** Optional historical-bucket payload for the period picker. */
+  historicalBuckets?: HistoricalBuckets
+}
+
+function findBucket(
+  buckets: HistoricalBuckets | undefined,
+  selection: PeriodSelection,
+): HistoricalBucket | null {
+  if (!buckets || selection.granularity === "current") return null
+  const list =
+    selection.granularity === "week"
+      ? buckets.weeks
+      : selection.granularity === "month"
+      ? buckets.months
+      : buckets.quarters
+  return list.find((b) => b.id === selection.bucketId) ?? null
+}
+
+function rankedToLite(r: RankedAssetRow | HistoricalRankedAsset): AssetRowLite {
+  return { symbol: r.symbol, usd: r.usd, type: r.type }
 }
 
 export function CompositionDonuts({
@@ -267,24 +304,49 @@ export function CompositionDonuts({
   borrowed,
   totalSuppliedUsd,
   totalBorrowedUsd,
+  historicalBuckets,
 }: Props) {
+  const [selection, setSelection] = useState<PeriodSelection>({
+    granularity: "current",
+    bucketId: "",
+  })
+
+  const bucket = findBucket(historicalBuckets, selection)
+  const isCurrent = selection.granularity === "current" || !bucket
+  const collateralRows = isCurrent ? collateral.map(rankedToLite) : bucket!.topCollateral.map(rankedToLite)
+  const borrowedRows = isCurrent ? borrowed.map(rankedToLite) : bucket!.topBorrowed.map(rankedToLite)
+  const supplyTotal = isCurrent ? totalSuppliedUsd : bucket!.totalSuppliedUsd
+  const borrowTotal = isCurrent ? totalBorrowedUsd : bucket!.totalBorrowedUsd
+  const asOfLabel = isCurrent ? "Current" : bucket!.label
+
   return (
-    <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
-      <DonutCard
-        title="Collateral Mix"
-        rows={collateral}
-        authoritativeTotal={totalSuppliedUsd}
-        kind="collateral"
-        methodologyKey="sector-collateral-mix-donut"
-      />
-      <DonutCard
-        title="Borrow Mix"
-        rows={borrowed}
-        authoritativeTotal={totalBorrowedUsd}
-        kind="borrow"
-        methodologyKey="sector-borrow-mix-donut"
-        footnote="DefiLlama returns USDS borrows under DAI for some Spark markets; that share is folded into the DAI wedge here."
-      />
+    <div className="space-y-2">
+      <div className="flex items-center justify-end">
+        <PeriodPicker
+          buckets={historicalBuckets}
+          value={selection}
+          onChange={setSelection}
+        />
+      </div>
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+        <DonutCard
+          title="Collateral Mix"
+          rows={collateralRows}
+          authoritativeTotal={supplyTotal}
+          kind="collateral"
+          methodologyKey="sector-collateral-mix-donut"
+          asOfLabel={asOfLabel}
+        />
+        <DonutCard
+          title="Borrow Mix"
+          rows={borrowedRows}
+          authoritativeTotal={borrowTotal}
+          kind="borrow"
+          methodologyKey="sector-borrow-mix-donut"
+          asOfLabel={asOfLabel}
+          footnote="DefiLlama returns USDS borrows under DAI for some Spark markets; that share is folded into the DAI wedge here."
+        />
+      </div>
     </div>
   )
 }

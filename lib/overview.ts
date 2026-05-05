@@ -5,6 +5,7 @@
 import { PROTOCOLS } from "./protocols"
 import { fetchAllProtocolHistory } from "./defillama"
 import { classifyAsset, type AssetType, ASSET_TYPE_STACK_ORDER } from "./assets"
+import { buildHistoricalBuckets, type HistoricalBuckets } from "./historical-buckets"
 
 export interface DeltaTriple {
   /** 24-hour absolute-USD change (current − T−1d) */
@@ -139,6 +140,11 @@ export interface OverviewResponse {
   netFlowMonthlySeries: OverviewTimeseriesPoint[]
   /** Net interest paid by borrowers (DefiLlama dailyUserFees), per protocol per day. */
   netInterestPaidDailySeries: OverviewTimeseriesPoint[]
+  /** End-of-bucket snapshots (Week/Month/Quarter) for the date-pickable
+   *  Composition Donuts and Top Markets tables. Latest 52 weeks / 24 months
+   *  / 8 quarters. May be undefined on snapshots written before this field
+   *  was introduced — components should fall back to the current arrays. */
+  historicalBuckets?: HistoricalBuckets
   fetchedAt: number
   errors: Array<{ slug: string; message: string }>
 }
@@ -799,6 +805,7 @@ export async function loadOverview(): Promise<OverviewResponse> {
     netFlowWeeklySeries,
     netFlowMonthlySeries,
     netInterestPaidDailySeries,
+    historicalBuckets: buildHistoricalBuckets(histories),
     fetchedAt: Math.floor(Date.now() / 1000),
     errors,
   }
