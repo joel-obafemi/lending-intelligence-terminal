@@ -6,6 +6,38 @@ interface Props {
   detail: ProtocolDetail
 }
 
+/** Small badge under the stat strip describing where the headline
+ *  numbers came from. "Live · on-chain" when we have a fresh
+ *  UiPoolDataProviderV3 read; "DefiLlama" otherwise. Includes a scope
+ *  hint for protocols with multiple deployments — e.g. Aave V3's Core
+ *  pool only, since that's what app.aave.com defaults to. */
+function LivenessBadge({ detail }: { detail: ProtocolDetail }) {
+  const isLive = detail.livenessSource === "on-chain"
+  return (
+    <div
+      className="flex items-center gap-2 text-[10px]"
+      style={{ color: "var(--text-muted)" }}
+    >
+      <span
+        className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded uppercase tracking-[0.05em]"
+        style={{
+          background: isLive ? "rgba(16, 185, 129, 0.10)" : "rgba(139, 92, 246, 0.08)",
+          color: isLive ? "var(--success)" : "var(--accent-blue)",
+          border: `1px solid ${isLive ? "rgba(16, 185, 129, 0.30)" : "rgba(139, 92, 246, 0.25)"}`,
+          fontWeight: 600,
+        }}
+      >
+        {isLive ? "Live · on-chain" : "DefiLlama"}
+      </span>
+      <span style={{ color: "var(--text-muted)" }}>
+        {isLive
+          ? `Read directly from Ethereum on each page load${detail.livenessScope ? ` · ${detail.livenessScope}` : ""}.`
+          : "DefiLlama Yields aggregate · refreshes every few hours."}
+      </span>
+    </div>
+  )
+}
+
 /**
  * Per-protocol headline counters. The first three (Supply / Borrows /
  * Available Liquidity) carry a 24h delta pill + 30d sparkline derived
@@ -25,6 +57,7 @@ export function ProtocolStatCards({ detail }: Props) {
     detail.totalSupplied > 0 ? (detail.totalTvl / detail.totalSupplied) * 100 : 0
 
   return (
+    <div className="space-y-2">
     <div
       className={`grid grid-cols-1 sm:grid-cols-2 ${
         isMorpho ? "lg:grid-cols-5" : "lg:grid-cols-4"
@@ -75,6 +108,8 @@ export function ProtocolStatCards({ detail }: Props) {
           accentColor="#F59E0B"
         />
       )}
+    </div>
+    <LivenessBadge detail={detail} />
     </div>
   )
 }

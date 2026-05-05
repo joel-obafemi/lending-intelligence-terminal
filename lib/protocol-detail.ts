@@ -97,6 +97,15 @@ export interface ProtocolDetail {
    *  ceiling and current isolation-mode debt. Empty for protocols that
    *  don't expose UiPoolDataProviderV3 (Morpho / Fluid). */
   isolationReserves: IsolationReserveRow[]
+  /** Where the headline Total Supply / Borrows / Available numbers
+   *  came from. "on-chain" = fresh UiPoolDataProviderV3 read (≤30s
+   *  old); "defillama" = DefiLlama Yields aggregate (≤a few hours old).
+   *  Visible to readers via a small badge on the protocol stat strip. */
+  livenessSource: "on-chain" | "defillama"
+  /** Human-readable scope label when the headline numbers come from
+   *  a specific deployment (e.g. "Aave V3 Core deployment"). Null when
+   *  the numbers cover the protocol's full DefiLlama scope. */
+  livenessScope: string | null
 }
 
 export interface IsolationReserveRow {
@@ -452,9 +461,46 @@ export async function loadProtocolDetail(slug: string): Promise<ProtocolDetail |
   // must therefore use supplied = unborrowed + borrowed as the denominator,
   // not TVL alone — otherwise Aave V3 (which has many heavily-borrowed
   // reserves) reads ~95% when the real number is ~45%.
-  const totalTvl = pools.reduce((s, p) => s + (p.tvlUsd ?? 0), 0)
-  const totalBorrowed = pools.reduce((s, p) => s + (p.totalBorrowUsd ?? 0), 0)
-  const totalSupplied = totalTvl + totalBorrowed
+  let totalTvl = pools.reduce((s, p) => s + (p.tvlUsd ?? 0), 0)
+  let totalBorrowed = pools.reduce((s, p) => s + (p.totalBorrowUsd ?? 0), 0)
+  let totalSupplied = totalTvl + totalBorrowed
+
+  // Liveness metadata for the page — defaults to DefiLlama (lagging by
+  // a few hours) and gets upgraded to "on-chain" when we have a live
+  // reserves snapshot from `UiPoolDataProviderV3`.
+  let livenessSource: ProtocolDetail["livenessSource"] = "defillama"
+  let livenessScope: string | null = null
+
+  // On-chain override: when we have fresh `UiPoolDataProviderV3` reads
+  // (Aave V3 Core or Spark Ethereum), sum reserve USD totals as the
+  // headline numbers. These reads are ≤30 seconds old — orders of
+  // magnitude fresher than DefiLlama's hourly refresh, and they match
+  // the protocol's own UI exactly. The DefiLlama-sourced totals stay
+  // available as a fallback when the on-chain read fails.
+  if (aaveStyleReserves.length > 0) {
+    const sum = aaveStyleReserves.reduce(
+      (acc, r) => {
+        acc.tvl += r.availableLiquidityUsd
+        acc.borrowed += r.totalBorrowUsd
+        acc.supplied += r.totalSupplyUsd
+        return acc
+      },
+      { tvl: 0, borrowed: 0, supplied: 0 },
+    )
+    if (sum.supplied > 0) {
+      totalTvl = sum.tvl
+      totalBorrowed = sum.borrowed
+      totalSupplied = sum.supplied
+      livenessSource = "on-chain"
+      // Aave V3 mainnet has 4 deployments (Core / Lido / EtherFi /
+      // Prime). Our on-chain read targets the Core pool only — that's
+      // also what Aave's app.aave.com defaults to. Spark has a single
+      // Ethereum deployment so the scope label is just the protocol
+      // name.
+      livenessScope =
+        slug === "aave-v3" ? "Aave V3 Core deployment" : cfg.name
+    }
+  }
 
   // Build per-asset Supply + Borrows series. Total Supply per asset = the
   // protocol's unborrowed deposits + borrowed amount of that asset.
@@ -549,6 +595,8 @@ export async function loadProtocolDetail(slug: string): Promise<ProtocolDetail |
     multiChainTvl: history?.multiChainTvl ?? {},
     multiChainBorrowed: history?.multiChainBorrowed ?? {},
     isolationReserves,
+    livenessSource,
+    livenessScope,
   }
 }
 
