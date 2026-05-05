@@ -500,6 +500,25 @@ export async function loadProtocolDetail(slug: string): Promise<ProtocolDetail |
       livenessScope =
         slug === "aave-v3" ? "Aave V3 Core deployment" : cfg.name
     }
+  } else if ((slug === "fluid" || slug === "morpho-blue") && history) {
+    // Protocol-history override for Fluid + Morpho. The DefiLlama Yields
+    // API doesn't index every market for these two — Fluid has Smart
+    // Debt vaults + lending-pool fTokens that don't expose a clean APY,
+    // and Morpho's `apyBase != null` filter (which we need for the
+    // markets table) drops the raw isolated-market rows. Falling back to
+    // `/protocol/{slug}` `chainTvls.Ethereum` matches each protocol's
+    // own UI and reconciles with the per-asset chart on this page,
+    // which already sources from this same endpoint.
+    const ethTvl = history.currentTvl
+    const ethBorrowed = history.currentBorrowed
+    const ethSupplied = ethTvl + ethBorrowed
+    if (ethSupplied > 0) {
+      totalTvl = ethTvl
+      totalBorrowed = ethBorrowed
+      totalSupplied = ethSupplied
+      // livenessSource stays "defillama" — both endpoints come from
+      // DefiLlama with comparable freshness; no need to relabel.
+    }
   }
 
   // Build per-asset Supply + Borrows series. Total Supply per asset = the
