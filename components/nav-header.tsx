@@ -29,6 +29,7 @@ const navItems = [
   { href: "/collateral", label: "Collateral" },
   { href: "/risk", label: "Risk" },
   { href: "/compare", label: "Compare" },
+  { href: "/reports", label: "Reports" },
 ]
 
 export function NavHeader() {
