@@ -1,14 +1,9 @@
 /**
- * Stub components for the /reports section.
- *
- * Every MDX-callable component the spec describes lives here as a minimal
- * placeholder. Each stub is replaced by a real implementation in later
- * commits; the MDX file renders end-to-end after every commit, just with
- * progressively better visual treatment.
+ * Remaining stub components for the /reports section.
  *
  * Replacement schedule:
  *  - Commit 2: SectionHeading, Lead, PullQuote, DataTable, Annotation,
- *              MethodologyNote
+ *              MethodologyNote ✓ (graduated to own files)
  *  - Commit 3-4: Chart
  *  - Commit 5: TOC, ProgressBar, ShareToolbar (added in their own files)
  *  - Commit 6: Hero, NextIssue, NewsletterSignup, CiteWidget
@@ -17,17 +12,9 @@
  * the corresponding stub here gets removed and the route's `components`
  * map points at the real file.
  */
-import type { ReactNode } from "react"
 import type { IssueFrontmatter } from "@/lib/reports/types"
 
-/**
- * Stubs that need frontmatter (Hero, CiteWidget) accept it via props.
- * The route binds the frontmatter into the components map by closure so
- * each stub stays a server component — no client-context plumbing
- * required just to read frontmatter.
- */
-
-// ─── Hero ────────────────────────────────────────────────────────────────
+// ─── Hero (commit 6) ─────────────────────────────────────────────────────
 export function HeroStub({ issue }: { issue: IssueFrontmatter }) {
   return (
     <header
@@ -101,254 +88,7 @@ export function HeroStub({ issue }: { issue: IssueFrontmatter }) {
   )
 }
 
-// ─── SectionHeading ──────────────────────────────────────────────────────
-export function SectionHeadingStub({
-  number,
-  children,
-}: {
-  number?: string
-  children: ReactNode
-}) {
-  return (
-    <h2
-      style={{
-        fontFamily: "var(--report-font-serif)",
-        fontWeight: 700,
-        fontSize: "32px",
-        lineHeight: 1.15,
-        marginTop: "80px",
-        marginBottom: "20px",
-      }}
-    >
-      {number != null && (
-        <span
-          className="report-numeric"
-          style={{
-            fontSize: "12px",
-            letterSpacing: "0.12em",
-            textTransform: "uppercase",
-            color: "var(--report-accent)",
-            display: "block",
-            marginBottom: "10px",
-            fontWeight: 500,
-          }}
-        >
-          § {number}
-        </span>
-      )}
-      {children}
-    </h2>
-  )
-}
-
-// ─── Lead ────────────────────────────────────────────────────────────────
-export function LeadStub({ children }: { children: ReactNode }) {
-  return (
-    <p
-      style={{
-        fontFamily: "var(--report-font-serif)",
-        fontSize: "var(--report-lead-size)",
-        lineHeight: 1.55,
-        marginBottom: "1.4em",
-        color: "var(--report-text)",
-      }}
-    >
-      {children}
-    </p>
-  )
-}
-
-// ─── PullQuote ───────────────────────────────────────────────────────────
-export function PullQuoteStub({ children }: { children: ReactNode }) {
-  return (
-    <blockquote
-      style={{
-        fontFamily: "var(--report-font-serif)",
-        fontStyle: "italic",
-        fontSize: "28px",
-        lineHeight: 1.35,
-        color: "var(--report-text)",
-        borderLeft: "4px solid var(--report-accent)",
-        paddingLeft: "24px",
-        margin: "2em 0",
-      }}
-    >
-      {children}
-    </blockquote>
-  )
-}
-
-// ─── DataTable ───────────────────────────────────────────────────────────
-interface DataTableColumn {
-  key: string
-  label: string
-  align?: "left" | "right"
-  sortable?: boolean
-}
-
-interface DataTableProps {
-  caption?: string
-  columns: DataTableColumn[]
-  rows: Array<Record<string, string | number>>
-  source_label?: string
-}
-
-export function DataTableStub({ caption, columns, rows, source_label }: DataTableProps) {
-  return (
-    <figure style={{ margin: "2em 0" }}>
-      {caption && (
-        <figcaption
-          style={{
-            fontFamily: "var(--report-font-serif)",
-            fontStyle: "italic",
-            fontSize: "14px",
-            color: "var(--report-text-muted)",
-            marginBottom: "8px",
-          }}
-        >
-          {caption}
-        </figcaption>
-      )}
-      <div style={{ overflowX: "auto" }}>
-        <table
-          style={{
-            width: "100%",
-            borderTop: "2px solid var(--report-accent)",
-            borderBottom: "2px solid var(--report-accent)",
-            borderCollapse: "collapse",
-          }}
-        >
-          <thead>
-            <tr>
-              {columns.map((c) => (
-                <th
-                  key={c.key}
-                  style={{
-                    textAlign: c.align ?? "left",
-                    padding: "10px 12px",
-                    fontFamily: "var(--report-font-sans)",
-                    fontSize: "11px",
-                    letterSpacing: "0.08em",
-                    textTransform: "uppercase",
-                    color: "var(--report-text-muted)",
-                    fontWeight: 600,
-                    borderBottom: "1px solid var(--report-border)",
-                  }}
-                >
-                  {c.label}
-                </th>
-              ))}
-            </tr>
-          </thead>
-          <tbody>
-            {rows.map((row, i) => (
-              <tr
-                key={i}
-                style={{
-                  background: i % 2 === 1 ? "rgba(31, 58, 95, 0.025)" : undefined,
-                }}
-              >
-                {columns.map((c) => (
-                  <td
-                    key={c.key}
-                    style={{
-                      textAlign: c.align ?? "left",
-                      padding: "10px 12px",
-                      fontFamily:
-                        c.align === "right"
-                          ? "var(--report-font-mono)"
-                          : "var(--report-font-serif)",
-                      fontVariantNumeric: c.align === "right" ? "tabular-nums" : undefined,
-                      fontSize: "14px",
-                    }}
-                  >
-                    {row[c.key] ?? ""}
-                  </td>
-                ))}
-              </tr>
-            ))}
-          </tbody>
-        </table>
-      </div>
-      {source_label && (
-        <div
-          style={{
-            fontFamily: "var(--report-font-mono)",
-            fontSize: "11px",
-            color: "var(--report-text-muted)",
-            marginTop: "8px",
-            letterSpacing: "0.04em",
-          }}
-        >
-          Source: {source_label}
-        </div>
-      )}
-    </figure>
-  )
-}
-
-// ─── Annotation ──────────────────────────────────────────────────────────
-export function AnnotationStub({ children }: { children: ReactNode }) {
-  return (
-    <aside
-      style={{
-        fontFamily: "var(--report-font-sans)",
-        fontSize: "14px",
-        lineHeight: 1.55,
-        color: "var(--report-text-muted)",
-        background: "rgba(31, 58, 95, 0.04)",
-        borderLeft: "2px solid var(--report-brand)",
-        padding: "12px 16px",
-        margin: "1.5em 0",
-        borderRadius: "0 4px 4px 0",
-      }}
-      role="note"
-    >
-      {children}
-    </aside>
-  )
-}
-
-// ─── MethodologyNote ─────────────────────────────────────────────────────
-export function MethodologyNoteStub({ children }: { children: ReactNode }) {
-  return (
-    <details
-      style={{
-        margin: "3em 0",
-        padding: "16px 20px",
-        background: "rgba(31, 58, 95, 0.04)",
-        borderRadius: "4px",
-      }}
-    >
-      <summary
-        style={{
-          fontFamily: "var(--report-font-sans)",
-          fontWeight: 600,
-          fontSize: "13px",
-          letterSpacing: "0.08em",
-          textTransform: "uppercase",
-          color: "var(--report-brand)",
-          cursor: "pointer",
-        }}
-      >
-        Methodology
-      </summary>
-      <div
-        style={{
-          marginTop: "16px",
-          fontFamily: "var(--report-font-serif)",
-          fontSize: "15px",
-          lineHeight: 1.6,
-          color: "var(--report-text-muted)",
-        }}
-      >
-        {children}
-      </div>
-    </details>
-  )
-}
-
-// ─── Chart ───────────────────────────────────────────────────────────────
+// ─── Chart (commit 3-4) ──────────────────────────────────────────────────
 interface ChartStubProps {
   source: string
   range?: string
@@ -439,7 +179,7 @@ export function ChartStub({
   )
 }
 
-// ─── CiteWidget ──────────────────────────────────────────────────────────
+// ─── CiteWidget (commit 6) ───────────────────────────────────────────────
 export function CiteWidgetStub({ issue }: { issue: IssueFrontmatter }) {
   return (
     <section
@@ -479,7 +219,7 @@ export function CiteWidgetStub({ issue }: { issue: IssueFrontmatter }) {
   )
 }
 
-// ─── NextIssue ───────────────────────────────────────────────────────────
+// ─── NextIssue (commit 6) ────────────────────────────────────────────────
 export function NextIssueStub() {
   return (
     <section

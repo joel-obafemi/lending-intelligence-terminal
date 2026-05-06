@@ -17,14 +17,14 @@ import { MDXRemote } from "next-mdx-remote/rsc"
 import remarkGfm from "remark-gfm"
 import { getIssueBySlug } from "@/lib/reports/getIssueBySlug"
 import { getAllIssues } from "@/lib/reports/getAllIssues"
+import { SectionHeading } from "@/components/report/SectionHeading"
+import { Lead } from "@/components/report/Lead"
+import { PullQuote } from "@/components/report/PullQuote"
+import { DataTable } from "@/components/report/DataTable"
+import { Annotation } from "@/components/report/Annotation"
+import { MethodologyNote } from "@/components/report/MethodologyNote"
 import {
   HeroStub,
-  SectionHeadingStub,
-  LeadStub,
-  PullQuoteStub,
-  DataTableStub,
-  AnnotationStub,
-  MethodologyNoteStub,
   ChartStub,
   CiteWidgetStub,
   NextIssueStub,
@@ -64,12 +64,12 @@ export default async function IssuePage({ params }: RouteParams) {
   const fm = issue.frontmatter
   const components = {
     Hero: () => <HeroStub issue={fm} />,
-    SectionHeading: SectionHeadingStub,
-    Lead: LeadStub,
-    PullQuote: PullQuoteStub,
-    DataTable: DataTableStub,
-    Annotation: AnnotationStub,
-    MethodologyNote: MethodologyNoteStub,
+    SectionHeading,
+    Lead,
+    PullQuote,
+    DataTable,
+    Annotation,
+    MethodologyNote,
     Chart: ChartStub,
     CiteWidget: () => <CiteWidgetStub issue={fm} />,
     NextIssue: NextIssueStub,
@@ -78,7 +78,7 @@ export default async function IssuePage({ params }: RouteParams) {
   return (
     <article className="report-prose" aria-labelledby="issue-title">
       <div
-        className="report-reading-column"
+        className="report-prose-grid"
         style={{ paddingTop: "32px", paddingBottom: "64px" }}
       >
         <MDXRemote
