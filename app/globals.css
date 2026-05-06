@@ -380,19 +380,12 @@ body:has(.reports-page)::before {
   font-variant-numeric: tabular-nums;
 }
 
-/* Hero + TOC layout. The TOC is bound to the hero — it sits next to
- * the title block on desktop, and scrolls away with the hero when the
- * reader enters the article body. No persistent right-rail sidebar.
- *
- * On <1280px viewports the TOC drops out entirely; readers rely on
- * the reading-progress bar + in-page anchor links plus the headings
- * themselves for navigation. (Magazines do the same — TOC is part of
- * the cover spread, not the article.) */
+/* Hero block. Single-column internal layout — title block fills the
+ * available width. The TOC moved to a persistent fixed left rail
+ * (.report-toc-rail) so the hero is no longer responsible for
+ * navigation chrome. */
 .reports-page .report-hero-inner {
-  display: grid;
-  grid-template-columns: 1fr;
-  column-gap: 48px;
-  align-items: stretch;
+  display: block;
 }
 .reports-page .report-hero-main {
   display: flex;
@@ -404,16 +397,28 @@ body:has(.reports-page)::before {
   display: none;
 }
 
+/* Persistent TOC — fixed left rail on desktop (≥1280px), hidden below.
+ * Stays visible as the reader scrolls so they can jump between sections
+ * without returning to the hero. */
+.reports-page .report-toc-rail {
+  display: none;
+}
 @media (min-width: 1280px) {
-  .reports-page .report-hero-inner {
-    grid-template-columns: minmax(0, 1fr) 280px;
-  }
-  .reports-page .report-hero-aside {
+  .reports-page .report-toc-rail {
     display: block;
-    align-self: end;
-    padding-bottom: 8px;
-    max-height: 480px;
+    position: fixed;
+    left: 24px;
+    top: 96px;
+    width: 220px;
+    max-height: calc(100vh - 128px);
     overflow-y: auto;
+    z-index: 30;
+  }
+}
+/* Wider viewports get a bit more breathing room from the page edge. */
+@media (min-width: 1600px) {
+  .reports-page .report-toc-rail {
+    left: max(24px, calc((100vw - 760px) / 2 - 260px));
   }
 }
 

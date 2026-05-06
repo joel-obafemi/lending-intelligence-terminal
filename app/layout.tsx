@@ -1,6 +1,7 @@
 import type { Metadata } from "next"
 import { Suspense } from "react"
 import { NavHeader } from "@/components/nav-header"
+import { SiteFooter } from "@/components/site-footer"
 import { IframePathSync } from "@/components/iframe-path-sync"
 import "./globals.css"
 
@@ -49,6 +50,10 @@ export default function RootLayout({
           <main className="flex-1">
             <Suspense fallback={<PageFallback />}>{children}</Suspense>
           </main>
+
+          {/* Site footer — Support + Feedback notes. Hidden on /reports/*
+              (those pages have their own magazine-style support module). */}
+          <SiteFooter />
 
           {/* Status Bar — matches SDK DashboardLayout footer */}
           <div

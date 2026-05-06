@@ -30,6 +30,7 @@ import { ShareToolbar } from "@/components/report/ShareToolbar"
 import { Hero } from "@/components/report/Hero"
 import { CiteWidget } from "@/components/report/CiteWidget"
 import { NextIssue } from "@/components/report/NextIssue"
+import { SupportPanel } from "@/components/report/SupportPanel"
 
 // ISR: snapshot view is canonical and rarely changes, but the "Live"
 // dataset rendered by every <Chart> is freshness-sensitive. Revalidate
@@ -202,9 +203,10 @@ export default async function IssuePage({ params }: RouteParams) {
         dangerouslySetInnerHTML={{ __html: JSON.stringify(articleJsonLd) }}
       />
       <ProgressBar />
-      {/* Hero block — cover + TOC together at the top. Both scroll away
-          as the reader enters the article body; no persistent sidebar. */}
-      <Hero issue={fm} aside={<TOC />} />
+      {/* Persistent left-rail TOC (≥1280px) so the reader can navigate
+          between sections without scrolling back to the hero. */}
+      <TOC />
+      <Hero issue={fm} />
       {/* Article body — single centered reading column. */}
       <article className="report-prose" aria-labelledby="issue-title">
         <div className="report-article-column" style={{ paddingTop: 48, paddingBottom: 64 }}>
@@ -218,6 +220,7 @@ export default async function IssuePage({ params }: RouteParams) {
               parseFrontmatter: false,
             }}
           />
+          <SupportPanel />
         </div>
       </article>
       <ShareToolbar

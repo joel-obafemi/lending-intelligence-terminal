@@ -15,6 +15,7 @@ import Link from "next/link"
 import type { Metadata } from "next"
 import { getAllIssues } from "@/lib/reports/getAllIssues"
 import { NewsletterSignup } from "@/components/report/NewsletterSignup"
+import { SupportPanel } from "@/components/report/SupportPanel"
 import type { IssueRecord } from "@/lib/reports/types"
 
 export const dynamic = "force-static"
@@ -424,6 +425,8 @@ export default async function ReportsArchivePage() {
           </p>
           <NewsletterSignup />
         </section>
+
+        <SupportPanel />
       </div>
     </main>
   )
