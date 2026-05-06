@@ -57,13 +57,55 @@ export async function generateStaticParams() {
   return issues.map((i) => ({ slug: i.slug }))
 }
 
+const SITE_URL = "https://lending-intelligence-terminal.vercel.app"
+
 export async function generateMetadata({ params }: RouteParams): Promise<Metadata> {
   const issue = await getIssueBySlug(params.slug)
   if (!issue) return { title: "Issue not found · DatumLabs Reports" }
-  const { frontmatter } = issue
+  const fm = issue.frontmatter
+  const title = `${fm.title} · Issue ${fm.issue_label} · ${fm.theme}`
+  const url = `${SITE_URL}/reports/${issue.slug}`
+  // Next will resolve the per-route opengraph-image.tsx automatically;
+  // we still declare the dimensions + alt explicitly so consumers that
+  // read raw meta tags get the right hint.
   return {
-    title: `${frontmatter.title} · Issue ${frontmatter.issue_label} · ${frontmatter.theme}`,
-    description: frontmatter.tagline,
+    title,
+    description: fm.tagline,
+    alternates: {
+      canonical: url,
+      types: {
+        "application/rss+xml": [
+          { url: `${SITE_URL}/reports/feed.xml`, title: "DatumLabs Reports" },
+        ],
+      },
+    },
+    openGraph: {
+      type: "article",
+      title,
+      description: fm.tagline,
+      url,
+      siteName: "DatumLabs Research",
+      publishedTime: fm.publication_date,
+      authors: ["DatumLabs"],
+      images: [
+        {
+          url: `${SITE_URL}/reports/${issue.slug}/opengraph-image`,
+          width: 1200,
+          height: 630,
+          alt: `${fm.title} — ${fm.theme}`,
+        },
+      ],
+    },
+    twitter: {
+      card: "summary_large_image",
+      title,
+      description: fm.tagline,
+      images: [`${SITE_URL}/reports/${issue.slug}/opengraph-image`],
+    },
+    other: {
+      "article:published_time": fm.publication_date,
+      "article:author": SITE_URL,
+    },
   }
 }
 
@@ -89,8 +131,33 @@ export default async function IssuePage({ params }: RouteParams) {
   const next = idx >= 0 && idx < sortedAsc.length - 1 ? sortedAsc[idx + 1] : null
 
   const fm = issue.frontmatter
-  const pageUrl = `https://lending-intelligence-terminal.vercel.app/reports/${issue.slug}`
+  const pageUrl = `${SITE_URL}/reports/${issue.slug}`
   const publicationYear = new Date(fm.publication_date).getFullYear()
+  const ogImageUrl = `${pageUrl}/opengraph-image`
+
+  const articleJsonLd = {
+    "@context": "https://schema.org",
+    "@type": "Article",
+    headline: `${fm.title} · Issue ${fm.issue_label}`,
+    name: fm.theme,
+    description: fm.tagline,
+    image: [ogImageUrl],
+    datePublished: fm.publication_date,
+    dateModified: fm.publication_date,
+    author: {
+      "@type": "Organization",
+      name: "DatumLabs Research",
+      url: SITE_URL,
+    },
+    publisher: {
+      "@type": "Organization",
+      name: "DatumLabs",
+      url: SITE_URL,
+    },
+    mainEntityOfPage: { "@type": "WebPage", "@id": pageUrl },
+    keywords: ["DeFi lending", "Ethereum", ...fm.protocols].join(", "),
+    isAccessibleForFree: true,
+  }
 
   // Bind frontmatter / archive context into the propless MDX components
   // by closure. The MDX file calls them with no props (<Hero />,
@@ -122,6 +189,10 @@ export default async function IssuePage({ params }: RouteParams) {
 
   return (
     <>
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(articleJsonLd) }}
+      />
       <ProgressBar />
       <article className="report-prose" aria-labelledby="issue-title">
         <div

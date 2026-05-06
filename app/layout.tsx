@@ -7,6 +7,13 @@ import "./globals.css"
 export const metadata: Metadata = {
   title: "Lending Intelligence Terminal · Datum Labs",
   description: "Multi-protocol lending analytics: Aave V3, SparkLend, Morpho, Fluid",
+  alternates: {
+    types: {
+      "application/rss+xml": [
+        { url: "/reports/feed.xml", title: "State of DeFi Lending — DatumLabs" },
+      ],
+    },
+  },
 }
 
 function PageFallback() {
