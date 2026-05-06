@@ -14,7 +14,7 @@
  *  - Axes use --report-text-muted, no axis lines, light grid.
  *  - Tooltip uses cream surface + serif label + monospaced numerals.
  */
-import { useMemo } from "react"
+import { Fragment, useMemo } from "react"
 import {
   ResponsiveContainer,
   ComposedChart,
@@ -139,8 +139,8 @@ export function ReportTooltip<T extends TimeseriesPoint>({
         }}
       >
         {rows.map((r) => (
-          <>
-            <span key={`${r.key}-l`} style={{ display: "flex", alignItems: "center", gap: 6, color: MUTED }}>
+          <Fragment key={r.key}>
+            <span style={{ display: "flex", alignItems: "center", gap: 6, color: MUTED }}>
               <span
                 style={{
                   display: "inline-block",
@@ -153,7 +153,6 @@ export function ReportTooltip<T extends TimeseriesPoint>({
               {r.label}
             </span>
             <span
-              key={`${r.key}-v`}
               style={{
                 fontFamily: "var(--report-font-mono)",
                 fontVariantNumeric: "tabular-nums",
@@ -162,10 +161,10 @@ export function ReportTooltip<T extends TimeseriesPoint>({
             >
               {formatter(r.value as number, r.key)}
             </span>
-          </>
+          </Fragment>
         ))}
         {total && (
-          <>
+          <Fragment key="__total">
             <span
               style={{
                 color: MUTED,
@@ -188,7 +187,7 @@ export function ReportTooltip<T extends TimeseriesPoint>({
             >
               {formatter(sum, "total")}
             </span>
-          </>
+          </Fragment>
         )}
       </div>
     </div>

@@ -17,12 +17,19 @@
  */
 import path from "node:path"
 import { promises as fs } from "node:fs"
+import type { ReactNode } from "react"
 import type { IssueFrontmatter } from "@/lib/reports/types"
 
 interface Props {
   issue: IssueFrontmatter
   /** Anchor id used by the "Cite this issue" link in the hero. */
   citeAnchor?: string
+  /** Optional content rendered to the right of the title block on
+   *  desktop (≥1280px), beneath it on smaller. The route uses this slot
+   *  to mount the table of contents alongside the cover. The aside is
+   *  bound to the hero — both scroll away together once the reader
+   *  enters the article body. */
+  aside?: ReactNode
 }
 
 async function coverImageAvailable(coverPath: string): Promise<boolean> {
@@ -58,7 +65,7 @@ function styleTitle(title: string) {
   )
 }
 
-export async function Hero({ issue, citeAnchor = "cite-this-issue" }: Props) {
+export async function Hero({ issue, citeAnchor = "cite-this-issue", aside }: Props) {
   const hasCover = await coverImageAvailable(issue.cover_image)
 
   return (
@@ -67,9 +74,6 @@ export async function Hero({ issue, citeAnchor = "cite-this-issue" }: Props) {
       aria-labelledby="issue-title"
       style={{
         position: "relative",
-        // Break out of the prose grid by spanning all columns.
-        gridColumn: "1 / -1",
-        marginTop: "-32px", // overlap the route's paddingTop
         padding: 0,
         minHeight: 480,
         overflow: "hidden",
@@ -96,16 +100,15 @@ export async function Hero({ issue, citeAnchor = "cite-this-issue" }: Props) {
       />
 
       <div
+        className="report-hero-inner"
         style={{
           maxWidth: 1200,
           margin: "0 auto",
           padding: "56px 32px 40px",
-          display: "flex",
-          flexDirection: "column",
-          gap: 28,
           minHeight: 480,
         }}
       >
+        <div className="report-hero-main">
         {/* Eyebrow */}
         <div
           style={{
@@ -226,6 +229,12 @@ export async function Hero({ issue, citeAnchor = "cite-this-issue" }: Props) {
             </a>
           </div>
         </div>
+        </div>
+        {aside && (
+          <div className="report-hero-aside" aria-label="Hero aside">
+            {aside}
+          </div>
+        )}
       </div>
     </header>
   )

@@ -76,9 +76,13 @@ const cachedCompareHistory = cache(
 export function rangeToDays(range: string | undefined): number | null {
   if (!range) return null
   if (range === "all") return null
-  if (range === "m") return 30
-  if (range === "w") return 7
-  if (range === "q") return 90
+  // Single-letter aliases mean "use this granularity with a sensible
+  // default count of buckets" — e.g. `m` = 12 months of monthly data,
+  // not "the last 30 days". The MDX uses these aliases to declare
+  // intent; chart loaders translate to a window length.
+  if (range === "m") return 365
+  if (range === "w") return 91
+  if (range === "q") return 730
   const m = range.match(/^(\d+)\s*(d|m|y)$/i)
   if (!m) return null
   const n = parseInt(m[1], 10)

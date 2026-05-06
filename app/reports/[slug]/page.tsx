@@ -43,13 +43,20 @@ interface RouteParams {
   params: { slug: string }
 }
 
-/** "April 2026" → "May 2026". Used as the next-issue placeholder when the
- *  next issue MDX hasn't been authored yet. */
-function nextMonthLabel(publicationDate: string): string {
+/** "Next issue arrives June 7, 2026" — assumes monthly cadence on the
+ *  7th of each month. Returns the full sentence so the NextIssue card
+ *  can use it directly. */
+function nextIssueDateLabel(publicationDate: string): string | undefined {
+  if (!publicationDate) return undefined
   const d = new Date(publicationDate)
-  if (Number.isNaN(d.getTime())) return ""
-  const next = new Date(Date.UTC(d.getUTCFullYear(), d.getUTCMonth() + 1, 1))
-  return next.toLocaleDateString("en-US", { month: "long", year: "numeric", timeZone: "UTC" })
+  if (Number.isNaN(d.getTime())) return undefined
+  const next = new Date(Date.UTC(d.getUTCFullYear(), d.getUTCMonth() + 1, 7))
+  return `Next issue arrives ${next.toLocaleDateString("en-US", {
+    month: "long",
+    day: "numeric",
+    year: "numeric",
+    timeZone: "UTC",
+  })}.`
 }
 
 export async function generateStaticParams() {
@@ -160,11 +167,16 @@ export default async function IssuePage({ params }: RouteParams) {
   }
 
   // Bind frontmatter / archive context into the propless MDX components
-  // by closure. The MDX file calls them with no props (<Hero />,
-  // <CiteWidget />, <NextIssue />); the route injects the frontmatter
-  // and adjacency. Same closure binds freeze_date into every <Chart>.
+  // by closure. The MDX file calls them with no props; the route
+  // injects the frontmatter and adjacency. Same closure binds
+  // freeze_date into every <Chart>.
+  //
+  // Hero is RENDERED OUTSIDE the MDX tree (alongside the TOC) so the
+  // hero+TOC unit scrolls away cleanly when the reader enters the
+  // article body. The MDX <Hero /> tag is mapped to a no-op so the
+  // existing MDX file keeps validating without rendering a duplicate.
   const components = {
-    Hero: () => <Hero issue={fm} />,
+    Hero: () => null,
     SectionHeading,
     Lead,
     PullQuote,
@@ -178,11 +190,7 @@ export default async function IssuePage({ params }: RouteParams) {
         current={issue}
         prev={prev}
         next={next}
-        nextPlaceholder={
-          fm.publication_date
-            ? `Next issue arrives at the end of ${nextMonthLabel(fm.publication_date)}.`
-            : undefined
-        }
+        nextPlaceholder={nextIssueDateLabel(fm.publication_date)}
       />
     ),
   }
@@ -194,11 +202,12 @@ export default async function IssuePage({ params }: RouteParams) {
         dangerouslySetInnerHTML={{ __html: JSON.stringify(articleJsonLd) }}
       />
       <ProgressBar />
+      {/* Hero block — cover + TOC together at the top. Both scroll away
+          as the reader enters the article body; no persistent sidebar. */}
+      <Hero issue={fm} aside={<TOC />} />
+      {/* Article body — single centered reading column. */}
       <article className="report-prose" aria-labelledby="issue-title">
-        <div
-          className="report-prose-grid"
-          style={{ paddingTop: "32px", paddingBottom: "64px" }}
-        >
+        <div className="report-article-column" style={{ paddingTop: 48, paddingBottom: 64 }}>
           <MDXRemote
             source={issue.body}
             components={components}
@@ -209,7 +218,6 @@ export default async function IssuePage({ params }: RouteParams) {
               parseFrontmatter: false,
             }}
           />
-          <TOC />
         </div>
       </article>
       <ShareToolbar

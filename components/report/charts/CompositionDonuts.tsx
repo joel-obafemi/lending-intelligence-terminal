@@ -149,9 +149,22 @@ export function CompositionDonutsReport({ data, params }: Props) {
     [data.borrowed, data.totalBorrowedUsd],
   )
   return (
-    <div style={{ display: "grid", gridTemplateColumns: "1fr", gap: 32 }}>
+    <div className="report-composition-donuts">
       <DonutHalf title="Collateral mix" total={data.totalSuppliedUsd} wedges={collateralWedges} />
       <DonutHalf title="Borrow mix" total={data.totalBorrowedUsd} wedges={borrowedWedges} />
+      <style>{`
+        .report-composition-donuts {
+          display: grid;
+          grid-template-columns: 1fr;
+          gap: 32px;
+        }
+        @media (min-width: 720px) {
+          .report-composition-donuts {
+            grid-template-columns: 1fr 1fr;
+            gap: 24px;
+          }
+        }
+      `}</style>
     </div>
   )
 }
