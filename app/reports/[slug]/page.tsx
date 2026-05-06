@@ -27,11 +27,9 @@ import { Chart } from "@/components/report/Chart"
 import { ProgressBar } from "@/components/report/ProgressBar"
 import { TOC } from "@/components/report/TOC"
 import { ShareToolbar } from "@/components/report/ShareToolbar"
-import {
-  HeroStub,
-  CiteWidgetStub,
-  NextIssueStub,
-} from "@/components/report/_stubs"
+import { Hero } from "@/components/report/Hero"
+import { CiteWidget } from "@/components/report/CiteWidget"
+import { NextIssue } from "@/components/report/NextIssue"
 
 // ISR: snapshot view is canonical and rarely changes, but the "Live"
 // dataset rendered by every <Chart> is freshness-sensitive. Revalidate
@@ -43,6 +41,15 @@ export const dynamicParams = false
 
 interface RouteParams {
   params: { slug: string }
+}
+
+/** "April 2026" → "May 2026". Used as the next-issue placeholder when the
+ *  next issue MDX hasn't been authored yet. */
+function nextMonthLabel(publicationDate: string): string {
+  const d = new Date(publicationDate)
+  if (Number.isNaN(d.getTime())) return ""
+  const next = new Date(Date.UTC(d.getUTCFullYear(), d.getUTCMonth() + 1, 1))
+  return next.toLocaleDateString("en-US", { month: "long", year: "numeric", timeZone: "UTC" })
 }
 
 export async function generateStaticParams() {
@@ -61,20 +68,36 @@ export async function generateMetadata({ params }: RouteParams): Promise<Metadat
 }
 
 export default async function IssuePage({ params }: RouteParams) {
-  const issue = await getIssueBySlug(params.slug)
+  const [issue, allIssues] = await Promise.all([
+    getIssueBySlug(params.slug),
+    getAllIssues(),
+  ])
   if (!issue) notFound()
   if (issue.frontmatter.status !== "published") notFound()
 
-  // Bind frontmatter into the propless components by closure. This keeps
-  // the stubs server components — no React Context plumbing needed yet.
-  // When client-only readers (TOC scroll-spy, ShareToolbar) ship in
-  // commit 5, an IssueProvider will be added back for those specifically.
+  // Locate prev / next from the published-issue archive. getAllIssues()
+  // sorts by publication_date desc; prev = newer than current,
+  // next = older. Reverse the human reading: at issue #N, "prev" means
+  // the *earlier* issue (#N-1) and "next" means the upcoming #N+1.
+  const sortedAsc = [...allIssues].sort(
+    (a, b) =>
+      Date.parse(a.frontmatter.publication_date) -
+      Date.parse(b.frontmatter.publication_date),
+  )
+  const idx = sortedAsc.findIndex((i) => i.slug === issue.slug)
+  const prev = idx > 0 ? sortedAsc[idx - 1] : null
+  const next = idx >= 0 && idx < sortedAsc.length - 1 ? sortedAsc[idx + 1] : null
+
   const fm = issue.frontmatter
-  // Bind the issue's freeze_date into every Chart by closure. The MDX
-  // file declares only `<Chart source="…" range="…" />`; the route
-  // injects freezeDate so authors don't have to repeat it.
+  const pageUrl = `https://lending-intelligence-terminal.vercel.app/reports/${issue.slug}`
+  const publicationYear = new Date(fm.publication_date).getFullYear()
+
+  // Bind frontmatter / archive context into the propless MDX components
+  // by closure. The MDX file calls them with no props (<Hero />,
+  // <CiteWidget />, <NextIssue />); the route injects the frontmatter
+  // and adjacency. Same closure binds freeze_date into every <Chart>.
   const components = {
-    Hero: () => <HeroStub issue={fm} />,
+    Hero: () => <Hero issue={fm} />,
     SectionHeading,
     Lead,
     PullQuote,
@@ -82,12 +105,20 @@ export default async function IssuePage({ params }: RouteParams) {
     Annotation,
     MethodologyNote,
     Chart: (props: any) => <Chart {...props} freezeDate={fm.freeze_date} />,
-    CiteWidget: () => <CiteWidgetStub issue={fm} />,
-    NextIssue: NextIssueStub,
+    CiteWidget: () => <CiteWidget issue={fm} pageUrl={pageUrl} />,
+    NextIssue: () => (
+      <NextIssue
+        current={issue}
+        prev={prev}
+        next={next}
+        nextPlaceholder={
+          fm.publication_date
+            ? `Next issue arrives at the end of ${nextMonthLabel(fm.publication_date)}.`
+            : undefined
+        }
+      />
+    ),
   }
-
-  const pageUrl = `https://lending-intelligence-terminal.vercel.app/reports/${issue.slug}`
-  const publicationYear = new Date(fm.publication_date).getFullYear()
 
   return (
     <>
