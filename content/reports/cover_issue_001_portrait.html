@@ -1,0 +1,263 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>State of DeFi Lending on Ethereum — Issue #001</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Source+Serif+4:ital,wght@0,400;0,600;0,700;1,400&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap');
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  html, body {
+    width: 100%;
+    height: 100%;
+    background: #F7F4ED;
+    overflow: hidden;
+  }
+
+  .cover {
+    width: 1240px;
+    height: 1748px;
+    margin: 0 auto;
+    background: #F7F4ED;
+    position: relative;
+    overflow: hidden;
+    color: #0E1B2C;
+  }
+
+  /* Top accent rail */
+  .rail {
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 16px;
+    background: linear-gradient(90deg, #1F3A5F 0%, #1F3A5F 60%, #C5511A 60%, #C5511A 100%);
+  }
+
+  /* Header band */
+  .header {
+    padding: 80px 80px 0;
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+  }
+
+  .brand {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 13px;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: #1F3A5F;
+    font-weight: 500;
+  }
+
+  .meta {
+    text-align: right;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 13px;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: #595959;
+  }
+
+  .meta .issue {
+    color: #C5511A;
+    font-weight: 500;
+    margin-bottom: 6px;
+  }
+
+  /* Decorative grid */
+  .grid {
+    position: absolute;
+    top: 220px; left: 80px; right: 80px;
+    height: 240px;
+    display: grid;
+    grid-template-columns: repeat(24, 1fr);
+    grid-template-rows: repeat(8, 1fr);
+    gap: 8px;
+    opacity: 0.7;
+  }
+
+  .grid-dot {
+    border-radius: 50%;
+    background: #1F3A5F;
+    opacity: 0;
+    transform: scale(0.5);
+  }
+
+  /* Title block */
+  .title-block {
+    position: absolute;
+    bottom: 460px;
+    left: 80px;
+    right: 80px;
+  }
+
+  .eyebrow {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 14px;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    color: #C5511A;
+    font-weight: 500;
+    margin-bottom: 28px;
+  }
+
+  .title {
+    font-family: 'Source Serif 4', serif;
+    font-size: 96px;
+    line-height: 1.0;
+    font-weight: 700;
+    letter-spacing: -0.02em;
+    color: #0E1B2C;
+    margin-bottom: 36px;
+  }
+
+  .title .of {
+    font-style: italic;
+    font-weight: 400;
+    color: #1F3A5F;
+  }
+
+  .divider {
+    width: 80px;
+    height: 4px;
+    background: #C5511A;
+    margin-bottom: 32px;
+  }
+
+  .subtitle {
+    font-family: 'Source Serif 4', serif;
+    font-size: 38px;
+    line-height: 1.2;
+    font-weight: 400;
+    font-style: italic;
+    color: #1F3A5F;
+  }
+
+  /* Tagline / abstract */
+  .tagline {
+    position: absolute;
+    bottom: 240px;
+    left: 80px;
+    right: 80px;
+    max-width: 860px;
+    font-family: 'Source Serif 4', serif;
+    font-size: 22px;
+    line-height: 1.5;
+    color: #404040;
+    font-weight: 400;
+  }
+
+  /* Footer */
+  .footer {
+    position: absolute;
+    bottom: 80px;
+    left: 80px;
+    right: 80px;
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+    padding-top: 40px;
+    border-top: 1px solid #D4CFC2;
+  }
+
+  .footer-left {
+    font-family: 'Inter', sans-serif;
+    font-size: 14px;
+    letter-spacing: 0.06em;
+    color: #595959;
+    text-transform: uppercase;
+    font-weight: 500;
+  }
+
+  .footer-left strong {
+    color: #1F3A5F;
+    display: block;
+    font-size: 18px;
+    letter-spacing: 0.04em;
+    margin-bottom: 6px;
+    font-weight: 600;
+  }
+
+  .protocols {
+    display: flex;
+    gap: 24px;
+    align-items: center;
+  }
+
+  .protocol-pill {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 12px;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    padding: 8px 14px;
+    border: 1px solid #1F3A5F;
+    border-radius: 999px;
+    color: #1F3A5F;
+    font-weight: 500;
+  }
+
+  /* Spark line decoration */
+  .spark {
+    position: absolute;
+    top: 220px;
+    left: 80px;
+    right: 80px;
+    height: 240px;
+    pointer-events: none;
+  }
+</style>
+</head>
+<body>
+<div class="cover">
+  <div class="rail"></div>
+
+  <div class="header">
+    <div class="brand">DatumLabs Research</div>
+    <div class="meta">
+      <div class="issue">Issue №001</div>
+      <div>April 2026</div>
+    </div>
+  </div>
+
+  <svg class="spark" viewBox="0 0 1080 240" preserveAspectRatio="none">
+    <defs>
+      <linearGradient id="grad" x1="0" x2="0" y1="0" y2="1">
+        <stop offset="0%" stop-color="#C5511A" stop-opacity="0.18"/>
+        <stop offset="100%" stop-color="#C5511A" stop-opacity="0"/>
+      </linearGradient>
+    </defs>
+    <path d="M 0 200 L 60 198 L 120 195 L 180 192 L 240 196 L 300 188 L 360 180 L 420 172 L 480 164 L 540 152 L 600 138 L 660 116 L 720 90 L 780 64 L 840 48 L 900 60 L 960 78 L 1020 92 L 1080 102"
+          fill="none" stroke="#C5511A" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+    <path d="M 0 200 L 60 198 L 120 195 L 180 192 L 240 196 L 300 188 L 360 180 L 420 172 L 480 164 L 540 152 L 600 138 L 660 116 L 720 90 L 780 64 L 840 48 L 900 60 L 960 78 L 1020 92 L 1080 102 L 1080 240 L 0 240 Z"
+          fill="url(#grad)"/>
+    <line x1="780" y1="0" x2="780" y2="240" stroke="#1F3A5F" stroke-width="1" stroke-dasharray="4 4" opacity="0.4"/>
+    <text x="790" y="20" font-family="JetBrains Mono, monospace" font-size="11" fill="#1F3A5F" letter-spacing="1.5">Apr 18 · rsETH</text>
+  </svg>
+
+  <div class="title-block">
+    <div class="eyebrow">Monthly Sector Brief</div>
+    <h1 class="title">State <span class="of">of</span> DeFi Lending<br/>on Ethereum</h1>
+    <div class="divider"></div>
+    <div class="subtitle">The rsETH Reckoning</div>
+  </div>
+
+  <div class="tagline">
+    How a single bridge exploit on Kelp's Unichain to Ethereum route cascaded through DeFi lending in 96 hours, redistributed $13.18 billion in net deposits, and closed the Real Yield Spread by 100 basis points without changing the conditions that made the cascade possible.
+  </div>
+
+  <div class="footer">
+    <div class="footer-left">
+      <strong>DatumLabs</strong>
+      Lending Terminal · datumlabs.xyz
+    </div>
+    <div class="protocols">
+      <div class="protocol-pill">Aave V3</div>
+      <div class="protocol-pill">Spark</div>
+      <div class="protocol-pill">Morpho</div>
+      <div class="protocol-pill">Fluid</div>
+    </div>
+  </div>
+</div>
+</body>
+</html>

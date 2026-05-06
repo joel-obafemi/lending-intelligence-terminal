@@ -255,3 +255,140 @@ body::before {
   background: rgba(15, 17, 21, 0.45);
   z-index: -1;
 }
+
+/* ═════════════════════════════════════════════════════════════════════════
+ * Reports section — magazine-style reading surface for the long-form
+ * State of DeFi Lending issues at /reports/[slug].
+ *
+ * Tokens are scoped under `.reports-page` so the dashboard's terminal-mode
+ * tokens above are completely untouched. The reports body uses a warm
+ * cream surface, a serif body type, and a brand+accent pair (navy +
+ * burnt orange) that match the issue cover art.
+ *
+ * Source: BUILD_SPEC_reports_section.md § "Visual design tokens".
+ * ═════════════════════════════════════════════════════════════════════════ */
+
+@import url('https://fonts.googleapis.com/css2?family=Source+Serif+4:ital,wght@0,400;0,600;0,700;1,400;1,600&family=Inter:wght@400;500;600;700&display=swap');
+
+.reports-page {
+  --report-bg: #F7F4ED;
+  --report-bg-dark: #0E1B2C;
+  --report-text: #0E1B2C;
+  --report-text-muted: #595959;
+  --report-text-subtle: #B8C9DD;
+  --report-accent: #C5511A;
+  --report-brand: #1F3A5F;
+  --report-border: #D4CFC2;
+
+  --report-font-serif: "Source Serif 4", "Iowan Old Style", "Charter", Georgia, serif;
+  --report-font-sans: "Inter", -apple-system, system-ui, sans-serif;
+  --report-font-mono: "JetBrains Mono", "Iosevka", "SF Mono", Consolas, monospace;
+
+  --report-reading-column: 720px;
+  --report-line-height: 1.75;
+  --report-body-size: 18px;
+  --report-lead-size: 21px;
+
+  background: var(--report-bg);
+  color: var(--report-text);
+  font-family: var(--report-font-serif);
+  font-size: var(--report-body-size);
+  line-height: var(--report-line-height);
+}
+
+/* The dashboard root injects a faint TUI scanline overlay on body::before;
+ * suppress it inside the reports surface so the magazine feel is clean. */
+body:has(.reports-page)::before {
+  display: none;
+}
+
+/* Reading column — applied to article body wrapper. */
+.reports-page .report-reading-column {
+  max-width: var(--report-reading-column);
+  margin-left: auto;
+  margin-right: auto;
+  padding-left: 24px;
+  padding-right: 24px;
+}
+
+/* Default prose styling — applies to the MDX-rendered content inside the
+ * issue page. Scoped via the `.report-prose` class on the article wrapper. */
+.reports-page .report-prose p {
+  margin-bottom: 1.4em;
+  color: var(--report-text);
+}
+
+.reports-page .report-prose h1,
+.reports-page .report-prose h2,
+.reports-page .report-prose h3 {
+  font-family: var(--report-font-serif);
+  font-weight: 700;
+  letter-spacing: -0.01em;
+  color: var(--report-text);
+  line-height: 1.15;
+}
+
+.reports-page .report-prose h2 {
+  font-size: 32px;
+  margin-top: 2.5em;
+  margin-bottom: 0.7em;
+}
+
+.reports-page .report-prose h3 {
+  font-size: 22px;
+  margin-top: 2em;
+  margin-bottom: 0.5em;
+}
+
+.reports-page .report-prose strong {
+  font-weight: 600;
+}
+
+.reports-page .report-prose em {
+  font-style: italic;
+}
+
+.reports-page .report-prose a {
+  color: var(--report-accent);
+  text-decoration: underline;
+  text-decoration-thickness: 1px;
+  text-underline-offset: 2px;
+}
+
+.reports-page .report-prose a:hover {
+  text-decoration-thickness: 2px;
+}
+
+.reports-page .report-prose code {
+  font-family: var(--report-font-mono);
+  font-size: 0.92em;
+  background: rgba(31, 58, 95, 0.06);
+  padding: 1px 6px;
+  border-radius: 3px;
+}
+
+.reports-page .report-prose hr {
+  border: 0;
+  border-top: 1px solid var(--report-border);
+  margin: 3em auto;
+  max-width: 120px;
+}
+
+/* Numeric tabular data inside the reports surface. */
+.reports-page .report-numeric {
+  font-family: var(--report-font-mono);
+  font-variant-numeric: tabular-nums;
+}
+
+/* Accessibility — honor `prefers-reduced-motion` across the reports surface
+ * (progress bar, chart entry, share toolbar fade-ins, etc.). */
+@media (prefers-reduced-motion: reduce) {
+  .reports-page *,
+  .reports-page *::before,
+  .reports-page *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+    scroll-behavior: auto !important;
+  }
+}

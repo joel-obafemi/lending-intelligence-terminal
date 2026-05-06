@@ -1,0 +1,236 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>State of DeFi Lending on Ethereum — Social Cover</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Source+Serif+4:ital,wght@0,400;0,600;0,700;1,400&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap');
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  html, body {
+    width: 100%;
+    background: #0E1B2C;
+    overflow: hidden;
+  }
+
+  .card {
+    width: 1200px;
+    height: 630px;
+    margin: 0 auto;
+    background: #0E1B2C;
+    position: relative;
+    overflow: hidden;
+    color: #F7F4ED;
+    display: flex;
+  }
+
+  /* Left content */
+  .left {
+    flex: 1.4;
+    padding: 60px 0 60px 70px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    z-index: 2;
+  }
+
+  .top {
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+  }
+
+  .brand-row {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+  }
+
+  .brand-mark {
+    width: 8px;
+    height: 8px;
+    background: #C5511A;
+    border-radius: 50%;
+  }
+
+  .brand-text {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 13px;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: #C5511A;
+    font-weight: 500;
+  }
+
+  .eyebrow {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 12px;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    color: rgba(247, 244, 237, 0.55);
+    font-weight: 500;
+  }
+
+  .title {
+    font-family: 'Source Serif 4', serif;
+    font-size: 56px;
+    line-height: 1.0;
+    font-weight: 700;
+    letter-spacing: -0.015em;
+    color: #F7F4ED;
+    margin-top: 4px;
+  }
+
+  .title .of {
+    font-style: italic;
+    font-weight: 400;
+    color: #B8C9DD;
+  }
+
+  .subtitle {
+    font-family: 'Source Serif 4', serif;
+    font-size: 30px;
+    line-height: 1.2;
+    font-style: italic;
+    font-weight: 400;
+    color: #C5511A;
+    margin-top: 28px;
+  }
+
+  .bottom {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding-top: 24px;
+    border-top: 1px solid rgba(247, 244, 237, 0.15);
+  }
+
+  .issue {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 14px;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: rgba(247, 244, 237, 0.7);
+    font-weight: 500;
+  }
+
+  .issue strong {
+    color: #F7F4ED;
+    font-weight: 600;
+  }
+
+  /* Right side: chart */
+  .right {
+    flex: 1;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .chart-bg {
+    position: absolute;
+    top: 0; left: 0; right: 0; bottom: 0;
+    background: linear-gradient(135deg, rgba(31,58,95,0.4) 0%, rgba(14,27,44,0.0) 100%);
+  }
+
+  .chart {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+  }
+
+  /* Annotation badge */
+  .annotation {
+    position: absolute;
+    top: 110px;
+    right: 60px;
+    background: #C5511A;
+    color: #F7F4ED;
+    padding: 12px 20px;
+    border-radius: 4px;
+    z-index: 3;
+  }
+
+  .annotation .num {
+    font-family: 'Source Serif 4', serif;
+    font-size: 36px;
+    font-weight: 700;
+    line-height: 1;
+    letter-spacing: -0.01em;
+  }
+
+  .annotation .label {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    margin-top: 6px;
+    opacity: 0.85;
+  }
+</style>
+</head>
+<body>
+<div class="card">
+  <div class="left">
+    <div class="top">
+      <div class="brand-row">
+        <div class="brand-mark"></div>
+        <div class="brand-text">DatumLabs Research</div>
+      </div>
+      <div class="eyebrow">Monthly Sector Brief · April 2026</div>
+      <h1 class="title">State <span class="of">of</span> DeFi Lending<br/>on Ethereum</h1>
+      <div class="subtitle">The rsETH Reckoning</div>
+    </div>
+
+    <div class="bottom">
+      <div class="issue">Issue <strong>№001</strong></div>
+      <div class="issue">Aave V3 · Spark · Morpho · Fluid</div>
+    </div>
+  </div>
+
+  <div class="right">
+    <div class="chart-bg"></div>
+    <svg class="chart" viewBox="0 0 500 630" preserveAspectRatio="xMidYMid slice">
+      <defs>
+        <linearGradient id="fillGrad" x1="0" x2="0" y1="0" y2="1">
+          <stop offset="0%" stop-color="#C5511A" stop-opacity="0.4"/>
+          <stop offset="100%" stop-color="#C5511A" stop-opacity="0"/>
+        </linearGradient>
+      </defs>
+      <!-- Horizontal grid lines -->
+      <g opacity="0.08" stroke="#F7F4ED" stroke-width="1">
+        <line x1="0" y1="120" x2="500" y2="120"/>
+        <line x1="0" y1="220" x2="500" y2="220"/>
+        <line x1="0" y1="320" x2="500" y2="320"/>
+        <line x1="0" y1="420" x2="500" y2="420"/>
+        <line x1="0" y1="520" x2="500" y2="520"/>
+      </g>
+      <!-- Zero line -->
+      <line x1="0" y1="370" x2="500" y2="370" stroke="#B8C9DD" stroke-width="1" stroke-dasharray="4 6" opacity="0.5"/>
+      <text x="14" y="362" font-family="JetBrains Mono, monospace" font-size="10" fill="#B8C9DD" letter-spacing="1" opacity="0.6">T-bill parity</text>
+
+      <!-- Real Yield Spread line: dips below zero, recovers in April -->
+      <path d="M 0 360 L 30 365 L 60 372 L 90 380 L 120 390 L 150 405 L 180 425 L 210 442 L 240 455 L 270 462 L 300 460 L 330 450 L 360 432 L 390 410 L 420 388 L 450 380 L 480 378 L 500 376"
+            fill="none" stroke="#C5511A" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+      <!-- Fill below the line, above zero baseline -->
+      <path d="M 0 360 L 30 365 L 60 372 L 90 380 L 120 390 L 150 405 L 180 425 L 210 442 L 240 455 L 270 462 L 300 460 L 330 450 L 360 432 L 390 410 L 420 388 L 450 380 L 480 378 L 500 376 L 500 370 L 0 370 Z"
+            fill="url(#fillGrad)" opacity="0.7"/>
+
+      <!-- Recovery callout -->
+      <circle cx="450" cy="380" r="6" fill="#C5511A"/>
+      <circle cx="450" cy="380" r="11" fill="none" stroke="#C5511A" stroke-width="1.5" opacity="0.4"/>
+
+      <!-- Axis labels -->
+      <text x="14" y="610" font-family="JetBrains Mono, monospace" font-size="10" fill="#B8C9DD" letter-spacing="1" opacity="0.5">2024</text>
+      <text x="475" y="610" font-family="JetBrains Mono, monospace" font-size="10" fill="#B8C9DD" letter-spacing="1" opacity="0.5" text-anchor="end">May '26</text>
+    </svg>
+
+    <div class="annotation">
+      <div class="num">−26 bps</div>
+      <div class="label">Real Yield Spread, Apr 30</div>
+    </div>
+  </div>
+</div>
+</body>
+</html>
