@@ -3,18 +3,48 @@ import { Suspense } from "react"
 import { NavHeader } from "@/components/nav-header"
 import { SiteFooter } from "@/components/site-footer"
 import { IframePathSync } from "@/components/iframe-path-sync"
+import { getFeaturedIssue } from "@/lib/reports/featuredIssue"
 import "./globals.css"
 
-export const metadata: Metadata = {
-  title: "Lending Intelligence Terminal · Datum Labs",
-  description: "Multi-protocol lending analytics: Aave V3, SparkLend, Morpho, Fluid",
-  alternates: {
-    types: {
-      "application/rss+xml": [
-        { url: "/reports/feed.xml", title: "State of DeFi Lending — DatumLabs" },
-      ],
+const SITE_URL = "https://lending-intelligence-terminal.vercel.app"
+
+export async function generateMetadata(): Promise<Metadata> {
+  // Default OG image falls back to the latest issue's social card so a
+  // shared dashboard link surfaces the publication in link previews.
+  // Per-route metadata (e.g. /reports/[slug]) overrides this default.
+  const featured = await getFeaturedIssue()
+  const ogImage = featured
+    ? {
+        url: featured.socialImageUrl,
+        width: 1200,
+        height: 630,
+        alt: `DatumLabs Research · ${featured.record.frontmatter.theme}`,
+      }
+    : null
+  return {
+    title: "Lending Intelligence Terminal · Datum Labs",
+    description: "Multi-protocol lending analytics: Aave V3, SparkLend, Morpho, Fluid",
+    metadataBase: new URL(SITE_URL),
+    alternates: {
+      types: {
+        "application/rss+xml": [
+          { url: "/reports/feed.xml", title: "State of DeFi Lending — DatumLabs" },
+        ],
+      },
     },
-  },
+    openGraph: ogImage
+      ? {
+          siteName: "DatumLabs Research",
+          images: [ogImage],
+        }
+      : { siteName: "DatumLabs Research" },
+    twitter: ogImage
+      ? {
+          card: "summary_large_image",
+          images: [ogImage.url],
+        }
+      : undefined,
+  }
 }
 
 function PageFallback() {
@@ -31,11 +61,30 @@ function PageFallback() {
   )
 }
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: {
   children: React.ReactNode
 }) {
+  const featured = await getFeaturedIssue()
+  // Serializable summary for client components (NavHeader, SiteFooter
+  // etc). The full IssueRecord includes the body which client doesn't
+  // need to ship.
+  const featuredSummary = featured
+    ? {
+        slug: featured.slug,
+        url: featured.url,
+        isFresh: featured.isFresh,
+        socialImageUrl: featured.socialImageUrl,
+        title: featured.record.frontmatter.title,
+        theme: featured.record.frontmatter.theme,
+        tagline: featured.record.frontmatter.tagline,
+        issueLabel: featured.record.frontmatter.issue_label,
+        publicationDate: featured.record.frontmatter.publication_date,
+        readingTimeMin: featured.record.frontmatter.reading_time_min,
+        coverImage: featured.record.frontmatter.cover_image,
+      }
+    : null
   return (
     <html lang="en">
       <body>
@@ -43,7 +92,7 @@ export default function RootLayout({
           className="min-h-screen font-mono flex flex-col"
           style={{ background: "var(--background)", color: "var(--foreground)" }}
         >
-          <NavHeader />
+          <NavHeader featured={featuredSummary} />
           <Suspense>
             <IframePathSync />
           </Suspense>
@@ -53,7 +102,7 @@ export default function RootLayout({
 
           {/* Site footer — Support + Feedback notes. Hidden on /reports/*
               (those pages have their own magazine-style support module). */}
-          <SiteFooter />
+          <SiteFooter featured={featuredSummary} />
 
           {/* Status Bar — matches SDK DashboardLayout footer */}
           <div

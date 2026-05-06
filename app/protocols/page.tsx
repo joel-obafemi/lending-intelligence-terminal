@@ -31,6 +31,7 @@ import { AaveSafetyModule } from "@/components/protocols/aave-safety-module"
 import { SparkYieldPanel } from "@/components/protocols/spark-yield-panel"
 import { AssetStackChart } from "@/components/overview/asset-stack-chart"
 import { AsOfFooter } from "@/components/overview/as-of-footer"
+import { FeaturedIssueCallout } from "@/components/featured-issue-callout"
 import {
   loadSafetyModuleStatus,
   type SafetyModuleStatus,
@@ -224,6 +225,12 @@ export default async function ProtocolsPage({ searchParams }: { searchParams: Se
       </div>
 
       <ProtocolStatCards detail={detail} />
+
+      {/* Featured-issue inline callout — surfaces the latest issue's
+          coverage of this protocol (italic-serif copy + deep link to
+          the issue's Protocol Deep Dive section). Renders nothing
+          when no editorial hook is configured for the active issue. */}
+      <FeaturedIssueCallout protocolSlug={slug} />
 
       {/* Fluid-only: Smart Collateral / Smart Debt adoption — Fluid's
           headline differentiator vs. Aave V3 forks. Sits high on the page

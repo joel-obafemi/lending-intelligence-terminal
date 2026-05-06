@@ -24,6 +24,7 @@ import { RevenueBarChart } from "@/components/overview/revenue-bar-chart"
 import { CollateralLiquidationTable } from "@/components/overview/collateral-liquidation-table"
 import { LargestEventsTable } from "@/components/overview/largest-events-table"
 import { AsOfFooter } from "@/components/overview/as-of-footer"
+import { FeaturedIssueCallout } from "@/components/featured-issue-callout"
 import { CiteThisPage } from "@/components/overview/cite-this-page"
 
 export const dynamic = "force-dynamic"
@@ -114,6 +115,10 @@ export default async function RiskPage() {
         summary={summary}
         badDebt={risk.badDebt}
       />
+
+      {/* Featured-issue inline callout — links to the latest issue's
+          theme essay (rsETH Reckoning for Issue #001). */}
+      <FeaturedIssueCallout theme />
 
       {/* Zone 2 — Stablecoin Debt Share trend */}
       <StablecoinDebtShareTrend

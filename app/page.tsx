@@ -6,9 +6,11 @@ import { CompositionDonuts } from "@/components/overview/composition-donuts"
 import { TopMarketsCrossProtocolTable } from "@/components/overview/top-markets-cross-protocol-table"
 import { CiteThisPage } from "@/components/overview/cite-this-page"
 import { AsOfFooter } from "@/components/overview/as-of-footer"
+import { FeaturedIssueBanner } from "@/components/featured-issue-banner"
 import { loadSectorOverview } from "@/lib/sector-snapshot"
 import { loadTopMarketsAcrossProtocols } from "@/lib/cross-protocol-markets"
 import { loadRealYieldSpread } from "@/lib/real-yield"
+import { getFeaturedIssue } from "@/lib/reports/featuredIssue"
 import { sectorVerdictSentence } from "@/lib/headline-sentence"
 import {
   biggestMover,
@@ -27,12 +29,28 @@ export const dynamic = "force-dynamic"
 export const maxDuration = 60
 
 export default async function OverviewPage() {
-  const [overview, topMarkets, realYield] = await Promise.all([
+  const [overview, topMarkets, realYield, featured] = await Promise.all([
     loadSectorOverview(),
     loadTopMarketsAcrossProtocols(50),
     loadRealYieldSpread().catch(() => null),
+    getFeaturedIssue().catch(() => null),
   ])
   const data = overview.payload
+  const featuredSummary = featured
+    ? {
+        slug: featured.slug,
+        url: featured.url,
+        isFresh: featured.isFresh,
+        socialImageUrl: featured.socialImageUrl,
+        title: featured.record.frontmatter.title,
+        theme: featured.record.frontmatter.theme,
+        tagline: featured.record.frontmatter.tagline,
+        issueLabel: featured.record.frontmatter.issue_label,
+        publicationDate: featured.record.frontmatter.publication_date,
+        readingTimeMin: featured.record.frontmatter.reading_time_min,
+        coverImage: featured.record.frontmatter.cover_image,
+      }
+    : null
   const { snapshot, protocols, revenueSnapshot } = data
 
   // ─── Verdict strip inputs ─────────────────────────────────────────────
@@ -82,6 +100,11 @@ export default async function OverviewPage() {
           DefiLlama, the Liquidator Economy DB, and FRED.
         </p>
       </div>
+
+      {/* Featured-issue banner — discovery hook for the latest report.
+          Dismissible per slug via 7-day cookie. Renders nothing when no
+          issue is published or the banner has been dismissed. */}
+      <FeaturedIssueBanner featured={featuredSummary} />
 
       {/* Zone 1 — Verdict strip (3 scale + 3 rate cards + summary) */}
       <VerdictStrip
