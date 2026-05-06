@@ -53,7 +53,11 @@ export const SERIES_COLORS = [
 
 export interface TimeseriesPoint {
   timestamp: number
-  [key: string]: number | null | undefined
+  // Recharts indexes data points by string keys at render time. Loose
+  // index signature lets per-chart Datum interfaces declare their own
+  // field types (e.g. `bps: number`) without explicitly redeclaring
+  // the index signature on every shape.
+  [key: string]: any
 }
 
 export interface SeriesKey {

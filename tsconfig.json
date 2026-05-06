@@ -22,6 +22,11 @@
     // The Cloudflare Worker is a separate project with its own TypeScript
     // setup — it imports Cloudflare's `ScheduledController` / `ExecutionContext`
     // ambient types which aren't present in the main Next.js compile.
-    "worker"
+    "worker",
+    // Cover-rendering script lazy-imports playwright (an optional dev
+    // dep). Authors install it on demand before rendering Issue #N's
+    // covers; the main Next.js build doesn't need to typecheck against
+    // it.
+    "scripts/render-covers.ts"
   ]
 }

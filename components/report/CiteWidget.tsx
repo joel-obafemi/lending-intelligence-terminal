@@ -82,14 +82,17 @@ export function CiteWidget({ issue, pageUrl }: Props) {
       </h2>
       <ul style={{ listStyle: "none", padding: 0, margin: 0, display: "grid", gap: 14 }}>
         {formats.map((f) => (
-          <CitationRow key={f.key} {...f} />
+          // The FormatRow object has a `key` field used both as React's
+          // list key and as an internal id. Pass each prop explicitly
+          // so the explicit `key={…}` doesn't collide with a spread.
+          <CitationRow key={f.key} label={f.label} hint={f.hint} text={f.text} />
         ))}
       </ul>
     </section>
   )
 }
 
-function CitationRow({ label, hint, text }: FormatRow) {
+function CitationRow({ label, hint, text }: Omit<FormatRow, "key">) {
   const [copied, setCopied] = useState(false)
   async function copy() {
     try {

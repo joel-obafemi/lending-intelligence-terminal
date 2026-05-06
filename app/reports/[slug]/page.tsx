@@ -219,6 +219,13 @@ export default async function IssuePage({ params }: RouteParams) {
                 remarkPlugins: [remarkGfm],
               },
               parseFrontmatter: false,
+              // Issue MDX is authored in-repo (not user-submitted content),
+              // so JSX expressions like `rows={[…]}` and `columns={[…]}`
+              // are required for the DataTable / Chart components to
+              // receive their props. v6 of next-mdx-remote defaults
+              // blockJS to true; we opt out for trusted content.
+              blockJS: false,
+              blockDangerousJS: false,
             }}
           />
           <SupportPanel />

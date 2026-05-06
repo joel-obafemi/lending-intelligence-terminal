@@ -31,8 +31,10 @@ function flattenChildren(children: ReactNode): string {
     if (typeof child === "string" || typeof child === "number") {
       out += String(child)
     } else if (child && typeof child === "object" && "props" in child) {
-      // @ts-expect-error — recursing into a child's nested children is fine
-      out += flattenChildren(child.props.children)
+      const props = (child as { props?: { children?: ReactNode } }).props
+      if (props?.children !== undefined) {
+        out += flattenChildren(props.children)
+      }
     }
   })
   return out
