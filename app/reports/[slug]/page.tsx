@@ -23,15 +23,20 @@ import { PullQuote } from "@/components/report/PullQuote"
 import { DataTable } from "@/components/report/DataTable"
 import { Annotation } from "@/components/report/Annotation"
 import { MethodologyNote } from "@/components/report/MethodologyNote"
+import { Chart } from "@/components/report/Chart"
 import {
   HeroStub,
-  ChartStub,
   CiteWidgetStub,
   NextIssueStub,
 } from "@/components/report/_stubs"
 
+// ISR: snapshot view is canonical and rarely changes, but the "Live"
+// dataset rendered by every <Chart> is freshness-sensitive. Revalidate
+// hourly so a reader who flips a chart to "Live" never sees data older
+// than ~60 minutes. The snapshot view itself is stable across rebuilds.
+export const revalidate = 3600
 export const dynamic = "force-static"
-export const revalidate = false
+export const dynamicParams = false
 
 interface RouteParams {
   params: { slug: string }
@@ -62,6 +67,9 @@ export default async function IssuePage({ params }: RouteParams) {
   // When client-only readers (TOC scroll-spy, ShareToolbar) ship in
   // commit 5, an IssueProvider will be added back for those specifically.
   const fm = issue.frontmatter
+  // Bind the issue's freeze_date into every Chart by closure. The MDX
+  // file declares only `<Chart source="…" range="…" />`; the route
+  // injects freezeDate so authors don't have to repeat it.
   const components = {
     Hero: () => <HeroStub issue={fm} />,
     SectionHeading,
@@ -70,7 +78,7 @@ export default async function IssuePage({ params }: RouteParams) {
     DataTable,
     Annotation,
     MethodologyNote,
-    Chart: ChartStub,
+    Chart: (props: any) => <Chart {...props} freezeDate={fm.freeze_date} />,
     CiteWidget: () => <CiteWidgetStub issue={fm} />,
     NextIssue: NextIssueStub,
   }

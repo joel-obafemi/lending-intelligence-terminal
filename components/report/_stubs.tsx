@@ -4,7 +4,8 @@
  * Replacement schedule:
  *  - Commit 2: SectionHeading, Lead, PullQuote, DataTable, Annotation,
  *              MethodologyNote ✓ (graduated to own files)
- *  - Commit 3-4: Chart
+ *  - Commit 3: Chart ✓ (graduated to Chart.tsx + chart-registry.ts)
+ *  - Commit 4: register remaining chart sources
  *  - Commit 5: TOC, ProgressBar, ShareToolbar (added in their own files)
  *  - Commit 6: Hero, NextIssue, NewsletterSignup, CiteWidget
  *
@@ -85,97 +86,6 @@ export function HeroStub({ issue }: { issue: IssueFrontmatter }) {
         {issue.reading_time_min} min read · Snapshot {issue.date}
       </div>
     </header>
-  )
-}
-
-// ─── Chart (commit 3-4) ──────────────────────────────────────────────────
-interface ChartStubProps {
-  source: string
-  range?: string
-  asset?: string
-  protocol?: string
-  caption?: string
-  source_label?: string
-  height?: number
-  view?: string
-  metric?: string
-  annotations?: Array<{ date: string; label: string; color?: string }>
-}
-
-export function ChartStub({
-  source,
-  caption,
-  source_label,
-  height = 360,
-  asset,
-  protocol,
-  range,
-}: ChartStubProps) {
-  const subtitle = [protocol, asset, range].filter(Boolean).join(" · ")
-  return (
-    <figure style={{ margin: "2em 0" }}>
-      <div
-        role="img"
-        aria-label={`Chart placeholder for ${source}${subtitle ? ` (${subtitle})` : ""}`}
-        style={{
-          height,
-          background: "rgba(31, 58, 95, 0.04)",
-          border: "1px dashed var(--report-border)",
-          borderRadius: "4px",
-          display: "flex",
-          flexDirection: "column",
-          alignItems: "center",
-          justifyContent: "center",
-          gap: "8px",
-          color: "var(--report-text-muted)",
-        }}
-      >
-        <span
-          className="report-numeric"
-          style={{
-            fontSize: "11px",
-            letterSpacing: "0.1em",
-            textTransform: "uppercase",
-          }}
-        >
-          Chart · {source}
-        </span>
-        {subtitle && (
-          <span
-            className="report-numeric"
-            style={{ fontSize: "11px", letterSpacing: "0.06em" }}
-          >
-            {subtitle}
-          </span>
-        )}
-      </div>
-      {caption && (
-        <figcaption
-          style={{
-            fontFamily: "var(--report-font-serif)",
-            fontStyle: "italic",
-            fontSize: "14px",
-            color: "var(--report-text-muted)",
-            marginTop: "10px",
-          }}
-        >
-          {caption}
-        </figcaption>
-      )}
-      {source_label && (
-        <div
-          style={{
-            fontFamily: "var(--report-font-mono)",
-            fontSize: "11px",
-            color: "var(--report-text-muted)",
-            marginTop: "4px",
-            letterSpacing: "0.04em",
-          }}
-        >
-          Source: {source_label}
-        </div>
-      )}
-    </figure>
   )
 }
 
