@@ -380,12 +380,19 @@ body:has(.reports-page)::before {
   font-variant-numeric: tabular-nums;
 }
 
-/* Hero block. Single-column internal layout — title block fills the
- * available width. The TOC moved to a persistent fixed left rail
- * (.report-toc-rail) so the hero is no longer responsible for
- * navigation chrome. */
+/* Hero + TOC layout — hybrid placement.
+ *
+ * On <1280px: hero is single-column; TOC doesn't render.
+ * On ≥1280px: hero is a 2-column grid (title block + aside). The TOC
+ * mounts inside the aside slot in normal flow until the reader scrolls
+ * past the hero, at which point the TOC switches to position: fixed at
+ * the left edge of the viewport. The aside slot still reserves its
+ * width so the layout doesn't reflow when the TOC pins. */
 .reports-page .report-hero-inner {
-  display: block;
+  display: grid;
+  grid-template-columns: 1fr;
+  column-gap: 48px;
+  align-items: stretch;
 }
 .reports-page .report-hero-main {
   display: flex;
@@ -397,15 +404,41 @@ body:has(.reports-page)::before {
   display: none;
 }
 
-/* Persistent TOC — fixed left rail on desktop (≥1280px), hidden below.
- * Stays visible as the reader scrolls so they can jump between sections
- * without returning to the hero. */
+@media (min-width: 1280px) {
+  .reports-page .report-hero-inner {
+    grid-template-columns: minmax(0, 1fr) 240px;
+  }
+  .reports-page .report-hero-aside {
+    display: block;
+    align-self: end;
+    padding-bottom: 8px;
+    max-height: 480px;
+    overflow-y: auto;
+  }
+}
+
+/* TOC rail. Default (mobile / small desktop): hidden.
+ *
+ * At ≥1280px, two states controlled by the TOC component's `pinned`
+ * class via a scroll listener:
+ *  - .in-hero  : in normal flow inside the hero's right-column aside
+ *  - .pinned   : fixed to the left edge of the viewport, visible at all
+ *                article scroll positions
+ *
+ * The transition happens once the hero's bottom edge crosses the 96px
+ * top buffer; same threshold reads cleanly without flicker. */
 .reports-page .report-toc-rail {
   display: none;
 }
 @media (min-width: 1280px) {
   .reports-page .report-toc-rail {
     display: block;
+  }
+  .reports-page .report-toc-rail.in-hero {
+    /* Naturally positioned inside the hero aside — no extra rules. */
+    position: relative;
+  }
+  .reports-page .report-toc-rail.pinned {
     position: fixed;
     left: 24px;
     top: 96px;
@@ -415,9 +448,10 @@ body:has(.reports-page)::before {
     z-index: 30;
   }
 }
-/* Wider viewports get a bit more breathing room from the page edge. */
+/* Wider viewports give the pinned rail more breathing room from the
+ * page edge so it doesn't crowd the prose column. */
 @media (min-width: 1600px) {
-  .reports-page .report-toc-rail {
+  .reports-page .report-toc-rail.pinned {
     left: max(24px, calc((100vw - 760px) / 2 - 260px));
   }
 }

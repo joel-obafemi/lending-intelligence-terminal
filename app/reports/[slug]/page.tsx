@@ -203,10 +203,11 @@ export default async function IssuePage({ params }: RouteParams) {
         dangerouslySetInnerHTML={{ __html: JSON.stringify(articleJsonLd) }}
       />
       <ProgressBar />
-      {/* Persistent left-rail TOC (≥1280px) so the reader can navigate
-          between sections without scrolling back to the hero. */}
-      <TOC />
-      <Hero issue={fm} />
+      {/* Hero + TOC — the TOC sits inside the hero's right-column aside
+          while the hero is on screen, then pins itself to the left edge
+          of the viewport once the reader scrolls past the hero. The
+          component owns the placement transition itself. */}
+      <Hero issue={fm} aside={<TOC />} />
       {/* Article body — single centered reading column. */}
       <article className="report-prose" aria-labelledby="issue-title">
         <div className="report-article-column" style={{ paddingTop: 48, paddingBottom: 64 }}>

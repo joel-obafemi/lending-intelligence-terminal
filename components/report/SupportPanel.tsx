@@ -74,7 +74,7 @@ export function SupportPanel() {
         >
           DatumLabs builds these dashboards and the monthly{" "}
           <em>State of DeFi Lending</em> issues independently, with no paywall and no sponsorships.
-          If the work has been useful — to a treasury decision, a research note, or a product call —
+          If the work has been useful for a treasury decision, a research note, or a product call,
           contributions help fund the next month of analysis.
         </p>
         <div
@@ -168,7 +168,7 @@ export function SupportPanel() {
             maxWidth: 640,
           }}
         >
-          Spotted an error in the data, or want a metric added? Reach out directly —{" "}
+          Spotted an error in the data, or want a metric added? You can{" "}
           <a
             href={X_PROFILE_URL}
             target="_blank"

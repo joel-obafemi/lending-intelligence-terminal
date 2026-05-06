@@ -1,11 +1,15 @@
 "use client"
 
 /**
- * Table of contents — persistent fixed left rail (desktop only).
+ * Table of contents — hybrid placement.
  *
- * Position: fixed to the left edge of the viewport at ≥1280px so the
- * reader can jump between sections without scrolling back to the hero.
- * Below 1280px it doesn't render — readers rely on the reading-
+ * While the hero is in the viewport, the TOC sits inside the hero's
+ * right-column aside (in normal flow, scrolls with the hero). Once
+ * the hero scrolls past the viewport top, the TOC pins itself to the
+ * left edge of the viewport as a fixed rail so the reader can jump
+ * between sections from anywhere in the article.
+ *
+ * Below 1280px the TOC doesn't render — readers rely on the reading-
  * progress bar and in-page anchor links.
  *
  * Auto-built by scanning the page DOM for `[data-section-anchor]`
@@ -44,6 +48,7 @@ function extractTocFromDom(): TocItem[] {
 export function TOC() {
   const [items, setItems] = useState<TocItem[]>([])
   const [active, setActive] = useState<string | null>(null)
+  const [pinned, setPinned] = useState(false)
 
   useEffect(() => {
     setItems(extractTocFromDom())
@@ -71,11 +76,43 @@ export function TOC() {
     return () => observer.disconnect()
   }, [items])
 
+  // Pin to the left edge of the viewport once the hero scrolls past
+  // the top buffer. While the hero is visible, the TOC sits in the
+  // hero's right-column aside (in normal flow). When pinned, it
+  // becomes position: fixed at the left edge.
+  useEffect(() => {
+    let raf = 0
+    function check() {
+      const hero = document.querySelector<HTMLElement>(".report-hero")
+      if (!hero) {
+        setPinned(false)
+        return
+      }
+      const rect = hero.getBoundingClientRect()
+      setPinned(rect.bottom < 96)
+    }
+    function onScroll() {
+      if (raf) return
+      raf = window.requestAnimationFrame(() => {
+        raf = 0
+        check()
+      })
+    }
+    check()
+    window.addEventListener("scroll", onScroll, { passive: true })
+    window.addEventListener("resize", onScroll)
+    return () => {
+      window.removeEventListener("scroll", onScroll)
+      window.removeEventListener("resize", onScroll)
+      if (raf) window.cancelAnimationFrame(raf)
+    }
+  }, [items])
+
   if (items.length === 0) return null
 
   return (
     <nav
-      className="report-toc-rail"
+      className={`report-toc-rail ${pinned ? "pinned" : "in-hero"}`}
       aria-label="Table of contents"
       style={{
         fontFamily: "var(--report-font-sans)",
