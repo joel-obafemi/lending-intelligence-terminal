@@ -380,11 +380,16 @@ body:has(.reports-page)::before {
   font-variant-numeric: tabular-nums;
 }
 
-/* Article body is a 3-column grid on desktop:
- *   [left-margin] [prose] [right-margin / aside]
- * <Annotation> elements jump to the right column. Everything else flows
- * down the prose column. On <1100px viewports the grid collapses and
- * annotations flow inline below the paragraph they follow. */
+/* Article body is a multi-column grid on desktop. Three breakpoints:
+ *   <1100px : single column. Annotation = inline indented block. TOC
+ *             collapses to a floating mobile FAB + drawer.
+ *   1100-1279px : margin / prose / aside / margin. Annotations float to
+ *             the aside column. TOC stays in mobile FAB form.
+ *   ≥1280px : margin / prose / aside / TOC / margin. TOC takes the
+ *             far-right column as a sticky rail.
+ *
+ * The default rule routes every child into the prose column; <Annotation>
+ * and the desktop TOC override to their own columns. */
 .reports-page .report-prose-grid {
   display: grid;
   grid-template-columns: 1fr;
@@ -397,7 +402,7 @@ body:has(.reports-page)::before {
     grid-template-columns:
       minmax(24px, 1fr)
       [prose-start] minmax(0, var(--report-reading-column)) [prose-end]
-      minmax(180px, 280px)
+      [aside-start] minmax(180px, 280px) [aside-end]
       minmax(24px, 1fr);
     column-gap: 40px;
     padding: 0;
@@ -406,7 +411,7 @@ body:has(.reports-page)::before {
     grid-column: prose-start / prose-end;
   }
   .reports-page .report-prose-grid > .report-annotation {
-    grid-column: prose-end / span 1;
+    grid-column: aside-start / aside-end;
     align-self: start;
     margin: 0.4em 0 1.6em;
     padding: 12px 14px;
@@ -417,6 +422,28 @@ body:has(.reports-page)::before {
   }
 }
 
+@media (min-width: 1280px) {
+  .reports-page .report-prose-grid {
+    grid-template-columns:
+      minmax(16px, 1fr)
+      [prose-start] minmax(0, var(--report-reading-column)) [prose-end]
+      [aside-start] minmax(160px, 240px) [aside-end]
+      [toc-start] minmax(180px, 220px) [toc-end]
+      minmax(16px, 1fr);
+  }
+  .reports-page .report-prose-grid > .report-toc-desktop {
+    grid-column: toc-start / toc-end;
+    /* Sticky relative to the article's scroll. */
+    position: sticky;
+    top: 24px;
+    align-self: start;
+    grid-row: 1 / -1; /* anchor to the start of the prose flow */
+    max-height: calc(100vh - 48px);
+    overflow-y: auto;
+    padding: 0;
+  }
+}
+
 /* Mobile / tablet — annotation falls back to inline indented block. */
 .reports-page .report-prose-grid > .report-annotation {
   margin: 1em 0 1.6em;
@@ -424,6 +451,19 @@ body:has(.reports-page)::before {
   background: rgba(31, 58, 95, 0.04);
   border-left: 2px solid var(--report-brand);
   border-radius: 0 4px 4px 0;
+}
+
+/* TOC visibility — desktop rail vs mobile FAB are mutually exclusive. */
+.reports-page .report-toc-desktop {
+  display: none;
+}
+@media (min-width: 1280px) {
+  .reports-page .report-toc-desktop {
+    display: block;
+  }
+  .reports-page .report-toc-mobile {
+    display: none;
+  }
 }
 
 /* Methodology body inherits prose typography but at a slightly muted tone. */

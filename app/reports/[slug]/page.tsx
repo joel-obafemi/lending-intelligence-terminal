@@ -24,6 +24,9 @@ import { DataTable } from "@/components/report/DataTable"
 import { Annotation } from "@/components/report/Annotation"
 import { MethodologyNote } from "@/components/report/MethodologyNote"
 import { Chart } from "@/components/report/Chart"
+import { ProgressBar } from "@/components/report/ProgressBar"
+import { TOC } from "@/components/report/TOC"
+import { ShareToolbar } from "@/components/report/ShareToolbar"
 import {
   HeroStub,
   CiteWidgetStub,
@@ -83,23 +86,36 @@ export default async function IssuePage({ params }: RouteParams) {
     NextIssue: NextIssueStub,
   }
 
+  const pageUrl = `https://lending-intelligence-terminal.vercel.app/reports/${issue.slug}`
+  const publicationYear = new Date(fm.publication_date).getFullYear()
+
   return (
-    <article className="report-prose" aria-labelledby="issue-title">
-      <div
-        className="report-prose-grid"
-        style={{ paddingTop: "32px", paddingBottom: "64px" }}
-      >
-        <MDXRemote
-          source={issue.body}
-          components={components}
-          options={{
-            mdxOptions: {
-              remarkPlugins: [remarkGfm],
-            },
-            parseFrontmatter: false,
-          }}
-        />
-      </div>
-    </article>
+    <>
+      <ProgressBar />
+      <article className="report-prose" aria-labelledby="issue-title">
+        <div
+          className="report-prose-grid"
+          style={{ paddingTop: "32px", paddingBottom: "64px" }}
+        >
+          <MDXRemote
+            source={issue.body}
+            components={components}
+            options={{
+              mdxOptions: {
+                remarkPlugins: [remarkGfm],
+              },
+              parseFrontmatter: false,
+            }}
+          />
+          <TOC />
+        </div>
+      </article>
+      <ShareToolbar
+        pageUrl={pageUrl}
+        issueLabel={fm.issue_label}
+        title={fm.title}
+        publicationYear={publicationYear}
+      />
+    </>
   )
 }
