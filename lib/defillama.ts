@@ -149,13 +149,16 @@ export async function fetchProtocolHistory(slug: string): Promise<ProtocolHistor
   const currentTvl = protocol.currentChainTvls?.["Ethereum"] ?? ethTvl.at(-1)?.usd ?? 0
   const currentBorrowed = protocol.currentChainTvls?.["Ethereum-borrowed"] ?? ethBorrowed.at(-1)?.usd ?? 0
 
-  const feesSeries = feesJson?.totalDataChart ?? []
-  const feePoints: DayPoint[] = feesSeries.map(([ts, v]) => ({ timestamp: ts, usd: v }))
+  // Ethereum-only daily fees. DefiLlama's totalDataChart rolls all
+  // chains together; the per-chain breakdown gives the Ethereum slice
+  // (Aave V3 fees overstate by ~30% on the all-chain total, Morpho
+  // by ~50%, Fluid by ~40%). The dashboard's coverage is Ethereum
+  // mainnet, so the headline numbers must match.
+  const feePoints: DayPoint[] = extractEthereumDailySeries(feesJson)
   const fees24h = feePoints.at(-1)?.usd ?? 0
   const fees7d = feePoints.slice(-7).reduce((s, p) => s + p.usd, 0)
 
-  const userFeesSeries = userFeesJson?.totalDataChart ?? []
-  let userFeePoints: DayPoint[] = userFeesSeries.map(([ts, v]) => ({ timestamp: ts, usd: v }))
+  let userFeePoints: DayPoint[] = extractEthereumDailySeries(userFeesJson)
   // Fallback: DefiLlama exposes dailyUserFees only for some protocols (Fluid
   // returns it, Aave V3 / Spark / Morpho don't have a dedicated stream and
   // 404). For lending protocols, dailyFees is overwhelmingly borrow interest
@@ -439,10 +442,53 @@ export async function fetchYieldChart(poolId: string): Promise<YieldChartPoint[]
 }
 
 interface LlamaFeesResponse {
-  /** [ [unix_ts, usd], ... ] */
+  /** All-chain totals — [ [unix_ts, usd], ... ]. Used as a fallback when
+   *  the per-chain breakdown isn't available. */
   totalDataChart: Array<[number, number]>
+  /** Per-chain breakdown — [ [unix_ts, { Chain: { Protocol: number } | number }], ... ].
+   *  We sum the Ethereum entries to get an Ethereum-only daily series.
+   *  Some protocols nest by sub-protocol; some report the chain total
+   *  directly. The extractor handles both shapes. */
+  totalDataChartBreakdown?: Array<[number, Record<string, Record<string, number> | number>]>
   total24h?: number
   total7d?: number
+}
+
+/**
+ * Sum the Ethereum entries in a DefiLlama fees response and return a
+ * daily series in our canonical DayPoint shape. The protocol-level
+ * fees tracked across the dashboard need to be Ethereum-only — the
+ * report we publish covers Ethereum mainnet, and DefiLlama's
+ * `totalDataChart` rolls all chains together (which inflates Aave V3
+ * fees by ~30%, Morpho ~50%, Fluid ~40% relative to the Ethereum-only
+ * cut).
+ *
+ * Falls back to `totalDataChart` when the breakdown is missing — that
+ * preserves behavior for protocols that only report a single chain
+ * (so the all-chain total IS the Ethereum total). All four lending
+ * protocols this dashboard tracks DO expose `totalDataChartBreakdown`.
+ */
+function extractEthereumDailySeries(r: LlamaFeesResponse | null): DayPoint[] {
+  if (!r) return []
+  const breakdown = r.totalDataChartBreakdown
+  if (Array.isArray(breakdown) && breakdown.length > 0) {
+    const out: DayPoint[] = []
+    for (const [ts, perChain] of breakdown) {
+      const eth = perChain?.Ethereum
+      let usd = 0
+      if (typeof eth === "number" && Number.isFinite(eth)) {
+        usd = eth
+      } else if (eth && typeof eth === "object") {
+        for (const v of Object.values(eth)) {
+          if (typeof v === "number" && Number.isFinite(v)) usd += v
+        }
+      }
+      out.push({ timestamp: ts, usd })
+    }
+    return out
+  }
+  // Single-chain protocol fallback — use the all-chain total directly.
+  return (r.totalDataChart ?? []).map(([ts, v]) => ({ timestamp: ts, usd: v }))
 }
 
 async function fetchFeesSummary(slug: string): Promise<LlamaFeesResponse> {
@@ -475,7 +521,11 @@ async function fetchFeesByType(slug: string, dataType: FeeRecipientType): Promis
     const res = await fetchJson<LlamaFeesResponse>(
       `${LLAMA_BASE}/summary/fees/${slug}?dataType=${dataType}`,
     )
-    return (res.totalDataChart ?? []).map(([ts, v]) => ({ timestamp: ts, usd: v }))
+    // Ethereum-only — same convention as fetchProtocolHistory's
+    // primary fees series. Recipient-decomposition charts (Revenue
+    // page) and the per-protocol cumulative-fees stat both depend on
+    // this being chain-scoped.
+    return extractEthereumDailySeries(res)
   } catch {
     return []
   }
