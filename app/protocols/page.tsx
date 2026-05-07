@@ -27,6 +27,7 @@ import { FluidSmartStatsCard } from "@/components/protocols/fluid-smart-stats-ca
 import { FluidComparisons } from "@/components/protocols/fluid-comparisons"
 import { AaveMultiChainFootprint } from "@/components/protocols/aave-multi-chain-footprint"
 import { AaveSafetyModule } from "@/components/protocols/aave-safety-module"
+import { AaveUmbrella } from "@/components/protocols/aave-umbrella"
 import { SparkYieldPanel } from "@/components/protocols/spark-yield-panel"
 import { AssetStackChart } from "@/components/overview/asset-stack-chart"
 import { AsOfFooter } from "@/components/overview/as-of-footer"
@@ -35,6 +36,7 @@ import {
   loadSafetyModuleStatus,
   type SafetyModuleStatus,
 } from "@/lib/aave-safety-module"
+import { loadUmbrellaStatus, type UmbrellaStatus } from "@/lib/aave-umbrella"
 import { loadAllAaveReservesLive } from "@/lib/aave-onchain"
 import {
   loadSparkYieldPanel,
@@ -152,6 +154,20 @@ export default async function ProtocolsPage({ searchParams }: { searchParams: Se
         }
       : safetyModule
 
+  // Umbrella per-asset coverage (Aave V3 only). Runs in a second
+  // round-trip so it can re-use the WETH price from the reserves call
+  // above instead of fetching its own oracle round-trip. Cached for 5
+  // minutes on the loader side.
+  const wethPriceUsd =
+    aaveReservesForPrice.find((r) => r.symbol.toUpperCase() === "WETH")?.priceUsd ?? null
+  const umbrellaStatus: UmbrellaStatus | null =
+    slug === "aave-v3"
+      ? await loadUmbrellaStatus(wethPriceUsd).catch((err) => {
+          console.error("[protocols] umbrella load failed:", err?.message ?? err)
+          return null
+        })
+      : null
+
   if (!detail) {
     return (
       <div className="max-w-[1400px] mx-auto px-4 lg:px-6 py-5 space-y-4">
@@ -256,14 +272,26 @@ export default async function ProtocolsPage({ searchParams }: { searchParams: Se
         <SparkYieldPanel data={sparkYieldPanel} />
       )}
 
-      {/* Aave V3 lens — Safety Module status. The on-chain stkAAVE pool
-          backstops bad debt; this surface answers "how much capital is
-          actually backing the protocol right now". */}
-      {slug === "aave-v3" && safetyModuleWithPrice && (
-        <AaveSafetyModule
-          status={safetyModuleWithPrice}
-          protocolColor={detail.color}
-        />
+      {/* Aave V3 lens — Safety Module + Umbrella, side-by-side on
+          desktop. Two distinct on-chain risk-capital pools:
+            SM       — single AAVE-token pool, slashable for any reserve's bad debt
+            Umbrella — per-asset aToken stakes, slashable only for that reserve
+          Both are currently active on Ethereum mainnet. */}
+      {slug === "aave-v3" && (safetyModuleWithPrice || umbrellaStatus) && (
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+          {safetyModuleWithPrice && (
+            <AaveSafetyModule
+              status={safetyModuleWithPrice}
+              protocolColor={detail.color}
+            />
+          )}
+          {umbrellaStatus && (
+            <AaveUmbrella
+              status={umbrellaStatus}
+              protocolColor={detail.color}
+            />
+          )}
+        </div>
       )}
 
       {/* Total Supply + Total Borrows by asset for this protocol */}

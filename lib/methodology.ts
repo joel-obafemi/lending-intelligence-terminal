@@ -254,8 +254,15 @@ export const METHODOLOGY: Record<string, MethodologyEntry> = {
 
   "aave-safety-module": {
     text:
-      "The Safety Module (SM) is the staked-AAVE pool that backstops Aave protocol insolvency risk. SM Size is the AAVE held by the stkAAVE contract × current AAVE/USD. Max Slashable is the on-chain governance-set portion (currently 30%) that can be drained to cover bad debt. Backing Ratio is AAVE balance ÷ stkAAVE supply — drift below 100% is the signature of a recent slash event. The newer Umbrella multi-asset SM rolls in here when its Ethereum deployment lands.",
+      "The Safety Module (SM) is the staked-AAVE pool that backstops Aave protocol insolvency risk globally — slashable to cover bad debt on ANY reserve. SM Size is the AAVE held by the stkAAVE contract × current AAVE/USD. Max Slashable is the on-chain governance-set portion (currently 30%) that can be drained to cover bad debt. Backing Ratio is AAVE balance ÷ stkAAVE supply — drift below 100% is the signature of a recent slash event. The Umbrella card to the right tracks the newer per-reserve risk-capital layer that runs alongside the SM.",
     source: "On-chain stkAAVE.totalSupply + AAVE.balanceOf(stkAAVE) + AAVE/USD via Aave V3 reserve price feed.",
+  },
+
+  "aave-umbrella": {
+    text:
+      "Umbrella is Aave's per-reserve staking layer — slashable only against bad debt on the matching reserve, not protocol-wide. Stakers deposit aTokens (waUSDC, waUSDT, waWETH) or GHO directly into reserve-specific stake-token contracts. Coverage USD is the on-chain underlying-asset balance × current price. Lives alongside the legacy Safety Module, not in place of it. Numbers reconcile within snapshot drift against Chaos Labs' Umbrella table and TokenLogic's per-asset coverage donut.",
+    source:
+      "On-chain UmbrellaStakeToken.totalAssets() per reserve (addresses from BGD Labs aave-address-book). Underlying USD: stables + GHO at $1, WETH from Aave V3 reserve oracle.",
   },
 
   // ─── Per-protocol pages ─────────────────────────────────────────────
