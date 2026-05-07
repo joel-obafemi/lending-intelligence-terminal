@@ -192,11 +192,6 @@ export const METHODOLOGY: Record<string, MethodologyEntry> = {
       "Aave V3's Available Liquidity (DefiLlama net-liquidity TVL) on every chain it's deployed on. The chart's job is to show whether Aave's center of gravity is shifting off mainnet — track this monthly. Long tail past the top 7 is folded into 'Other chains'.",
     source: "DefiLlama /protocol/aave-v3 currentChainTvls.",
   },
-  "aave-isolation-mode-watch": {
-    text:
-      "Every Aave V3 reserve currently configured with a non-zero debt ceiling (i.e. in isolation mode), with the on-chain ceiling, the current isolation-mode debt against that ceiling, and % used. Sorted by % used descending so reserves nearest a ceiling — the early-stress signals — surface first. Frozen / paused reserves are tagged but kept in the list so the reader can see the full isolation universe.",
-    source: "On-chain UiPoolDataProviderV3 (debtCeiling + isolationModeTotalDebt).",
-  },
   // ─── Morpho protocol-specific lens ──────────────────────────────────
   "morpho-markets-table": {
     text:

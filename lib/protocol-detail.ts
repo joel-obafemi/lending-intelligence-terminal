@@ -93,10 +93,6 @@ export interface ProtocolDetail {
   /** Per-chain active Borrows in USD. Same key shape as `multiChainTvl` so
    *  the Multi-Chain Footprint toggle pairs them cleanly. */
   multiChainBorrowed: Record<string, number>
-  /** Aave V3-style isolation-mode reserves with their on-chain debt
-   *  ceiling and current isolation-mode debt. Empty for protocols that
-   *  don't expose UiPoolDataProviderV3 (Morpho / Fluid). */
-  isolationReserves: IsolationReserveRow[]
   /** Where the headline Total Supply / Borrows / Available numbers
    *  came from. "on-chain" = fresh UiPoolDataProviderV3 read (≤30s
    *  old); "defillama" = DefiLlama Yields aggregate (≤a few hours old).
@@ -106,21 +102,6 @@ export interface ProtocolDetail {
    *  a specific deployment (e.g. "Aave V3 Core deployment"). Null when
    *  the numbers cover the protocol's full DefiLlama scope. */
   livenessScope: string | null
-}
-
-export interface IsolationReserveRow {
-  symbol: string
-  underlyingAsset: string
-  /** Isolation-mode debt ceiling in USD. */
-  debtCeilingUsd: number
-  /** Outstanding isolation-mode debt in USD. */
-  isolationDebtUsd: number
-  /** % of ceiling used (0-100). */
-  ceilingUsedPct: number
-  /** Total supplied USD on this reserve (for context). */
-  totalSupplyUsd: number
-  /** True if `isFrozen` or `isPaused` — reserve isn't actively borrowable. */
-  inactive: boolean
 }
 
 /** Table column label for the "market" column, varies by architecture. */
@@ -573,25 +554,6 @@ export async function loadProtocolDetail(slug: string): Promise<ProtocolDetail |
     ? buildProtocolDelta(buildSuppliedSeries(history.tvl, history.borrowed))
     : buildProtocolDelta([])
 
-  // Project the live Aave-style reserves into the isolation-mode shape the
-  // page renders. Filter to reserves with a non-zero debt ceiling — that's
-  // the on-chain signal the asset is in isolation mode.
-  const isolationReserves: IsolationReserveRow[] = aaveStyleReserves
-    .filter((r) => r.debtCeilingUsd > 0)
-    .map((r) => ({
-      symbol: r.symbol,
-      underlyingAsset: r.underlyingAsset,
-      debtCeilingUsd: r.debtCeilingUsd,
-      isolationDebtUsd: r.isolationModeTotalDebtUsd,
-      ceilingUsedPct:
-        r.debtCeilingUsd > 0
-          ? Math.min(100, (r.isolationModeTotalDebtUsd / r.debtCeilingUsd) * 100)
-          : 0,
-      totalSupplyUsd: r.totalSupplyUsd,
-      inactive: r.isFrozen || r.isPaused,
-    }))
-    .sort((a, b) => b.ceilingUsedPct - a.ceilingUsedPct)
-
   return {
     slug: cfg.slug,
     name: cfg.name,
@@ -613,7 +575,6 @@ export async function loadProtocolDetail(slug: string): Promise<ProtocolDetail |
     topAssets,
     multiChainTvl: history?.multiChainTvl ?? {},
     multiChainBorrowed: history?.multiChainBorrowed ?? {},
-    isolationReserves,
     livenessSource,
     livenessScope,
   }

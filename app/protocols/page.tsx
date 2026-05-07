@@ -26,7 +26,6 @@ import { MorphoMarketsTable } from "@/components/protocols/morpho-markets-table"
 import { FluidSmartStatsCard } from "@/components/protocols/fluid-smart-stats-card"
 import { FluidComparisons } from "@/components/protocols/fluid-comparisons"
 import { AaveMultiChainFootprint } from "@/components/protocols/aave-multi-chain-footprint"
-import { AaveIsolationModeWatch } from "@/components/protocols/aave-isolation-mode-watch"
 import { AaveSafetyModule } from "@/components/protocols/aave-safety-module"
 import { SparkYieldPanel } from "@/components/protocols/spark-yield-panel"
 import { AssetStackChart } from "@/components/overview/asset-stack-chart"
@@ -255,16 +254,6 @@ export default async function ProtocolsPage({ searchParams }: { searchParams: Se
           on-chain distribution arm. */}
       {slug === "spark" && sparkYieldPanel && (
         <SparkYieldPanel data={sparkYieldPanel} />
-      )}
-
-      {/* Aave V3 lens — Isolation Mode Watch sits up here as the
-          early-stress signal lens; Multi-Chain Footprint goes side-by-side
-          with the Top Markets chart further down. */}
-      {slug === "aave-v3" && detail.isolationReserves.length > 0 && (
-        <AaveIsolationModeWatch
-          rows={detail.isolationReserves}
-          color={detail.color}
-        />
       )}
 
       {/* Aave V3 lens — Safety Module status. The on-chain stkAAVE pool
