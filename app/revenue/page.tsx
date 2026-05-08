@@ -18,7 +18,10 @@ import { MethodologyTooltip } from "@/components/overview/methodology-tooltip"
 import { AsOfFooter } from "@/components/overview/as-of-footer"
 import { CiteThisPage } from "@/components/overview/cite-this-page"
 
-export const dynamic = "force-dynamic"
+// ISR — 15 min cache. Fee data is daily-resolution from DefiLlama; a
+// 15-min revalidation window keeps trend charts fresh enough while
+// making nav-back-to-/revenue instant.
+export const revalidate = 900
 export const maxDuration = 60
 
 export default async function RevenuePage() {

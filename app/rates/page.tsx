@@ -12,7 +12,11 @@ import { MethodologyTooltip } from "@/components/overview/methodology-tooltip"
 import { AsOfFooter } from "@/components/overview/as-of-footer"
 import { CiteThisPage } from "@/components/overview/cite-this-page"
 
-export const dynamic = "force-dynamic"
+// ISR — 30 min cache. /rates is the heaviest page (DefiLlama Yields
+// charts × multiple pools, FRED, blended-stable APY series). Caching
+// is the biggest win here. Rates change slowly enough that 30 min
+// staleness is acceptable.
+export const revalidate = 1800
 export const maxDuration = 60
 
 /** Assets that get historical charts. Limited to keep the page fast.
@@ -90,11 +94,14 @@ export default async function RatesPage() {
         </p>
       )}
 
-      {/* Hero: Real Yield Spread, 18 months. The page's flagship. */}
+      {/* Hero: Real Yield Spread, 18 months. The page's flagship.
+          Default range = M (30 days) for consistency with every other
+          chart on the dashboard; readers can step out to Q if they
+          want the longer-window smoothing. */}
       <RealYieldSpreadChart
         title="Real Yield Spread · 18 months"
         data={data.realYieldSpreadHistory}
-        defaultRange={90}
+        defaultRange={30}
         methodologyKey="rates-real-yield-spread-hero"
       />
 

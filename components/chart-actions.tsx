@@ -18,6 +18,7 @@
  */
 
 import { useEffect, useRef, useState } from "react"
+import { createPortal } from "react-dom"
 import { FileDown, Maximize2, Minimize2 } from "lucide-react"
 
 interface Props {
@@ -396,6 +397,22 @@ export function ChartActions({ cardRef, title }: Props) {
       >
         {expanded ? <Minimize2 size={12} /> : <Maximize2 size={12} />}
       </button>
+
+      {/* Backdrop is portal'd to <body> so it sits in the document
+          stacking context (z-index: 1000) below the expanded card
+          (z-index: 1001) — keeps the dim overlay from bleeding onto
+          the chart, which was the visible bug when the backdrop was
+          a ::after pseudo-element scoped to the card. Click-to-dismiss. */}
+      {expanded &&
+        typeof document !== "undefined" &&
+        createPortal(
+          <div
+            className="chart-expanded-backdrop"
+            onClick={() => setExpanded(false)}
+            aria-hidden="true"
+          />,
+          document.body,
+        )}
     </div>
   )
 }

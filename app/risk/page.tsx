@@ -27,7 +27,9 @@ import { AsOfFooter } from "@/components/overview/as-of-footer"
 import { FeaturedIssueCallout } from "@/components/featured-issue-callout"
 import { CiteThisPage } from "@/components/overview/cite-this-page"
 
-export const dynamic = "force-dynamic"
+// ISR — 15 min cache. Risk reads (oracle vendor map, stablecoin debt
+// share trend, liquidation intensity) are slow-moving day-to-day.
+export const revalidate = 900
 export const maxDuration = 60
 
 export default async function RiskPage() {

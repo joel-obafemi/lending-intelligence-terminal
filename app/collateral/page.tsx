@@ -6,7 +6,9 @@ import { CiteThisPage } from "@/components/overview/cite-this-page"
 import { AsOfFooter } from "@/components/overview/as-of-footer"
 import { classifyAsset } from "@/lib/assets"
 
-export const dynamic = "force-dynamic"
+// ISR — 30 min cache. Composition mix changes slowly; longer
+// revalidation window is fine and makes navigation instant.
+export const revalidate = 1800
 export const maxDuration = 60
 
 export default async function CollateralPage() {

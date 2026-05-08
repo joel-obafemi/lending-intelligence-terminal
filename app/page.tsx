@@ -23,9 +23,12 @@ import {
   suppliedMomChangeFraction,
 } from "@/lib/sector-derived"
 
-export const dynamic = "force-dynamic"
-// Heavy first render only on cache miss / stale snapshot. Hot path is a
-// single Neon SELECT (~5ms).
+// ISR — cache the rendered Sector Overview for 10 minutes. The hot path
+// is already a single Neon SELECT against `sector_snapshots` (~5ms), but
+// caching the rendered React tree skips even that round-trip for repeat
+// visitors and makes nav-back-to-/ instant. The daily cron refreshes
+// the underlying snapshot at 01:00 UTC; ISR layers on top.
+export const revalidate = 600
 export const maxDuration = 60
 
 export default async function OverviewPage() {

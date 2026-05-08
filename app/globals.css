@@ -235,7 +235,7 @@ body::before {
 .chart-expanded {
   position: fixed !important;
   inset: 24px !important;
-  z-index: 60 !important;
+  z-index: 1001 !important;
   width: auto !important;
   max-width: none !important;
   box-shadow: 0 24px 64px rgba(15, 17, 21, 0.25);
@@ -248,12 +248,16 @@ body::before {
   min-height: 0;
   height: auto !important;
 }
-.chart-expanded::after {
-  content: "";
+/* Backdrop is a sibling DOM element rendered to <body> via portal
+ * (see chart-actions.tsx) — kept out of the card's stacking context
+ * so the dim overlay can't bleed onto the chart content. */
+.chart-expanded-backdrop {
   position: fixed;
   inset: 0;
-  background: rgba(15, 17, 21, 0.45);
-  z-index: -1;
+  background: rgba(15, 17, 21, 0.55);
+  backdrop-filter: blur(2px);
+  z-index: 1000;
+  cursor: pointer;
 }
 
 /* ═════════════════════════════════════════════════════════════════════════
