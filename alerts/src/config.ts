@@ -40,10 +40,13 @@ export const PROTOCOL_HANDLE: Record<Protocol, string> = {
   fluid: "@0xfluid",
 };
 
-// DefiLlama protocol slugs (some differ from our internal slugs).
+// DefiLlama protocol slugs. Spark's lending product is "sparklend" on both
+// /protocol/{slug} and the Yields /pools project field; the bare "spark"
+// slug exists but is a different product (Sparkdex). Verified against the
+// dashboard's protocols registry.
 export const DEFILLAMA_PROTOCOL_SLUG: Record<Protocol, string> = {
   "aave-v3": "aave-v3",
-  spark: "spark",
+  spark: "sparklend",
   morpho: "morpho-blue",
   fluid: "fluid-lending",
 };
@@ -52,7 +55,7 @@ export const DEFILLAMA_PROTOCOL_SLUG: Record<Protocol, string> = {
 // the watchlist entries.
 export const DEFILLAMA_YIELDS_PROJECT: Record<Protocol, string[]> = {
   "aave-v3": ["aave-v3"],
-  spark: ["spark"],
+  spark: ["sparklend"],
   morpho: ["morpho-blue"],
   fluid: ["fluid-lending"],
 };
