@@ -27,6 +27,6 @@ binding = "ALERTS_KV"
 id = "be6d7e2dd8aa43419b465132d316b8d3"
 
 [vars]
-PUBLIC_DASHBOARD_BASE_URL = "https://datumlabs.xyz/lending-terminal"
-DIGEST_FROM = "alerts@datumlabs.xyz"
+PUBLIC_DASHBOARD_BASE_URL = "https://datumlab.xyz/lending-terminal"
+DIGEST_FROM = "alerts@datumlab.xyz"
 DIGEST_RECIPIENTS = "datumlabss@gmail.com"

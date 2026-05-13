@@ -1,7 +1,14 @@
 import type { AlertContext, AlertEvent, AlertRule } from "../types";
 import {
+  LIQUIDITY_ABSOLUTE_FLOOR_PCT_OF_MEAN,
+  LIQUIDITY_ABSOLUTE_FLOOR_USD,
   LIQUIDITY_BAND_STDDEV,
   LIQUIDITY_BASELINE_WINDOW_DAYS,
+  LIQUIDITY_METRIC_KEY_PREFIX,
+  LIQUIDITY_NORMALIZE_DURATION_MS,
+  LIQUIDITY_NORMALIZE_LOOKBACK_MS,
+  LIQUIDITY_RELATIVE_FLOOR_PCT,
+  LIQUIDITY_STRESS_CONSECUTIVE_SAMPLES,
   LIQUIDITY_WATCHLIST,
   PROTOCOL_DISPLAY_NAME,
   PROTOCOL_HANDLE,
@@ -16,14 +23,29 @@ import { readLatest, writeLatest } from "../state/kv";
 import { DefiLlamaClient } from "../sources/defillama";
 import { formatUsdShort } from "../dispatchers/format";
 
-/** Minimum baseline points before the rule is allowed to fire. */
-export const MIN_BASELINE_SAMPLES = 24;
+/**
+ * Minimum baseline samples (at 5-min cadence) before the rule may evaluate
+ * floors and streaks. 288 samples ≈ 1 day. Below that the 30-day mean is
+ * not a meaningful reference.
+ */
+export const MIN_BASELINE_SAMPLES = 288;
 
 type BandStatus = "inside" | "outside-high" | "outside-low";
 
-interface LatestState {
+interface LiquidityState {
   value: number;
   status: BandStatus;
+  /**
+   * Count of consecutive samples that have shared the current status. Reset
+   * to 1 on every transition (the first sample of a new status counts).
+   */
+  consecutiveSamples: number;
+  /** Unix ms when the current status was first observed. */
+  streakStartedAt: number;
+  /** Last time a stressed fire dispatched for this (protocol, asset). */
+  lastStressedFireAt: number | null;
+  /** Last time a normalized fire dispatched for this (protocol, asset). */
+  lastNormalizedFireAt: number | null;
   recordedAt: number;
 }
 
@@ -36,7 +58,7 @@ export function createLiquidityNormalizationRule(deps: LiquidityRuleDeps = {}): 
     id: "liquidity_normalization",
     name: "Liquidity normalization",
     description:
-      "Fires when available liquidity for a watchlist market crosses the 7-day mean ± 1.5σ band.",
+      "Fires when watchlist liquidity transitions across the 30-day mean ± 1.5σ band with sustained out-of-band evidence and a non-trivial magnitude.",
     schedule: "fast",
     cooldownHours: 6,
 
@@ -58,10 +80,8 @@ export function createLiquidityNormalizationRule(deps: LiquidityRuleDeps = {}): 
         const supply = pool.totalSupplyUsd ?? 0;
         const borrow = pool.totalBorrowUsd ?? 0;
         const available = Math.max(0, supply - borrow);
-        const metricKey = `liquidity:${entry.protocol}:${entry.asset}`;
+        const metricKey = `${LIQUIDITY_METRIC_KEY_PREFIX}:${entry.protocol}:${entry.asset}`;
 
-        // Record the new sample first, then prune anything outside the
-        // window. Re-applying the same (key, sample_at) overwrites.
         await recordBaselineSample(ctx.env, metricKey, nowMs, available);
         await pruneBaselineSamples(ctx.env, metricKey, windowSinceMs);
 
@@ -75,7 +95,6 @@ export function createLiquidityNormalizationRule(deps: LiquidityRuleDeps = {}): 
             nowMs,
           );
         }
-
         if (!stats || stats.sampleCount < MIN_BASELINE_SAMPLES) {
           console.log(
             `liquidity_normalization: ${metricKey} accumulating (${stats?.sampleCount ?? 0}/${MIN_BASELINE_SAMPLES})`,
@@ -89,37 +108,57 @@ export function createLiquidityNormalizationRule(deps: LiquidityRuleDeps = {}): 
           available > hi ? "outside-high" : available < lo ? "outside-low" : "inside";
 
         const ruleKey = `${entry.protocol}:${entry.asset}`;
-        const prev = await readLatest<LatestState>(ctx.env, "liquidity_normalization", ruleKey);
+        const prev = await readLatest<LiquidityState>(
+          ctx.env,
+          "liquidity_normalization",
+          ruleKey,
+        );
 
-        await writeLatest<LatestState>(ctx.env, "liquidity_normalization", ruleKey, {
-          value: available,
-          status,
-          recordedAt: nowMs,
-        });
+        // Update streak counters relative to prior state. First-ever read
+        // starts a streak of 1.
+        const nextState: LiquidityState =
+          prev && prev.status === status
+            ? {
+                ...prev,
+                value: available,
+                consecutiveSamples: prev.consecutiveSamples + 1,
+                recordedAt: nowMs,
+              }
+            : {
+                value: available,
+                status,
+                consecutiveSamples: 1,
+                streakStartedAt: nowMs,
+                lastStressedFireAt: prev?.lastStressedFireAt ?? null,
+                lastNormalizedFireAt: prev?.lastNormalizedFireAt ?? null,
+                recordedAt: nowMs,
+              };
 
-        if (!prev) continue;
-        if (prev.status === status) continue;
-
-        let direction: "normalized" | "stressed";
-        if (prev.status !== "inside" && status === "inside") {
-          direction = "normalized";
-        } else {
-          // inside → outside, or outside-low → outside-high (and vice versa):
-          // treat as a stress event in the new direction.
-          direction = "stressed";
-        }
-
-        const event = buildEvent({
+        const fired = maybeBuildEvent({
           ctx,
           entry,
           available,
+          mean: stats.mean,
           lo,
           hi,
-          mean: stats.mean,
-          status,
-          direction,
+          prev,
+          state: nextState,
         });
-        events.push(event);
+        if (fired) {
+          events.push(fired);
+          if (fired.data.direction === "stressed") {
+            nextState.lastStressedFireAt = nowMs;
+          } else {
+            nextState.lastNormalizedFireAt = nowMs;
+          }
+        }
+
+        await writeLatest<LiquidityState>(
+          ctx.env,
+          "liquidity_normalization",
+          ruleKey,
+          nextState,
+        );
       }
 
       return events;
@@ -127,46 +166,135 @@ export function createLiquidityNormalizationRule(deps: LiquidityRuleDeps = {}): 
   };
 }
 
+interface MaybeBuildArgs {
+  ctx: AlertContext;
+  entry: { protocol: import("../types").Protocol; asset: string; market?: string };
+  available: number;
+  mean: number;
+  lo: number;
+  hi: number;
+  prev: LiquidityState | null;
+  state: LiquidityState;
+}
+
+function maybeBuildEvent(args: MaybeBuildArgs): (AlertEvent & {
+  data: { direction: "stressed" | "normalized"; [k: string]: unknown };
+}) | null {
+  const { ctx, entry, available, mean, lo, hi, prev, state } = args;
+  if (!prev) return null; // First evaluation seeds state; no fire.
+
+  // Magnitude floors. Reject before considering direction so a quiet day
+  // can never breach a tight band and fire.
+  const relativeDelta = mean > 0 ? Math.abs(available - mean) / mean : 0;
+  if (relativeDelta < LIQUIDITY_RELATIVE_FLOOR_PCT / 100) return null;
+  const absoluteFloor = Math.max(
+    LIQUIDITY_ABSOLUTE_FLOOR_USD,
+    (LIQUIDITY_ABSOLUTE_FLOOR_PCT_OF_MEAN / 100) * mean,
+  );
+  if (Math.abs(available - prev.value) < absoluteFloor) return null;
+
+  // Stressed: outside the band, 12 consecutive outside samples, not already
+  // fired in this same outside streak.
+  if (state.status !== "inside") {
+    const alreadyFiredInStreak =
+      state.lastStressedFireAt != null &&
+      state.lastStressedFireAt >= state.streakStartedAt;
+    if (
+      state.consecutiveSamples >= LIQUIDITY_STRESS_CONSECUTIVE_SAMPLES &&
+      !alreadyFiredInStreak
+    ) {
+      return buildEvent({
+        ctx,
+        entry,
+        available,
+        mean,
+        lo,
+        hi,
+        status: state.status,
+        direction: "stressed",
+      });
+    }
+    return null;
+  }
+
+  // Normalized: inside the band for at least 12 hours of continuous streak,
+  // a stressed fire happened in the past 7 days, and we have not already
+  // fired the normalize for this re-entry.
+  const insideForMs = ctx.now.getTime() - state.streakStartedAt;
+  const alreadyFiredInStreak =
+    state.lastNormalizedFireAt != null &&
+    state.lastNormalizedFireAt >= state.streakStartedAt;
+  const priorStressRecent =
+    state.lastStressedFireAt != null &&
+    ctx.now.getTime() - state.lastStressedFireAt <= LIQUIDITY_NORMALIZE_LOOKBACK_MS;
+  if (
+    insideForMs >= LIQUIDITY_NORMALIZE_DURATION_MS &&
+    !alreadyFiredInStreak &&
+    priorStressRecent
+  ) {
+    return buildEvent({
+      ctx,
+      entry,
+      available,
+      mean,
+      lo,
+      hi,
+      status: "inside",
+      direction: "normalized",
+    });
+  }
+  return null;
+}
+
 interface BuildEventArgs {
   ctx: AlertContext;
   entry: { protocol: import("../types").Protocol; asset: string; market?: string };
   available: number;
+  mean: number;
   lo: number;
   hi: number;
-  mean: number;
   status: BandStatus;
-  direction: "normalized" | "stressed";
+  direction: "stressed" | "normalized";
 }
 
-function buildEvent(args: BuildEventArgs): AlertEvent {
-  const { ctx, entry, available, lo, hi, status, direction } = args;
+function buildEvent(args: BuildEventArgs): AlertEvent & {
+  data: { direction: "stressed" | "normalized"; [k: string]: unknown };
+} {
+  const { ctx, entry, available, mean, lo, hi, status, direction } = args;
   const protoName = PROTOCOL_DISPLAY_NAME[entry.protocol];
   const handle = PROTOCOL_HANDLE[entry.protocol];
   const dashboardUrl = `${ctx.env.PUBLIC_DASHBOARD_BASE_URL}/protocols?p=${entry.protocol}`;
 
-  // Suggested-tweet copy. Voice rules: no em-dashes, no first-person plural.
+  const deltaPct = mean > 0 ? ((available - mean) / mean) * 100 : 0;
+  const deltaPctAbs = Math.abs(deltaPct);
+  const deltaDirection = deltaPct >= 0 ? "above" : "below";
+
+  // Voice rules: no em-dashes, no first-person plural. Lead with the
+  // magnitude of the move; the band crossing is supporting evidence.
   const tweetLines: string[] = [];
   if (direction === "normalized") {
-    tweetLines.push(`${entry.asset} liquidity on ${protoName} is back at normal levels.`);
+    tweetLines.push(
+      `${entry.asset} liquidity on ${protoName} is back at normal levels.`,
+    );
     tweetLines.push("");
     tweetLines.push(`Available: ${formatUsdShort(available)}`);
-    tweetLines.push(`7-day band: ${formatUsdShort(lo)} to ${formatUsdShort(hi)}`);
+    tweetLines.push(`30-day band: ${formatUsdShort(lo)} to ${formatUsdShort(hi)}`);
     tweetLines.push("");
     tweetLines.push("Capital that left during the recent stress window is returning.");
   } else {
     const side = status === "outside-high" ? "above" : "below";
-    tweetLines.push(`${entry.asset} liquidity on ${protoName} moved ${side} its 7-day band.`);
+    tweetLines.push(
+      `${entry.asset} liquidity on ${protoName} is ${deltaPctAbs.toFixed(0)}% ${deltaDirection} its 30-day mean.`,
+    );
     tweetLines.push("");
-    tweetLines.push(`Available: ${formatUsdShort(available)}`);
-    tweetLines.push(`7-day band: ${formatUsdShort(lo)} to ${formatUsdShort(hi)}`);
+    tweetLines.push(`Available: ${formatUsdShort(available)} (${side} the band)`);
+    tweetLines.push(`30-day band: ${formatUsdShort(lo)} to ${formatUsdShort(hi)}`);
     tweetLines.push("");
     tweetLines.push("Watch the borrow side: utilization shifts often follow.");
   }
   tweetLines.push("");
   tweetLines.push(dashboardUrl);
   let suggestedTweet = tweetLines.join("\n");
-  // Hard guard: tweet must fit in 280 chars. Drop the trailing link line
-  // first, then truncate the closing line.
   if (suggestedTweet.length > 280) {
     suggestedTweet = tweetLines.slice(0, -2).join("\n");
   }
@@ -177,10 +305,11 @@ function buildEvent(args: BuildEventArgs): AlertEvent {
   const headline =
     direction === "normalized"
       ? `${entry.asset} liquidity on ${protoName} normalized`
-      : `${entry.asset} liquidity on ${protoName} moved outside its 7-day band`;
+      : `${entry.asset} liquidity on ${protoName} is ${deltaPctAbs.toFixed(0)}% ${deltaDirection} 30-day mean`;
   const body = [
     `Available: ${formatUsdShort(available)}`,
-    `7-day band: ${formatUsdShort(lo)} to ${formatUsdShort(hi)}`,
+    `30-day mean: ${formatUsdShort(mean)} (Δ ${deltaPct >= 0 ? "+" : ""}${deltaPct.toFixed(1)}%)`,
+    `30-day band: ${formatUsdShort(lo)} to ${formatUsdShort(hi)}`,
     `Direction: ${direction}`,
   ].join("\n");
 
@@ -197,9 +326,10 @@ function buildEvent(args: BuildEventArgs): AlertEvent {
       protocol: entry.protocol,
       asset: entry.asset,
       available,
-      band: { lo, hi, mean: args.mean },
+      band: { lo, hi, mean },
       status,
       direction,
+      deltaPct,
     },
     firedAt: ctx.now,
   };

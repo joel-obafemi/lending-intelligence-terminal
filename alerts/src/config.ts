@@ -24,7 +24,27 @@ export const NET_FLOW_THRESHOLDS = {
 } as const;
 
 export const LIQUIDITY_BAND_STDDEV = 1.5;
-export const LIQUIDITY_BASELINE_WINDOW_DAYS = 7;
+// 30-day window (was 7) so the band does not collapse during low-volatility
+// stretches and produce 1-2% noise fires.
+export const LIQUIDITY_BASELINE_WINDOW_DAYS = 30;
+// Metric-key namespace bumped alongside the window so a stale 7-day row in
+// baseline_samples can never feed the 30-day band.
+export const LIQUIDITY_METRIC_KEY_PREFIX = "liquidity30d";
+
+// Magnitude floors. Both must pass before any fire (stress or normalize):
+//   - Relative: |current - 30d mean| / 30d mean >= 10%.
+//   - Absolute: |current - last evaluation| >= max($50M, 2% of 30d mean).
+export const LIQUIDITY_RELATIVE_FLOOR_PCT = 10;
+export const LIQUIDITY_ABSOLUTE_FLOOR_USD = 50_000_000;
+export const LIQUIDITY_ABSOLUTE_FLOOR_PCT_OF_MEAN = 2;
+
+// Sustained out-of-band requirements.
+//   - Stress: 12 consecutive 5-min samples outside the band (~1 hour).
+//   - Normalize: 12 hours back inside the band AND a prior stress fire on
+//     the same (protocol, asset) within the previous 7 days.
+export const LIQUIDITY_STRESS_CONSECUTIVE_SAMPLES = 12;
+export const LIQUIDITY_NORMALIZE_DURATION_MS = 12 * 3600 * 1000;
+export const LIQUIDITY_NORMALIZE_LOOKBACK_MS = 7 * 24 * 3600 * 1000;
 
 // Utilization rate-kink watchlist. Spec 5.2: stablecoin markets on Aave V3
 // and Spark only. Threshold crossings 90% / 95% from below.

@@ -218,20 +218,36 @@ describe("net_flow_24h rule", () => {
 });
 
 describe("liquidity_normalization rule", () => {
-  test("accumulates baseline silently until min samples reached", async () => {
+  const METRIC_KEY = "liquidity30d:aave-v3:WETH";
+  const LATEST_KEY = "latest:liquidity_normalization:aave-v3:WETH";
+
+  // Helper: seed 288 samples (1 day at 5-min cadence) around a target mean
+  // with small jitter so the band is meaningful but tight.
+  async function seedBaseline(env: ReturnType<typeof makeEnv>, mean: number, now: Date) {
+    for (let i = 0; i < MIN_BASELINE_SAMPLES; i++) {
+      await recordBaselineSample(
+        env,
+        METRIC_KEY,
+        now.getTime() - (MIN_BASELINE_SAMPLES - i) * 5 * 60 * 1000,
+        mean + (i % 2 === 0 ? -1_000_000 : 1_000_000),
+      );
+    }
+  }
+
+  function poolWithAvailable(supply: number, borrow: number) {
+    return fakeYieldPool({
+      project: "aave-v3",
+      symbol: "WETH",
+      totalSupplyUsd: supply,
+      totalBorrowUsd: borrow,
+      tvlUsd: Math.max(0, supply - borrow),
+    });
+  }
+
+  test("accumulates baseline silently until 288 samples reached", async () => {
     const env = makeEnv();
     const stub = new StubDefiLlamaClient();
-    stub.setPool(
-      "aave-v3",
-      "WETH",
-      fakeYieldPool({
-        project: "aave-v3",
-        symbol: "WETH",
-        totalSupplyUsd: 1_000_000_000,
-        totalBorrowUsd: 500_000_000,
-        tvlUsd: 500_000_000,
-      }),
-    );
+    stub.setPool("aave-v3", "WETH", poolWithAvailable(1_000_000_000, 500_000_000));
 
     const now = new Date("2026-05-13T12:00:00Z");
     const rule = createLiquidityNormalizationRule({ client: stub as never });
@@ -239,84 +255,262 @@ describe("liquidity_normalization rule", () => {
     expect(events).toEqual([]);
   });
 
-  test("fires when value crosses outside the band after baseline is built", async () => {
+  test("does not fire on the 12th consecutive outside sample if magnitude floor not met", async () => {
+    // mean = 500M, current available = 510M (2% above mean). Inside the
+    // relative floor (10%), so should be suppressed even after a long
+    // outside streak. Mimics the Spark WETH false fire (1-2% move).
     const env = makeEnv();
     const stub = new StubDefiLlamaClient();
-    // Pre-seed enough samples around mean = 500M with low stddev so the
-    // band is tight, then have current value blow past it.
-    const meanAvailable = 500_000_000;
-    const minSamples = MIN_BASELINE_SAMPLES;
+    const mean = 500_000_000;
     const now = new Date("2026-05-13T12:00:00Z");
-    for (let i = 0; i < minSamples; i++) {
-      await recordBaselineSample(
-        env,
-        "liquidity:aave-v3:WETH",
-        now.getTime() - (minSamples - i) * 5 * 60 * 1000,
-        meanAvailable + (i % 2 === 0 ? -1_000_000 : 1_000_000),
-      );
-    }
+    await seedBaseline(env, mean, now);
 
-    // Pre-seed KV "latest" with status=inside so the new outside status fires.
     const kv = env.ALERTS_KV as unknown as FakeKV;
     await kv.put(
-      "latest:liquidity_normalization:aave-v3:WETH",
-      JSON.stringify({ value: meanAvailable, status: "inside", recordedAt: now.getTime() - 60_000 }),
-    );
-
-    // Current available = 1B, well above mean+1.5σ.
-    stub.setPool(
-      "aave-v3",
-      "WETH",
-      fakeYieldPool({
-        project: "aave-v3",
-        symbol: "WETH",
-        totalSupplyUsd: 1_500_000_000,
-        totalBorrowUsd: 500_000_000,
-        tvlUsd: 1_000_000_000,
+      LATEST_KEY,
+      JSON.stringify({
+        value: 509_000_000,
+        status: "outside-high",
+        consecutiveSamples: 11,
+        streakStartedAt: now.getTime() - 55 * 60 * 1000,
+        lastStressedFireAt: null,
+        lastNormalizedFireAt: null,
+        recordedAt: now.getTime() - 5 * 60 * 1000,
       }),
     );
-    // Set all other watchlist pools so they are skipped cleanly (no pool found).
+
+    stub.setPool("aave-v3", "WETH", poolWithAvailable(1_500_000_000, 990_000_000));
 
     const rule = createLiquidityNormalizationRule({ client: stub as never });
     const events = await rule.evaluate({ env, now, fetchedAt: now });
-    const wethEvent = events.find((e) => e.key === "aave-v3:WETH");
-    expect(wethEvent).toBeDefined();
-    expect(wethEvent!.suggestedTweet).toContain("WETH liquidity on Aave V3");
-    expect(wethEvent!.suggestedTweet).not.toContain("—");
-    expect(wethEvent!.suggestedTweet).not.toMatch(/\bwe\b|\bour\b/i);
-    expect(wethEvent!.suggestedTweet.length).toBeLessThanOrEqual(280);
+    expect(events.find((e) => e.key === "aave-v3:WETH")).toBeUndefined();
   });
 
-  test("does not fire when value stays inside the band", async () => {
+  test("does not fire on the 12th outside sample if absolute floor not met", async () => {
+    // mean = 500M. Current available = 600M (20% above, passes relative
+    // floor) but only $5M move since last evaluation (~1% < 2% absolute floor).
     const env = makeEnv();
     const stub = new StubDefiLlamaClient();
-    const meanAvailable = 500_000_000;
+    const mean = 500_000_000;
     const now = new Date("2026-05-13T12:00:00Z");
-    for (let i = 0; i < MIN_BASELINE_SAMPLES; i++) {
-      await recordBaselineSample(
-        env,
-        "liquidity:aave-v3:WETH",
-        now.getTime() - (MIN_BASELINE_SAMPLES - i) * 5 * 60 * 1000,
-        meanAvailable + (i % 2 === 0 ? -2_000_000 : 2_000_000),
-      );
-    }
+    await seedBaseline(env, mean, now);
+
     const kv = env.ALERTS_KV as unknown as FakeKV;
     await kv.put(
-      "latest:liquidity_normalization:aave-v3:WETH",
-      JSON.stringify({ value: meanAvailable, status: "inside", recordedAt: now.getTime() - 60_000 }),
-    );
-
-    stub.setPool(
-      "aave-v3",
-      "WETH",
-      fakeYieldPool({
-        project: "aave-v3",
-        symbol: "WETH",
-        totalSupplyUsd: 1_000_000_000,
-        totalBorrowUsd: 500_001_000,
-        tvlUsd: 499_999_000,
+      LATEST_KEY,
+      JSON.stringify({
+        value: 595_000_000,
+        status: "outside-high",
+        consecutiveSamples: 11,
+        streakStartedAt: now.getTime() - 55 * 60 * 1000,
+        lastStressedFireAt: null,
+        lastNormalizedFireAt: null,
+        recordedAt: now.getTime() - 5 * 60 * 1000,
       }),
     );
+
+    stub.setPool("aave-v3", "WETH", poolWithAvailable(1_200_000_000, 600_000_000));
+
+    const rule = createLiquidityNormalizationRule({ client: stub as never });
+    const events = await rule.evaluate({ env, now, fetchedAt: now });
+    expect(events.find((e) => e.key === "aave-v3:WETH")).toBeUndefined();
+  });
+
+  test("does not fire on the 11th consecutive outside sample (one short of 12)", async () => {
+    const env = makeEnv();
+    const stub = new StubDefiLlamaClient();
+    const mean = 500_000_000;
+    const now = new Date("2026-05-13T12:00:00Z");
+    await seedBaseline(env, mean, now);
+
+    const kv = env.ALERTS_KV as unknown as FakeKV;
+    await kv.put(
+      LATEST_KEY,
+      JSON.stringify({
+        value: 800_000_000,
+        status: "outside-high",
+        consecutiveSamples: 10,
+        streakStartedAt: now.getTime() - 50 * 60 * 1000,
+        lastStressedFireAt: null,
+        lastNormalizedFireAt: null,
+        recordedAt: now.getTime() - 5 * 60 * 1000,
+      }),
+    );
+
+    stub.setPool("aave-v3", "WETH", poolWithAvailable(1_500_000_000, 700_000_000));
+
+    const rule = createLiquidityNormalizationRule({ client: stub as never });
+    const events = await rule.evaluate({ env, now, fetchedAt: now });
+    expect(events.find((e) => e.key === "aave-v3:WETH")).toBeUndefined();
+  });
+
+  test("fires stressed after 12th consecutive outside sample with both floors satisfied", async () => {
+    const env = makeEnv();
+    const stub = new StubDefiLlamaClient();
+    const mean = 500_000_000;
+    const now = new Date("2026-05-13T12:00:00Z");
+    await seedBaseline(env, mean, now);
+
+    const kv = env.ALERTS_KV as unknown as FakeKV;
+    await kv.put(
+      LATEST_KEY,
+      JSON.stringify({
+        value: 700_000_000,
+        status: "outside-high",
+        consecutiveSamples: 11,
+        streakStartedAt: now.getTime() - 55 * 60 * 1000,
+        lastStressedFireAt: null,
+        lastNormalizedFireAt: null,
+        recordedAt: now.getTime() - 5 * 60 * 1000,
+      }),
+    );
+
+    // 800M is 60% above 500M mean (passes relative). Move from 700M is 100M
+    // (passes absolute, > max($50M, $10M=2%×500M)).
+    stub.setPool("aave-v3", "WETH", poolWithAvailable(1_600_000_000, 800_000_000));
+
+    const rule = createLiquidityNormalizationRule({ client: stub as never });
+    const events = await rule.evaluate({ env, now, fetchedAt: now });
+    const fire = events.find((e) => e.key === "aave-v3:WETH");
+    expect(fire).toBeDefined();
+    expect((fire!.data as { direction: string }).direction).toBe("stressed");
+    expect(fire!.suggestedTweet).toContain("WETH liquidity on Aave V3");
+    expect(fire!.suggestedTweet).toContain("30-day");
+    expect(fire!.suggestedTweet).not.toContain("7-day");
+    expect(fire!.suggestedTweet).not.toContain("—");
+    expect(fire!.suggestedTweet).not.toMatch(/\bwe\b|\bour\b/i);
+    expect(fire!.suggestedTweet.length).toBeLessThanOrEqual(280);
+
+    // The same outside streak must not re-fire. Bump samples and re-run.
+    const fired = (env.ALERTS_KV as unknown as FakeKV).inspect(LATEST_KEY);
+    expect(fired).toBeTruthy();
+    const state = JSON.parse(fired!) as { lastStressedFireAt: number | null };
+    expect(state.lastStressedFireAt).toBeGreaterThan(0);
+
+    // Second eval, same streak: should not fire again.
+    stub.setPool("aave-v3", "WETH", poolWithAvailable(1_700_000_000, 900_000_000));
+    const followup = await rule.evaluate({
+      env,
+      now: new Date(now.getTime() + 5 * 60 * 1000),
+      fetchedAt: now,
+    });
+    expect(followup.find((e) => e.key === "aave-v3:WETH")).toBeUndefined();
+  });
+
+  test("does not fire normalized without a prior stressed fire", async () => {
+    // Inside the band, plenty of time, but lastStressedFireAt is null.
+    const env = makeEnv();
+    const stub = new StubDefiLlamaClient();
+    const mean = 500_000_000;
+    const now = new Date("2026-05-13T12:00:00Z");
+    await seedBaseline(env, mean, now);
+
+    const kv = env.ALERTS_KV as unknown as FakeKV;
+    await kv.put(
+      LATEST_KEY,
+      JSON.stringify({
+        value: mean + 1_000_000,
+        status: "inside",
+        consecutiveSamples: 200,
+        streakStartedAt: now.getTime() - 13 * 3600 * 1000,
+        lastStressedFireAt: null,
+        lastNormalizedFireAt: null,
+        recordedAt: now.getTime() - 5 * 60 * 1000,
+      }),
+    );
+
+    // Magnitude floors apply to normalize too — make the magnitude large
+    // enough that the rule has a chance to reach the prior-stress check.
+    stub.setPool("aave-v3", "WETH", poolWithAvailable(1_500_000_000, 950_000_000));
+
+    const rule = createLiquidityNormalizationRule({ client: stub as never });
+    const events = await rule.evaluate({ env, now, fetchedAt: now });
+    expect(events.find((e) => e.key === "aave-v3:WETH")).toBeUndefined();
+  });
+
+  test("fires normalized after 12h inside with a prior stress in the past 7 days", async () => {
+    const env = makeEnv();
+    const stub = new StubDefiLlamaClient();
+    const mean = 500_000_000;
+    const now = new Date("2026-05-13T12:00:00Z");
+    await seedBaseline(env, mean, now);
+
+    const kv = env.ALERTS_KV as unknown as FakeKV;
+    await kv.put(
+      LATEST_KEY,
+      JSON.stringify({
+        // Was stressed at 200M (60% below mean) two days ago, came back
+        // inside the band 13h ago, never re-fired since.
+        value: 480_000_000,
+        status: "inside",
+        consecutiveSamples: 200,
+        streakStartedAt: now.getTime() - 13 * 3600 * 1000,
+        lastStressedFireAt: now.getTime() - 2 * 24 * 3600 * 1000,
+        lastNormalizedFireAt: null,
+        recordedAt: now.getTime() - 5 * 60 * 1000,
+      }),
+    );
+
+    // Mean is 500M. Current "inside" available should still satisfy the
+    // magnitude floors (otherwise the suppressor would block). Available
+    // 480M is 4% off mean — that's below the relative floor. Make the
+    // current move bigger: bump to 560M (12% above mean, still inside the
+    // band if stddev is healthy). With our tight seed (~1M jitter), 12%
+    // above is well outside the σ-band, so the status would be
+    // outside-high. To exercise the normalize path I need a wider
+    // baseline; widen by adding bursts of jitter.
+    for (let i = 0; i < 50; i++) {
+      await recordBaselineSample(
+        env,
+        METRIC_KEY,
+        now.getTime() - (50 - i) * 60 * 60 * 1000,
+        mean + (i % 2 === 0 ? -150_000_000 : 150_000_000),
+      );
+    }
+    // After widening, current = 560M sits comfortably inside the band.
+    stub.setPool("aave-v3", "WETH", poolWithAvailable(1_500_000_000, 940_000_000));
+
+    const rule = createLiquidityNormalizationRule({ client: stub as never });
+    const events = await rule.evaluate({ env, now, fetchedAt: now });
+    const fire = events.find((e) => e.key === "aave-v3:WETH");
+    expect(fire).toBeDefined();
+    expect((fire!.data as { direction: string }).direction).toBe("normalized");
+    expect(fire!.suggestedTweet).toContain("back at normal levels");
+    expect(fire!.suggestedTweet).toContain("30-day band");
+    expect(fire!.suggestedTweet).not.toContain("—");
+    expect(fire!.suggestedTweet).not.toMatch(/\bwe\b|\bour\b/i);
+  });
+
+  test("does not fire normalized when prior stress is older than 7 days", async () => {
+    const env = makeEnv();
+    const stub = new StubDefiLlamaClient();
+    const mean = 500_000_000;
+    const now = new Date("2026-05-13T12:00:00Z");
+    await seedBaseline(env, mean, now);
+    for (let i = 0; i < 50; i++) {
+      await recordBaselineSample(
+        env,
+        METRIC_KEY,
+        now.getTime() - (50 - i) * 60 * 60 * 1000,
+        mean + (i % 2 === 0 ? -150_000_000 : 150_000_000),
+      );
+    }
+
+    const kv = env.ALERTS_KV as unknown as FakeKV;
+    await kv.put(
+      LATEST_KEY,
+      JSON.stringify({
+        value: 480_000_000,
+        status: "inside",
+        consecutiveSamples: 1000,
+        streakStartedAt: now.getTime() - 13 * 3600 * 1000,
+        lastStressedFireAt: now.getTime() - 10 * 24 * 3600 * 1000, // 10 days ago
+        lastNormalizedFireAt: null,
+        recordedAt: now.getTime() - 5 * 60 * 1000,
+      }),
+    );
+
+    stub.setPool("aave-v3", "WETH", poolWithAvailable(1_500_000_000, 940_000_000));
 
     const rule = createLiquidityNormalizationRule({ client: stub as never });
     const events = await rule.evaluate({ env, now, fetchedAt: now });
