@@ -1,0 +1,30 @@
+name = "datumlabs-alerts"
+main = "src/index.ts"
+compatibility_date = "2026-04-01"
+compatibility_flags = ["nodejs_compat"]
+
+# Observability tail logs in the Cloudflare dashboard
+[observability]
+enabled = true
+
+# Cron triggers. The handler dispatches to fast / hourly / daily rule sets.
+[triggers]
+crons = [
+  "*/5 * * * *",
+  "0 */1 * * *",
+  "0 0 * * *"
+]
+
+# D1 binding. Replace database_id after `wrangler d1 create datumlabs-alerts`.
+[[d1_databases]]
+binding = "ALERTS_DB"
+database_name = "datumlabs-alerts"
+database_id = "d5f1570d-7d95-400c-b89c-0ceeb14c52f5"
+
+# KV binding. Replace id after `wrangler kv:namespace create ALERTS_KV`.
+[[kv_namespaces]]
+binding = "ALERTS_KV"
+id = "be6d7e2dd8aa43419b465132d316b8d3"
+
+[vars]
+PUBLIC_DASHBOARD_BASE_URL = "https://datumlabs.xyz/lending-terminal"
