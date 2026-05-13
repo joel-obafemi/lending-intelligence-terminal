@@ -54,6 +54,31 @@ export const REAL_YIELD_STABLES = ["USDC", "USDT", "USDS"] as const;
 export const REAL_YIELD_PROTOCOLS: Protocol[] = ["aave-v3", "spark", "fluid"];
 export const REAL_YIELD_RAPID_MOVE_BPS = 25;
 
+// Liquidation cascade thresholds. Spec 5.7: WARNING at threshold, CRITICAL
+// at 2x threshold, evaluated against 24h liquidation volume in USD.
+export const LIQUIDATION_THRESHOLDS_USD: Record<Protocol, number> = {
+  "aave-v3": 100_000_000,
+  morpho: 50_000_000,
+  fluid: 30_000_000,
+  spark: 20_000_000,
+};
+
+// Slug used by the liquidator-economy DB's liquidation_events.protocol column.
+// Mirrors lib/protocols.ts from the dashboard.
+export const LIQUIDATOR_DB_SLUG: Record<Protocol, string> = {
+  "aave-v3": "aave_v3",
+  spark: "spark",
+  morpho: "morpho_blue",
+  fluid: "fluid",
+};
+
+// Morpho curator HHI thresholds (spec 5.6, using percentages so a curator
+// with 38.8% contributes 1505.44).
+export const HHI_HIGHLY_CONCENTRATED = 2500;
+export const HHI_DOUBLY_CONCENTRATED = 3000;
+export const HHI_7D_DELTA_TRIGGER = 100;
+export const HHI_TOP3_SHARE_DELTA_PP = 1;
+
 export const PROTOCOL_DISPLAY_NAME: Record<Protocol, string> = {
   "aave-v3": "Aave V3",
   spark: "Spark",

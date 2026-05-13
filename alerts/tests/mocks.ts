@@ -31,6 +31,8 @@ export class FakeD1 {
     this.ensureTable("tvl_snapshots", { pk: ["protocol", "snapshot_at"] });
     this.ensureTable("cooldowns", { pk: ["cooldown_key"] });
     this.ensureTable("rule_errors", { pk: null, autoIncrement: { col: "id", next: 1 } });
+    this.ensureTable("hhi_snapshots", { pk: ["snapshot_at"] });
+    this.ensureTable("digest_runs", { pk: ["ran_at"] });
   }
 
   private ensureTable(name: string, opts: Omit<Table, "rows">) {
@@ -217,6 +219,59 @@ class FakeD1Statement {
         .sort((a, b) => (b["fired_at"] as number) - (a["fired_at"] as number));
       const limit = (this.params[0] as number) ?? rows.length;
       return rows.slice(0, limit);
+    }
+
+    if (upper.startsWith("INSERT INTO HHI_SNAPSHOTS")) {
+      this.db.applyInsert(
+        "hhi_snapshots",
+        [
+          "snapshot_at",
+          "hhi",
+          "total_assets_usd",
+          "top1_share_pct",
+          "top2_share_pct",
+          "top3_share_pct",
+          "top3_combined_pct",
+        ],
+        this.params,
+        {
+          keys: ["snapshot_at"],
+          updateCols: [
+            "hhi",
+            "total_assets_usd",
+            "top1_share_pct",
+            "top2_share_pct",
+            "top3_share_pct",
+            "top3_combined_pct",
+          ],
+        },
+      );
+      return;
+    }
+
+    if (upper.startsWith("SELECT SNAPSHOT_AT, HHI")) {
+      const [cutoff] = this.params as [number];
+      const rows = this.db
+        .selectAll("hhi_snapshots", (r) => (r["snapshot_at"] as number) <= cutoff)
+        .sort((a, b) => (b["snapshot_at"] as number) - (a["snapshot_at"] as number));
+      return rows.slice(0, 1);
+    }
+
+    if (upper.startsWith("SELECT RULE_ID, ALERT_KEY, SEVERITY")) {
+      const [sinceMs, limit] = this.params as [number, number];
+      return this.db
+        .selectAll("alert_history", (r) => (r["fired_at"] as number) >= sinceMs)
+        .sort((a, b) => (b["fired_at"] as number) - (a["fired_at"] as number))
+        .slice(0, limit);
+    }
+
+    if (upper.startsWith("INSERT INTO DIGEST_RUNS")) {
+      this.db.applyInsert(
+        "digest_runs",
+        ["ran_at", "alerts_count", "recipients", "status", "error_message"],
+        this.params,
+      );
+      return;
     }
 
     throw new Error(`FakeD1: unhandled SQL: ${sql}`);

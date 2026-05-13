@@ -11,6 +11,9 @@ import {
   createApyDispersionBlowoutRule,
 } from "../src/rules/apy-dispersion-blowout";
 import { createRealYieldSpreadRegimeRule } from "../src/rules/real-yield-spread-regime";
+import { createLiquidationCascadeRule } from "../src/rules/liquidation-cascade";
+import { createMorphoCuratorHhiRule } from "../src/rules/morpho-curator-hhi";
+import { buildDailyDigest } from "../src/dispatchers/email";
 import { recordBaselineSample, recordTvlSnapshot } from "../src/state/d1";
 import { AlertEngine } from "../src/engine";
 import type { YieldPool } from "../src/sources/defillama";
@@ -596,5 +599,242 @@ describe("real_yield_spread_regime rule", () => {
     });
     const events = await rule.evaluate({ env, now, fetchedAt: now });
     expect(events).toEqual([]);
+  });
+});
+
+describe("liquidation_cascade rule", () => {
+  test("does not fire below thresholds", async () => {
+    const env = makeEnv({ LIQUIDATOR_DATABASE_URL: "postgres://stub" });
+    const now = new Date("2026-05-13T12:00:00Z");
+    const rule = createLiquidationCascadeRule({
+      fetchVolumes: async () => [
+        { protocol: "aave_v3", count: 200, volumeUsd: 60_000_000 },
+        { protocol: "spark", count: 30, volumeUsd: 5_000_000 },
+        { protocol: "morpho_blue", count: 50, volumeUsd: 20_000_000 },
+        { protocol: "fluid", count: 80, volumeUsd: 10_000_000 },
+      ],
+      fetchLargest: async () => new Map(),
+    });
+    const events = await rule.evaluate({ env, now, fetchedAt: now });
+    expect(events).toEqual([]);
+  });
+
+  test("fires WARNING when volume crosses per-protocol threshold", async () => {
+    const env = makeEnv({ LIQUIDATOR_DATABASE_URL: "postgres://stub" });
+    const now = new Date("2026-05-13T12:00:00Z");
+    const rule = createLiquidationCascadeRule({
+      fetchVolumes: async () => [
+        { protocol: "aave_v3", count: 612, volumeUsd: 140_000_000 },
+      ],
+      fetchLargest: async () =>
+        new Map([
+          ["aave_v3", { protocol: "aave_v3", collateral_symbol: "WBTC", debt_amount_usd: 38_000_000 }],
+        ]),
+    });
+    const events = await rule.evaluate({ env, now, fetchedAt: now });
+    expect(events).toHaveLength(1);
+    const fire = events[0]!;
+    expect(fire.severity).toBe("WARNING");
+    expect(fire.key).toBe("aave-v3");
+    expect(fire.suggestedTweet).toContain("Aave V3");
+    expect(fire.suggestedTweet).toContain("$140M");
+    expect(fire.suggestedTweet).not.toContain("—");
+    expect(fire.suggestedTweet).not.toMatch(/\bwe\b|\bour\b/i);
+    expect(fire.suggestedTweet.length).toBeLessThanOrEqual(280);
+  });
+
+  test("fires CRITICAL when volume exceeds 2x threshold", async () => {
+    const env = makeEnv({ LIQUIDATOR_DATABASE_URL: "postgres://stub" });
+    const now = new Date("2026-05-13T12:00:00Z");
+    const rule = createLiquidationCascadeRule({
+      fetchVolumes: async () => [
+        { protocol: "fluid", count: 700, volumeUsd: 80_000_000 },
+      ],
+      fetchLargest: async () => new Map(),
+    });
+    const events = await rule.evaluate({ env, now, fetchedAt: now });
+    expect(events).toHaveLength(1);
+    expect(events[0]!.severity).toBe("CRITICAL");
+  });
+
+  test("skips when LIQUIDATOR_DATABASE_URL is not configured", async () => {
+    const env = makeEnv();
+    const now = new Date("2026-05-13T12:00:00Z");
+    const rule = createLiquidationCascadeRule({
+      fetchVolumes: async () => [
+        { protocol: "aave_v3", count: 612, volumeUsd: 140_000_000 },
+      ],
+      fetchLargest: async () => new Map(),
+    });
+    const events = await rule.evaluate({ env, now, fetchedAt: now });
+    expect(events).toEqual([]);
+  });
+});
+
+class StubMorphoClient {
+  public result = {
+    hhi: 0,
+    totalAssetsUsd: 0,
+    vaultCount: 0,
+    curators: [] as Array<{ name: string; totalAssetsUsd: number; sharePct: number }>,
+  };
+  async getCuratorHhi() {
+    return this.result;
+  }
+}
+
+describe("morpho_curator_hhi rule", () => {
+  test("seeds baseline silently on first evaluation", async () => {
+    const env = makeEnv();
+    const stub = new StubMorphoClient();
+    stub.result = {
+      hhi: 2200,
+      totalAssetsUsd: 5_000_000_000,
+      vaultCount: 80,
+      curators: [
+        { name: "Steakhouse", totalAssetsUsd: 1_900_000_000, sharePct: 38 },
+        { name: "Gauntlet", totalAssetsUsd: 1_000_000_000, sharePct: 20 },
+        { name: "Re7", totalAssetsUsd: 500_000_000, sharePct: 10 },
+      ],
+    };
+    const now = new Date("2026-05-13T00:00:00Z");
+    const rule = createMorphoCuratorHhiRule({ client: stub as never });
+    const events = await rule.evaluate({ env, now, fetchedAt: now });
+    expect(events).toEqual([]);
+  });
+
+  test("fires WARNING on a 2500 HHI threshold crossing", async () => {
+    const env = makeEnv();
+    const stub = new StubMorphoClient();
+    stub.result = {
+      hhi: 2620,
+      totalAssetsUsd: 5_000_000_000,
+      vaultCount: 80,
+      curators: [
+        { name: "Steakhouse", totalAssetsUsd: 2_300_000_000, sharePct: 46 },
+        { name: "Gauntlet", totalAssetsUsd: 800_000_000, sharePct: 16 },
+        { name: "Re7", totalAssetsUsd: 500_000_000, sharePct: 10 },
+      ],
+    };
+
+    const now = new Date("2026-05-13T00:00:00Z");
+    const kv = env.ALERTS_KV as unknown as FakeKV;
+    await kv.put(
+      "latest:morpho_curator_hhi:global",
+      JSON.stringify({
+        hhi: 2400,
+        top3CombinedPct: 72,
+        top1Name: "Steakhouse",
+        top1Pct: 44,
+        recordedAt: now.getTime() - 86400_000,
+      }),
+    );
+    const rule = createMorphoCuratorHhiRule({ client: stub as never });
+    const events = await rule.evaluate({ env, now, fetchedAt: now });
+    expect(events).toHaveLength(1);
+    const fire = events[0]!;
+    expect(fire.severity).toBe("WARNING");
+    expect(fire.suggestedTweet).toContain("HHI");
+    expect(fire.suggestedTweet).toContain("2,500");
+    expect(fire.suggestedTweet).not.toContain("—");
+    expect(fire.suggestedTweet).not.toMatch(/\bwe\b|\bour\b/i);
+    expect(fire.suggestedTweet.length).toBeLessThanOrEqual(280);
+  });
+
+  test("does not fire when HHI stays inside the band", async () => {
+    const env = makeEnv();
+    const stub = new StubMorphoClient();
+    stub.result = {
+      hhi: 2420,
+      totalAssetsUsd: 5_000_000_000,
+      vaultCount: 80,
+      curators: [
+        { name: "Steakhouse", totalAssetsUsd: 1_900_000_000, sharePct: 38 },
+        { name: "Gauntlet", totalAssetsUsd: 1_000_000_000, sharePct: 20 },
+        { name: "Re7", totalAssetsUsd: 500_000_000, sharePct: 10 },
+      ],
+    };
+    const now = new Date("2026-05-13T00:00:00Z");
+    const kv = env.ALERTS_KV as unknown as FakeKV;
+    await kv.put(
+      "latest:morpho_curator_hhi:global",
+      JSON.stringify({
+        hhi: 2400,
+        top3CombinedPct: 68.2,
+        top1Name: "Steakhouse",
+        top1Pct: 38,
+        recordedAt: now.getTime() - 86400_000,
+      }),
+    );
+    const rule = createMorphoCuratorHhiRule({ client: stub as never });
+    const events = await rule.evaluate({ env, now, fetchedAt: now });
+    expect(events).toEqual([]);
+  });
+});
+
+describe("daily digest builder", () => {
+  test("groups alerts by severity (CRITICAL first), single subject line", () => {
+    const now = new Date("2026-05-13T00:00:00Z").getTime();
+    const digest = buildDailyDigest({
+      alerts: [
+        {
+          rule_id: "net_flow_24h",
+          alert_key: "aave-v3",
+          severity: "CRITICAL",
+          headline: "Aave V3 24h net outflow: $2.3B",
+          body: "Prior TVL: $30B\nCurrent TVL: $27.7B",
+          suggested_tweet: "Aave V3 just saw $2.30B in net outflow over 24 hours.",
+          dashboard_url: "https://datumlabs.xyz/lending-terminal/protocols?p=aave-v3",
+          fired_at: now - 3_600_000,
+        },
+        {
+          rule_id: "utilization_rate_kink",
+          alert_key: "aave-v3:USDC:90",
+          severity: "WARNING",
+          headline: "USDC utilization on Aave V3 crossed 90%",
+          body: "Utilization: 91.42%",
+          suggested_tweet: "USDC utilization on Aave V3 just crossed 90%.",
+          dashboard_url: null,
+          fired_at: now - 6_400_000,
+        },
+        {
+          rule_id: "apy_dispersion_blowout",
+          alert_key: "USDC",
+          severity: "NORMAL",
+          headline: "USDC APY dispersion: 850 bps (3.5x baseline)",
+          body: "Dispersion: 850 bps",
+          suggested_tweet: "USDC supply APY dispersion just hit 850 bps.",
+          dashboard_url: null,
+          fired_at: now - 8_400_000,
+        },
+      ],
+      windowEndMs: now,
+      dashboardBaseUrl: "https://datumlabs.xyz/lending-terminal",
+    });
+    expect(digest.subject).toBe("DatumLabs Alerts · 3 events · 2026-05-13");
+    expect(digest.alertCount).toBe(3);
+    // Severity ordering enforced in the HTML and text payloads.
+    const criticalIdx = digest.text.indexOf("CRITICAL (1)");
+    const warningIdx = digest.text.indexOf("WARNING (1)");
+    const normalIdx = digest.text.indexOf("NORMAL (1)");
+    expect(criticalIdx).toBeGreaterThan(-1);
+    expect(criticalIdx).toBeLessThan(warningIdx);
+    expect(warningIdx).toBeLessThan(normalIdx);
+    expect(digest.html).toContain("Aave V3 24h net outflow");
+    expect(digest.text).toContain("Aave V3 24h net outflow");
+    expect(digest.text).not.toContain("—");
+    expect(digest.text).not.toMatch(/\bwe\b|\bour\b/i);
+  });
+
+  test("empty alert list still produces a valid digest", () => {
+    const now = Date.now();
+    const digest = buildDailyDigest({
+      alerts: [],
+      windowEndMs: now,
+      dashboardBaseUrl: "https://datumlabs.xyz/lending-terminal",
+    });
+    expect(digest.alertCount).toBe(0);
+    expect(digest.subject).toContain("0 events");
+    expect(digest.html).toContain("No alerts fired");
   });
 });

@@ -1,5 +1,7 @@
 import { AlertEngine } from "./engine";
 import { sendRawTelegramMessage } from "./dispatchers/telegram";
+import { buildDailyDigest } from "./dispatchers/email";
+import { recentAlertsSince } from "./state/d1";
 import type { Env, Schedule } from "./types";
 
 export default {
@@ -55,6 +57,35 @@ export default {
           : "fast";
       const engine = new AlertEngine(env);
       const result = await engine.run(schedule);
+      return Response.json(result);
+    }
+
+    // Renders the digest HTML in the browser without sending. Useful for
+    // visual review before relying on the daily cron.
+    if (req.method === "GET" && url.pathname === "/digest/preview") {
+      const hours = Number(url.searchParams.get("hours") ?? 24);
+      const now = new Date();
+      const rows = await recentAlertsSince(env, now.getTime() - hours * 3600 * 1000, 200);
+      const digest = buildDailyDigest({
+        alerts: rows,
+        windowEndMs: now.getTime(),
+        dashboardBaseUrl: env.PUBLIC_DASHBOARD_BASE_URL,
+      });
+      const format = url.searchParams.get("format");
+      if (format === "json") {
+        return Response.json({ subject: digest.subject, alertCount: digest.alertCount, text: digest.text });
+      }
+      if (format === "text") {
+        return new Response(digest.text, { headers: { "content-type": "text/plain; charset=utf-8" } });
+      }
+      return new Response(digest.html, { headers: { "content-type": "text/html; charset=utf-8" } });
+    }
+
+    // One-shot manual send. Builds the same digest the cron would and
+    // dispatches via Resend immediately.
+    if (req.method === "POST" && url.pathname === "/digest/send") {
+      const engine = new AlertEngine(env);
+      const result = await engine.sendDailyDigest(new Date());
       return Response.json(result);
     }
 

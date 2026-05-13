@@ -152,3 +152,126 @@ export async function upsertRollingBaseline(
     .bind(metricKey, windowDays, stats.mean, stats.stddev, stats.sampleCount, updatedAtMs)
     .run();
 }
+
+// Morpho HHI snapshot helpers.
+
+export interface HhiSnapshotRow {
+  snapshot_at: number;
+  hhi: number;
+  total_assets_usd: number;
+  top1_share_pct: number;
+  top2_share_pct: number;
+  top3_share_pct: number;
+  top3_combined_pct: number;
+}
+
+export async function recordHhiSnapshot(
+  env: Env,
+  row: HhiSnapshotRow,
+): Promise<void> {
+  await env.ALERTS_DB.prepare(
+    `INSERT INTO hhi_snapshots
+       (snapshot_at, hhi, total_assets_usd,
+        top1_share_pct, top2_share_pct, top3_share_pct, top3_combined_pct)
+     VALUES (?, ?, ?, ?, ?, ?, ?)
+     ON CONFLICT(snapshot_at) DO UPDATE SET
+       hhi = excluded.hhi,
+       total_assets_usd = excluded.total_assets_usd,
+       top1_share_pct = excluded.top1_share_pct,
+       top2_share_pct = excluded.top2_share_pct,
+       top3_share_pct = excluded.top3_share_pct,
+       top3_combined_pct = excluded.top3_combined_pct`,
+  )
+    .bind(
+      row.snapshot_at,
+      row.hhi,
+      row.total_assets_usd,
+      row.top1_share_pct,
+      row.top2_share_pct,
+      row.top3_share_pct,
+      row.top3_combined_pct,
+    )
+    .run();
+}
+
+export async function findHhiSnapshotAtOrBefore(
+  env: Env,
+  cutoffMs: number,
+): Promise<HhiSnapshotRow | null> {
+  const row = await env.ALERTS_DB.prepare(
+    `SELECT snapshot_at, hhi, total_assets_usd,
+            top1_share_pct, top2_share_pct, top3_share_pct, top3_combined_pct
+       FROM hhi_snapshots
+      WHERE snapshot_at <= ?
+      ORDER BY snapshot_at DESC
+      LIMIT 1`,
+  )
+    .bind(cutoffMs)
+    .first<HhiSnapshotRow>();
+  return row ?? null;
+}
+
+// Daily digest helpers.
+
+export async function recentAlertsSince(
+  env: Env,
+  sinceMs: number,
+  limit = 200,
+): Promise<
+  Array<{
+    rule_id: string;
+    alert_key: string;
+    severity: string;
+    headline: string;
+    body: string;
+    suggested_tweet: string;
+    dashboard_url: string | null;
+    fired_at: number;
+  }>
+> {
+  const rows = await env.ALERTS_DB.prepare(
+    `SELECT rule_id, alert_key, severity, headline, body, suggested_tweet,
+            dashboard_url, fired_at
+       FROM alert_history
+      WHERE fired_at >= ?
+      ORDER BY fired_at DESC
+      LIMIT ?`,
+  )
+    .bind(sinceMs, limit)
+    .all<{
+      rule_id: string;
+      alert_key: string;
+      severity: string;
+      headline: string;
+      body: string;
+      suggested_tweet: string;
+      dashboard_url: string | null;
+      fired_at: number;
+    }>();
+  return rows.results ?? [];
+}
+
+export async function recordDigestRun(
+  env: Env,
+  row: {
+    ran_at: number;
+    alerts_count: number;
+    recipients: string;
+    status: "sent" | "skipped-empty" | "failed";
+    error_message?: string;
+  },
+): Promise<void> {
+  await env.ALERTS_DB.prepare(
+    `INSERT INTO digest_runs
+       (ran_at, alerts_count, recipients, status, error_message)
+     VALUES (?, ?, ?, ?, ?)`,
+  )
+    .bind(
+      row.ran_at,
+      row.alerts_count,
+      row.recipients,
+      row.status,
+      row.error_message ?? null,
+    )
+    .run();
+}

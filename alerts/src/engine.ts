@@ -1,8 +1,18 @@
 import type { AlertContext, AlertEvent, AlertRule, Env, Schedule } from "./types";
 import { buildRuleRegistry, rulesForSchedule } from "./rules";
-import { recordAlert, recordRuleError } from "./state/d1";
+import {
+  recentAlertsSince,
+  recordAlert,
+  recordDigestRun,
+  recordRuleError,
+} from "./state/d1";
 import { isInCooldown, isRuleDisabled, writeCooldown } from "./state/kv";
 import { sendAlertToTelegram } from "./dispatchers/telegram";
+import {
+  buildDailyDigest,
+  resolveRecipients,
+  sendDigestEmail,
+} from "./dispatchers/email";
 
 export interface EngineRunResult {
   schedule: Schedule;
@@ -10,6 +20,12 @@ export interface EngineRunResult {
   fired: number;
   dispatched: number;
   errors: number;
+  digest?: {
+    alertCount: number;
+    recipients: string[];
+    status: "sent" | "skipped-empty" | "failed";
+    error?: string;
+  };
 }
 
 export class AlertEngine {
@@ -55,10 +71,72 @@ export class AlertEngine {
       }
     }
 
+    if (schedule === "daily") {
+      result.digest = await this.sendDailyDigest(now);
+    }
+
     console.log(
-      `engine.run: schedule=${schedule} evaluated=${result.evaluated} fired=${result.fired} dispatched=${result.dispatched} errors=${result.errors}`,
+      `engine.run: schedule=${schedule} evaluated=${result.evaluated} fired=${result.fired} dispatched=${result.dispatched} errors=${result.errors}${result.digest ? ` digest=${result.digest.status}(${result.digest.alertCount})` : ""}`,
     );
     return result;
+  }
+
+  /**
+   * Compose and send the 24h digest. Runs after the daily rules so the
+   * digest includes anything the same daily run just fired.
+   */
+  async sendDailyDigest(now: Date): Promise<NonNullable<EngineRunResult["digest"]>> {
+    const recipients = resolveRecipients(this.env);
+    const sinceMs = now.getTime() - 24 * 3600 * 1000;
+    const rows = await recentAlertsSince(this.env, sinceMs, 200);
+    const digest = buildDailyDigest({
+      alerts: rows,
+      windowEndMs: now.getTime(),
+      dashboardBaseUrl: this.env.PUBLIC_DASHBOARD_BASE_URL,
+    });
+
+    if (recipients.length === 0) {
+      await recordDigestRun(this.env, {
+        ran_at: now.getTime(),
+        alerts_count: digest.alertCount,
+        recipients: "",
+        status: "failed",
+        error_message: "DIGEST_RECIPIENTS not configured",
+      });
+      console.warn("engine: no digest recipients configured, skipping send");
+      return {
+        alertCount: digest.alertCount,
+        recipients,
+        status: "failed",
+        error: "no recipients",
+      };
+    }
+
+    const send = await sendDigestEmail({ env: this.env, recipients, digest });
+    const recipientsStr = recipients.join(",");
+    if (send.ok) {
+      await recordDigestRun(this.env, {
+        ran_at: now.getTime(),
+        alerts_count: digest.alertCount,
+        recipients: recipientsStr,
+        status: "sent",
+      });
+      return { alertCount: digest.alertCount, recipients, status: "sent" };
+    }
+    await recordDigestRun(this.env, {
+      ran_at: now.getTime(),
+      alerts_count: digest.alertCount,
+      recipients: recipientsStr,
+      status: "failed",
+      error_message: `${send.status}: ${send.body?.slice(0, 500) ?? ""}`,
+    });
+    console.error(`engine: digest send failed status=${send.status} body=${send.body}`);
+    return {
+      alertCount: digest.alertCount,
+      recipients,
+      status: "failed",
+      error: send.body ?? `status ${send.status}`,
+    };
   }
 
   private async maybeDispatch(

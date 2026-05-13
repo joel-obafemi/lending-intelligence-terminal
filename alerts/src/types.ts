@@ -11,7 +11,14 @@ export interface Env {
   RESEND_API_KEY?: string;
   FRED_API_KEY?: string;
 
+  /** Postgres connection string for the liquidator-economy Neon DB. */
+  LIQUIDATOR_DATABASE_URL?: string;
+
   PUBLIC_DASHBOARD_BASE_URL: string;
+  /** Comma-separated recipients for the daily digest. Falls back to RESEND_DIGEST_TO. */
+  DIGEST_RECIPIENTS?: string;
+  /** Sender address for the daily digest (must be verified in Resend). */
+  DIGEST_FROM?: string;
 }
 
 export interface AlertContext {

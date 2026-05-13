@@ -11,7 +11,8 @@ rules are documented in `../BUILD_SPEC_alert_system.md`.
 
 ## Status
 
-Phase 1 + Phase 2 live. Five rules running:
+Phase 1 + Phase 2 + Phase 3 live. All seven launch rules running plus
+the daily digest email:
 
 | Rule                          | Schedule | Cooldown | Severity                |
 |-------------------------------|----------|----------|-------------------------|
@@ -20,9 +21,11 @@ Phase 1 + Phase 2 live. Five rules running:
 | `net_flow_24h`                | hourly   | 12h      | NORMAL / CRITICAL       |
 | `apy_dispersion_blowout`      | hourly   | 12h      | NORMAL                  |
 | `real_yield_spread_regime`    | hourly   | 24h      | NORMAL / CRITICAL       |
+| `liquidation_cascade`         | hourly   | 6h       | WARNING / CRITICAL      |
+| `morpho_curator_hhi`          | daily    | 24h      | NORMAL / WARNING        |
 
-Phase 3 (`morpho_curator_hhi`, `liquidation_cascade`, Resend daily
-digest) is scoped in the spec but not implemented.
+Phase 4 (public `/pulse` page + Beehiiv subscriber signup) is the only
+remaining phase.
 
 ## Provisioned resources
 
@@ -58,13 +61,17 @@ npx wrangler d1 execute datumlabs-alerts --remote --file=./src/state/schema.sql
 
 ## Setting secrets
 
-Telegram dispatch will not work until both secrets are set. The engine
-records alerts to D1 either way; without secrets it just skips the
-Telegram send and logs a warning.
-
 ```powershell
+# Telegram (Phase 1).
 npx wrangler secret put TELEGRAM_BOT_TOKEN
 npx wrangler secret put TELEGRAM_CHAT_ID
+
+# Liquidator-economy Neon DB (Phase 3 liquidation_cascade source).
+# Same connection string the dashboard uses on Vercel.
+npx wrangler secret put LIQUIDATOR_DATABASE_URL
+
+# Resend (Phase 3 daily digest dispatch).
+npx wrangler secret put RESEND_API_KEY
 ```
 
 Telegram setup:
@@ -73,12 +80,17 @@ Telegram setup:
    `TELEGRAM_BOT_TOKEN`.
 2. Start a chat with the bot from the operator account. Then visit
    `https://api.telegram.org/bot<TOKEN>/getUpdates` once a message has
-   been sent to the bot. The `chat.id` in the response is
-   `TELEGRAM_CHAT_ID`.
-3. Re-run the two `wrangler secret put` commands above.
+   been sent. The `chat.id` is `TELEGRAM_CHAT_ID`.
 
-Phase 3 will also use `RESEND_API_KEY` and `FRED_API_KEY`. Set those
-later, not now.
+Resend setup:
+
+1. Verify the sender domain in the Resend dashboard. The Worker sends
+   from the address in `wrangler.toml`'s `DIGEST_FROM` (currently
+   `alerts@datumlabs.xyz`).
+2. Create an API key with `emails.send` scope, then run
+   `wrangler secret put RESEND_API_KEY`.
+3. Recipients live in `DIGEST_RECIPIENTS` (`wrangler.toml`, comma-
+   separated). To add or remove, edit and re-deploy.
 
 ## Deploying
 
@@ -238,6 +250,57 @@ FRED's CSV endpoint is keyless; falls back from `TB4WK` to `DGS1MO` if
 TB4WK is unavailable. State lives under `latest:real_yield_spread_regime:global`
 in KV.
 
+### `liquidation_cascade`
+
+Fires when a protocol's trailing-24h liquidation volume (in USD)
+clears the per-protocol threshold from `LIQUIDATION_THRESHOLDS_USD`:
+Aave V3 $100M, Morpho $50M, Fluid $30M, Spark $20M. WARNING at the
+threshold, CRITICAL at 2x. Data source is the dashboard's
+`liquidator-economy` Neon DB via `@neondatabase/serverless`'s HTTP
+function (no WebSockets). Set `LIQUIDATOR_DATABASE_URL` with
+`wrangler secret put`; rule self-skips with a log line if the secret
+is absent.
+
+### `morpho_curator_hhi`
+
+Fires daily on any of four conditions:
+- HHI crosses 2,500 from below (highly concentrated zone).
+- HHI crosses 3,000 from below.
+- 7-day delta in HHI exceeds 100 points.
+- Top-3 combined share changes by more than 1 pp in 24 hours.
+
+HHI uses share-as-percentage (Steakhouse at 38.8% contributes 1505.44).
+Source is `blue-api.morpho.org`'s `vaults` GraphQL endpoint, paginated
+in 100-item pages. Curators with no metadata bucket as "Uncurated".
+Daily snapshots persisted to D1 `hhi_snapshots` so 7-day delta survives
+KV evictions.
+
+## Daily digest email
+
+The `0 0 * * *` cron runs the daily rules and then composes a 24-hour
+digest covering everything in `alert_history` from the prior day.
+Format is HTML with a plain-text fallback, sender controlled by the
+`DIGEST_FROM` var, recipients controlled by `DIGEST_RECIPIENTS`
+(comma-separated). Dispatch is via Resend's `/emails` endpoint.
+
+Preview the next digest without sending:
+
+```powershell
+Invoke-RestMethod "https://datumlabs-alerts.joelobafemii.workers.dev/digest/preview?format=text"
+# or open in a browser:
+# https://datumlabs-alerts.joelobafemii.workers.dev/digest/preview
+```
+
+Force an immediate send (the cron will also run at midnight UTC
+regardless):
+
+```powershell
+Invoke-RestMethod -Method Post -Uri "https://datumlabs-alerts.joelobafemii.workers.dev/digest/send"
+```
+
+Each send is logged to `digest_runs` (`status` = `sent` /
+`skipped-empty` / `failed`).
+
 ## Voice rules for any user-facing copy
 
 Suggested tweets, Telegram message text, and operator-facing strings all
@@ -252,11 +315,10 @@ or the published voice drifts off-brand.
 
 ## Roadmap
 
-- Phase 3: `morpho_curator_hhi`, `liquidation_cascade`, Resend daily
-  digest email at 00:00 UTC. Adding Morpho stablecoin APY via the
-  `blue-api.morpho.org` GraphQL API would re-enable the fourth protocol
-  on dispersion and real-yield blends.
 - Phase 4: public `/pulse` page in the dashboard, Beehiiv subscriber
   signup, alert filters.
+- Outstanding ergonomic gap: porting the Morpho GraphQL stablecoin-APY
+  lookup to the alerts Worker would re-enable Morpho on the dispersion
+  and real-yield blends (currently scoped to Aave V3 + Spark + Fluid).
 
 The full plan is in `../BUILD_SPEC_alert_system.md`.

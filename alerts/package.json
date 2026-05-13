@@ -16,6 +16,9 @@
     "kv:create": "wrangler kv:namespace create ALERTS_KV",
     "seed:baselines": "tsx scripts/seed-baselines.ts"
   },
+  "dependencies": {
+    "@neondatabase/serverless": "^0.10.0"
+  },
   "devDependencies": {
     "@cloudflare/workers-types": "^4.20250101.0",
     "tsx": "^4.19.2",
