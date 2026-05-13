@@ -5,6 +5,12 @@ import {
   MIN_BASELINE_SAMPLES,
   createLiquidityNormalizationRule,
 } from "../src/rules/liquidity-normalization";
+import { createUtilizationRateKinkRule } from "../src/rules/utilization-rate-kink";
+import {
+  MIN_DISPERSION_SAMPLES,
+  createApyDispersionBlowoutRule,
+} from "../src/rules/apy-dispersion-blowout";
+import { createRealYieldSpreadRegimeRule } from "../src/rules/real-yield-spread-regime";
 import { recordBaselineSample, recordTvlSnapshot } from "../src/state/d1";
 import { AlertEngine } from "../src/engine";
 import type { YieldPool } from "../src/sources/defillama";
@@ -27,10 +33,26 @@ function fakeYieldPool(over: Partial<YieldPool> & { project: string; symbol: str
 
 class StubDefiLlamaClient {
   public protocolTvlByProtocol = new Map<string, number>();
-  public poolsByKey = new Map<string, YieldPool>();
+  public poolsByKey = new Map<string, YieldPool[]>();
+  public blendedByKey = new Map<
+    string,
+    { apyPct: number; weightUsd: number } | null
+  >();
 
   setPool(protocol: string, asset: string, pool: YieldPool) {
-    this.poolsByKey.set(`${protocol}:${asset}`, pool);
+    this.poolsByKey.set(`${protocol}:${asset}`, [pool]);
+  }
+
+  setPools(protocol: string, asset: string, pools: YieldPool[]) {
+    this.poolsByKey.set(`${protocol}:${asset}`, pools);
+  }
+
+  setBlended(
+    protocol: string,
+    asset: string,
+    value: { apyPct: number; weightUsd: number } | null,
+  ) {
+    this.blendedByKey.set(`${protocol}:${asset}`, value);
   }
 
   setProtocolTvl(protocol: string, tvl: number) {
@@ -38,7 +60,18 @@ class StubDefiLlamaClient {
   }
 
   async findPool(protocol: string, asset: string): Promise<YieldPool | null> {
-    return this.poolsByKey.get(`${protocol}:${asset}`) ?? null;
+    return this.poolsByKey.get(`${protocol}:${asset}`)?.[0] ?? null;
+  }
+
+  async findPools(protocol: string, asset: string): Promise<YieldPool[]> {
+    return this.poolsByKey.get(`${protocol}:${asset}`) ?? [];
+  }
+
+  async blendedSupplyApyPct(
+    protocol: string,
+    asset: string,
+  ): Promise<{ apyPct: number; weightUsd: number } | null> {
+    return this.blendedByKey.get(`${protocol}:${asset}`) ?? null;
   }
 
   async getProtocolTvlUsd(protocol: string): Promise<number | null> {
@@ -46,7 +79,20 @@ class StubDefiLlamaClient {
   }
 
   async getEthereumYieldPools(): Promise<YieldPool[]> {
-    return [...this.poolsByKey.values()];
+    return [...this.poolsByKey.values()].flat();
+  }
+}
+
+class StubFredClient {
+  public tBill: number | null = null;
+  async fetchTBill4wk(): Promise<number | null> {
+    return this.tBill;
+  }
+  async fetchLatest(): Promise<number | null> {
+    return this.tBill;
+  }
+  async fetchSeries(): Promise<{ timestampMs: number; rate: number }[]> {
+    return this.tBill == null ? [] : [{ timestampMs: Date.now(), rate: this.tBill }];
   }
 }
 
@@ -272,5 +318,283 @@ describe("liquidity_normalization rule", () => {
     const rule = createLiquidityNormalizationRule({ client: stub as never });
     const events = await rule.evaluate({ env, now, fetchedAt: now });
     expect(events.find((e) => e.key === "aave-v3:WETH")).toBeUndefined();
+  });
+});
+
+describe("utilization_rate_kink rule", () => {
+  test("does not fire on first evaluation (no prior to compare against)", async () => {
+    const env = makeEnv();
+    const stub = new StubDefiLlamaClient();
+    // 80% utilization on Aave V3 USDC.
+    stub.setPool(
+      "aave-v3",
+      "USDC",
+      fakeYieldPool({
+        project: "aave-v3",
+        symbol: "USDC",
+        totalSupplyUsd: 1_000_000_000,
+        totalBorrowUsd: 800_000_000,
+        apyBase: 3.5,
+        apyBaseBorrow: 4.4,
+      }),
+    );
+    const now = new Date("2026-05-13T12:00:00Z");
+    const rule = createUtilizationRateKinkRule({ client: stub as never });
+    const events = await rule.evaluate({ env, now, fetchedAt: now });
+    expect(events.find((e) => e.key.startsWith("aave-v3:USDC"))).toBeUndefined();
+  });
+
+  test("fires WARNING when utilization crosses 90% from below", async () => {
+    const env = makeEnv();
+    const stub = new StubDefiLlamaClient();
+    const kv = env.ALERTS_KV as unknown as FakeKV;
+    // Prior: 85%. New: 92%. Should cross 90, not 95.
+    await kv.put(
+      "latest:utilization_rate_kink:aave-v3:USDC",
+      JSON.stringify({ utilPct: 85, recordedAt: Date.now() - 60_000 }),
+    );
+    stub.setPool(
+      "aave-v3",
+      "USDC",
+      fakeYieldPool({
+        project: "aave-v3",
+        symbol: "USDC",
+        totalSupplyUsd: 1_000_000_000,
+        totalBorrowUsd: 920_000_000,
+        apyBase: 4.2,
+        apyBaseBorrow: 5.5,
+      }),
+    );
+    const now = new Date("2026-05-13T12:00:00Z");
+    const rule = createUtilizationRateKinkRule({ client: stub as never });
+    const events = await rule.evaluate({ env, now, fetchedAt: now });
+    const fire = events.find((e) => e.key === "aave-v3:USDC:90");
+    expect(fire).toBeDefined();
+    expect(fire!.severity).toBe("WARNING");
+    expect(fire!.suggestedTweet).toContain("90%");
+    expect(fire!.suggestedTweet).not.toContain("—");
+    expect(fire!.suggestedTweet).not.toMatch(/\bwe\b|\bour\b/i);
+    expect(fire!.suggestedTweet.length).toBeLessThanOrEqual(280);
+  });
+
+  test("fires CRITICAL when utilization jumps past 95%", async () => {
+    const env = makeEnv();
+    const stub = new StubDefiLlamaClient();
+    const kv = env.ALERTS_KV as unknown as FakeKV;
+    await kv.put(
+      "latest:utilization_rate_kink:aave-v3:USDC",
+      JSON.stringify({ utilPct: 89, recordedAt: Date.now() - 60_000 }),
+    );
+    stub.setPool(
+      "aave-v3",
+      "USDC",
+      fakeYieldPool({
+        project: "aave-v3",
+        symbol: "USDC",
+        totalSupplyUsd: 1_000_000_000,
+        totalBorrowUsd: 970_000_000,
+      }),
+    );
+    const now = new Date("2026-05-13T12:00:00Z");
+    const rule = createUtilizationRateKinkRule({ client: stub as never });
+    const events = await rule.evaluate({ env, now, fetchedAt: now });
+    const fire = events.find((e) => e.key === "aave-v3:USDC:95");
+    expect(fire).toBeDefined();
+    expect(fire!.severity).toBe("CRITICAL");
+  });
+
+  test("does not fire when utilization stays above threshold without re-crossing", async () => {
+    const env = makeEnv();
+    const stub = new StubDefiLlamaClient();
+    const kv = env.ALERTS_KV as unknown as FakeKV;
+    // Was already at 93%. Now at 94%. No new crossing.
+    await kv.put(
+      "latest:utilization_rate_kink:aave-v3:USDC",
+      JSON.stringify({ utilPct: 93, recordedAt: Date.now() - 60_000 }),
+    );
+    stub.setPool(
+      "aave-v3",
+      "USDC",
+      fakeYieldPool({
+        project: "aave-v3",
+        symbol: "USDC",
+        totalSupplyUsd: 1_000_000_000,
+        totalBorrowUsd: 940_000_000,
+      }),
+    );
+    const now = new Date("2026-05-13T12:00:00Z");
+    const rule = createUtilizationRateKinkRule({ client: stub as never });
+    const events = await rule.evaluate({ env, now, fetchedAt: now });
+    expect(events.find((e) => e.key.startsWith("aave-v3:USDC"))).toBeUndefined();
+  });
+});
+
+describe("apy_dispersion_blowout rule", () => {
+  test("accumulates baseline silently until min samples reached", async () => {
+    const env = makeEnv();
+    const stub = new StubDefiLlamaClient();
+    stub.setBlended("aave-v3", "USDC", { apyPct: 4, weightUsd: 1_000_000_000 });
+    stub.setBlended("spark", "USDC", { apyPct: 4.2, weightUsd: 800_000_000 });
+    stub.setBlended("fluid", "USDC", { apyPct: 5, weightUsd: 200_000_000 });
+    const now = new Date("2026-05-13T12:00:00Z");
+    const rule = createApyDispersionBlowoutRule({ client: stub as never });
+    const events = await rule.evaluate({ env, now, fetchedAt: now });
+    expect(events).toEqual([]);
+  });
+
+  test("fires when dispersion exceeds mean + 2 stddev", async () => {
+    const env = makeEnv();
+    const stub = new StubDefiLlamaClient();
+    // Cross-protocol: 8% high, 4% low → 400 bps current dispersion.
+    stub.setBlended("aave-v3", "USDC", { apyPct: 4.0, weightUsd: 1_000_000_000 });
+    stub.setBlended("spark", "USDC", { apyPct: 4.5, weightUsd: 800_000_000 });
+    stub.setBlended("fluid", "USDC", { apyPct: 8.0, weightUsd: 200_000_000 });
+
+    // Baseline: 72 samples around 50 bps (mean 50, low stddev).
+    const now = new Date("2026-05-13T12:00:00Z");
+    for (let i = 0; i < MIN_DISPERSION_SAMPLES; i++) {
+      await recordBaselineSample(
+        env,
+        "dispersion:USDC",
+        now.getTime() - (MIN_DISPERSION_SAMPLES - i) * 60 * 60 * 1000,
+        50 + (i % 2 === 0 ? -2 : 2),
+      );
+    }
+    const rule = createApyDispersionBlowoutRule({ client: stub as never });
+    const events = await rule.evaluate({ env, now, fetchedAt: now });
+    const fire = events.find((e) => e.key === "USDC");
+    expect(fire).toBeDefined();
+    expect(fire!.severity).toBe("NORMAL");
+    expect(fire!.suggestedTweet).toContain("USDC");
+    expect(fire!.suggestedTweet).not.toContain("—");
+    expect(fire!.suggestedTweet).not.toMatch(/\bwe\b|\bour\b/i);
+    expect(fire!.suggestedTweet.length).toBeLessThanOrEqual(280);
+  });
+
+  test("does not fire when dispersion is within the band", async () => {
+    const env = makeEnv();
+    const stub = new StubDefiLlamaClient();
+    stub.setBlended("aave-v3", "USDC", { apyPct: 4.4, weightUsd: 1_000_000_000 });
+    stub.setBlended("spark", "USDC", { apyPct: 4.5, weightUsd: 800_000_000 });
+    stub.setBlended("fluid", "USDC", { apyPct: 4.7, weightUsd: 200_000_000 });
+
+    const now = new Date("2026-05-13T12:00:00Z");
+    for (let i = 0; i < MIN_DISPERSION_SAMPLES; i++) {
+      await recordBaselineSample(
+        env,
+        "dispersion:USDC",
+        now.getTime() - (MIN_DISPERSION_SAMPLES - i) * 60 * 60 * 1000,
+        50 + (i % 2 === 0 ? -10 : 10),
+      );
+    }
+    const rule = createApyDispersionBlowoutRule({ client: stub as never });
+    const events = await rule.evaluate({ env, now, fetchedAt: now });
+    expect(events.find((e) => e.key === "USDC")).toBeUndefined();
+  });
+});
+
+describe("real_yield_spread_regime rule", () => {
+  test("seeds baseline silently on first evaluation", async () => {
+    const env = makeEnv();
+    const defi = new StubDefiLlamaClient();
+    const fred = new StubFredClient();
+    fred.tBill = 4.0;
+    defi.setBlended("aave-v3", "USDC", { apyPct: 6.0, weightUsd: 1_000_000_000 });
+    defi.setBlended("spark", "USDC", { apyPct: 5.5, weightUsd: 800_000_000 });
+    defi.setBlended("fluid", "USDC", { apyPct: 7.0, weightUsd: 200_000_000 });
+    const now = new Date("2026-05-13T12:00:00Z");
+    const rule = createRealYieldSpreadRegimeRule({
+      defiLlama: defi as never,
+      fred: fred as never,
+    });
+    const events = await rule.evaluate({ env, now, fetchedAt: now });
+    expect(events).toEqual([]);
+  });
+
+  test("fires CRITICAL when spread crosses zero", async () => {
+    const env = makeEnv();
+    const defi = new StubDefiLlamaClient();
+    const fred = new StubFredClient();
+    fred.tBill = 5.0;
+    // Blended APY = 5.5 → spread = +50 bps.
+    defi.setBlended("aave-v3", "USDC", { apyPct: 5.5, weightUsd: 1_000_000_000 });
+
+    const now = new Date("2026-05-13T12:00:00Z");
+    const kv = env.ALERTS_KV as unknown as FakeKV;
+    // Prior spread was -75 bps. New spread +50 bps → zero-cross.
+    await kv.put(
+      "latest:real_yield_spread_regime:global",
+      JSON.stringify({
+        spreadBps: -75,
+        blendedApyPct: 4.25,
+        tBillPct: 5.0,
+        recordedAt: now.getTime() - 2 * 3600 * 1000,
+      }),
+    );
+
+    const rule = createRealYieldSpreadRegimeRule({
+      defiLlama: defi as never,
+      fred: fred as never,
+    });
+    const events = await rule.evaluate({ env, now, fetchedAt: now });
+    expect(events).toHaveLength(1);
+    expect(events[0]!.severity).toBe("CRITICAL");
+    expect(events[0]!.suggestedTweet).toContain("parity");
+    expect(events[0]!.suggestedTweet).not.toContain("—");
+    expect(events[0]!.suggestedTweet).not.toMatch(/\bwe\b|\bour\b/i);
+    expect(events[0]!.suggestedTweet.length).toBeLessThanOrEqual(280);
+  });
+
+  test("fires NORMAL on a rapid 24h move without zero cross", async () => {
+    const env = makeEnv();
+    const defi = new StubDefiLlamaClient();
+    const fred = new StubFredClient();
+    fred.tBill = 4.0;
+    defi.setBlended("aave-v3", "USDC", { apyPct: 5.5, weightUsd: 1_000_000_000 });
+    // New spread +150 bps. Prior +50 bps. Same sign, |Δ| = 100 bps > 25.
+    const now = new Date("2026-05-13T12:00:00Z");
+    const kv = env.ALERTS_KV as unknown as FakeKV;
+    await kv.put(
+      "latest:real_yield_spread_regime:global",
+      JSON.stringify({
+        spreadBps: 50,
+        blendedApyPct: 4.5,
+        tBillPct: 4.0,
+        recordedAt: now.getTime() - 3 * 3600 * 1000,
+      }),
+    );
+    const rule = createRealYieldSpreadRegimeRule({
+      defiLlama: defi as never,
+      fred: fred as never,
+    });
+    const events = await rule.evaluate({ env, now, fetchedAt: now });
+    expect(events).toHaveLength(1);
+    expect(events[0]!.severity).toBe("NORMAL");
+  });
+
+  test("does not fire on a small move with same sign", async () => {
+    const env = makeEnv();
+    const defi = new StubDefiLlamaClient();
+    const fred = new StubFredClient();
+    fred.tBill = 4.0;
+    defi.setBlended("aave-v3", "USDC", { apyPct: 4.6, weightUsd: 1_000_000_000 });
+    // New spread +60 bps. Prior +50. Δ = 10 bps.
+    const now = new Date("2026-05-13T12:00:00Z");
+    const kv = env.ALERTS_KV as unknown as FakeKV;
+    await kv.put(
+      "latest:real_yield_spread_regime:global",
+      JSON.stringify({
+        spreadBps: 50,
+        blendedApyPct: 4.5,
+        tBillPct: 4.0,
+        recordedAt: now.getTime() - 3 * 3600 * 1000,
+      }),
+    );
+    const rule = createRealYieldSpreadRegimeRule({
+      defiLlama: defi as never,
+      fred: fred as never,
+    });
+    const events = await rule.evaluate({ env, now, fetchedAt: now });
+    expect(events).toEqual([]);
   });
 });

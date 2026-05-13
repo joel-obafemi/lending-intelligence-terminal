@@ -105,16 +105,48 @@ export class DefiLlamaClient {
    * so the alert reflects the canonical market.
    */
   async findPool(protocol: Protocol, asset: string): Promise<YieldPool | null> {
+    const matches = await this.findPools(protocol, asset);
+    if (matches.length === 0) return null;
+    return matches[0]!;
+  }
+
+  /**
+   * All matching pools for (protocol, asset), ranked by depth. Used by rules
+   * that want to blend (e.g. dispersion across vaults for the same asset).
+   */
+  async findPools(protocol: Protocol, asset: string): Promise<YieldPool[]> {
     const pools = await this.getEthereumYieldPools();
     const projects = DEFILLAMA_YIELDS_PROJECT[protocol];
     const symbolUpper = asset.toUpperCase();
-    const matches = pools.filter(
-      (p) => projects.includes(p.project) && p.symbol === symbolUpper,
-    );
-    if (matches.length === 0) return null;
-    return matches.sort(
-      (a, b) => (b.totalSupplyUsd ?? b.tvlUsd) - (a.totalSupplyUsd ?? a.tvlUsd),
-    )[0]!;
+    return pools
+      .filter((p) => projects.includes(p.project) && p.symbol === symbolUpper)
+      .sort(
+        (a, b) =>
+          (b.totalSupplyUsd ?? b.tvlUsd) - (a.totalSupplyUsd ?? a.tvlUsd),
+      );
+  }
+
+  /**
+   * TVL-weighted blended supply APY (apyBase, no incentives) for a
+   * (protocol, asset). Returns null if no pool has a non-null apyBase.
+   * Matches the dashboard's lib/real-yield.ts blending approach.
+   */
+  async blendedSupplyApyPct(
+    protocol: Protocol,
+    asset: string,
+  ): Promise<{ apyPct: number; weightUsd: number } | null> {
+    const pools = await this.findPools(protocol, asset);
+    let weighted = 0;
+    let weight = 0;
+    for (const p of pools) {
+      if (p.apyBase == null || !Number.isFinite(p.apyBase)) continue;
+      const w = p.totalSupplyUsd ?? p.tvlUsd ?? 0;
+      if (w <= 0) continue;
+      weighted += p.apyBase * w;
+      weight += w;
+    }
+    if (weight <= 0) return null;
+    return { apyPct: weighted / weight, weightUsd: weight };
   }
 
   /**

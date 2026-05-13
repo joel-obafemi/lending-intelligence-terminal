@@ -26,6 +26,34 @@ export const NET_FLOW_THRESHOLDS = {
 export const LIQUIDITY_BAND_STDDEV = 1.5;
 export const LIQUIDITY_BASELINE_WINDOW_DAYS = 7;
 
+// Utilization rate-kink watchlist. Spec 5.2: stablecoin markets on Aave V3
+// and Spark only. Threshold crossings 90% / 95% from below.
+export interface UtilizationWatchEntry {
+  protocol: Protocol;
+  asset: string;
+}
+export const UTILIZATION_WATCHLIST: UtilizationWatchEntry[] = [
+  { protocol: "aave-v3", asset: "USDC" },
+  { protocol: "aave-v3", asset: "USDT" },
+  { protocol: "spark", asset: "USDS" },
+];
+export const UTILIZATION_THRESHOLDS_PCT = [90, 95] as const;
+
+// APY dispersion watchlist. Spec 5.3: USDC, USDT, USDS, DAI across the four
+// protocols. Morpho is excluded for now: DefiLlama's morpho-blue pools
+// don't expose meaningful apyBase for stables (vault APYs live in the
+// Morpho GraphQL API). Falling back to Aave V3 + Spark + Fluid.
+export const DISPERSION_STABLES = ["USDC", "USDT", "USDS", "DAI"] as const;
+export const DISPERSION_PROTOCOLS: Protocol[] = ["aave-v3", "spark", "fluid"];
+export const DISPERSION_BASELINE_WINDOW_DAYS = 30;
+export const DISPERSION_BAND_STDDEV = 2;
+
+// Real yield spread blend. Spec 5.5: USDC + USDT + USDS across the four
+// protocols, TVL-weighted, vs FRED TB4WK. Same Morpho caveat applies.
+export const REAL_YIELD_STABLES = ["USDC", "USDT", "USDS"] as const;
+export const REAL_YIELD_PROTOCOLS: Protocol[] = ["aave-v3", "spark", "fluid"];
+export const REAL_YIELD_RAPID_MOVE_BPS = 25;
+
 export const PROTOCOL_DISPLAY_NAME: Record<Protocol, string> = {
   "aave-v3": "Aave V3",
   spark: "Spark",

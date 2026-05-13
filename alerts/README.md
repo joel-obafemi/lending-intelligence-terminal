@@ -9,20 +9,20 @@ The Worker lives in this directory and is deployed independently of the
 dashboard. The full design rationale, voice rules, and the seven launch
 rules are documented in `../BUILD_SPEC_alert_system.md`.
 
-## Phase 1 status
+## Status
 
-Phase 1 (MVP) is live:
+Phase 1 + Phase 2 live. Five rules running:
 
-- Two rules implemented: `liquidity_normalization` (fast / 5 min) and
-  `net_flow_24h` (hourly).
-- Telegram dispatcher with Markdown V2 templating and a 280-character
-  suggested-tweet guard.
-- D1 schema (`src/state/schema.sql`) applied to the live database.
-- Three cron triggers registered (`*/5`, `0 */1`, `0 0`).
-- Unit tests for trigger / no-trigger / cooldown.
+| Rule                          | Schedule | Cooldown | Severity                |
+|-------------------------------|----------|----------|-------------------------|
+| `liquidity_normalization`     | fast     | 6h       | NORMAL                  |
+| `utilization_rate_kink`       | fast     | 4h       | WARNING / CRITICAL      |
+| `net_flow_24h`                | hourly   | 12h      | NORMAL / CRITICAL       |
+| `apy_dispersion_blowout`      | hourly   | 12h      | NORMAL                  |
+| `real_yield_spread_regime`    | hourly   | 24h      | NORMAL / CRITICAL       |
 
-Phase 2 and Phase 3 rules and the Resend email digest are scoped in the
-spec but not implemented.
+Phase 3 (`morpho_curator_hhi`, `liquidation_cascade`, Resend daily
+digest) is scoped in the spec but not implemented.
 
 ## Provisioned resources
 
@@ -184,7 +184,7 @@ it after adding a table or index:
 npx wrangler d1 execute datumlabs-alerts --remote --file=./src/state/schema.sql
 ```
 
-## Notes on the Phase 1 rules
+## Notes on the rules
 
 ### `liquidity_normalization`
 
@@ -193,7 +193,6 @@ available liquidity crosses out of, or back into, its trailing-7-day
 mean ± 1.5σ band. Samples are recorded in `baseline_samples` every 5
 minutes; mean and stddev are recomputed on every run. The rule needs
 at least 24 samples (about 2 hours of accumulation) before it can fire.
-That guard avoids spurious fires before the baseline is meaningful.
 
 ### `net_flow_24h`
 
@@ -203,6 +202,41 @@ snapshots TVL to `tvl_snapshots` on every hourly run and looks back 24h
 ± 2h for the prior point. First run per protocol just seeds the
 baseline; the first fire-eligible evaluation happens at hour 24 of
 uptime.
+
+### `utilization_rate_kink`
+
+Fires when a stablecoin market on Aave V3 or Spark crosses 90% or 95%
+utilization from below. Stateless aside from the previous-value lookup
+in KV. The rule key includes the threshold (`aave-v3:USDC:90`) so a jump
+from 89 to 96 fires both the 90 and 95 events on separate keys, each on
+its own 4-hour cooldown.
+
+### `apy_dispersion_blowout`
+
+Fires when the cross-protocol supply-APY spread for a stablecoin exceeds
+the trailing-30-day mean by 2 stddev. Uses TVL-weighted blended apyBase
+per (protocol, stable) across all matching pools, then computes
+`max - min` in basis points. Requires 72 samples (3 days of hourly
+runs) before it can fire. Seed initial 30-day history with:
+
+```powershell
+npm run seed:baselines
+npx wrangler d1 execute datumlabs-alerts --remote --file=./scripts/.seed-dispersion.sql
+```
+
+Morpho is excluded from the cross-section because DefiLlama's
+`morpho-blue` pool rows do not expose meaningful `apyBase` for
+stablecoins (vault rates live in the Morpho GraphQL API; the dashboard
+queries that separately). Rule operates on Aave V3, Spark, and Fluid.
+
+### `real_yield_spread_regime`
+
+Fires on a zero-crossing (CRITICAL) or a 24-hour move > 25 bps (NORMAL)
+in `blended_stablecoin_APY - TB4WK`. Blend is TVL-weighted across USDC,
+USDT, USDS on Aave V3 / Spark / Fluid (same Morpho caveat as above).
+FRED's CSV endpoint is keyless; falls back from `TB4WK` to `DGS1MO` if
+TB4WK is unavailable. State lives under `latest:real_yield_spread_regime:global`
+in KV.
 
 ## Voice rules for any user-facing copy
 
@@ -218,11 +252,10 @@ or the published voice drifts off-brand.
 
 ## Roadmap
 
-- Phase 2: `utilization_rate_kink`, `apy_dispersion_blowout`,
-  `real_yield_spread_regime`. Baseline backfill script
-  (`scripts/seed-baselines.ts`) for the dispersion rule.
 - Phase 3: `morpho_curator_hhi`, `liquidation_cascade`, Resend daily
-  digest email at 00:00 UTC.
+  digest email at 00:00 UTC. Adding Morpho stablecoin APY via the
+  `blue-api.morpho.org` GraphQL API would re-enable the fourth protocol
+  on dispersion and real-yield blends.
 - Phase 4: public `/pulse` page in the dashboard, Beehiiv subscriber
   signup, alert filters.
 

@@ -13,10 +13,12 @@
     "d1:create": "wrangler d1 create datumlabs-alerts",
     "d1:apply": "wrangler d1 execute datumlabs-alerts --remote --file=./src/state/schema.sql",
     "d1:apply-local": "wrangler d1 execute datumlabs-alerts --local --file=./src/state/schema.sql",
-    "kv:create": "wrangler kv:namespace create ALERTS_KV"
+    "kv:create": "wrangler kv:namespace create ALERTS_KV",
+    "seed:baselines": "tsx scripts/seed-baselines.ts"
   },
   "devDependencies": {
     "@cloudflare/workers-types": "^4.20250101.0",
+    "tsx": "^4.19.2",
     "typescript": "^5.6.0",
     "vitest": "^1.6.0",
     "wrangler": "^3.114.0"
