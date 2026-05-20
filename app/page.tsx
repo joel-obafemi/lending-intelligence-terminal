@@ -1,7 +1,7 @@
 import { VerdictStrip } from "@/components/overview/verdict-strip"
 import { MarketShareHero } from "@/components/overview/market-share-hero"
 import { CompositionStrip } from "@/components/overview/composition-strip"
-import { NetFlowStackedBarChart } from "@/components/overview/net-flow-stacked-bar-chart"
+import { NetFlowsSankey } from "@/components/overview/net-flows-sankey"
 import { CompositionDonuts } from "@/components/overview/composition-donuts"
 import { TopMarketsCrossProtocolTable } from "@/components/overview/top-markets-cross-protocol-table"
 import { CiteThisPage } from "@/components/overview/cite-this-page"
@@ -140,13 +140,15 @@ export default async function OverviewPage() {
         netDeposits30d={netDeps30d}
       />
 
-      {/* Zone 4 — Net Supply Flows · 24-month stacked bars by protocol
-          with W / M / Q toggle. */}
-      <NetFlowStackedBarChart
-        title="Net Supply Flows"
-        data={data.netFlowWeeklySeries}
-        methodologyKey="sector-net-flows"
-      />
+      {/* Zone 4 — Net Supply Flows · Sankey, three columns
+          (asset inflow → protocol net → asset outflow), W / M / Q toggle. */}
+      {data.netFlowsSankey && (
+        <NetFlowsSankey
+          title="Net Supply Flows"
+          windows={data.netFlowsSankey}
+          methodologyKey="sector-net-flows"
+        />
+      )}
 
       {/* Zone 5 — Composition donuts (totals reconciled to Verdict cards;
           period picker drives both donuts off historicalBuckets) */}

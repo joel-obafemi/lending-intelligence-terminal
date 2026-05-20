@@ -6,6 +6,11 @@ import { PROTOCOLS } from "./protocols"
 import { fetchAllProtocolHistory } from "./defillama"
 import { classifyAsset, type AssetType, ASSET_TYPE_STACK_ORDER } from "./assets"
 import { buildHistoricalBuckets, type HistoricalBuckets } from "./historical-buckets"
+import {
+  buildNetFlowsSankey,
+  type NetFlowsSankeyData,
+  type ProtocolAssetUsdSeries,
+} from "./net-flows-sankey"
 
 export interface DeltaTriple {
   /** 24-hour absolute-USD change (current − T−1d) */
@@ -138,6 +143,14 @@ export interface OverviewResponse {
   netFlowWeeklySeries: OverviewTimeseriesPoint[]
   /** Same data as `netFlowWeeklySeries`, bucketed by calendar month instead of week. */
   netFlowMonthlySeries: OverviewTimeseriesPoint[]
+  /** Pre-computed Sankey snapshots for the trailing W (7d), M (30d), Q (90d)
+   *  windows. Each entry has the three-column shape (asset inflow → protocol
+   *  net → asset outflow) ready for the <NetFlowsSankey> client component. */
+  netFlowsSankey?: {
+    week: NetFlowsSankeyData
+    month: NetFlowsSankeyData
+    quarter: NetFlowsSankeyData
+  }
   /** Net interest paid by borrowers (DefiLlama dailyUserFees), per protocol per day. */
   netInterestPaidDailySeries: OverviewTimeseriesPoint[]
   /** End-of-bucket snapshots (Week/Month/Quarter) for the date-pickable
@@ -578,6 +591,14 @@ export async function loadOverview(): Promise<OverviewResponse> {
   // (supplied-tokens × latest-price) summed across symbols. We compute daily
   // flows once, then bucket into BOTH weekly and monthly views.
   const dailyFlowsByProtocol: Record<string, Array<{ timestamp: number; flow: number }>> = {}
+  // Per-(protocol, asset, day) USD-at-constant-prices series. For
+  // token-path protocols (Aave V3, Spark, Morpho, ...), each `tokens` row
+  // carries per-symbol USD. For USD-fallback protocols (Fluid, Compound
+  // V3 base assets, Euler V2 vaults) it carries a single synthetic
+  // "Mixed" symbol equal to the protocol's daily total, so the Sankey
+  // still places them in the middle column with a single "Mixed"
+  // inflow/outflow link instead of dropping them entirely.
+  const assetUsdByProtocol: ProtocolAssetUsdSeries[] = []
   ;(() => {
     PROTOCOLS.forEach((p, i) => {
       const h = histories[i]
@@ -631,26 +652,38 @@ export async function loadOverview(): Promise<OverviewResponse> {
           suppliedQtyByDay.set(pt.timestamp, bucket)
         }
         const sortedQtyDays = [...suppliedQtyByDay.entries()].sort(([a], [b]) => a - b)
+        const perAssetDaily: ProtocolAssetUsdSeries["daily"] = []
         for (const [ts, qtys] of sortedQtyDays) {
           let sum = 0
+          const tokens: Record<string, number> = {}
           for (const [sym, qty] of Object.entries(qtys)) {
             const price = latestPrice[sym]
             if (!price || !qty) continue
-            sum += qty * price
+            const usd = qty * price
+            sum += usd
+            tokens[sym] = usd
           }
           sortedDays.push({ timestamp: ts, usd: sum })
+          perAssetDaily.push({ timestamp: ts, tokens })
         }
+        assetUsdByProtocol.push({ protocolSlug: p.slug, daily: perAssetDaily })
       } else {
         // USD-fallback: use total supplied = TVL + borrowed in USD.
         const tvlByTs = new Map<number, number>(h.tvl.map((pt) => [pt.timestamp, pt.usd]))
         const borByTs = new Map<number, number>(h.borrowed.map((pt) => [pt.timestamp, pt.usd]))
         const allTimestamps = new Set<number>([...tvlByTs.keys(), ...borByTs.keys()])
         const sortedTs = [...allTimestamps].sort((a, b) => a - b)
+        const perAssetDaily: ProtocolAssetUsdSeries["daily"] = []
         for (const ts of sortedTs) {
           const tvl = tvlByTs.get(ts) ?? 0
           const bor = borByTs.get(ts) ?? 0
-          sortedDays.push({ timestamp: ts, usd: tvl + bor })
+          const total = tvl + bor
+          sortedDays.push({ timestamp: ts, usd: total })
+          // Synthetic "Mixed" symbol so the Sankey can still attach an
+          // inflow / outflow link for this protocol's net total.
+          perAssetDaily.push({ timestamp: ts, tokens: { Mixed: total } })
         }
+        assetUsdByProtocol.push({ protocolSlug: p.slug, daily: perAssetDaily })
       }
 
       // Compute daily flow series for this protocol — we'll bucket later.
@@ -696,6 +729,17 @@ export async function loadOverview(): Promise<OverviewResponse> {
     const d = new Date(ts * 1000)
     return Math.floor(Date.UTC(d.getUTCFullYear(), d.getUTCMonth(), 1) / 1000)
   })
+
+  // ─── Sankey snapshots for the Net Supply Flows chart ───────────────────
+  // Three trailing windows: W (7 days), M (30 days), Q (90 days). Each is
+  // a three-column (asset inflow → protocol → asset outflow) shape ready
+  // for the <NetFlowsSankey> client component. Computed at constant
+  // prices via the per-(protocol, asset) USD series captured above.
+  const netFlowsSankey = {
+    week: buildNetFlowsSankey(assetUsdByProtocol, 7),
+    month: buildNetFlowsSankey(assetUsdByProtocol, 30),
+    quarter: buildNetFlowsSankey(assetUsdByProtocol, 90),
+  }
 
   // ─── Net interest paid by borrowers (Tier 1 metric) ────────────────────
   // Daily series per protocol from DefiLlama's dailyUserFees endpoint.
@@ -804,6 +848,7 @@ export async function loadOverview(): Promise<OverviewResponse> {
     revenueSnapshot,
     netFlowWeeklySeries,
     netFlowMonthlySeries,
+    netFlowsSankey,
     netInterestPaidDailySeries,
     historicalBuckets: buildHistoricalBuckets(histories),
     fetchedAt: Math.floor(Date.now() / 1000),
