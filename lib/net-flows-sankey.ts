@@ -73,7 +73,9 @@ export interface ProtocolAssetUsdSeries {
 }
 
 /**
- * Build a Sankey snapshot covering the trailing `windowDays`.
+ * Build a Sankey snapshot covering the trailing `windowDays`. Trailing
+ * variant — use buildNetFlowsSankeyForRange for explicit calendar
+ * boundaries (e.g. "May 2026").
  *
  *  - For each protocol, picks the last point as the END snapshot and the
  *    point closest to (END − windowDays * 86400) as the START.
@@ -101,6 +103,63 @@ export function buildNetFlowsSankey(
     return { nodes: [], links: [], totalInflowUsd: 0, totalOutflowUsd: 0, windowDays, endTimestamp: 0 }
   }
   const startTargetTs = endTs - windowDays * 86400
+  return buildSankeyInternal(perProtocol, startTargetTs, endTs, windowDays, minLinkUsd, maxAssetsPerSide)
+}
+
+/**
+ * Build a Sankey snapshot covering a specific calendar window. Used by
+ * the month / quarter pickers so users see "May 2026" or "Q2 2026"
+ * deltas instead of a trailing 30 / 90.
+ *
+ *  - startTs / endTs are unix seconds, inclusive on the start side.
+ *  - For partial periods (e.g. the current month before month-end), the
+ *    end snapshot is the latest available data day, so the chart still
+ *    renders as month-to-date.
+ *  - The two snapshots are picked as the closest available days to the
+ *    requested boundaries, so weekend / holiday gaps in DefiLlama don't
+ *    drop the period.
+ */
+export function buildNetFlowsSankeyForRange(
+  perProtocol: ProtocolAssetUsdSeries[],
+  startTs: number,
+  endTs: number,
+  minLinkUsd = 1_000_000,
+  maxAssetsPerSide = 18,
+): NetFlowsSankeyData {
+  if (endTs <= startTs) {
+    return { nodes: [], links: [], totalInflowUsd: 0, totalOutflowUsd: 0, windowDays: 0, endTimestamp: endTs }
+  }
+  const windowDays = Math.max(1, Math.round((endTs - startTs) / 86400))
+  return buildSankeyInternal(perProtocol, startTs, endTs, windowDays, minLinkUsd, maxAssetsPerSide)
+}
+
+/**
+ * Shared core. Picks the closest available snapshots to `startTargetTs`
+ * and `endTargetTs` per protocol, then computes per-(protocol, asset)
+ * deltas and emits the Sankey shape.
+ */
+function buildSankeyInternal(
+  perProtocol: ProtocolAssetUsdSeries[],
+  startTargetTs: number,
+  endTargetTs: number,
+  windowDays: number,
+  minLinkUsd: number,
+  maxAssetsPerSide: number,
+): NetFlowsSankeyData {
+  // Latest available data day per protocol — capped at endTargetTs so
+  // future requests still snap to the most recent observed day.
+  const effectiveEndTs = perProtocol.reduce((max, p) => {
+    if (p.daily.length === 0) return max
+    const lastAvailable = p.daily[p.daily.length - 1]!.timestamp
+    const capped = Math.min(lastAvailable, endTargetTs)
+    return Math.max(max, capped)
+  }, 0)
+  if (effectiveEndTs === 0) {
+    return { nodes: [], links: [], totalInflowUsd: 0, totalOutflowUsd: 0, windowDays, endTimestamp: 0 }
+  }
+  // Re-target the locals for the rest of the function so the existing
+  // delta logic just sees a single (startTargetTs, endTs) pair.
+  const endTs = effectiveEndTs
 
   // ── Per-(protocol, asset) delta computation ─────────────────────────
   // Each row: { protocolSlug, assetSymbol, deltaUsd }. Positive deltaUsd
@@ -114,9 +173,17 @@ export function buildNetFlowsSankey(
   for (const p of perProtocol) {
     if (p.daily.length === 0) continue
     const sorted = p.daily // already sorted asc
-    const endPoint = sorted[sorted.length - 1]!
-    // Find the snapshot closest to (endTs - windowDays). Tolerate ±2 days
-    // so weekend / holiday gaps don't drop the window.
+    // Pick the END point: the latest day <= endTs. For "current period
+    // in progress" calls this is the latest available data point. For
+    // historical periods (e.g. April 2026 viewed from May) this snaps
+    // to the closing day of the period.
+    let endPoint = sorted[0]!
+    for (const point of sorted) {
+      if (point.timestamp <= endTs) endPoint = point
+      else break
+    }
+    // Pick the START point: closest day to startTargetTs. Tolerates a
+    // few days of weekend / holiday gap so the period does not collapse.
     let startPoint = sorted[0]
     let bestDist = Math.abs(sorted[0]!.timestamp - startTargetTs)
     for (const point of sorted) {
@@ -127,7 +194,7 @@ export function buildNetFlowsSankey(
       }
       if (point.timestamp > startTargetTs + 2 * 86400) break
     }
-    if (!startPoint) continue
+    if (!startPoint || startPoint.timestamp >= endPoint.timestamp) continue
     const symbols = new Set<string>([
       ...Object.keys(endPoint.tokens),
       ...Object.keys(startPoint.tokens),

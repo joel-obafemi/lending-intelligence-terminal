@@ -8,9 +8,25 @@ import { classifyAsset, type AssetType, ASSET_TYPE_STACK_ORDER } from "./assets"
 import { buildHistoricalBuckets, type HistoricalBuckets } from "./historical-buckets"
 import {
   buildNetFlowsSankey,
+  buildNetFlowsSankeyForRange,
   type NetFlowsSankeyData,
   type ProtocolAssetUsdSeries,
 } from "./net-flows-sankey"
+
+/** Calendar-aligned Sankey snapshot — one per month or quarter. */
+export interface NetFlowsSankeyPeriod {
+  /** Stable key for the period (e.g. "2026-05" / "2026-Q2"). */
+  key: string
+  /** Display label shown in the picker (e.g. "May 2026" / "Q2 2026"). */
+  label: string
+  /** Unix seconds for the period's start day (inclusive). */
+  startTs: number
+  /** Unix seconds for the period's end day (inclusive, or "now" for current). */
+  endTs: number
+  /** True when this is the currently-elapsing period (partial data). */
+  isCurrent: boolean
+  sankey: NetFlowsSankeyData
+}
 
 export interface DeltaTriple {
   /** 24-hour absolute-USD change (current − T−1d) */
@@ -143,13 +159,14 @@ export interface OverviewResponse {
   netFlowWeeklySeries: OverviewTimeseriesPoint[]
   /** Same data as `netFlowWeeklySeries`, bucketed by calendar month instead of week. */
   netFlowMonthlySeries: OverviewTimeseriesPoint[]
-  /** Pre-computed Sankey snapshots for the trailing W (7d), M (30d), Q (90d)
-   *  windows. Each entry has the three-column shape (asset inflow → protocol
-   *  net → asset outflow) ready for the <NetFlowsSankey> client component. */
+  /** Pre-computed Sankey snapshots for the Net Supply Flows chart.
+   *  W is a trailing-7-day window. M and Q are calendar-aligned arrays
+   *  (newest first, current period included even if partial) so the
+   *  client can render a "May 2026" / "Q2 2026" picker. */
   netFlowsSankey?: {
     week: NetFlowsSankeyData
-    month: NetFlowsSankeyData
-    quarter: NetFlowsSankeyData
+    monthly: NetFlowsSankeyPeriod[]
+    quarterly: NetFlowsSankeyPeriod[]
   }
   /** Net interest paid by borrowers (DefiLlama dailyUserFees), per protocol per day. */
   netInterestPaidDailySeries: OverviewTimeseriesPoint[]
@@ -160,6 +177,78 @@ export interface OverviewResponse {
   historicalBuckets?: HistoricalBuckets
   fetchedAt: number
   errors: Array<{ slug: string; message: string }>
+}
+
+/**
+ * Build calendar-aligned monthly Sankey snapshots. Returns the most
+ * recent `monthsBack` months newest-first, including the in-progress
+ * current month (its data is month-to-date). Floor + per-side cap are
+ * tuned for typical monthly volume.
+ */
+function buildMonthlySankeySnapshots(
+  perProtocol: ProtocolAssetUsdSeries[],
+  monthsBack: number,
+): NetFlowsSankeyPeriod[] {
+  const nowMs = Date.now()
+  const now = new Date(nowMs)
+  const periods: NetFlowsSankeyPeriod[] = []
+  const monthLabel = (d: Date) =>
+    d.toLocaleString("en-US", { month: "long", year: "numeric", timeZone: "UTC" })
+  for (let i = 0; i < monthsBack; i++) {
+    const startMonth = new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth() - i, 1))
+    const endMonth = new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth() - i + 1, 1))
+    const startTs = Math.floor(startMonth.getTime() / 1000)
+    // End is the first day of NEXT month, exclusive. Subtract 1 second so
+    // the snapshot helper's "<= endTs" lookup snaps to the last day of THE
+    // month rather than the first day of the next one.
+    const endTs = Math.floor(endMonth.getTime() / 1000) - 1
+    const isCurrent = i === 0
+    periods.push({
+      key: `${startMonth.getUTCFullYear()}-${String(startMonth.getUTCMonth() + 1).padStart(2, "0")}`,
+      label: monthLabel(startMonth),
+      startTs,
+      endTs,
+      isCurrent,
+      sankey: buildNetFlowsSankeyForRange(perProtocol, startTs, endTs, 25_000_000, 14),
+    })
+  }
+  return periods
+}
+
+/**
+ * Build calendar-aligned quarterly Sankey snapshots. Quarters use the
+ * standard Jan-Mar / Apr-Jun / Jul-Sep / Oct-Dec convention. Includes
+ * the in-progress current quarter.
+ */
+function buildQuarterlySankeySnapshots(
+  perProtocol: ProtocolAssetUsdSeries[],
+  quartersBack: number,
+): NetFlowsSankeyPeriod[] {
+  const nowMs = Date.now()
+  const now = new Date(nowMs)
+  const periods: NetFlowsSankeyPeriod[] = []
+  for (let i = 0; i < quartersBack; i++) {
+    const currentQuarter = Math.floor(now.getUTCMonth() / 3)
+    const targetQuarter = currentQuarter - i
+    const baseYear = now.getUTCFullYear()
+    const yearOffset = Math.floor(targetQuarter / 4)
+    const quarterIdx = ((targetQuarter % 4) + 4) % 4
+    const year = baseYear + yearOffset
+    const startMonth = quarterIdx * 3
+    const start = new Date(Date.UTC(year, startMonth, 1))
+    const end = new Date(Date.UTC(year, startMonth + 3, 1))
+    const startTs = Math.floor(start.getTime() / 1000)
+    const endTs = Math.floor(end.getTime() / 1000) - 1
+    periods.push({
+      key: `${year}-Q${quarterIdx + 1}`,
+      label: `Q${quarterIdx + 1} ${year}`,
+      startTs,
+      endTs,
+      isCurrent: i === 0,
+      sankey: buildNetFlowsSankeyForRange(perProtocol, startTs, endTs, 75_000_000, 12),
+    })
+  }
+  return periods
 }
 
 /**
@@ -731,19 +820,20 @@ export async function loadOverview(): Promise<OverviewResponse> {
   })
 
   // ─── Sankey snapshots for the Net Supply Flows chart ───────────────────
-  // Three trailing windows: W (7 days), M (30 days), Q (90 days). Each is
-  // a three-column (asset inflow → protocol → asset outflow) shape ready
-  // for the <NetFlowsSankey> client component. Computed at constant
-  // prices via the per-(protocol, asset) USD series captured above.
+  // W is a trailing-7-day window (matches "this week so far"). M and Q
+  // are calendar-aligned arrays (newest first, current period included
+  // even if partial), so the client can render a picker that scrubs
+  // between May 2026, April 2026, March 2026, etc.
   //
-  // Floor + node-cap scale with the window: longer windows surface more
-  // small-amount flows that would otherwise overlap labels on either
-  // side. Raising the minimum and tightening the per-side cap keeps the
-  // chart legible at the M and Q views without losing the leaders.
+  // Floor + node-cap scale with the window length: longer periods surface
+  // more small-amount flows that would otherwise overlap labels on
+  // either side.
+  const monthly = buildMonthlySankeySnapshots(assetUsdByProtocol, 6)
+  const quarterly = buildQuarterlySankeySnapshots(assetUsdByProtocol, 4)
   const netFlowsSankey = {
     week: buildNetFlowsSankey(assetUsdByProtocol, 7, 1_000_000, 18),
-    month: buildNetFlowsSankey(assetUsdByProtocol, 30, 25_000_000, 14),
-    quarter: buildNetFlowsSankey(assetUsdByProtocol, 90, 75_000_000, 12),
+    monthly,
+    quarterly,
   }
 
   // ─── Net interest paid by borrowers (Tier 1 metric) ────────────────────

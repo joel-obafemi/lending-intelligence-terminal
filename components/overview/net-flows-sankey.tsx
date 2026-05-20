@@ -2,50 +2,46 @@
 
 /**
  * Net Supply Flows — Sankey rendering of the per-asset → protocol →
- * per-asset flow over the trailing W / M / Q window.
+ * per-asset flow over the active period.
  *
  * Three columns:
  *   LEFT     asset nodes contributing net inflow (green)
  *   MIDDLE   protocols with net total (signed, color-coded)
  *   RIGHT    asset nodes contributing net outflow (red)
  *
+ * Two scoping controls in the header:
+ *   - W / M / Q toggle picks the window length.
+ *   - When M or Q is active, a period picker scrubs between calendar
+ *     months / quarters ("May 2026", "Q1 2026", ...). W stays as
+ *     "trailing 7 days" since "this week so far" is the natural read.
+ *
  * Column headers above the chart label the inflow / outflow split so the
- * direction is obvious without hovering. Per-link tooltip details show on
- * hover via a custom hover layer (Recharts' built-in Tooltip strips the
- * custom fields we attach to Sankey nodes, so we render our own from the
- * node/link renderer mouse events).
+ * direction is obvious without hovering. Hover-state tooltip is rendered
+ * by the component (Recharts' Tooltip strips Sankey-node custom fields).
  */
 
 import { useMemo, useRef, useState } from "react"
+import { ChevronLeft, ChevronRight } from "lucide-react"
 import { ResponsiveContainer, Sankey } from "recharts"
 import { MethodologyTooltip } from "./methodology-tooltip"
 import { ChartActions } from "../chart-actions"
 import type { NetFlowsSankeyData, SankeyNode } from "@/lib/net-flows-sankey"
+import type { NetFlowsSankeyPeriod } from "@/lib/overview"
 
 type WindowKey = "week" | "month" | "quarter"
 
 interface Props {
   title: string
-  /** One Sankey snapshot per window. */
   windows: {
     week: NetFlowsSankeyData
-    month: NetFlowsSankeyData
-    quarter: NetFlowsSankeyData
+    monthly: NetFlowsSankeyPeriod[]
+    quarterly: NetFlowsSankeyPeriod[]
   }
   methodologyKey?: string
 }
 
 const WINDOW_LABEL: Record<WindowKey, string> = { week: "W", month: "M", quarter: "Q" }
-const WINDOW_LONG: Record<WindowKey, string> = {
-  week: "7 days",
-  month: "30 days",
-  quarter: "90 days",
-}
 
-// Pixel budgets used by the renderer. The two label gutters together with
-// the chart center must fit inside the card. Long token names like
-// "PT-AVUSD-14MAY2026" (~17 chars * 7px) approach 130px, so 180px on each
-// side gives breathing room without crowding the bands.
 const LABEL_GUTTER = 180
 const NODE_COLUMN_WIDTH = 12
 
@@ -67,11 +63,6 @@ function nodeColor(node: SankeyNode): string {
   return node.kind === "asset_in" ? "var(--success)" : "var(--danger)"
 }
 
-/**
- * Truncate a long label so it fits the gutter. Comfortable budget at 11px
- * mono font is ~22 chars including the dollar suffix; trim symbols past
- * that with an ellipsis so the layout stays clean.
- */
 function clampLabel(name: string, maxChars: number): string {
   if (name.length <= maxChars) return name
   return name.slice(0, maxChars - 1) + "…"
@@ -79,10 +70,8 @@ function clampLabel(name: string, maxChars: number): string {
 
 interface HoverPayload {
   kind: "node" | "link"
-  /** For a node: the SankeyNode object. For a link: source and target SankeyNode + USD value. */
   node?: SankeyNode
   link?: { source: SankeyNode; target: SankeyNode; value: number }
-  /** Cursor position in the chart's local (SVG) coordinates. */
   x: number
   y: number
 }
@@ -102,8 +91,6 @@ function SankeyNodeRender(props: NodeRenderProps) {
   const { x, y, width, height, payload, onHover } = props
   const kind = payload.kind
   const fill = nodeColor(payload)
-  // Label width budget. Mono 11px averages ~6.5px per char; subtract the
-  // 8px gap from x so the label visually clears the bar.
   const charBudget = Math.max(8, Math.floor((LABEL_GUTTER - 16) / 6.5))
   const valueText =
     kind === "protocol"
@@ -193,10 +180,6 @@ function SankeyLinkRender(props: LinkRenderProps) {
     payload,
     onHover,
   } = props
-  // Recharts resolves source/target to node objects on the link payload at
-  // render time. Read kind off either side; treat unresolved (number)
-  // refs as inflow by default since they only appear on the leftmost
-  // index 0 case which is always asset_in.
   const srcKind =
     typeof payload.source === "object" ? payload.source?.kind : "asset_in"
   const isInflow = srcKind === "asset_in"
@@ -236,11 +219,10 @@ function HoverTooltip({ hover }: { hover: HoverPayload | null }) {
   if (hover.kind === "link" && hover.link) {
     const { source, target, value } = hover.link
     const isInflow = source.kind === "asset_in"
-    const arrow = isInflow ? "→" : "→"
     body = (
       <>
         <p className="text-xs text-text-muted mb-1.5">
-          {source.name ?? "?"} {arrow} {target.name ?? "?"}
+          {source.name ?? "?"} → {target.name ?? "?"}
         </p>
         <p
           className="text-xs font-semibold tabular-nums"
@@ -296,28 +278,135 @@ function HoverTooltip({ hover }: { hover: HoverPayload | null }) {
   )
 }
 
+interface PeriodPickerProps {
+  periods: NetFlowsSankeyPeriod[]
+  activeIndex: number
+  onChange: (next: number) => void
+}
+
+function PeriodPicker({ periods, activeIndex, onChange }: PeriodPickerProps) {
+  // Newest period is index 0; "go back" means moving to a larger index.
+  const active = periods[activeIndex]
+  if (!active) return null
+  const canGoNewer = activeIndex > 0
+  const canGoOlder = activeIndex < periods.length - 1
+  return (
+    <div
+      style={{
+        display: "inline-flex",
+        alignItems: "center",
+        gap: 4,
+        border: "1px solid var(--card-border)",
+        borderRadius: 4,
+        background: "var(--background)",
+        padding: "2px 4px",
+      }}
+    >
+      <button
+        type="button"
+        onClick={() => canGoOlder && onChange(activeIndex + 1)}
+        disabled={!canGoOlder}
+        aria-label="Older period"
+        style={{
+          background: "transparent",
+          border: "none",
+          color: canGoOlder ? "var(--text-muted)" : "var(--card-border)",
+          cursor: canGoOlder ? "pointer" : "not-allowed",
+          padding: "2px 2px",
+          display: "inline-flex",
+          alignItems: "center",
+        }}
+      >
+        <ChevronLeft size={12} />
+      </button>
+      <select
+        value={active.key}
+        onChange={(e) => {
+          const idx = periods.findIndex((p) => p.key === e.target.value)
+          if (idx >= 0) onChange(idx)
+        }}
+        style={{
+          background: "transparent",
+          border: "none",
+          color: "var(--text-primary)",
+          fontFamily: "inherit",
+          fontSize: 11,
+          fontWeight: 600,
+          padding: "2px 4px",
+          cursor: "pointer",
+          outline: "none",
+          appearance: "none",
+          letterSpacing: "0.03em",
+        }}
+      >
+        {periods.map((p) => (
+          <option key={p.key} value={p.key}>
+            {p.label}
+            {p.isCurrent ? " (current)" : ""}
+          </option>
+        ))}
+      </select>
+      <button
+        type="button"
+        onClick={() => canGoNewer && onChange(activeIndex - 1)}
+        disabled={!canGoNewer}
+        aria-label="Newer period"
+        style={{
+          background: "transparent",
+          border: "none",
+          color: canGoNewer ? "var(--text-muted)" : "var(--card-border)",
+          cursor: canGoNewer ? "pointer" : "not-allowed",
+          padding: "2px 2px",
+          display: "inline-flex",
+          alignItems: "center",
+        }}
+      >
+        <ChevronRight size={12} />
+      </button>
+    </div>
+  )
+}
+
 export function NetFlowsSankey({ title, windows, methodologyKey }: Props) {
   const [window, setWindow] = useState<WindowKey>("week")
+  // Monthly / quarterly picker index. 0 = current period.
+  const [monthIndex, setMonthIndex] = useState(0)
+  const [quarterIndex, setQuarterIndex] = useState(0)
   const [hover, setHover] = useState<HoverPayload | null>(null)
   const cardRef = useRef<HTMLDivElement>(null)
-  const data = windows[window]
+
+  // Pick the active Sankey snapshot based on the toggle + picker state.
+  const { data, contextLabel } = useMemo(() => {
+    if (window === "week") {
+      return { data: windows.week, contextLabel: "7 days" }
+    }
+    if (window === "month") {
+      const period = windows.monthly[monthIndex] ?? windows.monthly[0]
+      return { data: period?.sankey, contextLabel: period?.label ?? "" }
+    }
+    const qp = windows.quarterly[quarterIndex] ?? windows.quarterly[0]
+    return { data: qp?.sankey, contextLabel: qp?.label ?? "" }
+  }, [window, windows, monthIndex, quarterIndex])
 
   const chartData = useMemo(
     () => ({
-      nodes: data.nodes.map((n) => ({ ...n, name: n.name })),
-      links: data.links.map((l) => ({ source: l.source, target: l.target, value: l.value })),
+      nodes: (data?.nodes ?? []).map((n) => ({ ...n, name: n.name })),
+      links: (data?.links ?? []).map((l) => ({
+        source: l.source,
+        target: l.target,
+        value: l.value,
+      })),
     }),
     [data],
   )
 
-  const hasData = data.nodes.length > 0 && data.links.length > 0
-  // Height scales with the side with more nodes; each row needs ~22px to
-  // breathe at 11px mono. Cap at 760px so the page does not balloon on
-  // the Q view where many small flows would otherwise pile up.
-  const sideCount = Math.max(
-    data.nodes.filter((n) => n.kind === "asset_in").length,
-    data.nodes.filter((n) => n.kind === "asset_out").length,
-  )
+  const hasData = !!data && data.nodes.length > 0 && data.links.length > 0
+  const sideCount = data
+    ? Math.max(
+        data.nodes.filter((n) => n.kind === "asset_in").length,
+        data.nodes.filter((n) => n.kind === "asset_out").length,
+      )
+    : 0
   const dynamicHeight = Math.max(360, Math.min(760, 80 + sideCount * 24))
 
   return (
@@ -367,19 +456,36 @@ export function NetFlowsSankey({ title, windows, methodologyKey }: Props) {
               </button>
             ))}
           </div>
-          <span
-            className="text-[10px] uppercase tracking-[0.08em]"
-            style={{ color: "var(--text-muted)" }}
-          >
-            {WINDOW_LONG[window]}
-          </span>
-          <ChartActions cardRef={cardRef} title={`${title} · ${WINDOW_LONG[window]}`} />
+
+          {/* W has no picker — period is just "7 days". M and Q expose a
+              calendar-aligned picker so the active snapshot can be May,
+              April, March, etc. */}
+          {window === "month" && windows.monthly.length > 0 && (
+            <PeriodPicker
+              periods={windows.monthly}
+              activeIndex={monthIndex}
+              onChange={setMonthIndex}
+            />
+          )}
+          {window === "quarter" && windows.quarterly.length > 0 && (
+            <PeriodPicker
+              periods={windows.quarterly}
+              activeIndex={quarterIndex}
+              onChange={setQuarterIndex}
+            />
+          )}
+          {window === "week" && (
+            <span
+              className="text-[10px] uppercase tracking-[0.08em]"
+              style={{ color: "var(--text-muted)" }}
+            >
+              {contextLabel}
+            </span>
+          )}
+          <ChartActions cardRef={cardRef} title={`${title} · ${contextLabel}`} />
         </div>
       </div>
 
-      {/* Column headers — sit above the chart so visitors know which side
-          is inflow vs outflow without hovering. Color-coded to match the
-          asset node fills and the link bands. */}
       <div
         className="flex items-center justify-between px-4 pt-3 pb-1 text-[10px] uppercase tracking-[0.12em]"
         style={{ color: "var(--text-muted)" }}
@@ -447,7 +553,7 @@ export function NetFlowsSankey({ title, windows, methodologyKey }: Props) {
             className="absolute inset-0 flex items-center justify-center text-xs"
             style={{ color: "var(--text-muted)" }}
           >
-            No net flows in the trailing {WINDOW_LONG[window]} window.
+            No net flows recorded for {contextLabel || "the active period"}.
           </div>
         )}
       </div>
@@ -461,7 +567,9 @@ export function NetFlowsSankey({ title, windows, methodologyKey }: Props) {
         }}
       >
         <span>
-          Net inflow {formatCompactUsd(data.totalInflowUsd)} · Net outflow {formatCompactUsd(data.totalOutflowUsd)}
+          {data
+            ? `Net inflow ${formatCompactUsd(data.totalInflowUsd)} · Net outflow ${formatCompactUsd(data.totalOutflowUsd)}`
+            : ""}
         </span>
         <span>Constant prices · DefiLlama token quantities · &quot;Mixed&quot; = USD-only protocols</span>
       </div>
