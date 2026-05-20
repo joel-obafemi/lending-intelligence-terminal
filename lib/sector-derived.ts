@@ -238,12 +238,19 @@ export function buildDailyDeltaTriple(
 /** Hero chart needs ~24-month per-protocol series for each of three
  *  lenses (borrows / supply / available liquidity). The data layer
  *  already produces all three at daily resolution; we just normalize to
- *  market-share % using `marketShareSeries`. */
+ *  market-share % using `marketShareSeries`. The raw USD series come
+ *  back too so the tooltip can show absolute dollars alongside the
+ *  share percentage. */
 export interface HeroLensData {
   /** Each lens's pre-normalized share series (sums to 100% per day). */
   borrowsShare: OverviewTimeseriesPoint[]
   supplyShare: OverviewTimeseriesPoint[]
   availableShare: OverviewTimeseriesPoint[]
+  /** Same timestamps as the share series, but values are absolute USD per
+   *  protocol slug. Used to render the dollar amount in the tooltip. */
+  borrowsUsd: OverviewTimeseriesPoint[]
+  supplyUsd: OverviewTimeseriesPoint[]
+  availableUsd: OverviewTimeseriesPoint[]
   /** One auto-generated insight per lens — the chart picks the matching
    *  one when the user toggles, so the sentence beneath always describes
    *  the active view. */
@@ -275,6 +282,13 @@ export function buildHeroLenses(d: OverviewResponse): HeroLensData {
     borrowsShare,
     supplyShare,
     availableShare,
+    // Pass the raw USD series straight through. The chart bucketer in
+    // MarketShareHero re-buckets them alongside the share series so the
+    // tooltip can read both `[slug]` (share %) and `[slug]_usd` keys
+    // off the same data point.
+    borrowsUsd: d.borrowedSeries,
+    supplyUsd: d.supplySeries,
+    availableUsd: d.tvlSeries,
     insights: {
       borrows: buildHeroInsight(borrowsShare),
       supply: buildHeroInsight(supplyShare),

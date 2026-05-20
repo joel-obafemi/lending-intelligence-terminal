@@ -17,7 +17,10 @@
  * SDK-aligned dashboards use this exact palette.
  */
 
-:root {
+/* ─── Light theme (explicit data-theme="light", and the default
+ *      :root fallback so a missing attribute still renders cleanly). ─── */
+:root,
+:root[data-theme="light"] {
   /* ─── Surface (SDK names) ─── */
   --background: #F5F6F8;          /* app background — cool off-white */
   --foreground: #0F1115;          /* primary text — near-black */
@@ -62,6 +65,57 @@
   --scanline-color: rgba(15, 17, 21, 0.02);
 
   color-scheme: light;
+}
+
+/* ─── Dark theme (default for this terminal). All token NAMES match the
+ *      light set so every component reads the right CSS variable without
+ *      knowing which theme is active. Accents stay the same brand hex; the
+ *      surface and text values flip. Tuned for AA contrast against the
+ *      near-black surface. ─── */
+:root[data-theme="dark"] {
+  --background: #0B0D11;
+  --foreground: #E5E7EB;
+  --card: #14171D;
+  --card-hover: #1B1F27;
+  --panel-header: #1A1D24;
+  --border: rgba(255, 255, 255, 0.08);
+  --border-bright: rgba(255, 255, 255, 0.16);
+  --text-muted: #8B92A1;
+
+  /* Accents stay close to brand but nudged brighter where contrast on a
+   * dark surface would otherwise crush. */
+  --accent-orange: #FF8155;
+  --accent-red: #F26B68;
+  --accent-blue: #6B85FF;
+  --accent-green: #34D399;
+  --accent-purple: #B97AFF;
+  --accent-cyan: #38BDF8;
+  --accent-yellow: #FBBF24;
+
+  /* Chart palette — brighter variants for dark surfaces. */
+  --chart-1: #6B85FF;
+  --chart-2: #34D399;
+  --chart-3: #FBBF24;
+  --chart-4: #B97AFF;
+  --chart-5: #38BDF8;
+  --chart-6: #FF8155;
+  --chart-7: #F472B6;
+  --chart-8: #818CF8;
+
+  --card-bg: var(--card);
+  --card-border: var(--border);
+  --text-primary: var(--foreground);
+  --text-secondary: #C8CCD6;
+  --accent: var(--accent-orange);
+  --accent-secondary: var(--accent-purple);
+  --success: var(--accent-green);
+  --danger: var(--accent-red);
+  --tooltip-bg: rgba(20, 23, 29, 0.98);
+  --tooltip-shadow: rgba(0, 0, 0, 0.45);
+  --hover-overlay: rgba(255, 255, 255, 0.04);
+  --scanline-color: rgba(255, 255, 255, 0.02);
+
+  color-scheme: dark;
 }
 
 * {

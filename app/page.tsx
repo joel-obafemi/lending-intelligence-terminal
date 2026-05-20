@@ -12,7 +12,6 @@ import { loadTopMarketsAcrossProtocols } from "@/lib/cross-protocol-markets"
 import { loadRealYieldSpread } from "@/lib/real-yield"
 import { getFeaturedIssue } from "@/lib/reports/featuredIssue"
 import {
-  biggestMover,
   buildDailyDeltaTriple,
   buildHeroLenses,
   netDeposits30dByProtocol,
@@ -74,12 +73,10 @@ export default async function OverviewPage() {
   // ─── Hero lens series + insight ───────────────────────────────────────
   const hero = buildHeroLenses(data)
 
-  // ─── Composition strip mover line ─────────────────────────────────────
-  // Net Flows now charts the full 24-month time series (see Zone 4 below);
-  // the trailing-30d aggregate stays only as input to the Composition
-  // strip's "biggest mover" line.
+  // ─── Composition strip net-deposits row ──────────────────────────────
+  // Trailing-30d net deposits per protocol feed the per-card NET DEPOSITS 30D
+  // line. The full time series renders in the Sankey Net Flows chart below.
   const netDeps30d = netDeposits30dByProtocol(data.netFlowWeeklySeries)
-  const mover = biggestMover(netDeps30d)
 
   return (
     <div className="max-w-[1400px] mx-auto px-4 lg:px-6 py-5 space-y-6">
@@ -131,14 +128,16 @@ export default async function OverviewPage() {
         borrowsShare={hero.borrowsShare}
         supplyShare={hero.supplyShare}
         availableShare={hero.availableShare}
+        borrowsUsd={hero.borrowsUsd}
+        supplyUsd={hero.supplyUsd}
+        availableUsd={hero.availableUsd}
       />
 
-      {/* Zone 3 — Composition Strip (per-protocol cards w/ Fees + biggest mover) */}
+      {/* Zone 3 — Composition Strip · 3 columns × 2 rows */}
       <CompositionStrip
         protocols={protocols}
         revenueSnapshot={revenueSnapshot}
         netDeposits30d={netDeps30d}
-        biggestMover={mover}
       />
 
       {/* Zone 4 — Net Supply Flows · 24-month stacked bars by protocol

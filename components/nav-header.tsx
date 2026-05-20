@@ -4,6 +4,7 @@ import Link from "next/link"
 import Image from "next/image"
 import { usePathname } from "next/navigation"
 import type { FeaturedIssueSummary } from "@/lib/reports/featuredIssue"
+import { ThemeToggle } from "./theme-toggle"
 
 /**
  * Top navigation bar for the Lending Intelligence Terminal.
@@ -117,6 +118,9 @@ export function NavHeader({ featured }: Props) {
               />
               CONNECTED
             </span>
+
+            {/* Theme toggle — dark by default, persists to lit-theme. */}
+            <ThemeToggle />
           </div>
         </div>
       </nav>

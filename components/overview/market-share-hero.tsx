@@ -60,6 +60,12 @@ interface Props {
   borrowsShare: OverviewTimeseriesPoint[]
   supplyShare: OverviewTimeseriesPoint[]
   availableShare: OverviewTimeseriesPoint[]
+  /** Same timestamps as the share series but values are absolute USD per
+   *  slug. Bucketed alongside the share series so the tooltip can show
+   *  the dollar amount that produced each share %. */
+  borrowsUsd: OverviewTimeseriesPoint[]
+  supplyUsd: OverviewTimeseriesPoint[]
+  availableUsd: OverviewTimeseriesPoint[]
 }
 
 const METHODOLOGY_KEY_BY_LENS: Record<Lens, string> = {
@@ -70,18 +76,21 @@ const METHODOLOGY_KEY_BY_LENS: Record<Lens, string> = {
 
 function ShareTooltip({ active, payload }: any) {
   if (!active || !payload?.length) return null
-  const point = payload[0]?.payload as OverviewTimeseriesPoint | undefined
+  const point = payload[0]?.payload as
+    | (OverviewTimeseriesPoint & Record<string, number>)
+    | undefined
   if (!point) return null
   const rows = PROTOCOLS.map((p) => ({
     slug: p.slug,
     name: p.name,
     color: p.color,
     pct: (point[p.slug] as number) || 0,
+    usd: (point[`${p.slug}__usd`] as number) || 0,
   }))
     .filter((r) => r.pct > 0.01)
     .sort((a, b) => b.pct - a.pct)
   return (
-    <div className="custom-tooltip min-w-[220px]">
+    <div className="custom-tooltip min-w-[260px]">
       <p className="text-xs text-text-muted mb-2">
         {formatBucketTooltipLabel(point.timestamp, BUCKET)}
       </p>
@@ -93,7 +102,7 @@ function ShareTooltip({ active, payload }: any) {
               <span className="text-xs text-text-secondary">{r.name}</span>
             </div>
             <span className="text-xs font-medium text-text-primary tabular-nums">
-              {formatPercent(r.pct, 1)}
+              {formatUsdCompact(r.usd)} <span style={{ color: "var(--text-muted)" }}>·</span> {formatPercent(r.pct, 1)}
             </span>
           </div>
         ))}
@@ -102,10 +111,21 @@ function ShareTooltip({ active, payload }: any) {
   )
 }
 
+function formatUsdCompact(v: number): string {
+  if (!Number.isFinite(v) || v <= 0) return "$0"
+  if (v >= 1e9) return `$${(v / 1e9).toFixed(2)}B`
+  if (v >= 1e6) return `$${(v / 1e6).toFixed(0)}M`
+  if (v >= 1e3) return `$${(v / 1e3).toFixed(0)}K`
+  return `$${v.toFixed(0)}`
+}
+
 export function MarketShareHero({
   borrowsShare,
   supplyShare,
   availableShare,
+  borrowsUsd,
+  supplyUsd,
+  availableUsd,
 }: Props) {
   const [lens, setLens] = useState<Lens>("borrows")
   const colors = useThemeColors()
@@ -119,10 +139,28 @@ export function MarketShareHero({
   const methodologyKey = METHODOLOGY_KEY_BY_LENS[lens]
 
   const data = lens === "borrows" ? borrowsShare : lens === "supply" ? supplyShare : availableShare
-  const bucketed = useMemo(
-    () => bucketSeries(data, BUCKET, "last", PROTOCOLS.map((p) => p.slug), MONTHS),
-    [data],
-  )
+  const usdData =
+    lens === "borrows" ? borrowsUsd : lens === "supply" ? supplyUsd : availableUsd
+  const bucketed = useMemo(() => {
+    const slugs = PROTOCOLS.map((p) => p.slug)
+    const shareBucketed = bucketSeries(data, BUCKET, "last", slugs, MONTHS)
+    const usdBucketed = bucketSeries(usdData, BUCKET, "last", slugs, MONTHS)
+    // Index USD by timestamp so a missing alignment (e.g. asymmetric tail
+    // trim) does not desync the tooltip from the visible bar.
+    const usdByTs = new Map<number, OverviewTimeseriesPoint>()
+    for (const pt of usdBucketed) usdByTs.set(pt.timestamp, pt)
+    return shareBucketed.map((sharePt) => {
+      const usdPt = usdByTs.get(sharePt.timestamp) ?? null
+      const merged: Record<string, number> & { timestamp: number } = {
+        timestamp: sharePt.timestamp,
+      }
+      for (const p of PROTOCOLS) {
+        merged[p.slug] = (sharePt[p.slug] as number) ?? 0
+        merged[`${p.slug}__usd`] = (usdPt?.[p.slug] as number) ?? 0
+      }
+      return merged
+    })
+  }, [data, usdData])
 
   return (
     <div className="space-y-2">

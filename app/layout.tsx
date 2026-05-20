@@ -3,8 +3,29 @@ import { Suspense } from "react"
 import { NavHeader } from "@/components/nav-header"
 import { SiteFooter } from "@/components/site-footer"
 import { IframePathSync } from "@/components/iframe-path-sync"
+import { ThemeProvider } from "@/components/theme-provider"
 import { getFeaturedIssue } from "@/lib/reports/featuredIssue"
 import "./globals.css"
+
+/**
+ * Pre-paint theme script. Reads the persisted choice from localStorage
+ * and applies `data-theme` to <html> before React hydrates. Without this
+ * inline pass, a user with light-mode persisted would see a dark-mode
+ * flash on every page load (the default attribute we render server-side
+ * is "dark"). Inline injection is intentional — Next.js's <Script>
+ * loads AFTER paint, which defeats the purpose.
+ */
+const THEME_INIT_SCRIPT = `
+(function () {
+  try {
+    var saved = window.localStorage.getItem('lit-theme');
+    if (saved !== 'light' && saved !== 'dark') saved = 'dark';
+    document.documentElement.setAttribute('data-theme', saved);
+  } catch (e) {
+    document.documentElement.setAttribute('data-theme', 'dark');
+  }
+})();
+`
 
 const SITE_URL = "https://lending-intelligence-terminal.vercel.app"
 
@@ -86,40 +107,45 @@ export default async function RootLayout({
       }
     : null
   return (
-    <html lang="en">
+    <html lang="en" data-theme="dark" suppressHydrationWarning>
+      <head>
+        <script dangerouslySetInnerHTML={{ __html: THEME_INIT_SCRIPT }} />
+      </head>
       <body>
-        <div
-          className="min-h-screen font-mono flex flex-col"
-          style={{ background: "var(--background)", color: "var(--foreground)" }}
-        >
-          <NavHeader featured={featuredSummary} />
-          <Suspense>
-            <IframePathSync />
-          </Suspense>
-          <main className="flex-1">
-            <Suspense fallback={<PageFallback />}>{children}</Suspense>
-          </main>
-
-          {/* Site footer — Support + Feedback notes. Hidden on /reports/*
-              (those pages have their own magazine-style support module). */}
-          <SiteFooter featured={featuredSummary} />
-
-          {/* Status Bar — matches SDK DashboardLayout footer */}
+        <ThemeProvider>
           <div
-            className="flex items-center justify-between px-4 lg:px-6 h-7 text-[11px]"
-            style={{
-              borderTop: "1px solid var(--border)",
-              background: "var(--panel-header)",
-              color: "var(--text-muted)",
-            }}
+            className="min-h-screen font-mono flex flex-col"
+            style={{ background: "var(--background)", color: "var(--foreground)" }}
           >
-            <div className="flex items-center gap-1.5">
-              <span style={{ color: "var(--accent-orange)" }}>&gt;</span>
-              <span>datumlab.xyz/lending-terminal</span>
+            <NavHeader featured={featuredSummary} />
+            <Suspense>
+              <IframePathSync />
+            </Suspense>
+            <main className="flex-1">
+              <Suspense fallback={<PageFallback />}>{children}</Suspense>
+            </main>
+
+            {/* Site footer — Support + Feedback notes. Hidden on /reports/*
+                (those pages have their own magazine-style support module). */}
+            <SiteFooter featured={featuredSummary} />
+
+            {/* Status Bar — matches SDK DashboardLayout footer */}
+            <div
+              className="flex items-center justify-between px-4 lg:px-6 h-7 text-[11px]"
+              style={{
+                borderTop: "1px solid var(--border)",
+                background: "var(--panel-header)",
+                color: "var(--text-muted)",
+              }}
+            >
+              <div className="flex items-center gap-1.5">
+                <span style={{ color: "var(--accent-orange)" }}>&gt;</span>
+                <span>datumlab.xyz/lending-terminal</span>
+              </div>
+              <span>Powered by Datum Labs</span>
             </div>
-            <span>Powered by Datum Labs</span>
           </div>
-        </div>
+        </ThemeProvider>
       </body>
     </html>
   )
