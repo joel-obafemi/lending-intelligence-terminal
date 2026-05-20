@@ -83,12 +83,15 @@ export interface ProtocolAssetUsdSeries {
  *  - Aggregates left/right column totals by asset symbol.
  *
  * Below-floor deltas are merged into "Other" buckets so the chart does not
- * disappear under a long tail of $50K rows.
+ * disappear under a long tail of $50K rows. `maxAssetsPerSide` further
+ * caps how many asset rows render on each side; everything beyond the cap
+ * (sorted desc by magnitude) collapses into "Other" too.
  */
 export function buildNetFlowsSankey(
   perProtocol: ProtocolAssetUsdSeries[],
   windowDays: number,
   minLinkUsd = 1_000_000,
+  maxAssetsPerSide = 18,
 ): NetFlowsSankeyData {
   const endTs = perProtocol.reduce(
     (max, p) => (p.daily.length > 0 ? Math.max(max, p.daily[p.daily.length - 1]!.timestamp) : max),
@@ -152,8 +155,10 @@ export function buildNetFlowsSankey(
   }
 
   // ── Bucket tiny rows into "Other" so the chart stays legible ────────
-  const inflowBuckets = bucketBySize(inflowByAsset, minLinkUsd)
-  const outflowBuckets = bucketBySize(outflowByAsset, minLinkUsd)
+  // Two filters: absolute floor (drop rows below minLinkUsd) and per-side
+  // node cap (rank remaining rows desc, keep top N, fold rest into Other).
+  const inflowBuckets = bucketByThresholds(inflowByAsset, minLinkUsd, maxAssetsPerSide)
+  const outflowBuckets = bucketByThresholds(outflowByAsset, minLinkUsd, maxAssetsPerSide)
 
   // ── Build node arrays ───────────────────────────────────────────────
   const nodes: SankeyNode[] = []
@@ -241,15 +246,22 @@ export function buildNetFlowsSankey(
 }
 
 /**
- * Group a usd-by-asset map into ranked buckets, rolling anything below the
- * floor into a single "Other" entry. Returns the buckets in original Map
- * form so callers can iterate while preserving ordering decisions.
+ * Group a usd-by-asset map into ranked buckets. First filter: drop anything
+ * below `minUsd` into the "Other" bucket. Second filter: keep only the
+ * top `maxKept` assets by magnitude; everything beyond that also rolls
+ * into "Other".
  */
-function bucketBySize(byAsset: Map<string, number>, minUsd: number): Map<string, number> {
+function bucketByThresholds(
+  byAsset: Map<string, number>,
+  minUsd: number,
+  maxKept: number,
+): Map<string, number> {
+  const sorted = [...byAsset.entries()].sort(([, a], [, b]) => b - a)
   const out = new Map<string, number>()
   let otherTotal = 0
-  for (const [asset, usd] of byAsset.entries()) {
-    if (usd >= minUsd) {
+  for (let i = 0; i < sorted.length; i++) {
+    const [asset, usd] = sorted[i]!
+    if (usd >= minUsd && i < maxKept) {
       out.set(asset, usd)
     } else {
       otherTotal += usd

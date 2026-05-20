@@ -735,10 +735,15 @@ export async function loadOverview(): Promise<OverviewResponse> {
   // a three-column (asset inflow → protocol → asset outflow) shape ready
   // for the <NetFlowsSankey> client component. Computed at constant
   // prices via the per-(protocol, asset) USD series captured above.
+  //
+  // Floor + node-cap scale with the window: longer windows surface more
+  // small-amount flows that would otherwise overlap labels on either
+  // side. Raising the minimum and tightening the per-side cap keeps the
+  // chart legible at the M and Q views without losing the leaders.
   const netFlowsSankey = {
-    week: buildNetFlowsSankey(assetUsdByProtocol, 7),
-    month: buildNetFlowsSankey(assetUsdByProtocol, 30),
-    quarter: buildNetFlowsSankey(assetUsdByProtocol, 90),
+    week: buildNetFlowsSankey(assetUsdByProtocol, 7, 1_000_000, 18),
+    month: buildNetFlowsSankey(assetUsdByProtocol, 30, 25_000_000, 14),
+    quarter: buildNetFlowsSankey(assetUsdByProtocol, 90, 75_000_000, 12),
   }
 
   // ─── Net interest paid by borrowers (Tier 1 metric) ────────────────────
