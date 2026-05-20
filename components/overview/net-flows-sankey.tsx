@@ -571,7 +571,9 @@ export function NetFlowsSankey({ title, windows, methodologyKey }: Props) {
             ? `Net inflow ${formatCompactUsd(data.totalInflowUsd)} · Net outflow ${formatCompactUsd(data.totalOutflowUsd)}`
             : ""}
         </span>
-        <span>Constant prices · DefiLlama token quantities · &quot;Mixed&quot; = USD-only protocols</span>
+        <span>
+          Net change in deposit base · constant prices · price moves excluded · DefiLlama token quantities
+        </span>
       </div>
     </div>
   )

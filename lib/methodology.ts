@@ -96,8 +96,8 @@ export const METHODOLOGY: Record<string, MethodologyEntry> = {
   },
   "sector-net-flows": {
     text:
-      "Per-bucket change in supplied USD per protocol over the last 24 months, stacked vertically. Default bucket is monthly; the toggle re-aggregates into weekly or quarterly. Daily flows are price-stripped (token-quantity deltas valued at the latest observed price) so the chart isolates real flow from price moves. Bars above zero are net deposits, below zero are net withdrawals; the stack height is the protocols' summed contribution for that period.",
-    source: "DefiLlama /protocol/<slug> token-quantity deltas, weekly bucketed, re-aggregated to W / M / Q.",
+      "Net change in each protocol's deposit base over the active period, rendered as a three-column Sankey: inflow assets (left) → protocols (middle, signed net) → outflow assets (right). Computed as the change in (supplied + borrowed) token quantities per (protocol, asset), valued at today's observed price, so the chart isolates real flow from token-price moves. W is a trailing 7-day window; M and Q are calendar-aligned (May 2026, Q2 2026, etc.) and include the in-progress current period. Important caveat: this measures balance change, not gross user activity. A user who deposited and then withdrew the same amount across the window nets to zero here, even though both events happened on-chain. To match gross-event reports (subgraph Deposit/Withdraw counts) the data layer would need to ingest subgraphs — a planned extension.",
+    source: "DefiLlama /protocol/<slug> per-asset token quantities, valued at constant (latest) prices, day-on-day deltas summed across the active calendar window.",
   },
   /** @deprecated Use sector-net-flows. The previous trailing-30d
    *  Organic-vs-Interest split was retired when the chart moved to a
