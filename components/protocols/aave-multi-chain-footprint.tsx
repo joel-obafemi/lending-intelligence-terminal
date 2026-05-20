@@ -133,19 +133,6 @@ export function AaveMultiChainFootprint({
   // Dynamic chart height — same trick as the top-markets bar chart.
   const chartHeight = Math.max(220, data.length * 32 + 40)
 
-  const insight =
-    rows.length === 0
-      ? null
-      : rows.length === 1
-      ? `${protocolName} reports ${formatUSD(rows[0].value)} of ${VIEW_NOUN[view]} on a single chain (${rows[0].chain}).`
-      : `${protocolName} runs across ${rows.length} chain${
-          rows.length === 1 ? "" : "s"
-        } with ${formatUSD(total)} of ${VIEW_NOUN[view]}. ${
-          ethRow
-            ? `Ethereum holds ${formatPercent(ethShare, 0)} of that footprint.`
-            : ""
-        }`
-
   if (rows.length === 0) {
     return null
   }
@@ -208,14 +195,6 @@ export function AaveMultiChainFootprint({
           </ResponsiveContainer>
         </div>
       </div>
-      {insight && (
-        <p
-          className="text-[12px] leading-relaxed px-1"
-          style={{ color: "var(--text-secondary)" }}
-        >
-          {insight}
-        </p>
-      )}
     </div>
   )
 }

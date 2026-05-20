@@ -111,19 +111,6 @@ export function CapitalEfficiencyComparator({ symbol, cells }: Props) {
     })
     .sort((a, b) => b.ltv - a.ltv)
 
-  // Auto insight: highest LTV vs lowest among available cells.
-  let insight: string | null = null
-  if (rows.length >= 2) {
-    const top = rows[0]
-    const bottom = rows[rows.length - 1]
-    const headroomPp = (top.ltv - bottom.ltv) * 100
-    if (headroomPp >= 1) {
-      insight = `Using ${symbol} as collateral, ${top.name} allows up to ${formatPercent(top.ltv * 100, 0)} LTV (${Number.isFinite(top.leverage) ? `${top.leverage.toFixed(2)}× leverage` : "unlimited leverage"}) — ${headroomPp.toFixed(0)} pp more headroom than ${bottom.name}'s ${formatPercent(bottom.ltv * 100, 0)}.`
-    } else {
-      insight = `${symbol} LTVs across protocols sit within ${headroomPp.toFixed(1)} pp of each other — the lending market has converged on ${formatPercent(top.ltv * 100, 0)} as the standard.`
-    }
-  }
-
   return (
     <div className="space-y-3">
       <div
@@ -251,14 +238,6 @@ export function CapitalEfficiencyComparator({ symbol, cells }: Props) {
           </div>
         </div>
       </div>
-      {insight && (
-        <p
-          className="text-[12px] leading-relaxed px-1"
-          style={{ color: "var(--text-secondary)" }}
-        >
-          {insight}
-        </p>
-      )}
     </div>
   )
 }

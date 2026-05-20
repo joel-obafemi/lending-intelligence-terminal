@@ -35,11 +35,6 @@ export function AaveUmbrella({ status, protocolColor }: Props) {
   const total = status.totalCoverageUsd
   const reserves = [...status.reserves].sort((a, b) => b.coverageUsd - a.coverageUsd)
 
-  const lead = reserves[0]
-  const insight = lead
-    ? `${formatUSD(total)} of depositor capital is staked across the four Umbrella reserves. ${lead.symbol} carries the largest share at ${formatUSD(lead.coverageUsd)} (${((lead.coverageUsd / total) * 100).toFixed(1)}%).`
-    : `${formatUSD(total)} of coverage across the Umbrella reserves.`
-
   return (
     <div className="space-y-2">
       <div className="tui-card bg-card-bg border border-card-border rounded overflow-hidden">
@@ -141,12 +136,6 @@ export function AaveUmbrella({ status, protocolColor }: Props) {
           })}
         </ul>
       </div>
-      <p
-        className="text-[12px] leading-relaxed px-1"
-        style={{ color: "var(--text-secondary)" }}
-      >
-        {insight}
-      </p>
     </div>
   )
 }

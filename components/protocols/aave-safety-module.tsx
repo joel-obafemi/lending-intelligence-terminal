@@ -72,12 +72,6 @@ const TONE_COLOR: Record<string, string> = {
 
 export function AaveSafetyModule({ status, protocolColor }: Props) {
   const tone = backingTone(status.backingRatio)
-  const insight =
-    status.smTotalUsd != null
-      ? `${formatUSD(status.smTotalUsd)} of AAVE is staked in the Safety Module — up to ${formatUSD(
-          status.maxSlashableUsd ?? 0,
-        )} (${SAFETY_MODULE_MAX_SLASH_PCT}%) is slashable to cover protocol bad debt.`
-      : `${fmtAaveAmount(status.aaveBacking)} is staked in the Safety Module. Up to ${SAFETY_MODULE_MAX_SLASH_PCT}% is slashable to cover protocol bad debt.`
 
   return (
     <div className="space-y-2">
@@ -139,12 +133,6 @@ export function AaveSafetyModule({ status, protocolColor }: Props) {
           </div>
         </div>
       </div>
-      <p
-        className="text-[12px] leading-relaxed px-1"
-        style={{ color: "var(--text-secondary)" }}
-      >
-        {insight}
-      </p>
     </div>
   )
 }

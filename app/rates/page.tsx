@@ -1,7 +1,6 @@
 import { loadRates } from "@/lib/rates"
 import { loadOverview } from "@/lib/overview"
 import { computeRateKpis } from "@/lib/rates-kpi"
-import { ratesInsightSentence } from "@/lib/rates-insight"
 import { RateMatrixTable } from "@/components/overview/rate-matrix-table"
 import { RatesKpiCards } from "@/components/overview/rates-kpi-cards"
 import { RateHistorySelector } from "@/components/overview/rate-history-selector"
@@ -42,12 +41,6 @@ export default async function RatesPage() {
   const dispersionUsdc = data.dispersionByAsset["USDC"] ?? []
   const last30Disp = dispersionUsdc.slice(-30)
 
-  const insight = ratesInsightSentence({
-    kpis,
-    realYieldSpreadPct: data.realYieldSpreadCurrent.spreadPct,
-    realYieldSpreadHistory: ryHistory,
-  })
-
   return (
     <div className="max-w-[1400px] mx-auto px-4 lg:px-6 py-5 space-y-5">
       <div className="flex items-start justify-between gap-3">
@@ -83,16 +76,6 @@ export default async function RatesPage() {
         stableDispersionSparkline={last30Disp}
       />
 
-      {/* Auto insight sentence — generated server-side from the matrix +
-          spread history. */}
-      {insight && (
-        <p
-          className="text-[12px] leading-relaxed"
-          style={{ color: "var(--text-secondary)" }}
-        >
-          {insight}
-        </p>
-      )}
 
       {/* Hero: Real Yield Spread, 18 months. The page's flagship.
           Default range = M (30 days) for consistency with every other

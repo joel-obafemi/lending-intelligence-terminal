@@ -23,6 +23,10 @@
     // setup — it imports Cloudflare's `ScheduledController` / `ExecutionContext`
     // ambient types which aren't present in the main Next.js compile.
     "worker",
+    // Same situation for the alerts Worker — has its own tsconfig and
+    // depends on @cloudflare/workers-types ambients that the Next.js
+    // compile does not load.
+    "alerts",
     // Cover-rendering script lazy-imports playwright (an optional dev
     // dep). Authors install it on demand before rendering Issue #N's
     // covers; the main Next.js build doesn't need to typecheck against

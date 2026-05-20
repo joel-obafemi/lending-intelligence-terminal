@@ -50,33 +50,9 @@ function tooltipFormatter(value: number, name: string): [string, string] {
   return [`${value.toFixed(2)}%`, label]
 }
 
-function buildInsight(d: SparkYieldPanelResponse): string {
-  const { ssrPct, sparkBorrowPct, tBillPct, capturedSpreadPct, onchainPremiumPct } = d.current
-  const parts: string[] = []
-  if (ssrPct != null) {
-    parts.push(`Sky Savings Rate: ${ssrPct.toFixed(2)}% — what USDS savers earn`)
-  }
-  if (sparkBorrowPct != null) {
-    const tail =
-      capturedSpreadPct != null
-        ? ` (a ${Math.round(capturedSpreadPct * 100)}-bp spread Spark captures from borrowers)`
-        : ""
-    parts.push(`Spark USDS borrowers pay ${sparkBorrowPct.toFixed(2)}%${tail}`)
-  }
-  if (tBillPct != null && onchainPremiumPct != null) {
-    const bps = Math.round(onchainPremiumPct * 100)
-    const verb = bps >= 0 ? "over" : "under"
-    parts.push(
-      `T-bills are at ${tBillPct.toFixed(2)}% — savers earn ${Math.abs(bps)} bps ${verb} the risk-free rate`,
-    )
-  }
-  return parts.join(". ") + (parts.length > 0 ? "." : "")
-}
-
 export function SparkYieldPanel({ data }: Props) {
   const colors = useThemeColors()
   const cardRef = useRef<HTMLDivElement>(null)
-  const insight = buildInsight(data)
   const hasSsr = data.history.some((p) => p.ssrPct != null)
   const hasBorrow = data.history.some((p) => p.sparkBorrowPct != null)
   const hasTbill = data.history.some((p) => p.tBillPct != null)
@@ -225,14 +201,6 @@ export function SparkYieldPanel({ data }: Props) {
           </ResponsiveContainer>
         </div>
       </div>
-      {insight && (
-        <p
-          className="text-[12px] leading-relaxed px-1"
-          style={{ color: "var(--text-secondary)" }}
-        >
-          {insight}
-        </p>
-      )}
     </div>
   )
 }

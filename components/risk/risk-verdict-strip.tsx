@@ -62,7 +62,6 @@ interface Props {
   unclassifiedPct: number
   peakIntensityName: string
   peakIntensityPct: number
-  summary: string
   badDebt: BadDebtSummary
 }
 
@@ -84,7 +83,6 @@ export function RiskVerdictStrip({
   unclassifiedPct,
   peakIntensityName,
   peakIntensityPct,
-  summary,
   badDebt,
 }: Props) {
   const oracleColor = ORACLE_COLOR[topOracleVendor]
@@ -149,12 +147,6 @@ export function RiskVerdictStrip({
           methodologyKey="risk-days-since-bad-debt"
         />
       </div>
-      <p
-        className="text-[12px] leading-relaxed px-1"
-        style={{ color: "var(--text-secondary)" }}
-      >
-        {summary}
-      </p>
     </div>
   )
 }

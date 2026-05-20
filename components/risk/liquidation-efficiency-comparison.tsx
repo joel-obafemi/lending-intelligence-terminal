@@ -111,8 +111,6 @@ export function LiquidationEfficiencyComparison({ rows, periodDays }: Props) {
       .sort((a, b) => b.ratio - a.ratio)
   }, [rows])
 
-  const insight = useMemo(() => buildInsight(data), [data])
-
   if (data.length === 0) {
     return (
       <div
@@ -198,28 +196,7 @@ export function LiquidationEfficiencyComparison({ rows, periodDays }: Props) {
           </BarChart>
         </ResponsiveContainer>
       </div>
-      {insight && (
-        <p
-          className="px-4 pb-3 pt-1 text-[11px] leading-relaxed"
-          style={{ color: "var(--text-muted)" }}
-        >
-          {insight}
-        </p>
-      )}
     </div>
   )
 }
 
-function buildInsight(data: Datum[]): string | null {
-  if (data.length < 2) return null
-  const cheapest = [...data].sort((a, b) => a.ratio - b.ratio)[0]
-  const others = data.filter((d) => d.slug !== cheapest.slug)
-  const otherAvgPct =
-    others.reduce((s, d) => s + d.effectivePenaltyPct, 0) / others.length
-  const cheapestPct = cheapest.effectivePenaltyPct
-  const gap = otherAvgPct - cheapestPct
-  if (gap > 0.5) {
-    return `${cheapest.name} liquidations cost borrowers ${formatPercent(cheapestPct, 2)} on average — ${formatPercent(gap, 2)} cheaper than the ${formatPercent(otherAvgPct, 2)} mean across the other protocols.`
-  }
-  return `Cross-protocol liquidation penalty band: ${formatPercent(cheapestPct, 2)} (${cheapest.name}) to ${formatPercent(Math.max(...data.map((d) => d.effectivePenaltyPct)), 2)}.`
-}

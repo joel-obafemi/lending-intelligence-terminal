@@ -155,16 +155,6 @@ function pickBadge(
 }
 
 export function ParameterComparator({ symbol, cells }: Props) {
-  // Generate the auto insight line beneath the table.
-  const ltvWinner = pickBadge(ROWS[0], cells)
-  const bonusLowest = pickBadge(ROWS[2], cells)
-  const ltvWinnerCell = cells.find((c) => c.protocolSlug === ltvWinner)
-  const bonusLowestCell = cells.find((c) => c.protocolSlug === bonusLowest)
-  const insight =
-    ltvWinnerCell?.ltv != null && bonusLowestCell?.liquidationBonus != null
-      ? `For ${symbol}, ${ltvWinnerCell.protocolName} currently allows the highest LTV at ${formatPercent(ltvWinnerCell.ltv * 100, 0)} and ${bonusLowestCell.protocolName} charges the smallest liquidation bonus at ${formatPercent(bonusLowestCell.liquidationBonus * 100, 1)}.`
-      : null
-
   return (
     <div className="space-y-3">
       <div className="tui-card bg-card-bg border border-card-border rounded overflow-hidden">
@@ -384,14 +374,6 @@ export function ParameterComparator({ symbol, cells }: Props) {
           </table>
         </div>
       </div>
-      {insight && (
-        <p
-          className="text-[12px] leading-relaxed px-1"
-          style={{ color: "var(--text-secondary)" }}
-        >
-          {insight}
-        </p>
-      )}
       <p className="text-[10px] px-1" style={{ color: "var(--text-muted)", fontStyle: "italic" }}>
         {PARAMS_VARY_BY_MARKET_NOTE}
       </p>

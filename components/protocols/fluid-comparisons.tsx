@@ -72,8 +72,6 @@ function CapitalEfficiencyChart({ rows }: { rows: ProtocolEfficiencyRow[] }) {
     [rows],
   )
 
-  const insight = useMemo(() => buildEfficiencyInsight(rows), [rows])
-
   return (
     <div
       ref={cardRef}
@@ -136,14 +134,6 @@ function CapitalEfficiencyChart({ rows }: { rows: ProtocolEfficiencyRow[] }) {
           </BarChart>
         </ResponsiveContainer>
       </div>
-      {insight && (
-        <div
-          className="px-4 pb-3 pt-1 text-[11px] leading-relaxed"
-          style={{ color: "var(--text-muted)" }}
-        >
-          {insight}
-        </div>
-      )}
     </div>
   )
 }
@@ -163,22 +153,6 @@ function EfficiencyTooltip({ active, payload }: any) {
   )
 }
 
-function buildEfficiencyInsight(rows: ProtocolEfficiencyRow[]): string | null {
-  const fluid = rows.find((r) => r.slug === FLUID_SLUG)
-  if (!fluid || fluid.efficiency <= 0) return null
-  const others = rows.filter((r) => r.slug !== FLUID_SLUG && r.efficiency > 0)
-  if (others.length === 0) return null
-  const nextBest = others.reduce((acc, r) =>
-    r.efficiency > acc.efficiency ? r : acc,
-  )
-  const fluidPct = fluid.efficiency * 100
-  const nextPct = nextBest.efficiency * 100
-  const diff = fluidPct - nextPct
-  if (diff > 0) {
-    return `Fluid borrows $${(fluid.efficiency * 100).toFixed(0)}¢ for every $1 supplied — ${diff.toFixed(1)} pp ahead of the next-most-efficient protocol (${nextBest.name} at ${nextPct.toFixed(1)}%).`
-  }
-  return `Fluid borrows $${(fluid.efficiency * 100).toFixed(0)}¢ for every $1 supplied; ${nextBest.name} runs higher at ${nextPct.toFixed(1)}%.`
-}
 
 // ─────────────────────────────────────────────────────────────────────────
 // Liquidation Penalty (effective bonus paid)
@@ -206,8 +180,6 @@ function LiquidationPenaltyChart({
         .reverse(),
     [rows],
   )
-
-  const insight = useMemo(() => buildPenaltyInsight(rows), [rows])
 
   if (sorted.length === 0) {
     return (
@@ -279,14 +251,6 @@ function LiquidationPenaltyChart({
           </BarChart>
         </ResponsiveContainer>
       </div>
-      {insight && (
-        <div
-          className="px-4 pb-3 pt-1 text-[11px] leading-relaxed"
-          style={{ color: "var(--text-muted)" }}
-        >
-          {insight}
-        </div>
-      )}
     </div>
   )
 }
@@ -311,25 +275,6 @@ function PenaltyTooltip({ active, payload }: any) {
       <Row label="Debt Repaid" value={formatUSD(r.totalDebtUsd)} muted />
     </div>
   )
-}
-
-function buildPenaltyInsight(
-  rows: ProtocolLiquidationPenaltyRow[],
-): string | null {
-  const fluid = rows.find((r) => r.slug === FLUID_SLUG)
-  if (!fluid || fluid.effectivePenaltyPct == null) return null
-  const others = rows.filter(
-    (r) => r.slug !== FLUID_SLUG && r.effectivePenaltyPct != null,
-  )
-  if (others.length === 0) return null
-  const otherAvg =
-    others.reduce((s, r) => s + (r.effectivePenaltyPct ?? 0), 0) / others.length
-  const fluidPct = fluid.effectivePenaltyPct
-  const gap = otherAvg - fluidPct
-  if (gap > 0) {
-    return `Fluid pays ${formatPercent(fluidPct, 2)} on liquidations vs a ${formatPercent(otherAvg, 2)} average across the other three protocols — ${formatPercent(gap, 2)} cheaper for borrowers when positions get liquidated.`
-  }
-  return `Fluid effective penalty: ${formatPercent(fluidPct, 2)}; cross-protocol average: ${formatPercent(otherAvg, 2)}.`
 }
 
 // ─────────────────────────────────────────────────────────────────────────

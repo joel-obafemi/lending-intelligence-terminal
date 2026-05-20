@@ -27,7 +27,7 @@ import { ChartActions } from "../chart-actions"
 import { MethodologyTooltip } from "./methodology-tooltip"
 import { PeriodPicker, type PeriodSelection } from "./period-picker"
 import { formatUSD, formatPercent } from "@/lib/utils"
-import { classifyAsset, type AssetType } from "@/lib/assets"
+import { type AssetType } from "@/lib/assets"
 import type { RankedAssetRow } from "@/lib/overview"
 import type {
   HistoricalBuckets,
@@ -97,33 +97,6 @@ interface Wedge {
   sharePct: number
 }
 
-function buildInsight(rows: Wedge[], total: number, kind: "collateral" | "borrow"): string {
-  if (rows.length === 0 || total <= 0) return ""
-  const top = rows[0]
-  const isCollateral = kind === "collateral"
-  const noun = isCollateral ? "collateral USD" : "active borrows"
-  let secondary = ""
-  if (isCollateral) {
-    const ethFamily = rows
-      .filter((r) => {
-        const t = classifyAsset(r.name)
-        return t === "native" || t === "lst" || t === "lrt"
-      })
-      .reduce((s, r) => s + r.value, 0)
-    if (ethFamily > 0) {
-      secondary = ` ETH-family assets (ETH, LSTs, LRTs) make up ${formatPercent((ethFamily / total) * 100, 0)} of the deposit base.`
-    }
-  } else {
-    const stables = rows
-      .filter((r) => classifyAsset(r.name) === "stable")
-      .reduce((s, r) => s + r.value, 0)
-    if (stables > 0) {
-      secondary = ` Stablecoins account for ${formatPercent((stables / total) * 100, 0)} of all on-chain credit.`
-    }
-  }
-  return `${top.name} is the largest ${noun} at ${formatPercent(top.sharePct, 1)} of the sector total.${secondary}`
-}
-
 function DonutCard({
   title,
   rows,
@@ -153,8 +126,6 @@ function DonutCard({
     }
     return out
   }, [rows, authoritativeTotal])
-
-  const insight = buildInsight(wedges, authoritativeTotal, kind)
 
   return (
     <div
@@ -244,14 +215,6 @@ function DonutCard({
           ))}
         </div>
       </div>
-      {insight && (
-        <p
-          className="text-[11px] leading-relaxed px-4 pb-3"
-          style={{ color: "var(--text-secondary)" }}
-        >
-          {insight}
-        </p>
-      )}
       {footnote && (
         <div
           className="px-4 py-2 text-[10px]"

@@ -118,16 +118,6 @@ export function MorphoCuratorConcentration({ rows }: Props) {
       ? "var(--success)"
       : "var(--accent-blue)"
 
-  // Auto insight — names the top 3 curators' aggregate share.
-  const top3Names = stats.segments.slice(0, 3).map((s) => s.name)
-  const top3Phrase =
-    top3Names.length === 3
-      ? `${top3Names[0]}, ${top3Names[1]}, and ${top3Names[2]}`
-      : top3Names.join(" + ")
-  const insight = `${top3Phrase} together hold ${formatPercent(
-    stats.top3SharePct,
-    1,
-  )} of curated TVL across ${stats.curatedCount} curators.`
 
   return (
     <div className="space-y-2">
@@ -238,12 +228,6 @@ export function MorphoCuratorConcentration({ rows }: Props) {
           )}
         </div>
       </div>
-      <p
-        className="text-[12px] leading-relaxed px-1"
-        style={{ color: "var(--text-secondary)" }}
-      >
-        {insight}
-      </p>
     </div>
   )
 }

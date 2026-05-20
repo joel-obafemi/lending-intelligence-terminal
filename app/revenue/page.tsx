@@ -4,7 +4,6 @@ import { loadRevenueDecomp } from "@/lib/revenue-decomp"
 import { buildTakeRateSeries } from "@/lib/take-rate"
 import {
   computeRevenueVerdict,
-  revenueVerdictSentence,
 } from "@/lib/revenue-verdict"
 import { RevenueSnapshotCards } from "@/components/overview/revenue-snapshot-cards"
 import { RevenueBarChart } from "@/components/overview/revenue-bar-chart"
@@ -32,7 +31,6 @@ export default async function RevenuePage() {
   ])
 
   const verdict = computeRevenueVerdict(data, decomp)
-  const insight = revenueVerdictSentence(verdict)
   const takeRateSeries = buildTakeRateSeries(data, 365)
 
   // Trend charts default to ~12 monthly buckets — captures the current
@@ -62,15 +60,6 @@ export default async function RevenuePage() {
 
       {/* Verdict band — sector aggregates + biggest mover. */}
       <RevenueVerdictStrip verdict={verdict} />
-
-      {insight && (
-        <p
-          className="text-[12px] leading-relaxed"
-          style={{ color: "var(--text-secondary)" }}
-        >
-          {insight}
-        </p>
-      )}
 
       {/* Per-protocol revenue snapshot cards (now with sparklines, MoM
           deltas, and the Morpho 0% capture explainer). */}

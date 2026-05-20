@@ -13,7 +13,6 @@
 import { ExternalLink } from "lucide-react"
 import { loadRisk } from "@/lib/risk"
 import { loadLiquidations } from "@/lib/liquidations"
-import { riskVerdictSentence } from "@/lib/headline-sentence"
 import { RiskVerdictStrip } from "@/components/risk/risk-verdict-strip"
 import { OracleMapTable } from "@/components/risk/oracle-map-table"
 import { StablecoinDebtShareTrend } from "@/components/risk/stablecoin-debt-share-trend"
@@ -44,54 +43,6 @@ export default async function RiskPage() {
 
   const peakName = risk.peakIntensity?.name ?? "No protocol"
   const peakPct = risk.peakIntensity?.intensityPct ?? 0
-  const summary = riskVerdictSentence({
-    stablecoinDebtSharePct: risk.stablecoinDebtSharePct,
-    topOraclePct: risk.oracle.topSharePct,
-    topOracleName: risk.oracle.topVendor,
-    peakIntensityPct: peakPct,
-    peakIntensityProtocol: peakName,
-  })
-
-  // Auto insight: Stablecoin Debt Share trend. Compare current value
-  // to 12 months ago to characterize the trajectory in one line.
-  const stableInsight = (() => {
-    const series = risk.stablecoinDebtShareHistory
-    if (series.length < 30) return null
-    const current = series[series.length - 1]?.sharePct
-    if (!Number.isFinite(current)) return null
-    const yearAgoTs = series[series.length - 1]!.timestamp - 365 * 86400
-    let prior: number | null = null
-    for (let i = series.length - 1; i >= 0; i--) {
-      if (series[i].timestamp <= yearAgoTs) {
-        prior = series[i].sharePct
-        break
-      }
-    }
-    if (prior == null) prior = series[0].sharePct
-    const delta = current - prior
-    const dirWord =
-      Math.abs(delta) < 0.5
-        ? "essentially flat"
-        : delta > 0
-        ? `up ${delta.toFixed(1)} pp`
-        : `down ${Math.abs(delta).toFixed(1)} pp`
-    return `Stablecoin share of cross-protocol borrows is ${current.toFixed(1)}% — ${dirWord} vs 12 months ago. The ${current >= 50 ? "majority" : "plurality"} of on-chain credit is denominated in stables.`
-  })()
-
-  // Auto insight: Liquidation Intensity table. Reads off the gap
-  // between the peak and the second-highest protocol — Fluid is
-  // typically the peak by a wide margin.
-  const intensityInsight = (() => {
-    const sorted = [...risk.intensity].sort((a, b) => b.intensityPct - a.intensityPct)
-    const top = sorted[0]
-    const second = sorted[1]
-    if (!top || !second) return null
-    const gap = top.intensityPct - second.intensityPct
-    if (gap < 0.5) {
-      return `Cross-protocol liquidation intensity is converged: ${top.name} ${top.intensityPct.toFixed(1)}% vs ${second.name} ${second.intensityPct.toFixed(1)}% over 90 days.`
-    }
-    return `${top.name} liquidated ${top.intensityPct.toFixed(1)}% of its TVL over 90 days vs ${second.name}'s ${second.intensityPct.toFixed(1)}% — outsized velocity per dollar of TVL.`
-  })()
 
   return (
     <div className="max-w-[1400px] mx-auto px-4 lg:px-6 py-5 space-y-6">
@@ -114,7 +65,6 @@ export default async function RiskPage() {
         unclassifiedPct={risk.oracle.unclassifiedPct}
         peakIntensityName={peakName}
         peakIntensityPct={peakPct}
-        summary={summary}
         badDebt={risk.badDebt}
       />
 
@@ -127,7 +77,6 @@ export default async function RiskPage() {
         title="Stablecoin Debt Share · 24 months"
         data={risk.stablecoinDebtShareHistory}
         methodologyKey="risk-stablecoin-debt-share-trend"
-        insight={stableInsight}
       />
 
       {/* Zone 3 — Oracle Map table */}
@@ -145,7 +94,6 @@ export default async function RiskPage() {
             title="Liquidation Intensity by Protocol"
             rows={risk.intensity}
             methodologyKey="risk-liquidation-intensity"
-            insight={intensityInsight}
           />
           <RevenueBarChart
             title="Liquidation Volume by Protocol"

@@ -354,21 +354,6 @@ function SpreadSubChart({
   // Apr 17-21 USDC spike. Annotation timestamps land at day-bucket
   // boundaries so a single dashed line + label renders.
   const annotations = useAnnotations("compare-cross-protocol-dispersion")
-  // Verb carries its own preposition so the sentence stays grammatical
-  // for every branch ("tighter than the …", "in line with the …").
-  const verb =
-    current != null && avg90d != null
-      ? current < avg90d
-        ? "tighter than"
-        : current > avg90d
-        ? "wider than"
-        : "in line with"
-      : "n/a vs"
-  const insight =
-    current != null && avg90d != null
-      ? `Current dispersion across protocols on ${symbol} supply APY is ${(current * 100).toFixed(0)} bps, ${verb} the 12-month average of ${(avg90d * 100).toFixed(0)} bps.`
-      : `Insufficient data to compute cross-protocol dispersion for ${symbol}.`
-
   return (
     <div
       ref={cardRef}
@@ -434,12 +419,6 @@ function SpreadSubChart({
           </AreaChart>
         </ResponsiveContainer>
       </div>
-      <p
-        className="text-[11px] leading-relaxed px-4 pb-3"
-        style={{ color: "var(--text-secondary)" }}
-      >
-        {insight}
-      </p>
     </div>
   )
 }

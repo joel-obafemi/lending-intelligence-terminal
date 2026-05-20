@@ -38,7 +38,6 @@ import {
   type BucketType,
 } from "@/lib/time-bucketing"
 import type { OverviewTimeseriesPoint } from "@/lib/overview"
-import type { HeroInsight } from "@/lib/sector-derived"
 
 type Lens = "borrows" | "supply" | "available"
 
@@ -61,14 +60,6 @@ interface Props {
   borrowsShare: OverviewTimeseriesPoint[]
   supplyShare: OverviewTimeseriesPoint[]
   availableShare: OverviewTimeseriesPoint[]
-  /** One insight per lens — the chart picks the matching one based on the
-   *  active toggle so the sentence beneath always describes the current
-   *  view. */
-  insights: {
-    borrows: HeroInsight | null
-    supply: HeroInsight | null
-    available: HeroInsight | null
-  }
 }
 
 const METHODOLOGY_KEY_BY_LENS: Record<Lens, string> = {
@@ -115,7 +106,6 @@ export function MarketShareHero({
   borrowsShare,
   supplyShare,
   availableShare,
-  insights,
 }: Props) {
   const [lens, setLens] = useState<Lens>("borrows")
   const colors = useThemeColors()
@@ -127,27 +117,12 @@ export function MarketShareHero({
   const annotations = useAnnotations("sector-borrows-share")
   const showAnnotations = lens === "borrows"
   const methodologyKey = METHODOLOGY_KEY_BY_LENS[lens]
-  const insight = insights[lens]
 
   const data = lens === "borrows" ? borrowsShare : lens === "supply" ? supplyShare : availableShare
   const bucketed = useMemo(
     () => bucketSeries(data, BUCKET, "last", PROTOCOLS.map((p) => p.slug), MONTHS),
     [data],
   )
-
-  const insightLine = useMemo(() => {
-    if (!insight) return null
-    const noun = LENS_NOUN[lens]
-    const topPhrase =
-      insight.yoyDeltaPp == null
-        ? `${insight.topProtocolName} holds ${formatPercent(insight.topSharePct, 1)} of ${noun}.`
-        : `${insight.topProtocolName} holds ${formatPercent(insight.topSharePct, 1)} of ${noun}, ${insight.yoyDeltaPp >= 0 ? "up" : "down"} ${Math.abs(insight.yoyDeltaPp).toFixed(1)} pp from a year ago.`
-    const gainerPhrase =
-      insight.gainerYoyPp != null && insight.gainerSlug !== insight.topProtocolSlug && insight.gainerYoyPp >= 0.5
-        ? ` ${insight.gainerName} has gained ${insight.gainerYoyPp.toFixed(1)} pp over the same window.`
-        : ""
-    return topPhrase + gainerPhrase
-  }, [insight, lens])
 
   return (
     <div className="space-y-2">
@@ -263,14 +238,6 @@ export function MarketShareHero({
           ))}
         </div>
       </div>
-      {insightLine && (
-        <p
-          className="text-[12px] leading-relaxed px-1"
-          style={{ color: "var(--text-secondary)" }}
-        >
-          {insightLine}
-        </p>
-      )}
     </div>
   )
 }

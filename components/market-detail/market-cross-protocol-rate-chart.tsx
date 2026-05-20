@@ -61,49 +61,6 @@ function mergeHistories(
   return [...byTs.values()].sort((a, b) => a.timestamp - b.timestamp)
 }
 
-function buildInsight(
-  history: Record<string, Array<{ timestamp: number; value: number }>>,
-  asset: string,
-): string | null {
-  // Pick the protocol with the highest LATEST supply APY — the "best venue
-  // right now" sentence the audit specifically called out.
-  const latestBySlug: Array<{ slug: string; value: number }> = []
-  for (const [slug, points] of Object.entries(history)) {
-    if (points.length === 0) continue
-    const latest = points[points.length - 1]
-    if (Number.isFinite(latest.value)) latestBySlug.push({ slug, value: latest.value })
-  }
-  if (latestBySlug.length === 0) return null
-  latestBySlug.sort((a, b) => b.value - a.value)
-  const top = latestBySlug[0]
-  const topName = PROTOCOL_BY_SLUG[top.slug]?.name ?? top.slug
-
-  // Single-protocol fallback — still useful: tells the reader nobody else
-  // lists this asset right now.
-  if (latestBySlug.length === 1) {
-    return `${topName} is the only protocol with ${asset} supply data right now (${top.value.toFixed(2)}%).`
-  }
-
-  const second = latestBySlug[1]
-  const secondName = PROTOCOL_BY_SLUG[second.slug]?.name ?? second.slug
-  const spreadBps = Math.round((top.value - second.value) * 100)
-
-  if (spreadBps < 1) {
-    return `${asset} supply rates are converged across protocols — within 1 bp at the latest read.`
-  }
-
-  // When the leader's APY is at least 5× the runner-up AND the runner-up is
-  // effectively zero (<5 bps), surface the "only meaningful APY" callout.
-  // Catches the wstETH case where Fluid actively pays for borrowed
-  // collateral and others sit at parking-lot rates.
-  const baseInsight = `Best supply venue right now: ${topName} at ${top.value.toFixed(2)}% (+${spreadBps} bps over ${secondName} at ${second.value.toFixed(2)}%).`
-  const meaningfullyAhead = top.value > 0 && top.value >= second.value * 5 && second.value < 0.05
-  if (meaningfullyAhead) {
-    return `${baseInsight} ${topName} is the only protocol where ${asset} lenders earn meaningful APY — a function of being one of the few venues where ${asset} is actively borrowed.`
-  }
-  return baseInsight
-}
-
 export function MarketCrossProtocolRateChart({
   asset,
   currentProtocolSlug,
@@ -113,30 +70,11 @@ export function MarketCrossProtocolRateChart({
   const cardRef = useRef<HTMLDivElement>(null)
   const slugs = Object.keys(history)
   const data = useMemo(() => mergeHistories(history), [history])
-  const insight = useMemo(() => buildInsight(history, asset), [history, asset])
-  // Per-asset annotation channel — events keyed
-  // `market-cross-protocol-rate-<asset>` (lowercase) opt in here. PYUSD
-  // and other assets get a dashed reference line at the event timestamp
-  // with the curated label rendered above the chart.
   const annotations = useAnnotations(
     `market-cross-protocol-rate-${asset.toLowerCase()}`,
   )
 
   if (slugs.length < 2 || data.length < 2) {
-    // No siblings (or insufficient data) — the chart itself would just
-    // dupe the per-market supply history above. Skip the chart but keep
-    // the insight line if we have one ("Fluid is the only protocol with
-    // wstETH supply data" still informs the reader).
-    if (insight) {
-      return (
-        <p
-          className="text-[12px] leading-relaxed px-1"
-          style={{ color: "var(--text-secondary)" }}
-        >
-          {insight}
-        </p>
-      )
-    }
     return null
   }
 
@@ -244,14 +182,6 @@ export function MarketCrossProtocolRateChart({
           </ResponsiveContainer>
         </div>
       </div>
-      {insight && (
-        <p
-          className="text-[12px] leading-relaxed px-1"
-          style={{ color: "var(--text-secondary)" }}
-        >
-          {insight}
-        </p>
-      )}
     </div>
   )
 }

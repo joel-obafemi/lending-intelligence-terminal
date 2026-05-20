@@ -208,9 +208,6 @@ interface Props {
     sparkline: Array<{ timestamp: number; value: number }>
   } | null
   takeRatePct: number
-
-  /** Auto-generated one-line summary built via `sectorVerdictSentence`. */
-  summary: string
 }
 
 export function VerdictStrip({
@@ -225,7 +222,6 @@ export function VerdictStrip({
   realYieldSpreadPct,
   realYieldDeltas,
   takeRatePct,
-  summary,
 }: Props) {
   return (
     <div className="space-y-2">
@@ -309,12 +305,6 @@ export function VerdictStrip({
           methodologyKey="sector-take-rate"
         />
       </div>
-      <p
-        className="text-[12px] leading-relaxed px-1"
-        style={{ color: "var(--text-secondary)" }}
-      >
-        {summary}
-      </p>
     </div>
   )
 }

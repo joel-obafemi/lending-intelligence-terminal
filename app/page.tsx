@@ -11,7 +11,6 @@ import { loadSectorOverview } from "@/lib/sector-snapshot"
 import { loadTopMarketsAcrossProtocols } from "@/lib/cross-protocol-markets"
 import { loadRealYieldSpread } from "@/lib/real-yield"
 import { getFeaturedIssue } from "@/lib/reports/featuredIssue"
-import { sectorVerdictSentence } from "@/lib/headline-sentence"
 import {
   biggestMover,
   buildDailyDeltaTriple,
@@ -20,7 +19,6 @@ import {
   sectorTakeRatePct,
   sectorUtilizationDailySeries,
   sectorUtilizationPct,
-  suppliedMomChangeFraction,
 } from "@/lib/sector-derived"
 
 // ISR — cache the rendered Sector Overview for 10 minutes. The hot path
@@ -72,15 +70,6 @@ export default async function OverviewPage() {
     realYieldDailySeries.length > 0
       ? buildDailyDeltaTriple(realYieldDailySeries)
       : null
-
-  const verdictSummary = sectorVerdictSentence({
-    asOf: overview.fetchedAt,
-    totalSuppliedUsd: snapshot.totalSupplied,
-    suppliedMomChange: suppliedMomChangeFraction(data),
-    protocolCount: snapshot.protocolCount,
-    realYieldSpreadPct,
-    sectorTakeRatePct: takeRatePct,
-  })
 
   // ─── Hero lens series + insight ───────────────────────────────────────
   const hero = buildHeroLenses(data)
@@ -134,7 +123,6 @@ export default async function OverviewPage() {
             : null
         }
         takeRatePct={takeRatePct}
-        summary={verdictSummary}
       />
 
       {/* Zone 2 — Hero: Market Share with Borrows / Supply / Available
@@ -143,7 +131,6 @@ export default async function OverviewPage() {
         borrowsShare={hero.borrowsShare}
         supplyShare={hero.supplyShare}
         availableShare={hero.availableShare}
-        insights={hero.insights}
       />
 
       {/* Zone 3 — Composition Strip (per-protocol cards w/ Fees + biggest mover) */}
