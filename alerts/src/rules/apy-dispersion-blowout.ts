@@ -2,6 +2,8 @@ import type { AlertContext, AlertEvent, AlertRule, Protocol } from "../types";
 import {
   DISPERSION_BAND_STDDEV,
   DISPERSION_BASELINE_WINDOW_DAYS,
+  DISPERSION_MIN_ABSOLUTE_BPS,
+  DISPERSION_MIN_TVL_USD,
   DISPERSION_PROTOCOLS,
   DISPERSION_STABLES,
   PROTOCOL_DISPLAY_NAME,
@@ -48,6 +50,16 @@ export function createApyDispersionBlowoutRule(deps: DispersionRuleDeps = {}): A
         for (const protocol of DISPERSION_PROTOCOLS) {
           const blended = await client.blendedSupplyApyPct(protocol, stable);
           if (!blended) continue;
+          // Min-TVL floor. Without this a single $1M Euler V2 vault paying
+          // 18% APY would blow dispersion past the 2σ threshold even though
+          // the rate is unreachable in practice. Filter the protocol out
+          // of the cross-section when its blended TVL is too thin to count.
+          if (blended.weightUsd < DISPERSION_MIN_TVL_USD) {
+            console.log(
+              `apy_dispersion_blowout: ${protocol}/${stable} excluded (TVL ${blended.weightUsd.toFixed(0)} < min ${DISPERSION_MIN_TVL_USD})`,
+            );
+            continue;
+          }
           perProtocol.push({
             protocol,
             apyPct: blended.apyPct,
@@ -89,6 +101,14 @@ export function createApyDispersionBlowoutRule(deps: DispersionRuleDeps = {}): A
 
         const threshold = stats.mean + DISPERSION_BAND_STDDEV * stats.stddev;
         if (dispersionBps <= threshold) continue;
+        // Absolute floor: spreads below 30 bps don't move treasury capital,
+        // so they're not tweet-worthy even if statistically anomalous.
+        if (dispersionBps < DISPERSION_MIN_ABSOLUTE_BPS) {
+          console.log(
+            `apy_dispersion_blowout: ${stable} dispersion ${dispersionBps.toFixed(0)} bps below absolute floor (${DISPERSION_MIN_ABSOLUTE_BPS} bps), skipping`,
+          );
+          continue;
+        }
 
         events.push(
           buildEvent({

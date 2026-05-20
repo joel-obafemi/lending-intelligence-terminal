@@ -20,8 +20,8 @@ export default async function CollateralPage() {
           Collateral Landscape
         </h1>
         <p className="text-xs text-text-muted">
-          What&apos;s being deposited and borrowed across Aave V3, Spark, Morpho, and Fluid,
-          and what risk it creates.
+          What&apos;s being deposited and borrowed across the tracked Ethereum
+          lending protocols, and what risk it creates.
         </p>
       </div>
 

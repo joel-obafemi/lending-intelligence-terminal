@@ -49,9 +49,9 @@ export default async function RatesPage() {
             Rate Monitor
             <MethodologyTooltip
               text={
-                `Live supply and borrow APYs across Aave V3, SparkLend, Morpho, and Fluid on Ethereum mainnet. ` +
+                `Live supply and borrow APYs across the tracked Ethereum lending protocols. ` +
                 `Aave V3 + SparkLend cells come from on-chain reads via UiPoolDataProviderV3 (${onChainCells} live cells); ` +
-                `Morpho cells are TVL-weighted blends across MetaMorpho vaults; Fluid cells use DefiLlama Yields. ` +
+                `Morpho cells are TVL-weighted blends across MetaMorpho vaults; Fluid, Compound V3, and Euler V2 cells use DefiLlama Yields. ` +
                 `Real Yield Spread = blended stablecoin lending APY − 4-week T-bill (FRED TB4WK). ` +
                 `Spread = borrow − supply. Reward APY (where applicable) appears below the base in accent color; toggle Reward-adjusted on the matrix to re-rank by net effective rate.`
               }

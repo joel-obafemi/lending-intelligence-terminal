@@ -64,8 +64,8 @@ export default async function ComparePage({
           Cross-Protocol Compare
         </h1>
         <p className="text-xs text-text-muted">
-          Side-by-side lookup across Aave V3, Spark, Morpho, and Fluid for the
-          same asset. Pick an asset, pick a view, share the URL.
+          Side-by-side lookup across the tracked Ethereum lending protocols
+          for the same asset. Pick an asset, pick a view, share the URL.
         </p>
       </div>
 

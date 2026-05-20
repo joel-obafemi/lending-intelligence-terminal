@@ -1,4 +1,10 @@
-export type Protocol = "aave-v3" | "spark" | "morpho" | "fluid";
+export type Protocol =
+  | "aave-v3"
+  | "spark"
+  | "morpho"
+  | "fluid"
+  | "compound-v3"
+  | "euler-v2";
 export type Severity = "INFO" | "NORMAL" | "WARNING" | "CRITICAL";
 export type Schedule = "fast" | "hourly" | "daily";
 

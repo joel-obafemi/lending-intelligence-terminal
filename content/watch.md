@@ -1,6 +1,6 @@
 # What to Watch
 
-A curated list of items to monitor across the four Ethereum lending
+A curated list of items to monitor across the tracked Ethereum lending
 protocols. Edit this file once per Lending Pulse edition (usually Sunday
 night before Monday publish). Each `## Heading` becomes a watch item;
 the paragraph below it becomes the body.

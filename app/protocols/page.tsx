@@ -190,7 +190,7 @@ export default async function ProtocolsPage({ searchParams }: { searchParams: Se
           Protocol Deep Dive
         </h1>
         <p className="text-xs text-text-muted">
-          Per-protocol market breakdown, rates, and historical liquidity across the four tracked
+          Per-protocol market breakdown, rates, and historical liquidity across the tracked
           Ethereum lending protocols. Source: DefiLlama Yields.
         </p>
       </div>

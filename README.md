@@ -1,12 +1,12 @@
 # Lending Intelligence Terminal
 
-Multi-protocol lending analytics for Ethereum. Unified view of **Aave V3, Spark, Morpho Blue, Fluid** — TVL, rates, utilization, revenue, liquidations, collateral risk.
+Multi-protocol lending analytics for Ethereum. Unified view of **Aave V3, Spark, Morpho Blue, Fluid, Compound V3, Euler V2** — TVL, rates, utilization, revenue, liquidations, collateral risk.
 
 Product of Datum Labs. Companion to the Liquidator Economy terminal.
 
 ## Pages
 
-1. **Overview** — aggregate market metrics across all four protocols.
+1. **Overview** — aggregate market metrics across all tracked protocols.
 2. **Protocols** — per-protocol deep dive (TVL, utilization, revenue, rate curves).
 3. **Rates** — cross-protocol supply/borrow rate comparison per asset.
 4. **Collateral** — collateral risk monitor (peg stability, oracle config, cross-chain dependency).

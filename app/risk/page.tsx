@@ -51,7 +51,7 @@ export default async function RiskPage() {
           Collateral & Stress Risk
         </h1>
         <p className="text-xs text-text-muted">
-          Sector-level risk indicators across Aave V3, Spark, Morpho, and Fluid on Ethereum.
+          Sector-level risk indicators across the tracked Ethereum lending protocols.
           Wallet-concentration metrics light up in a later pass once the borrower-discovery
           data layer ships.
         </p>

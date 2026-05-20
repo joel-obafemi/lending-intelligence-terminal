@@ -23,7 +23,7 @@ export async function generateMetadata(): Promise<Metadata> {
     : null
   return {
     title: "Lending Intelligence Terminal · Datum Labs",
-    description: "Multi-protocol lending analytics: Aave V3, SparkLend, Morpho, Fluid",
+    description: "Multi-protocol lending analytics: Aave V3, SparkLend, Morpho, Fluid, Compound V3, Euler V2",
     metadataBase: new URL(SITE_URL),
     alternates: {
       types: {

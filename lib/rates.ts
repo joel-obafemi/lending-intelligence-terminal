@@ -58,6 +58,8 @@ export const YIELDS_PROJECT_BY_PROTOCOL: Record<string, string[]> = {
   // Fluid uses "fluid-lending" on the Yields API, but they've renamed in
   // the past — accept both just in case.
   fluid: ["fluid-lending", "fluid"],
+  "compound-v3": ["compound-v3"],
+  "euler-v2": ["euler-v2"],
 }
 
 function protocolSlugForProject(project: string): string | undefined {

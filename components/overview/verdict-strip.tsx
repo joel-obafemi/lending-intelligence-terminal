@@ -26,6 +26,7 @@ import {
 } from "lucide-react"
 import { MetricCard } from "@/components/metric-card"
 import { formatPercent } from "@/lib/utils"
+import { PROTOCOLS } from "@/lib/protocols"
 import { MethodologyTooltip } from "./methodology-tooltip"
 
 interface RatePillProps {
@@ -236,7 +237,7 @@ export function VerdictStrip({
           sparkline={totalSuppliedDeltas.sparkline}
           icon={<TrendingUp size={12} strokeWidth={2.5} />}
           accentColor="#10B981"
-          caption="deposits across 4 protocols"
+          caption={`deposits across ${PROTOCOLS.length} protocols`}
         />
         <MetricCard
           label="Active Borrows"

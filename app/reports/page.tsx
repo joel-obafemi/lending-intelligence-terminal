@@ -522,9 +522,9 @@ export default async function ReportsArchivePage() {
               maxWidth: 720,
             }}
           >
-            Monthly research on the four protocols that matter most: Aave V3, Spark,
-            Morpho, Fluid. Written for analysts and treasuries that need data, not
-            commentary.
+            Monthly research on the protocols that matter most: Aave V3, Spark,
+            Morpho, Fluid, Compound V3, and Euler V2. Written for analysts and
+            treasuries that need data, not commentary.
           </p>
         </header>
 
@@ -633,9 +633,9 @@ export default async function ReportsArchivePage() {
               }}
             >
               <em>State of DeFi Lending on Ethereum</em> publishes on the 7th of each
-              month, covering Aave V3, Spark, Morpho, and Fluid. Each issue is anchored
-              to an end-of-month snapshot and pairs prose analysis with live charts that
-              draw from the same data layer powering this dashboard.{" "}
+              month, covering Aave V3, Spark, Morpho, Fluid, Compound V3, and Euler V2.
+              Each issue is anchored to an end-of-month snapshot and pairs prose analysis
+              with live charts that draw from the same data layer powering this dashboard.{" "}
               <Link
                 href="/reports/2026-04-april#methodology-heading"
                 style={{

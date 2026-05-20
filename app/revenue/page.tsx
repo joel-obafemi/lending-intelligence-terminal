@@ -46,7 +46,7 @@ export default async function RevenuePage() {
           Revenue &amp; Protocol Economics
           <MethodologyTooltip
             text={
-              "Daily fees, cumulative revenue, and recipient split across the four Ethereum lending protocols. " +
+              "Daily fees, cumulative revenue, and recipient split across the tracked Ethereum lending protocols. " +
               "Per-protocol Rev/TVL annualization in the cards. Authoritative recipient split (supply-side / protocol / holders) " +
               "from DefiLlama; liquidation-source share estimated from the Liquidator Economy DB."
             }

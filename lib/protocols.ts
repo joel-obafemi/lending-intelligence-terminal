@@ -68,6 +68,36 @@ export const PROTOCOLS: ProtocolConfig[] = [
     website: "https://fluid.io",
     description: "Instadapp's vault-based lending with smart collateral and smart debt, enabling DEX-like capital efficiency on paired assets.",
   },
+  {
+    slug: "compound-v3",
+    name: "Compound",
+    // Comet is one-base-many-collaterals per market — the base asset is
+    // pooled across borrowers, so 'pool' is the closest architecture tag.
+    // Collateral assets do not earn interest in Comet.
+    architecture: "pool",
+    defillamaSlug: "compound-v3",
+    // The liquidator-economy DB does not currently ingest Compound; this
+    // slug is set for the eventual ingestion but the dashboard tolerates
+    // a missing slug gracefully (liquidation panels render "—").
+    liquidatorSlug: "compound_v3",
+    chain: "ethereum",
+    color: "#06B6D4",
+    website: "https://compound.finance",
+    description: "Comet architecture. Each market has one borrowable base asset (USDC, USDT, ETH, USDS) and many collateral assets; collateral does not earn interest.",
+  },
+  {
+    slug: "euler-v2",
+    name: "Euler",
+    // EVK vaults are isolated markets with their own risk parameters;
+    // the closest existing architecture tag is 'vault' (matches Fluid).
+    architecture: "vault",
+    defillamaSlug: "euler-v2",
+    liquidatorSlug: "euler_v2",
+    chain: "ethereum",
+    color: "#D946EF",
+    website: "https://euler.finance",
+    description: "Modular vault-based lending. Each EVK vault is an isolated market with its own risk parameters, oracle, and IRM.",
+  },
 ]
 
 /** Reverse lookup: liquidator-economy slug → our canonical slug. */
