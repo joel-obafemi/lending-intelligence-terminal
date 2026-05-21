@@ -74,24 +74,20 @@ export function AaveSafetyModule({ status, protocolColor }: Props) {
   const tone = backingTone(status.backingRatio)
 
   return (
-    <div className="space-y-2">
-      <div className="tui-card bg-card-bg border border-card-border rounded overflow-hidden">
-        <div
-          className="border-b border-card-border flex items-center justify-between"
-          style={{ padding: "10px 16px" }}
+    <div className="tui-card bg-card-bg border border-card-border rounded overflow-hidden flex flex-col h-full">
+      <div
+        className="border-b border-card-border flex items-center justify-between"
+        style={{ padding: "10px 16px" }}
+      >
+        <span
+          className="text-accent flex items-center gap-1.5"
+          style={{ fontSize: "11px", fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.1em" }}
         >
-          <span
-            className="text-accent flex items-center gap-1.5"
-            style={{ fontSize: "11px", fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.1em" }}
-          >
-            <Shield size={12} strokeWidth={2.5} style={{ color: protocolColor }} />
-            Safety Module
-            <MethodologyTooltip methodologyKey="aave-safety-module" />
-          </span>
-          <span className="text-[10px] uppercase tracking-[0.08em]" style={{ color: "var(--text-muted)" }}>
-            stkAAVE · live on-chain
-          </span>
-        </div>
+          <Shield size={12} strokeWidth={2.5} style={{ color: protocolColor }} />
+          Safety Module
+          <MethodologyTooltip methodologyKey="aave-safety-module" />
+        </span>
+      </div>
         <div
           className="grid grid-cols-1 sm:grid-cols-3 divide-y sm:divide-y-0 sm:divide-x"
           style={{ borderColor: "var(--card-border)" }}
@@ -131,7 +127,6 @@ export function AaveSafetyModule({ status, protocolColor }: Props) {
               AAVE balance ÷ stkAAVE supply · 100% = full backing
             </span>
           </div>
-        </div>
       </div>
     </div>
   )

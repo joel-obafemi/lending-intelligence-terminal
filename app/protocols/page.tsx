@@ -25,7 +25,6 @@ import { MorphoUncuratedCallout } from "@/components/protocols/morpho-uncurated-
 import { MorphoMarketsTable } from "@/components/protocols/morpho-markets-table"
 import { FluidSmartStatsCard } from "@/components/protocols/fluid-smart-stats-card"
 import { FluidComparisons } from "@/components/protocols/fluid-comparisons"
-import { AaveMultiChainFootprint } from "@/components/protocols/aave-multi-chain-footprint"
 import { AaveSafetyModule } from "@/components/protocols/aave-safety-module"
 import { AaveUmbrella } from "@/components/protocols/aave-umbrella"
 import { SparkYieldPanel } from "@/components/protocols/spark-yield-panel"
@@ -43,8 +42,12 @@ import {
   type SparkYieldPanelResponse,
 } from "@/lib/spark-yield-panel"
 
-export const dynamic = "force-dynamic"
-// Heavy first render: DefiLlama Yields snapshot + per-protocol history.
+// ISR. Heavy cold-render (DefiLlama Yields snapshot + per-protocol history
+// + on-chain reads) was previously force-dynamic, which paid the full
+// 15-20s cost on every visit. Per-(protocol-slug, search-param) cached
+// HTML is good for 10 minutes; first visit after revalidation re-renders
+// in the background while serving the stale page to the user.
+export const revalidate = 600
 export const maxDuration = 60
 
 interface SearchParams {
@@ -310,49 +313,29 @@ export default async function ProtocolsPage({ searchParams }: { searchParams: Se
         />
       </div>
 
-      {/* Top markets chart + (Aave-only) Multi-Chain Footprint side-by-side.
-          For non-Aave protocols the Top Markets chart spans the full row.
-          The shared layout lets both charts breathe; the filter pills on
-          each one let the reader frame the same data three ways. */}
-      {slug === "aave-v3" && Object.keys(detail.multiChainTvl).length > 0 ? (
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
-          <TopMarketsBarChart
-            protocolName={detail.name}
-            color={detail.color}
-            markets={detail.markets}
-            topN={15}
-            defaultView="supply"
-            views={["supply", "available", "borrows"]}
-          />
-          <AaveMultiChainFootprint
-            multiChainAvailable={detail.multiChainTvl}
-            multiChainBorrowed={detail.multiChainBorrowed}
-            color={detail.color}
-            protocolName={detail.name}
-          />
-        </div>
-      ) : (
-        <TopMarketsBarChart
-          protocolName={detail.name}
-          color={detail.color}
-          markets={detail.markets}
-          topN={15}
-          defaultView="supply"
-          views={
-            // Morpho's vault rows on DefiLlama Yields don't carry borrowed
-            // USD, so the Borrows view would be empty. Limit Morpho to the
-            // supply / available filters.
-            slug === "morpho-blue" ? ["supply", "available"] : ["supply", "available", "borrows"]
-          }
-          // Fluid + Morpho rows are vaults, not markets — keep the
-          // chart's noun consistent with the table beneath it.
-          itemNoun={
-            detail.architecture === "isolated" || detail.architecture === "vault"
-              ? "Vaults"
-              : "Markets"
-          }
-        />
-      )}
+      {/* Top markets / vaults chart — full-width across all protocols.
+          The multi-chain footprint chart (previously beside this on Aave)
+          was removed; cross-chain coverage lives on the Sector Overview. */}
+      <TopMarketsBarChart
+        protocolName={detail.name}
+        color={detail.color}
+        markets={detail.markets}
+        topN={15}
+        defaultView="supply"
+        views={
+          // Morpho's vault rows on DefiLlama Yields don't carry borrowed
+          // USD, so the Borrows view would be empty. Limit Morpho to the
+          // supply / available filters.
+          slug === "morpho-blue" ? ["supply", "available"] : ["supply", "available", "borrows"]
+        }
+        // Fluid + Morpho rows are vaults, not markets — keep the
+        // chart's noun consistent with the table beneath it.
+        itemNoun={
+          detail.architecture === "isolated" || detail.architecture === "vault"
+            ? "Vaults"
+            : "Markets"
+        }
+      />
 
       <MarketsTable
         architecture={detail.architecture}

@@ -520,8 +520,16 @@ async function loadFromDefillama(
   // `supplyUsdHistory` represents TOTAL supplied (unborrowed + borrowed),
   // matching the semantic of the `totalSupplyUsd` snapshot value. We use the
   // /protocol/<slug>-derived series rather than DefiLlama Yields' tvlUsd
-  // (which is just unborrowed liquidity).
-  const supplyUsdHistory = derived.totalSupplyUsdHistory
+  // (which is just unborrowed liquidity). For protocols whose tokens map
+  // on /protocol/<slug> doesn't include this asset symbol (Fluid's
+  // Liquidity Layer fTokens, Compound V3 / Euler V2 newer markets), the
+  // derived path returns empty — fall back to per-pool tvlUsd from
+  // /chart/{poolId} so the supply chart still renders. For pool-style
+  // protocols this fallback approximates total supply by their available
+  // liquidity (no borrow component); accept the underestimate over an
+  // empty chart.
+  const supplyUsdHistory =
+    derived.totalSupplyUsdHistory.length > 0 ? derived.totalSupplyUsdHistory : tvlHistory
 
   // Re-derive borrow APY now that we have supplyApyHistory. The earlier
   // parallel call was just to pre-fetch utilization in parallel with the

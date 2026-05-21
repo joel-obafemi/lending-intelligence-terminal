@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation"
 import { formatUSD, formatPercent } from "@/lib/utils"
 import type { MarketRow, ProtocolDetail } from "@/lib/protocol-detail"
 
-const ROWS_PER_PAGE = 20
+const ROWS_PER_PAGE = 15
 
 interface Props {
   architecture: ProtocolDetail["architecture"]
@@ -146,6 +146,7 @@ export function MarketsTable({ architecture, color, markets, vaultIndex }: Props
               <th>{isVaultLabel ? "Vault" : "Market"}</th>
               <th className="text-right">Total Supply</th>
               {!isVaultLayout && <th className="text-right">Borrowed</th>}
+              {!isVaultLayout && <th className="text-right">Liquidity</th>}
               {!isVaultLayout && <th className="text-right">Util</th>}
               <th className="text-right">{isVaultLayout ? "Net APY" : "Supply APY"}</th>
               {!isVaultLayout && <th className="text-right">Borrow APY</th>}
@@ -264,6 +265,19 @@ export function MarketsTable({ architecture, color, markets, vaultIndex }: Props
                 {!isVaultLayout && (
                   <td className="text-right tabular-nums" style={{ color: "var(--text-muted)" }}>
                     {m.borrowedUsd != null ? formatUSD(m.borrowedUsd) : "—"}
+                  </td>
+                )}
+                {!isVaultLayout && (
+                  <td className="text-right tabular-nums" style={{ color: "var(--text-muted)" }}>
+                    {(() => {
+                      // Liquidity = available (unborrowed). For Fluid
+                      // lending-only pools the borrow side lives elsewhere,
+                      // so Liquidity equals Total Supply.
+                      if (m.totalSupplyUsd == null) return "—"
+                      const borrowed = m.borrowedUsd ?? 0
+                      const liquidity = Math.max(0, m.totalSupplyUsd - borrowed)
+                      return formatUSD(liquidity)
+                    })()}
                   </td>
                 )}
                 {!isVaultLayout && (

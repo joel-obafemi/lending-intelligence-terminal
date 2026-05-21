@@ -21,10 +21,15 @@ import { FluidPenaltyCallout } from "@/components/market-detail/fluid-penalty-ca
 import { MarketSpikeCallout } from "@/components/market-detail/market-spike-callout"
 import { MarketCrossProtocolRateChart } from "@/components/market-detail/market-cross-protocol-rate-chart"
 
-export const dynamic = "force-dynamic"
-// First-render cold load can hit 15-20s (DefiLlama Yields full pool list +
-// `/protocol/<slug>` history + on-chain `getReservesData` + per-vault Morpho
-// queries). Vercel Hobby's default function timeout is 10s; bump to 60s.
+// ISR. The first render for a given poolId still pays the 15-20s cold
+// load (DefiLlama Yields full pool list + `/protocol/<slug>` history +
+// on-chain `getReservesData` + per-vault Morpho queries), but Next caches
+// the rendered HTML and serves subsequent visits instantly. Stale-
+// while-revalidate at 10-minute intervals keeps the snapshot fresh
+// without paying the cold-load tax on every visit.
+export const revalidate = 600
+// Vercel Hobby's default function timeout is 10s; bump to 60s for the
+// cold-render path. Once cached the cache hit costs sub-100ms.
 export const maxDuration = 60
 
 interface PageProps {

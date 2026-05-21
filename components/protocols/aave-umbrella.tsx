@@ -36,32 +36,25 @@ export function AaveUmbrella({ status, protocolColor }: Props) {
   const reserves = [...status.reserves].sort((a, b) => b.coverageUsd - a.coverageUsd)
 
   return (
-    <div className="space-y-2">
-      <div className="tui-card bg-card-bg border border-card-border rounded overflow-hidden">
-        <div
-          className="border-b border-card-border flex items-center justify-between"
-          style={{ padding: "10px 16px" }}
+    <div className="tui-card bg-card-bg border border-card-border rounded overflow-hidden flex flex-col h-full">
+      <div
+        className="border-b border-card-border flex items-center justify-between"
+        style={{ padding: "10px 16px" }}
+      >
+        <span
+          className="text-accent flex items-center gap-1.5"
+          style={{
+            fontSize: "11px",
+            fontWeight: 700,
+            textTransform: "uppercase",
+            letterSpacing: "0.1em",
+          }}
         >
-          <span
-            className="text-accent flex items-center gap-1.5"
-            style={{
-              fontSize: "11px",
-              fontWeight: 700,
-              textTransform: "uppercase",
-              letterSpacing: "0.1em",
-            }}
-          >
-            <UmbrellaIcon size={12} strokeWidth={2.5} style={{ color: protocolColor }} />
-            Umbrella
-            <MethodologyTooltip methodologyKey="aave-umbrella" />
-          </span>
-          <span
-            className="text-[10px] uppercase tracking-[0.08em]"
-            style={{ color: "var(--text-muted)" }}
-          >
-            Per-reserve · live on-chain
-          </span>
-        </div>
+          <UmbrellaIcon size={12} strokeWidth={2.5} style={{ color: protocolColor }} />
+          Umbrella
+          <MethodologyTooltip methodologyKey="aave-umbrella" />
+        </span>
+      </div>
 
         <div
           className="px-4 py-3 flex items-baseline justify-between gap-3 flex-wrap"
@@ -135,7 +128,6 @@ export function AaveUmbrella({ status, protocolColor }: Props) {
             )
           })}
         </ul>
-      </div>
     </div>
   )
 }
