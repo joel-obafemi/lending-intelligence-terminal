@@ -21,10 +21,13 @@
  *    upper-cased vault symbol (`STEAKUSDC` → `steakUSDC` on Morpho), so we
  *    filter by `assetAddress` first then case-insensitive symbol match.
  */
+import { unstable_cache } from "next/cache"
 import type { YieldPool } from "./defillama"
 
 const ENDPOINT = "https://blue-api.morpho.org/graphql"
 const ETH_CHAIN_ID = 1
+/** Match the DefiLlama wrapper's TTL. 10-minute reuse window across requests. */
+const MORPHO_CACHE_TTL_SEC = 600
 
 // ─────────────────────────────────────────────────────────────────────────
 // Public types — a Morpho-native shape. Callers (lib/market-detail.ts)
@@ -346,7 +349,7 @@ interface VaultDetailRaw {
   } | null
 }
 
-export async function loadMorphoVaultByAddress(
+async function loadMorphoVaultByAddressUncached(
   address: string,
 ): Promise<MorphoVaultDetail | null> {
   const data = await gql<VaultDetailRaw>(VAULT_DETAIL_QUERY, {
@@ -423,6 +426,18 @@ export async function loadMorphoVaultByAddress(
     },
   }
 }
+
+/**
+ * Cached wrapper. The vault detail GraphQL response is the heaviest call
+ * on a Morpho /markets/[poolId] page (includes 90-day history per series),
+ * so sharing parsed results across requests gives the largest single
+ * speedup on a vault click.
+ */
+export const loadMorphoVaultByAddress = unstable_cache(
+  loadMorphoVaultByAddressUncached,
+  ["morpho-vault-by-address"],
+  { revalidate: MORPHO_CACHE_TTL_SEC },
+)
 
 // ─────────────────────────────────────────────────────────────────────────
 // Raw Morpho Blue market detail
@@ -879,25 +894,42 @@ interface VaultLookupRaw {
   }
 }
 
+/**
+ * Inner cached lookup. Takes simple string args so unstable_cache's key
+ * derivation works cleanly (passing a full YieldPool would either bloat
+ * the cache key or fail to differentiate calls).
+ */
+const findMorphoVaultByAssetAndSymbol = unstable_cache(
+  async (
+    assetAddressLower: string,
+    targetSym: string,
+  ): Promise<{ address: string; symbol: string; name: string } | null> => {
+    const data = await gql<VaultLookupRaw>(VAULT_LOOKUP_QUERY, {
+      assetAddress: assetAddressLower,
+      chainId: ETH_CHAIN_ID,
+    }).catch((err) => {
+      console.error("[morpho-api] findMorphoVaultForDefillamaPool failed:", err.message)
+      return null
+    })
+    const items = data?.vaults?.items ?? []
+    if (items.length === 0) return null
+    const match = items.find((v) => v.symbol.toUpperCase() === targetSym)
+    const chosen = match ?? items[0]
+    return { address: chosen.address, symbol: chosen.symbol, name: chosen.name }
+  },
+  ["morpho-vault-lookup"],
+  { revalidate: MORPHO_CACHE_TTL_SEC },
+)
+
 export async function findMorphoVaultForDefillamaPool(
   pool: YieldPool,
 ): Promise<{ address: string; symbol: string; name: string } | null> {
   const assetAddress = pool.underlyingTokens?.[0]
   if (!assetAddress) return null
-  const data = await gql<VaultLookupRaw>(VAULT_LOOKUP_QUERY, {
-    assetAddress: assetAddress.toLowerCase(),
-    chainId: ETH_CHAIN_ID,
-  }).catch((err) => {
-    console.error("[morpho-api] findMorphoVaultForDefillamaPool failed:", err.message)
-    return null
-  })
-  const items = data?.vaults?.items ?? []
-  if (items.length === 0) return null
-  // Prefer symbol-match (case insensitive), else fall back to largest TVL.
-  const targetSym = pool.symbol.toUpperCase()
-  const match = items.find((v) => v.symbol.toUpperCase() === targetSym)
-  const chosen = match ?? items[0]
-  return { address: chosen.address, symbol: chosen.symbol, name: chosen.name }
+  return findMorphoVaultByAssetAndSymbol(
+    assetAddress.toLowerCase(),
+    pool.symbol.toUpperCase(),
+  )
 }
 
 // ─────────────────────────────────────────────────────────────────────────
