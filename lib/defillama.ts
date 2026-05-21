@@ -4,24 +4,7 @@
  *
  * Reference: https://api.llama.fi/protocol/<slug>
  * Fees:      https://api.llama.fi/summary/fees/<slug>?dataType=dailyFees
- *
- * Caching strategy:
- *  - Heavy fetches (/protocol/<slug>, /pools, /chart/{poolId}) are wrapped
- *    in `unstable_cache` so the parsed JSON result is reused across
- *    requests for the configured TTL. Cache key combines the function
- *    name (via keyParts) + the function's args, so per-slug / per-poolId
- *    cache entries are isolated.
- *  - The underlying `fetchJson` keeps `cache: "no-store"` to bypass Next
- *    14's 2MB fetch-cache cap (DefiLlama /protocol responses run 4-34MB).
- *    `unstable_cache` works on the post-parse object, not the raw
- *    response, so the 2MB cap does not apply.
- *  - 10-minute TTL matches the page-level ISR window on /protocols and
- *    /markets/[poolId]. First visit per (slug, TTL window) still pays
- *    the cold-fetch cost; every subsequent visit reuses the cached object.
  */
-import { unstable_cache } from "next/cache"
-
-const DEFILLAMA_CACHE_TTL_SEC = 600
 
 export interface DayPoint {
   /** Unix seconds (UTC midnight) */
@@ -143,7 +126,7 @@ async function fetchJson<T>(url: string, attempt = 0): Promise<T> {
   }
 }
 
-async function fetchProtocolHistoryUncached(slug: string): Promise<ProtocolHistory> {
+export async function fetchProtocolHistory(slug: string): Promise<ProtocolHistory> {
   const [protocol, feesJson, userFeesJson] = await Promise.all([
     fetchJson<LlamaProtocolResponse>(`${LLAMA_BASE}/protocol/${slug}`),
     fetchFeesSummary(slug).catch(() => null),
@@ -223,19 +206,6 @@ async function fetchProtocolHistoryUncached(slug: string): Promise<ProtocolHisto
     multiChainBorrowed,
   }
 }
-
-/**
- * Cached wrapper around `fetchProtocolHistoryUncached`. unstable_cache uses
- * the function args as part of the cache key, so each protocol slug gets
- * its own entry. TTL matches the dashboard's ISR window. The cached unit
- * is the parsed `ProtocolHistory` object, which is well under Next 14's
- * 2MB raw-fetch cap even for the heaviest protocols.
- */
-export const fetchProtocolHistory = unstable_cache(
-  fetchProtocolHistoryUncached,
-  ["defillama-protocol-history"],
-  { revalidate: DEFILLAMA_CACHE_TTL_SEC },
-)
 
 // ═══════════════════════════════════════════════════════════════════════════
 // DefiLlama Yields API — supply/borrow APY data for the Rate Monitor
@@ -324,7 +294,7 @@ interface LendBorrowRow {
   borrowable: boolean
 }
 
-async function fetchAllYieldPoolsUncached(): Promise<YieldPool[]> {
+export async function fetchAllYieldPools(): Promise<YieldPool[]> {
   const [pools, lendBorrow] = await Promise.all([
     fetchJson<YieldPoolsResponse>(`${YIELDS_BASE}/pools`),
     fetchJson<LendBorrowRow[]>(`${YIELDS_BASE}/lendBorrow`).catch(() => [] as LendBorrowRow[]),
@@ -375,18 +345,6 @@ async function fetchAllYieldPoolsUncached(): Promise<YieldPool[]> {
     }
   })
 }
-
-/**
- * Cached wrapper around `fetchAllYieldPoolsUncached`. The /pools snapshot
- * is ~5MB pre-parse and ~3MB post-parse; sharing across requests is the
- * biggest single win since every market-detail and protocol-detail call
- * starts with this fetch.
- */
-export const fetchAllYieldPools = unstable_cache(
-  fetchAllYieldPoolsUncached,
-  ["defillama-all-yield-pools"],
-  { revalidate: DEFILLAMA_CACHE_TTL_SEC },
-)
 
 /**
  * DefiLlama Coins API — instant USD price + decimals for any ERC20 by
@@ -471,7 +429,7 @@ export async function fetchTokenPriceUsd(
   return info?.priceUsd ?? null
 }
 
-async function fetchYieldChartUncached(poolId: string): Promise<YieldChartPoint[]> {
+export async function fetchYieldChart(poolId: string): Promise<YieldChartPoint[]> {
   const res = await fetchJson<YieldChartResponse>(`${YIELDS_BASE}/chart/${poolId}`)
   if (res.status !== "success" || !Array.isArray(res.data)) return []
   return res.data.map((d) => ({
@@ -482,18 +440,6 @@ async function fetchYieldChartUncached(poolId: string): Promise<YieldChartPoint[
     apyReward: d.apyReward,
   }))
 }
-
-/**
- * Cached wrapper around `fetchYieldChartUncached`. Cache key includes the
- * poolId via the args path. Used on every /markets/[poolId] visit, so
- * caching the per-pool history is high-leverage even though each chart
- * payload is modest (~50KB).
- */
-export const fetchYieldChart = unstable_cache(
-  fetchYieldChartUncached,
-  ["defillama-yield-chart"],
-  { revalidate: DEFILLAMA_CACHE_TTL_SEC },
-)
 
 interface LlamaFeesResponse {
   /** All-chain totals — [ [unix_ts, usd], ... ]. Used as a fallback when
@@ -586,7 +532,7 @@ async function fetchFeesByType(slug: string, dataType: FeeRecipientType): Promis
 }
 
 /** Pull all 5 recipient-bucket series in parallel. */
-async function fetchFeeBreakdownUncached(slug: string): Promise<FeeBreakdown> {
+export async function fetchFeeBreakdown(slug: string): Promise<FeeBreakdown> {
   const [fees, userFees, supplySideRevenue, protocolRevenue, holdersRevenue] = await Promise.all([
     fetchFeesByType(slug, "dailyFees"),
     fetchFeesByType(slug, "dailyUserFees"),
@@ -596,16 +542,6 @@ async function fetchFeeBreakdownUncached(slug: string): Promise<FeeBreakdown> {
   ])
   return { slug, fees, userFees, supplySideRevenue, protocolRevenue, holdersRevenue }
 }
-
-/**
- * Cached wrapper. /revenue page renders all six protocols' breakdowns;
- * sharing the parsed Ethereum-only series across requests is a clear win.
- */
-export const fetchFeeBreakdown = unstable_cache(
-  fetchFeeBreakdownUncached,
-  ["defillama-fee-breakdown"],
-  { revalidate: DEFILLAMA_CACHE_TTL_SEC },
-)
 
 /** Fetch history for all protocols in parallel. Failures are swallowed per-protocol so one bad slug doesn't break the page. */
 export async function fetchAllProtocolHistory(slugs: string[]): Promise<Array<ProtocolHistory | null>> {
