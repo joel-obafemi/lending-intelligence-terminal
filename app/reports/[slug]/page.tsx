@@ -36,9 +36,16 @@ import { SupportPanel } from "@/components/report/SupportPanel"
 // dataset rendered by every <Chart> is freshness-sensitive. Revalidate
 // hourly so a reader who flips a chart to "Live" never sees data older
 // than ~60 minutes. The snapshot view itself is stable across rebuilds.
+// Hourly ISR. We previously also pinned `dynamic = "force-static"`, but
+// that forces every published slug to be pre-rendered at build time —
+// if any single chart loader (DefiLlama, FRED, on-chain RPC) hangs past
+// Next's 60s build worker timeout, the build fails outright. Reverting
+// to default ISR semantics lets timeouts on one route fall through to
+// on-demand rendering at first request instead of aborting the deploy.
+// `dynamicParams = false` stays so unknown slugs still 404 cleanly.
 export const revalidate = 3600
-export const dynamic = "force-static"
 export const dynamicParams = false
+export const maxDuration = 120
 
 interface RouteParams {
   params: { slug: string }

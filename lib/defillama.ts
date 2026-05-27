@@ -112,13 +112,22 @@ async function fetchJson<T>(url: string, attempt = 0): Promise<T> {
   try {
     const res = await fetch(url, { cache: "no-store" })
     if (!res.ok) {
-      throw new Error(`DefiLlama ${res.status} for ${url}`)
+      // Tag 4xx so callers (and the retry below) can short-circuit. DefiLlama
+      // gates the /chart endpoint behind a paid tier as of mid-2026 — every
+      // /chart/<poolId> call now returns 403. Retrying a 403 wastes ~1.5s
+      // per call (3 attempts × 500ms backoff) and at ~40 chart calls in
+      // the matrix that's >60s of dead waiting on the build worker.
+      const err: any = new Error(`DefiLlama ${res.status} for ${url}`)
+      err.httpStatus = res.status
+      throw err
     }
     return (await res.json()) as T
   } catch (err: any) {
-    // Next.js dev mode (and occasional upstream blips) produce transient
-    // "terminated" errors on large responses. Retry up to twice with backoff.
-    if (attempt < 2) {
+    // Only retry transient errors (network/5xx). 4xx are deterministic and
+    // re-trying them just burns the build budget.
+    const status = err?.httpStatus as number | undefined
+    const isClientError = typeof status === "number" && status >= 400 && status < 500
+    if (!isClientError && attempt < 2) {
       await new Promise((r) => setTimeout(r, 500 * (attempt + 1)))
       return fetchJson<T>(url, attempt + 1)
     }
