@@ -102,11 +102,16 @@ export async function loadFluidSmartVaultStats(): Promise<FluidSmartVaultStats |
     return null
   }
 
+  // DefiLlama splits Fluid into multiple projects:
+  //   - `fluid-lending`: the lending-pool side (single-token, fToken deposits)
+  //   - `fluid-dex` / `fluid-lite`: the vault-side (collateral, loan) pairs
+  // Older revisions of this loader filtered to >=2 underlying tokens, which
+  // dropped every fluid-lending pool (they're single-token by design) AND
+  // ignored fluid-dex entirely → all categories collapsed to 0%. We now
+  // include all four buckets and let the downstream pair-matching classify.
+  const FLUID_PROJECTS = new Set(["fluid-lending", "fluid-dex", "fluid-lite", "fluid"])
   const fluidPools = pools.filter(
-    (p) =>
-      p.chain === "Ethereum" &&
-      (p.project === "fluid-lending" || p.project === "fluid") &&
-      (p.underlyingTokens?.length ?? 0) >= 2,
+    (p) => p.chain === "Ethereum" && FLUID_PROJECTS.has(p.project),
   )
   const totalTvlUsd = fluidPools.reduce((s, p) => s + poolTvl(p), 0)
 
@@ -131,13 +136,22 @@ export async function loadFluidSmartVaultStats(): Promise<FluidSmartVaultStats |
   let lendingOnlyPoolCount = 0
 
   for (const p of fluidPools) {
-    const col = p.underlyingTokens?.[0] ?? ""
-    const loan = p.underlyingTokens?.[1] ?? ""
-    const flags = flagsByPair.get(pairKey(col, loan))
+    const tokens = p.underlyingTokens ?? []
     const tvl = poolTvl(p)
+    // Single-token pools are always lending-pool deposits (fluid-lending's
+    // fTokens), never vault-pair entries — short-circuit them straight into
+    // the lending-only bucket without attempting a pair-match.
+    if (tokens.length < 2) {
+      lendingOnlyTvlUsd += tvl
+      lendingOnlyPoolCount += 1
+      continue
+    }
+    const col = tokens[0] ?? ""
+    const loan = tokens[1] ?? ""
+    const flags = flagsByPair.get(pairKey(col, loan))
     if (!flags) {
-      // Unmatched — typically a Liquidity-Layer-only fToken (lending
-      // pool deposits that vaults borrow from).
+      // 2-token pool that doesn't pair to an on-chain vault — treat as
+      // lending-only too (DEX-mode pools without a smart-flag classifier).
       lendingOnlyTvlUsd += tvl
       lendingOnlyPoolCount += 1
       continue
