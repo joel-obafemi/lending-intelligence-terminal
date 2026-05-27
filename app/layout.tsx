@@ -30,16 +30,21 @@ const THEME_INIT_SCRIPT = `
 const SITE_URL = "https://lending-intelligence-terminal.vercel.app"
 
 export async function generateMetadata(): Promise<Metadata> {
-  // Note: the dashboard's social-card image comes from the file-convention
-  // route at `app/opengraph-image.tsx` — Next.js auto-injects it into
-  // openGraph.images for every route that doesn't define its own
-  // `opengraph-image`. `/reports/[slug]/opengraph-image.tsx` continues to
-  // override per-issue. We don't set openGraph.images explicitly here so
-  // that file convention takes effect cleanly.
+  // Default OG image falls back to the latest issue's social card so a
+  // shared dashboard link surfaces the publication in link previews.
+  // Per-route metadata (e.g. /reports/[slug]) overrides this default.
+  const featured = await getFeaturedIssue()
+  const ogImage = featured
+    ? {
+        url: featured.socialImageUrl,
+        width: 1200,
+        height: 630,
+        alt: `DatumLabs Research · ${featured.record.frontmatter.theme}`,
+      }
+    : null
   return {
     title: "Lending Intelligence Terminal · Datum Labs",
-    description:
-      "Multi-protocol lending analytics: Aave V3, SparkLend, Morpho, Fluid, Compound V3, Euler V2",
+    description: "Multi-protocol lending analytics: Aave V3, SparkLend, Morpho, Fluid, Compound V3, Euler V2",
     metadataBase: new URL(SITE_URL),
     alternates: {
       types: {
@@ -48,22 +53,18 @@ export async function generateMetadata(): Promise<Metadata> {
         ],
       },
     },
-    openGraph: {
-      siteName: "DatumLabs Research",
-      title: "Lending Intelligence Terminal · Datum Labs",
-      description:
-        "TVL, rates, flows, and risk across Aave V3, SparkLend, Morpho, Fluid, Compound V3, and Euler V2.",
-      url: SITE_URL,
-      type: "website",
-    },
-    twitter: {
-      card: "summary_large_image",
-      site: "@datumlabs",
-      creator: "@datumlabs",
-      title: "Lending Intelligence Terminal · Datum Labs",
-      description:
-        "Multi-protocol Ethereum lending analytics. Live terminal.",
-    },
+    openGraph: ogImage
+      ? {
+          siteName: "DatumLabs Research",
+          images: [ogImage],
+        }
+      : { siteName: "DatumLabs Research" },
+    twitter: ogImage
+      ? {
+          card: "summary_large_image",
+          images: [ogImage.url],
+        }
+      : undefined,
   }
 }
 
