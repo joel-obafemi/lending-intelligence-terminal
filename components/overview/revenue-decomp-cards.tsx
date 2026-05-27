@@ -17,7 +17,7 @@ interface Props {
  */
 export function RevenueDecompCards({ rows, windowDays }: Props) {
   return (
-    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
       {rows.map((r) => {
         const supplyShare = r.totalFees > 0 ? r.supplySideRevenue / r.totalFees : 0
         const protocolShare = r.totalFees > 0 ? r.protocolRevenue / r.totalFees : 0

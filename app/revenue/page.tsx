@@ -26,11 +26,7 @@ export const maxDuration = 60
 export default async function RevenuePage() {
   const [data, liq, decomp] = await Promise.all([
     loadOverview(),
-    // 365-day window so the M view of the liquidation-volume chart at the
-    // bottom of the page renders ~12 months of bars (matches the rest of the
-    // page's trend charts). Only `liq.weeklyVolume` is consumed here — the
-    // snapshot/protocol rows aren't referenced.
-    loadLiquidations(365),
+    loadLiquidations(90),
     loadRevenueDecomp(90, 365),
   ])
 
