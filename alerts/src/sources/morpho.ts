@@ -17,8 +17,10 @@ interface VaultsRaw {
       address: string;
       name: string;
       symbol: string;
-      state: { totalAssetsUsd: number | null } | null;
-      metadata: {
+      // Morpho moved curator metadata onto `state` (mid-2026); the old
+      // `metadata.curators` field no longer exists on VaultMetadata.
+      state: {
+        totalAssetsUsd: number | null;
         curators: Array<{ name: string | null }> | null;
       } | null;
     }>;
@@ -39,8 +41,7 @@ const QUERY = /* GraphQL */ `
         address
         name
         symbol
-        state { totalAssetsUsd }
-        metadata { curators { name } }
+        state { totalAssetsUsd curators { name } }
       }
       pageInfo { count countTotal }
     }
@@ -95,7 +96,7 @@ export class MorphoGraphQLClient {
     for (const v of items) {
       const tvl = v.state?.totalAssetsUsd ?? 0;
       if (tvl <= 0) continue;
-      const primary = v.metadata?.curators?.[0]?.name?.trim() || "Uncurated";
+      const primary = v.state?.curators?.[0]?.name?.trim() || "Uncurated";
       tvlByCurator.set(primary, (tvlByCurator.get(primary) ?? 0) + tvl);
       totalAssetsUsd += tvl;
       vaultCount += 1;

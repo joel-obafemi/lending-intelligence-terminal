@@ -253,6 +253,7 @@ const VAULT_DETAIL_QUERY = /* GraphQL */ `
         netApyExcludingRewards
         fee
         curator
+        curators { name image }
         owner
         guardian
         feeRecipient
@@ -278,9 +279,6 @@ const VAULT_DETAIL_QUERY = /* GraphQL */ `
       }
       liquidity {
         usd
-      }
-      metadata {
-        curators { name image }
       }
       historicalState {
         totalAssetsUsd(options: $opts) { x y }
@@ -313,6 +311,7 @@ interface VaultDetailRaw {
       netApyExcludingRewards: number
       fee: number
       curator: string | null
+      curators: Array<{ name: string | null; image: string | null }> | null
       owner: string | null
       guardian: string | null
       feeRecipient: string | null
@@ -337,7 +336,6 @@ interface VaultDetailRaw {
       }>
     }
     liquidity: { usd: number } | null
-    metadata: { curators: Array<{ name: string | null; image: string | null }> } | null
     historicalState: {
       totalAssetsUsd: TimeseriesPointRaw[]
       apy: TimeseriesPointRaw[]
@@ -399,7 +397,7 @@ export async function loadMorphoVaultByAddress(
     timelockSeconds: v.state.timelock != null ? Number(v.state.timelock) : null,
     factoryAddress: v.factory?.address ?? null,
     creationBlockNumber: v.factory?.creationBlockNumber ?? null,
-    curatorMetadata: v.metadata?.curators?.[0] ?? null,
+    curatorMetadata: v.state?.curators?.[0] ?? null,
   }
 
   return {
@@ -925,8 +923,6 @@ const CURATOR_LEADERBOARD_QUERY = /* GraphQL */ `
         state {
           totalAssetsUsd
           netApy
-        }
-        metadata {
           curators { name image }
         }
         asset { symbol }
@@ -942,8 +938,15 @@ interface CuratorLeaderboardRaw {
       address: string
       name: string
       symbol: string
-      state: { totalAssetsUsd: number | null; netApy: number | null } | null
-      metadata: { curators: Array<{ name: string | null; image: string | null }> | null } | null
+      // Morpho moved curator metadata from `metadata.curators` to
+      // `state.curators` in mid-2026. `VaultMetadata` now only carries
+      // `description` + `image`; the curator name/logo lives on the vault
+      // STATE object alongside TVL.
+      state: {
+        totalAssetsUsd: number | null
+        netApy: number | null
+        curators: Array<{ name: string | null; image: string | null }> | null
+      } | null
       asset: { symbol: string }
     }>
     pageInfo: { count: number; countTotal: number }
@@ -1028,7 +1031,7 @@ export async function loadMorphoVaultIndex(): Promise<
   for (const v of all) {
     if (!v.symbol) continue
     const tvl = v.state?.totalAssetsUsd ?? 0
-    const primary = v.metadata?.curators?.[0] ?? null
+    const primary = v.state?.curators?.[0] ?? null
     out.set(v.symbol.toUpperCase(), {
       address: v.address,
       name: v.name,
@@ -1061,7 +1064,7 @@ export async function loadMorphoCuratorLeaderboard(): Promise<CuratorLeaderboard
   for (const v of all) {
     const tvl = v.state?.totalAssetsUsd ?? 0
     if (tvl <= 0) continue  // Skip empty vaults — they don't count for ranking.
-    const curators = v.metadata?.curators ?? null
+    const curators = v.state?.curators ?? null
     const primary = curators && curators.length > 0 ? curators[0] : null
     const displayName = primary?.name?.trim() || "Uncurated"
     const key = displayName.toLowerCase()
