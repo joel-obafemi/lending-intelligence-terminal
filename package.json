@@ -11,6 +11,7 @@
     "db:init": "tsx scripts/init-db.ts",
     "check:upstream": "tsx scripts/check-upstream.ts",
     "snapshot:rates": "tsx scripts/snapshot-rates.ts",
+    "snapshot:sector": "tsx scripts/sector-snapshot.ts",
     "scan": "tsx scripts/scan.ts",
     "export:friend": "tsx scripts/export-friend-csvs.ts",
     "render-covers": "tsx scripts/render-covers.ts"
