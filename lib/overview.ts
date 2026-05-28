@@ -4,6 +4,8 @@
  */
 import { PROTOCOLS } from "./protocols"
 import { fetchAllProtocolHistory } from "./defillama"
+import type { CrossProtocolMarket } from "./cross-protocol-markets"
+import type { RealYieldResponse } from "./real-yield"
 import { classifyAsset, type AssetType, ASSET_TYPE_STACK_ORDER } from "./assets"
 import { buildHistoricalBuckets, type HistoricalBuckets } from "./historical-buckets"
 import {
@@ -175,6 +177,16 @@ export interface OverviewResponse {
    *  / 8 quarters. May be undefined on snapshots written before this field
    *  was introduced — components should fall back to the current arrays. */
   historicalBuckets?: HistoricalBuckets
+  /** Top markets across all protocols — folded into the snapshot so the
+   *  Overview page reads them from Neon instead of a live DefiLlama fetch
+   *  (which would force the whole page to render dynamically per request).
+   *  Optional: snapshots written before this field existed won't have it;
+   *  the page falls back to an empty list until the next cron run. */
+  topMarketsCrossProtocol?: CrossProtocolMarket[]
+  /** Real Yield Spread (blended stable APY − 4-week T-bill) + 1y history.
+   *  Same rationale as `topMarketsCrossProtocol` — snapshotted so the
+   *  Overview render path has zero `no-store` fetches and can be cached. */
+  realYieldSpread?: RealYieldResponse | null
   fetchedAt: number
   errors: Array<{ slug: string; message: string }>
 }
@@ -946,6 +958,11 @@ export async function loadOverview(): Promise<OverviewResponse> {
     netFlowsSankey,
     netInterestPaidDailySeries,
     historicalBuckets: buildHistoricalBuckets(histories),
+    // topMarketsCrossProtocol + realYieldSpread are intentionally NOT set
+    // here — loadOverview stays lean because /rates, /risk, /revenue,
+    // /collateral all call it during their own renders. They're enriched
+    // only in persistSectorSnapshot (the daily cron), which is the single
+    // consumer that feeds the Overview page.
     fetchedAt: Math.floor(Date.now() / 1000),
     errors,
   }

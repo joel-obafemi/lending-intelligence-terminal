@@ -17,6 +17,8 @@
  */
 import { sql } from "./db"
 import { loadOverview, type OverviewResponse } from "./overview"
+import { loadTopMarketsAcrossProtocols, type CrossProtocolMarket } from "./cross-protocol-markets"
+import { loadRealYieldSpread, type RealYieldResponse } from "./real-yield"
 
 /** How stale a snapshot can get before we override with a live load. */
 const MAX_AGE_HOURS = 30
@@ -42,7 +44,25 @@ export async function persistSectorSnapshot(): Promise<{
   ms: number
 }> {
   const t0 = Date.now()
-  const payload = await loadOverview()
+  // Enrich the snapshot with the two loaders the Overview page used to call
+  // live (top markets + real-yield). Folding them in here — the once-daily
+  // cron path — means the Overview page render reads them from Neon and has
+  // ZERO no-store fetches, so it can be statically cached + ISR'd. These
+  // are deliberately NOT in loadOverview() itself, which other heavy pages
+  // call during their own renders.
+  const [payload, topMarketsCrossProtocol, realYieldSpread] = await Promise.all([
+    loadOverview(),
+    loadTopMarketsAcrossProtocols(50).catch((err) => {
+      console.error("[sector-snapshot] top markets failed:", err?.message ?? err)
+      return [] as CrossProtocolMarket[]
+    }),
+    loadRealYieldSpread().catch((err) => {
+      console.error("[sector-snapshot] real yield spread failed:", err?.message ?? err)
+      return null as RealYieldResponse | null
+    }),
+  ])
+  payload.topMarketsCrossProtocol = topMarketsCrossProtocol
+  payload.realYieldSpread = realYieldSpread
   const day = todayUtc()
   const json = JSON.stringify(payload)
   await sql`

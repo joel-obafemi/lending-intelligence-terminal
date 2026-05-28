@@ -17,10 +17,11 @@ import { MethodologyTooltip } from "@/components/overview/methodology-tooltip"
 import { AsOfFooter } from "@/components/overview/as-of-footer"
 import { CiteThisPage } from "@/components/overview/cite-this-page"
 
-// ISR — 15 min cache. Fee data is daily-resolution from DefiLlama; a
-// 15-min revalidation window keeps trend charts fresh enough while
-// making nav-back-to-/revenue instant.
-export const revalidate = 900
+// loadOverview() + DefiLlama fee summaries via cache: 'no-store', so this
+// route is dynamic regardless of revalidate (always a cache MISS).
+// force-dynamic makes it explicit and stops the build-time prerender that
+// blows the 60s budget when DefiLlama is slow.
+export const dynamic = "force-dynamic"
 export const maxDuration = 60
 
 export default async function RevenuePage() {

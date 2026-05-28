@@ -42,12 +42,13 @@ import {
   type SparkYieldPanelResponse,
 } from "@/lib/spark-yield-panel"
 
-// ISR. Heavy cold-render (DefiLlama Yields snapshot + per-protocol history
-// + on-chain reads) was previously force-dynamic, which paid the full
-// 15-20s cost on every visit. Per-(protocol-slug, search-param) cached
-// HTML is good for 10 minutes; first visit after revalidation re-renders
-// in the background while serving the stale page to the user.
-export const revalidate = 600
+// Reads searchParams (?p=slug) + live on-chain + DefiLlama (cache:
+// 'no-store'), so this route is dynamic regardless of revalidate (verified:
+// always a cache MISS). force-dynamic makes that explicit and, critically,
+// stops Next from attempting a build-time prerender of every protocol slug
+// — when the public RPC rate-limits, those prerenders blow the 60s budget
+// and fail the deploy.
+export const dynamic = "force-dynamic"
 export const maxDuration = 60
 
 interface SearchParams {

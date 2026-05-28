@@ -26,9 +26,12 @@ import { AsOfFooter } from "@/components/overview/as-of-footer"
 import { FeaturedIssueCallout } from "@/components/featured-issue-callout"
 import { CiteThisPage } from "@/components/overview/cite-this-page"
 
-// ISR — 15 min cache. Risk reads (oracle vendor map, stablecoin debt
-// share trend, liquidation intensity) are slow-moving day-to-day.
-export const revalidate = 900
+// Live on-chain + DefiLlama reads (cache: 'no-store') make this page
+// dynamic regardless of revalidate. force-dynamic stops Next from
+// attempting a build-time prerender — when the public RPC rate-limits,
+// that prerender blows the 60s static-generation budget and fails the
+// whole deploy. Runtime behavior is unchanged (always a cache MISS).
+export const dynamic = "force-dynamic"
 export const maxDuration = 60
 
 export default async function RiskPage() {

@@ -12,6 +12,16 @@
  */
 
 /** @type {import('next').NextConfig} */
-const nextConfig = {}
+const nextConfig = {
+  // The published /reports/[slug] pages are statically prerendered at build
+  // (generateStaticParams + dynamicParams=false). Each one runs the report
+  // chart loaders, which hit DefiLlama + FRED + on-chain Aave/Spark reads.
+  // When the public RPC rate-limits, a single report can take >60s to
+  // generate; the default 60s static-generation timeout then fails the
+  // whole deploy. Raise the ceiling so a slow-upstream blip doesn't block a
+  // ship. (Per-request runtime is bounded separately by each route's
+  // `maxDuration`.)
+  staticPageGenerationTimeout: 180,
+}
 
 module.exports = nextConfig

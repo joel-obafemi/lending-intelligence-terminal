@@ -8,8 +8,6 @@ import { CiteThisPage } from "@/components/overview/cite-this-page"
 import { AsOfFooter } from "@/components/overview/as-of-footer"
 import { FeaturedIssueBanner } from "@/components/featured-issue-banner"
 import { loadSectorOverview } from "@/lib/sector-snapshot"
-import { loadTopMarketsAcrossProtocols } from "@/lib/cross-protocol-markets"
-import { loadRealYieldSpread } from "@/lib/real-yield"
 import { getFeaturedIssue } from "@/lib/reports/featuredIssue"
 import {
   buildDailyDeltaTriple,
@@ -20,22 +18,26 @@ import {
   sectorUtilizationPct,
 } from "@/lib/sector-derived"
 
-// ISR — cache the rendered Sector Overview for 10 minutes. The hot path
-// is already a single Neon SELECT against `sector_snapshots` (~5ms), but
-// caching the rendered React tree skips even that round-trip for repeat
-// visitors and makes nav-back-to-/ instant. The daily cron refreshes
-// the underlying snapshot at 01:00 UTC; ISR layers on top.
-export const revalidate = 600
+// ISR — 1 hour. The underlying sector snapshot refreshes once daily at
+// 01:00 UTC (Cloudflare-triggered cron). Crucially, this page now reads
+// EVERYTHING (incl. top markets + real-yield) from that Neon snapshot —
+// no live DefiLlama `no-store` fetches in the render path — so Next can
+// actually statically cache + ISR it. Previously two live loaders forced
+// the whole page to render dynamically on every request, which is what
+// drove the Vercel Active-CPU + Fast-Origin-Transfer bill.
+export const revalidate = 3600
 export const maxDuration = 60
 
 export default async function OverviewPage() {
-  const [overview, topMarkets, realYield, featured] = await Promise.all([
+  const [overview, featured] = await Promise.all([
     loadSectorOverview(),
-    loadTopMarketsAcrossProtocols(50),
-    loadRealYieldSpread().catch(() => null),
     getFeaturedIssue().catch(() => null),
   ])
   const data = overview.payload
+  // Read from the snapshot payload. Falls back to empty/null for snapshots
+  // written before these fields were folded in (until the next cron run).
+  const topMarkets = data.topMarketsCrossProtocol ?? []
+  const realYield = data.realYieldSpread ?? null
   const featuredSummary = featured
     ? {
         slug: featured.slug,

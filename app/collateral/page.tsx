@@ -5,9 +5,11 @@ import { CollateralTypeChart } from "@/components/overview/collateral-type-chart
 import { CiteThisPage } from "@/components/overview/cite-this-page"
 import { AsOfFooter } from "@/components/overview/as-of-footer"
 
-// ISR — 30 min cache. Composition mix changes slowly; longer
-// revalidation window is fine and makes navigation instant.
-export const revalidate = 1800
+// loadOverview() uses cache: 'no-store' DefiLlama fetches, so this route
+// is dynamic regardless of revalidate (always a cache MISS). force-dynamic
+// makes it explicit and stops Next from attempting a build-time prerender
+// that blows the 60s budget when upstreams are slow.
+export const dynamic = "force-dynamic"
 export const maxDuration = 60
 
 export default async function CollateralPage() {

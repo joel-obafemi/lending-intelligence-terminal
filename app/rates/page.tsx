@@ -15,7 +15,11 @@ import { CiteThisPage } from "@/components/overview/cite-this-page"
 // charts × multiple pools, FRED, blended-stable APY series). Caching
 // is the biggest win here. Rates change slowly enough that 30 min
 // staleness is acceptable.
-export const revalidate = 1800
+// Heaviest page: DefiLlama Yields + per-pool charts + on-chain Aave/Spark
+// overlay + FRED, all via cache: 'no-store'. Dynamic regardless of
+// revalidate (always a cache MISS). force-dynamic stops the build-time
+// prerender that times out when the public RPC rate-limits.
+export const dynamic = "force-dynamic"
 export const maxDuration = 60
 
 /** Assets that get historical charts. Limited to keep the page fast.
