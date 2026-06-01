@@ -45,7 +45,11 @@ export default async function OgImage() {
         style={{
           width: 1200,
           height: 630,
-          background: BG,
+          // Indigo radial bloom layered over the dark base — the signature
+          // Blockworks "spotlight" effect. Put directly on the container
+          // (Satori renders gradients on backgrounds reliably; standalone
+          // absolute-overlay divs are hit-or-miss).
+          background: `radial-gradient(circle at 50% 38%, rgba(99, 79, 232, 0.72) 0%, rgba(74, 58, 200, 0.36) 28%, rgba(48, 36, 130, 0.12) 50%, ${BG} 70%)`,
           color: TEXT,
           fontFamily: "sans-serif",
           display: "flex",
@@ -55,18 +59,6 @@ export default async function OgImage() {
           position: "relative",
         }}
       >
-        {/* Indigo radial bloom — the signature Blockworks "spotlight" effect.
-            Positioned slightly above center so the headline sits in the
-            brightest part of the gradient. */}
-        <div
-          style={{
-            position: "absolute",
-            inset: 0,
-            display: "flex",
-            background:
-              "radial-gradient(ellipse 60% 55% at 50% 38%, rgba(99, 79, 232, 0.62) 0%, rgba(74, 58, 200, 0.32) 32%, rgba(10, 11, 15, 0) 70%)",
-          }}
-        />
 
         {/* Top brand pill — outlined, transparent fill, centered. */}
         <div
