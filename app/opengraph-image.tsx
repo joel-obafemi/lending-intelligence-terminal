@@ -36,7 +36,7 @@ const BLUE_DEEP = "#1A2160"
 // ─── Brand block — to port to another dashboard, edit this block ─────────
 const HEADLINE = "Lending Terminal."
 const SUBTITLE =
-  "Live multi-protocol intelligence for Ethereum lending — TVL, rates, flows, and risk."
+  "TVL, rates, flows, and risk across the major Ethereum lending venues."
 const PILL_LABEL = "/ Live Terminal"
 
 /**
@@ -84,10 +84,12 @@ export default async function OgImage() {
           color: CREAM_OVER_BLUE,
         }}
       >
-        {/* Royal-blue gradient blob — covers most of the canvas, fades to
-            cream at the right edge and bottom-right corner. Anchored
-            slightly left of center so the headline sits in the brightest
-            patch and the right edge feels like paper bleeding through. */}
+        {/* Royal-blue field. Two stacked linear gradients (no blend modes,
+            which Satori handles unreliably):
+              - Base: blue → cream horizontally, with sharp solid-blue zone
+                left-of-center and a clean fade to paper on the right.
+              - Overlay: a vertical vignette darkening toward the bottom so
+                the headline has a brighter halo than the foot. */}
         <div
           style={{
             position: "absolute",
@@ -96,7 +98,10 @@ export default async function OgImage() {
             width: 1200,
             height: 630,
             display: "flex",
-            background: `radial-gradient(circle at 36% 48%, ${BLUE_BRIGHT} 0%, ${BLUE_BRIGHT} 18%, ${BLUE_DEEP} 52%, rgba(26, 33, 96, 0) 86%)`,
+            background: `
+              linear-gradient(180deg, rgba(26, 33, 96, 0) 0%, rgba(26, 33, 96, 0) 55%, rgba(26, 33, 96, 0.55) 100%),
+              linear-gradient(95deg, ${BLUE_BRIGHT} 0%, ${BLUE_BRIGHT} 58%, ${CREAM} 92%)
+            `,
           }}
         />
 
