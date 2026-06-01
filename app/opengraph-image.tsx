@@ -1,53 +1,76 @@
 /**
  * Root-level OG image (1200×630) for the Lending Intelligence Terminal.
  *
- * Visual family: matches the existing report-issue OG at
- * `app/reports/[slug]/opengraph-image.tsx` — deep navy base, cream type,
- * burnt-orange accent, serif title with an italic accent line, two-panel
- * layout. This is the DatumLabs publishing identity; the Terminal sits in
- * the same visual world as the reports rather than looking like a
- * third-party dashboard preview.
+ * Visual identity: Datum Labs' own house style as established on social
+ * cards / data-thread covers — cream parchment base, big royal-blue
+ * gradient blob, serif display headline in cream-over-blue, sans-serif
+ * subtitle, dashed-border slug pill at bottom-left.
  *
- * Designed to be deliberately distinct from the Blockworks dashboard OG
- * family (centered sans-serif over an indigo radial bloom). Different
- * palette, alignment, typography, and structure.
+ * Built deliberately distinct from the Blockworks dashboard family
+ * (dark + indigo bloom + centered sans pill + bottom tab). Different
+ * palette, different layout, different typography, different motif.
  *
- * Portable to other Datum Labs dashboards by editing the BRAND block. The
- * right-panel stat (here: "06 / VENUES TRACKED") is the per-dashboard
- * proof-point — Morpho Research Terminal might show "{N} / CHAINS" or
- * "{N} / CURATORS", etc.
+ * Fonts are loaded from Google Fonts at edge runtime so the serif
+ * actually renders as a serif (Satori's bundled fallback is sans-only).
+ * The fetch happens once per OG cache miss — crawlers cache the PNG for
+ * days, so the cost is negligible.
  *
- * Static — no DB / API. OG crawlers cache the rendered PNG for days, so
- * dynamic numbers would be misleading.
+ * Portable to other Datum Labs dashboards by editing the BRAND block.
+ * The slug pill is the per-property knob (DATA THREAD, LENDING TERMINAL,
+ * MORPHO TERMINAL, etc.) — same composition, different label.
  */
 import { ImageResponse } from "next/og"
 
-export const alt = "Lending Terminal · Datum Labs Research"
+export const alt = "Lending Terminal · Datum Labs"
 export const size = { width: 1200, height: 630 }
 export const contentType = "image/png"
 export const runtime = "edge"
 
-// ─── Palette (mirrors the report OG so the family reads as one product) ──
-const NAVY = "#0E1B2C"
-const CREAM = "#F7F4ED"
-const ORANGE = "#C5511A"
-const SUBTLE_NAVY_TINT = "rgba(31, 58, 95, 0.40)"
-const CREAM_55 = "rgba(247, 244, 237, 0.55)"
-const CREAM_70 = "rgba(247, 244, 237, 0.70)"
-const HAIRLINE = "rgba(247, 244, 237, 0.15)"
+// ─── Palette — mirrors the Datum Labs social cards ───────────────────────
+const CREAM = "#F1EBD8"
+const CREAM_OVER_BLUE = "#F4EFE2"
+const CREAM_MUTED = "rgba(244, 239, 226, 0.85)"
+const BLUE_BRIGHT = "#4F6CE6"
+const BLUE_DEEP = "#1A2160"
 
 // ─── Brand block — to port to another dashboard, edit this block ─────────
-const EYEBROW = "DatumLabs Research"
-const SUB_EYEBROW = "Live Terminal · Multi-protocol intelligence for Ethereum lending"
-const TITLE_LINES = ["Lending", "Terminal"] // stacked serif headline
-const ITALIC_ACCENT = "TVL, rates, flows, and risk across the major venues."
-const FOOTER_URL = "datumlab.xyz/lending-terminal"
-const FOOTER_VENUES = "AAVE V3 · SPARK · MORPHO · FLUID · COMPOUND · EULER"
-const STAT_NUMBER = "06"
-const STAT_LABEL_1 = "Venues"
-const STAT_LABEL_2 = "Tracked"
+const HEADLINE = "Lending Terminal."
+const SUBTITLE =
+  "Live multi-protocol intelligence for Ethereum lending — TVL, rates, flows, and risk."
+const PILL_LABEL = "/ Live Terminal"
+
+/**
+ * Fetch a Google Font binary at edge runtime. Subsets the file to the
+ * characters we'll actually render so the download stays small.
+ */
+async function loadGoogleFont(
+  family: string,
+  weight: number,
+  text: string,
+): Promise<ArrayBuffer> {
+  const url =
+    `https://fonts.googleapis.com/css2?family=${family.replace(/ /g, "+")}` +
+    `:wght@${weight}&text=${encodeURIComponent(text)}`
+  const css = await fetch(url).then((r) => r.text())
+  // Match the actual font file URL from the @font-face src declaration.
+  const fileUrl = css.match(/src:\s*url\((https:\/\/[^)]+)\)/)?.[1]
+  if (!fileUrl) {
+    throw new Error(`Google Fonts: no src URL found for ${family} ${weight}`)
+  }
+  return fetch(fileUrl).then((r) => r.arrayBuffer())
+}
 
 export default async function OgImage() {
+  // Each font only needs to render its own text — subsetting keeps the
+  // edge fetch tiny.
+  const serifText = HEADLINE
+  const sansText = SUBTITLE + PILL_LABEL
+
+  const [serifData, sansData] = await Promise.all([
+    loadGoogleFont("Newsreader", 700, serifText),
+    loadGoogleFont("Inter", 500, sansText),
+  ])
+
   return new ImageResponse(
     (
       <div
@@ -55,186 +78,110 @@ export default async function OgImage() {
           width: 1200,
           height: 630,
           display: "flex",
-          background: NAVY,
-          color: CREAM,
-          fontFamily: '"serif"',
+          position: "relative",
+          background: CREAM,
+          fontFamily: "Inter",
+          color: CREAM_OVER_BLUE,
         }}
       >
-        {/* ─── Left panel — content ─────────────────────────────────────── */}
+        {/* Royal-blue gradient blob — covers most of the canvas, fades to
+            cream at the right edge and bottom-right corner. Anchored
+            slightly left of center so the headline sits in the brightest
+            patch and the right edge feels like paper bleeding through. */}
         <div
           style={{
-            flex: 1.4,
+            position: "absolute",
+            top: 0,
+            left: 0,
+            width: 1200,
+            height: 630,
+            display: "flex",
+            background: `radial-gradient(circle at 36% 48%, ${BLUE_BRIGHT} 0%, ${BLUE_BRIGHT} 18%, ${BLUE_DEEP} 52%, rgba(26, 33, 96, 0) 86%)`,
+          }}
+        />
+
+        {/* Content stack — vertically centered, padded from the left edge */}
+        <div
+          style={{
+            position: "relative",
             display: "flex",
             flexDirection: "column",
-            justifyContent: "space-between",
-            padding: "60px 0 60px 70px",
+            justifyContent: "center",
+            padding: "0 90px 0 90px",
+            width: 1200,
+            height: 630,
+            gap: 30,
           }}
         >
-          {/* Top stack: eyebrows + title + italic accent */}
-          <div style={{ display: "flex", flexDirection: "column", gap: 22 }}>
-            {/* Eyebrow row — orange bullet + small-caps label */}
-            <div style={{ display: "flex", alignItems: "center", gap: 14 }}>
-              <div
-                style={{
-                  width: 8,
-                  height: 8,
-                  background: ORANGE,
-                  borderRadius: "50%",
-                }}
-              />
-              <span
-                style={{
-                  fontFamily: "sans-serif",
-                  fontSize: 13,
-                  letterSpacing: "0.18em",
-                  textTransform: "uppercase",
-                  color: ORANGE,
-                  fontWeight: 500,
-                }}
-              >
-                {EYEBROW}
-              </span>
-            </div>
-
-            {/* Sub-eyebrow — muted small-caps */}
-            <span
-              style={{
-                fontFamily: "sans-serif",
-                fontSize: 12,
-                letterSpacing: "0.22em",
-                textTransform: "uppercase",
-                color: CREAM_55,
-                fontWeight: 500,
-                maxWidth: 600,
-                lineHeight: 1.4,
-              }}
-            >
-              {SUB_EYEBROW}
-            </span>
-
-            {/* Serif headline — two stacked lines */}
-            <div style={{ display: "flex", flexDirection: "column", marginTop: 8 }}>
-              {TITLE_LINES.map((line) => (
-                <div
-                  key={line}
-                  style={{
-                    fontSize: 96,
-                    fontWeight: 700,
-                    lineHeight: 1.02,
-                    letterSpacing: "-0.022em",
-                    color: CREAM,
-                    display: "flex",
-                  }}
-                >
-                  {line}
-                </div>
-              ))}
-            </div>
-
-            {/* Italic orange accent — the tagline */}
-            <div
-              style={{
-                fontSize: 26,
-                lineHeight: 1.28,
-                fontStyle: "italic",
-                fontWeight: 400,
-                color: ORANGE,
-                marginTop: 12,
-                maxWidth: 620,
-                display: "flex",
-              }}
-            >
-              {ITALIC_ACCENT}
-            </div>
-          </div>
-
-          {/* Footer — URL on the left, venues list on the right, both in
-              small-caps mono-feel sans-serif so they sit clearly under the
-              serif headline without competing with it. */}
+          {/* Serif display headline */}
           <div
             style={{
               display: "flex",
-              justifyContent: "space-between",
-              alignItems: "center",
-              paddingTop: 22,
-              borderTop: `1px solid ${HAIRLINE}`,
-              fontFamily: "sans-serif",
-              fontSize: 13,
-              letterSpacing: "0.14em",
-              textTransform: "uppercase",
-              color: CREAM_70,
-              gap: 24,
+              fontFamily: "Newsreader",
+              fontWeight: 700,
+              fontSize: 124,
+              lineHeight: 1.0,
+              letterSpacing: "-0.022em",
+              color: CREAM_OVER_BLUE,
+              maxWidth: 980,
             }}
           >
-            <span style={{ display: "flex", alignItems: "center", gap: 10 }}>
-              <span style={{ color: ORANGE, fontWeight: 700 }}>&gt;</span>
-              <span style={{ color: CREAM }}>{FOOTER_URL}</span>
-            </span>
-            <span>{FOOTER_VENUES}</span>
+            {HEADLINE}
+          </div>
+
+          {/* Sans-serif subtitle */}
+          <div
+            style={{
+              display: "flex",
+              fontFamily: "Inter",
+              fontWeight: 500,
+              fontSize: 30,
+              lineHeight: 1.32,
+              color: CREAM_MUTED,
+              maxWidth: 900,
+            }}
+          >
+            {SUBTITLE}
           </div>
         </div>
 
-        {/* ─── Right panel — stat marker over subtle gradient ───────────── */}
+        {/* Dashed-border slug pill — bottom-left, sits over the blue area.
+            This is the Datum Labs "data thread" idiom adapted for the
+            Terminal — the slash + uppercase label vocabulary stays, the
+            wording is per-property. */}
         <div
           style={{
-            flex: 1,
+            position: "absolute",
+            left: 90,
+            bottom: 70,
             display: "flex",
-            flexDirection: "column",
             alignItems: "center",
-            justifyContent: "center",
-            background: `linear-gradient(135deg, ${SUBTLE_NAVY_TINT} 0%, rgba(14, 27, 44, 0) 100%)`,
-            position: "relative",
+            padding: "11px 22px",
+            border: `1.5px dashed ${CREAM_OVER_BLUE}`,
+            borderRadius: 999,
           }}
         >
-          <div
+          <span
             style={{
-              display: "flex",
-              flexDirection: "column",
-              alignItems: "center",
-              gap: 6,
+              fontFamily: "Inter",
+              fontWeight: 500,
+              fontSize: 17,
+              letterSpacing: "0.16em",
+              textTransform: "uppercase",
+              color: CREAM_OVER_BLUE,
             }}
           >
-            <div
-              style={{
-                fontSize: 196,
-                fontWeight: 700,
-                color: ORANGE,
-                letterSpacing: "-0.04em",
-                lineHeight: 1,
-                display: "flex",
-              }}
-            >
-              {STAT_NUMBER}
-            </div>
-            <div
-              style={{
-                fontFamily: "sans-serif",
-                fontSize: 14,
-                letterSpacing: "0.22em",
-                textTransform: "uppercase",
-                color: CREAM_70,
-                marginTop: 6,
-                display: "flex",
-              }}
-            >
-              {STAT_LABEL_1}
-            </div>
-            <div
-              style={{
-                fontFamily: "sans-serif",
-                fontSize: 14,
-                letterSpacing: "0.22em",
-                textTransform: "uppercase",
-                color: CREAM_70,
-                display: "flex",
-              }}
-            >
-              {STAT_LABEL_2}
-            </div>
-          </div>
+            {PILL_LABEL}
+          </span>
         </div>
       </div>
     ),
-    { ...size },
+    {
+      ...size,
+      fonts: [
+        { name: "Newsreader", data: serifData, weight: 700, style: "normal" },
+        { name: "Inter", data: sansData, weight: 500, style: "normal" },
+      ],
+    },
   )
 }
