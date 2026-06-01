@@ -62,6 +62,12 @@ export async function generateMetadata(): Promise<Metadata> {
       creator: "@datumlabs",
       title: "Lending Terminal · Datum Labs",
       description: "Multi-protocol Ethereum lending analytics.",
+      // Explicit `twitter:image` — Next 14 does NOT auto-copy the file-
+      // convention opengraph-image into twitter:image when generateMetadata
+      // declares its own `twitter` object. Without this tag, X drops to
+      // the small-card variant even though og:image + summary_large_image
+      // are set. Relative URL is resolved against metadataBase.
+      images: ["/opengraph-image"],
     },
   }
 }
