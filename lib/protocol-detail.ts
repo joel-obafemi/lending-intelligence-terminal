@@ -29,6 +29,8 @@ import { YIELDS_PROJECT_BY_PROTOCOL } from "./rates"
 import type { AssetTimeseriesPoint } from "./overview"
 import { loadAllAaveReservesLive, type AaveReserveLive } from "./aave-onchain"
 import { loadAllSparkReservesLive } from "./spark-onchain"
+import { loadCompoundEthereumOnChain } from "./compound-onchain"
+import { loadEulerEthereumOnChain } from "./euler-onchain"
 
 /** 24h-delta + 30d sparkline for the four headline counters. */
 export interface ProtocolDelta {
@@ -499,6 +501,44 @@ export async function loadProtocolDetail(slug: string): Promise<ProtocolDetail |
       totalSupplied = ethSupplied
       // livenessSource stays "defillama" — both endpoints come from
       // DefiLlama with comparable freshness; no need to relabel.
+    }
+  } else if (slug === "compound-v3") {
+    // Compound V3 override: DefiLlama's chainTvls.Ethereum semantics
+    // diverge from on-chain Comet totals by roughly $180M today /
+    // $340M at May 31, 2026. The pools-derived `totalTvl` from
+    // line 445 sums per-asset deposited from /pools entries, which is
+    // close but still off because DefiLlama prices some collateral
+    // assets off-market. Read the four Comet markets directly and use
+    // those canonical totals when available.
+    const compoundData = await loadCompoundEthereumOnChain().catch((err) => {
+      console.error("[protocol-detail] compound on-chain load failed:", err?.message ?? err)
+      return null
+    })
+    if (compoundData && compoundData.supplied > 0) {
+      totalTvl = compoundData.tvl
+      totalBorrowed = compoundData.borrowed
+      totalSupplied = compoundData.supplied
+      livenessSource = "on-chain"
+      livenessScope = "Compound V3 Comet markets (USDC, USDT, WETH, USDS bases)"
+    }
+  } else if (slug === "euler-v2") {
+    // Euler V2 override: DefiLlama's chainTvls.Ethereum +
+    // Ethereum-borrowed overstates the on-chain truth by roughly $70M
+    // (verified June 2026 against per-vault totalAssets/totalBorrows
+    // reads across all 53/57 priced active vaults). Same root cause as
+    // the Compound case: DefiLlama's protocol-level adapter overcounts
+    // collateral/asset USD vs the on-chain accounting. Read the active
+    // EVK vaults directly and substitute.
+    const eulerData = await loadEulerEthereumOnChain().catch((err) => {
+      console.error("[protocol-detail] euler on-chain load failed:", err?.message ?? err)
+      return null
+    })
+    if (eulerData && eulerData.supplied > 0) {
+      totalTvl = eulerData.tvl
+      totalBorrowed = eulerData.borrowed
+      totalSupplied = eulerData.supplied
+      livenessSource = "on-chain"
+      livenessScope = `Euler V2 EVK vaults (${eulerData.perVault.length} of ${eulerData.activeVaultCount} active)`
     }
   }
 

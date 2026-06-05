@@ -4,6 +4,8 @@
  */
 import { PROTOCOLS } from "./protocols"
 import { fetchAllProtocolHistory } from "./defillama"
+import { loadCompoundEthereumOnChain } from "./compound-onchain"
+import { loadEulerEthereumOnChain } from "./euler-onchain"
 import type { CrossProtocolMarket } from "./cross-protocol-markets"
 import type { RealYieldResponse } from "./real-yield"
 import { classifyAsset, type AssetType, ASSET_TYPE_STACK_ORDER } from "./assets"
@@ -48,6 +50,10 @@ export interface OverviewSnapshot {
   totalBorrowed: number
   /** Total supplied = TVL + borrowed (the full deposit base) */
   totalSupplied: number
+  /** Sector-level Loan-to-Deposit Ratio = totalBorrowed / totalSupplied × 100.
+   *  Supplied-weighted across all covered protocols, equivalent to sector
+   *  utilization. Surfaced separately for §06.4's depositor-efficiency framing. */
+  sectorLdr: number
   /** Multi-window deltas + sparkline series for each headline counter. */
   tvlDeltas: DeltaTriple
   borrowedDeltas: DeltaTriple
@@ -70,6 +76,12 @@ export interface OverviewProtocolRow {
   tvl: number
   borrowed: number
   utilizationPct: number
+  /** Loan-to-Deposit Ratio = borrowed / (tvl + borrowed) × 100. Numeric
+   *  percentage, two-decimal precision intended at render. Mathematically
+   *  identical to utilizationPct (same numerator and denominator); kept
+   *  as a distinct field because §06.4 frames depositor efficiency, not
+   *  borrow saturation, and Issue 002 cites both side-by-side. */
+  ldr: number
   fees24h: number
   fees7d: number
   tvlShare: number
@@ -320,7 +332,33 @@ function buildDeltaTriple(
 
 export async function loadOverview(): Promise<OverviewResponse> {
   const slugs = PROTOCOLS.map((p) => p.defillamaSlug)
-  const histories = await fetchAllProtocolHistory(slugs)
+  // Run the Compound V3 on-chain override in parallel with the DefiLlama
+  // fan-out. DefiLlama's `chainTvls.Ethereum + Ethereum-borrowed` for
+  // Compound V3 diverges from on-chain by roughly $180M today and $340M
+  // at May 31, 2026, inflating the protocol card. The on-chain reader
+  // returns the canonical totals (base available + collateral, base
+  // borrowed); we substitute them into the Compound row below. Returns
+  // null if every Comet read fails — in that case the DefiLlama-derived
+  // numbers stay as the fallback.
+  // Same override pattern for Euler V2: DefiLlama's protocol-level
+  // chainTvls.Ethereum + Ethereum-borrowed for Euler overstates the
+  // on-chain truth by roughly $70M (June 2026 verification). The
+  // on-chain reader walks every active EVK vault, reads totalAssets()
+  // and totalBorrows() directly, prices via DefiLlama /coins/prices,
+  // and returns canonical tvl + borrowed. Returns null if discovery or
+  // every vault read fails, in which case the DefiLlama-derived numbers
+  // stay as the fallback.
+  const [histories, compoundOnChain, eulerOnChain] = await Promise.all([
+    fetchAllProtocolHistory(slugs),
+    loadCompoundEthereumOnChain().catch((err) => {
+      console.error("[overview] compound on-chain load failed:", err?.message ?? err)
+      return null
+    }),
+    loadEulerEthereumOnChain().catch((err) => {
+      console.error("[overview] euler on-chain load failed:", err?.message ?? err)
+      return null
+    }),
+  ])
 
   const errors: Array<{ slug: string; message: string }> = []
   const rows: OverviewProtocolRow[] = []
@@ -365,6 +403,7 @@ export async function loadOverview(): Promise<OverviewResponse> {
         tvl: 0,
         borrowed: 0,
         utilizationPct: 0,
+        ldr: 0,
         fees24h: 0,
         fees7d: 0,
         tvlShare: 0,
@@ -372,23 +411,44 @@ export async function loadOverview(): Promise<OverviewResponse> {
       return
     }
 
-    const supplied = h.currentTvl + h.currentBorrowed
-    const utilization = supplied > 0 ? (h.currentBorrowed / supplied) * 100 : 0
+    // Compound V3 + Euler V2 override: DefiLlama's chainTvls.Ethereum +
+    // Ethereum-borrowed formula over-counts both protocols vs on-chain
+    // (Compound by ~$180M today / ~$340M at May 31, 2026; Euler by ~$70M
+    // verified June 2026). When the on-chain reader returned a value,
+    // substitute its tvl / borrowed here so the composition-strip card's
+    // `totalSupply = tvl + borrowed` lands on on-chain truth.
+    let rowTvl = h.currentTvl
+    let rowBorrowed = h.currentBorrowed
+    if (p.slug === "compound-v3" && compoundOnChain) {
+      rowTvl = compoundOnChain.tvl
+      rowBorrowed = compoundOnChain.borrowed
+    } else if (p.slug === "euler-v2" && eulerOnChain) {
+      rowTvl = eulerOnChain.tvl
+      rowBorrowed = eulerOnChain.borrowed
+    }
+    const supplied = rowTvl + rowBorrowed
+    const utilization = supplied > 0 ? (rowBorrowed / supplied) * 100 : 0
+    // Loan-to-Deposit Ratio = borrows / (tvl + borrows). Mathematically
+    // the same value as utilization here; computed separately so the
+    // depositor-efficiency framing has its own field for §06.4 and
+    // future LDR-specific analysis.
+    const ldr = supplied > 0 ? (rowBorrowed / supplied) * 100 : 0
 
     rows.push({
       slug: p.slug,
       name: p.name,
       color: p.color,
-      tvl: h.currentTvl,
-      borrowed: h.currentBorrowed,
+      tvl: rowTvl,
+      borrowed: rowBorrowed,
       utilizationPct: utilization,
+      ldr,
       fees24h: h.fees24h,
       fees7d: h.fees7d,
       tvlShare: 0,
     })
 
-    totalTvl += h.currentTvl
-    totalBorrowed += h.currentBorrowed
+    totalTvl += rowTvl
+    totalBorrowed += rowBorrowed
     totalFees24h += h.fees24h
     totalFees7d += h.fees7d
 
@@ -922,11 +982,17 @@ export async function loadOverview(): Promise<OverviewResponse> {
   const stablecoinDebtSharePct =
     totalBorrowedRanked > 0 ? (stablecoinBorrowed / totalBorrowedRanked) * 100 : 0
 
+  // Sector LDR — supplied-weighted average across protocols. Algebraically
+  // identical to totalBorrowed / totalSupplied (sector utilization);
+  // computed once here so consumers don't recompute.
+  const sectorLdr = totalSupplied > 0 ? (totalBorrowed / totalSupplied) * 100 : 0
+
   return {
     snapshot: {
       totalTvl,
       totalBorrowed,
       totalSupplied,
+      sectorLdr,
       tvlDeltas,
       borrowedDeltas,
       suppliedDeltas,

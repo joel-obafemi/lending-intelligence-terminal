@@ -209,6 +209,10 @@ interface Props {
     sparkline: Array<{ timestamp: number; value: number }>
   } | null
   takeRatePct: number
+  /** Sector Loan-to-Deposit Ratio = totalBorrowed / totalSupplied × 100.
+   *  Numerically identical to utilizationPct but surfaced separately for
+   *  the depositor-efficiency framing §06.4 of Issue 002 uses. */
+  sectorLdrPct: number
 }
 
 export function VerdictStrip({
@@ -223,6 +227,7 @@ export function VerdictStrip({
   realYieldSpreadPct,
   realYieldDeltas,
   takeRatePct,
+  sectorLdrPct,
 }: Props) {
   return (
     <div className="space-y-2">
@@ -263,7 +268,7 @@ export function VerdictStrip({
         />
       </div>
       {/* Row 2 — rates */}
-      <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
         <RateCard
           label="Sector Utilization"
           value={formatPercent(utilizationPct, 1)}
@@ -275,6 +280,18 @@ export function VerdictStrip({
           changeYoYPp={utilizationDeltas.changeYoY}
           sparkline={utilizationDeltas.sparkline}
           formatPp={(v) => `${v.toFixed(1)} pp`}
+        />
+        <RateCard
+          label="Sector LDR"
+          value={formatPercent(sectorLdrPct, 2)}
+          caption="loan ÷ deposit"
+          accent="#F59E0B"
+          icon={<Activity size={12} strokeWidth={2.5} />}
+          methodologyKey="sector-utilization-headline"
+          changeMoMPp={utilizationDeltas.changeMoM}
+          changeYoYPp={utilizationDeltas.changeYoY}
+          sparkline={utilizationDeltas.sparkline}
+          formatPp={(v) => `${v.toFixed(2)} pp`}
         />
         <RateCard
           label="Real Yield Spread"

@@ -5,7 +5,7 @@ import Link from "next/link"
 import { formatUSD, formatPercent } from "@/lib/utils"
 import type { OverviewProtocolRow } from "@/lib/overview"
 
-type SortKey = "tvl" | "borrowed" | "utilizationPct" | "fees24h" | "fees7d" | "tvlShare"
+type SortKey = "tvl" | "borrowed" | "utilizationPct" | "ldr" | "fees24h" | "fees7d" | "tvlShare"
 
 interface Props {
   rows: OverviewProtocolRow[]
@@ -64,6 +64,7 @@ export function ProtocolComparisonTable({ rows }: Props) {
               {header("tvlShare", "Share")}
               {header("borrowed", "Borrowed")}
               {header("utilizationPct", "Utilization")}
+              {header("ldr", "LDR")}
               {header("fees24h", "Fees (24h)")}
               {header("fees7d", "Fees (7d)")}
             </tr>
@@ -91,6 +92,7 @@ export function ProtocolComparisonTable({ rows }: Props) {
                 </td>
                 <td className="text-right tabular-nums">{formatUSD(r.borrowed)}</td>
                 <td className="text-right tabular-nums">{formatPercent(r.utilizationPct, 1)}</td>
+                <td className="text-right tabular-nums">{formatPercent(r.ldr, 2)}</td>
                 <td className="text-right tabular-nums">{formatUSD(r.fees24h)}</td>
                 <td className="text-right tabular-nums">{formatUSD(r.fees7d)}</td>
               </tr>

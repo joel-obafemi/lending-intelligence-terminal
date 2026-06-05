@@ -73,6 +73,28 @@ export function sectorUtilizationPct(d: OverviewResponse): number {
   return (d.snapshot.totalBorrowed / d.snapshot.totalSupplied) * 100
 }
 
+/** Sector Loan-to-Deposit Ratio (%): total borrows ÷ total supplied.
+ *  Mathematically identical to sector utilization; surfaced separately
+ *  to support the depositor-efficiency framing §06.4 uses. */
+export function sectorLdrPct(d: OverviewResponse): number {
+  if (d.snapshot.totalSupplied <= 0) return 0
+  return (d.snapshot.totalBorrowed / d.snapshot.totalSupplied) * 100
+}
+
+/** Per-protocol LDR from any snapshot row's `protocols` array (e.g. a
+ *  historical sector_snapshots payload). LDR = borrowed / (tvl + borrowed) × 100.
+ *  Returns a slug → percentage map so callers can pull any subset by slug. */
+export function ldrByProtocol(
+  protocolsRow: Array<{ slug: string; tvl: number; borrowed: number }>,
+): Record<string, number> {
+  const out: Record<string, number> = {}
+  for (const p of protocolsRow) {
+    const supplied = (p.tvl || 0) + (p.borrowed || 0)
+    out[p.slug] = supplied > 0 ? ((p.borrowed || 0) / supplied) * 100 : 0
+  }
+  return out
+}
+
 /** Month-over-month total-supplied change as a fraction (e.g. -0.123 =
  *  -12.3%). Uses the same MoM-window value the Total Supply counter
  *  renders. Returns null when the lookup didn't find a baseline.

@@ -1,6 +1,7 @@
 import { VerdictStrip } from "@/components/overview/verdict-strip"
 import { MarketShareHero } from "@/components/overview/market-share-hero"
 import { CompositionStrip } from "@/components/overview/composition-strip"
+import { LdrChart } from "@/components/overview/ldr-chart"
 import { NetFlowsSankey } from "@/components/overview/net-flows-sankey"
 import { CompositionDonuts } from "@/components/overview/composition-donuts"
 import { TopMarketsCrossProtocolTable } from "@/components/overview/top-markets-cross-protocol-table"
@@ -122,6 +123,7 @@ export default async function OverviewPage() {
             : null
         }
         takeRatePct={takeRatePct}
+        sectorLdrPct={snapshot.sectorLdr}
       />
 
       {/* Zone 2 — Hero: Market Share with Borrows / Supply / Available
@@ -140,6 +142,16 @@ export default async function OverviewPage() {
         protocols={protocols}
         revenueSnapshot={revenueSnapshot}
         netDeposits30d={netDeps30d}
+      />
+
+      {/* Zone 3.5 — Loan-to-Deposit Ratio over time, per protocol +
+          sector average dashed. Same source data as the Sector
+          Utilization sparkline in the Verdict strip; this surfaces the
+          per-protocol breakdown the §06.4 narrative leans on. */}
+      <LdrChart
+        utilizationSeries={data.utilizationSeries}
+        supplySeries={data.supplySeries}
+        borrowedSeries={data.borrowedSeries}
       />
 
       {/* Zone 4 — Net Supply Flows · Sankey, three columns
