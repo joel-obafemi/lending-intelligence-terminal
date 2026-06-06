@@ -42,9 +42,16 @@ import { SupportPanel } from "@/components/report/SupportPanel"
 // Next's 60s build worker timeout, the build fails outright. Reverting
 // to default ISR semantics lets timeouts on one route fall through to
 // on-demand rendering at first request instead of aborting the deploy.
-// `dynamicParams = false` stays so unknown slugs still 404 cleanly.
+// `dynamicParams = true` + empty generateStaticParams means NO slugs are
+// prerendered at build time. The build no longer depends on whether
+// DefiLlama / FRED / Aave's UiPoolDataProviderV3 RPCs are reachable from
+// Vercel's build machine — historically the build has been killed by
+// Ankr or Cloudflare RPC returning "Internal error" on the report charts'
+// on-chain reads during build. Each slug renders on first request and
+// then sits in ISR cache for an hour. Unknown slugs still 404 via the
+// notFound() call inside the page (getIssueBySlug returns null).
 export const revalidate = 3600
-export const dynamicParams = false
+export const dynamicParams = true
 export const maxDuration = 120
 
 interface RouteParams {
@@ -68,8 +75,10 @@ function nextIssueDateLabel(publicationDate: string): string | undefined {
 }
 
 export async function generateStaticParams() {
-  const issues = await getAllIssues()
-  return issues.map((i) => ({ slug: i.slug }))
+  // Returning [] (with dynamicParams = true above) skips all build-time
+  // prerendering. Each slug renders on first request instead, which keeps
+  // the build green when public RPCs are flaky from Vercel's IPs.
+  return [] as Array<{ slug: string }>
 }
 
 const SITE_URL = "https://lending-intelligence-terminal.vercel.app"

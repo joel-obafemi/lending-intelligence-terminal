@@ -196,11 +196,15 @@ export async function loadCompoundEthereumOnChain(): Promise<CompoundEthereumOnC
         let collateralUsd = 0
         for (const ai of assetInfos as Array<{ asset: Address; priceFeed: Address }>) {
           try {
+            // viem's readContract return is a union across ABI overloads;
+            // a direct tuple cast is rejected by strict TS. Round-trip
+            // through `unknown` to assert the narrow shape we know each
+            // call returns.
             const [dec, priceRaw, totalsCol] = (await Promise.all([
               client.readContract({ address: ai.asset, abi: erc20Abi, functionName: "decimals" }),
               r("getPrice", [ai.priceFeed]),
               r("totalsCollateral", [ai.asset]),
-            ])) as [number, bigint, [bigint, bigint]]
+            ])) as unknown as [number, bigint, [bigint, bigint]]
             const qty = totalsCol[0]
             collateralUsd += quoteUsd(qty, priceRaw, dec)
           } catch {
