@@ -75,13 +75,7 @@ export function TakeRateVsTbillChart({ data }: Props) {
             axisLine={false}
             tickLine={false}
             domain={[2.5, 6.5]}
-            label={{
-              value: "Annualized %",
-              position: "insideTopLeft",
-              dy: -4,
-              dx: 14,
-              style: { fontFamily: "var(--report-font-mono)", fontSize: 10, fill: MUTED, letterSpacing: "0.08em" },
-            }}
+            width={56}
           />
           <Line
             dataKey="takeRatePct"

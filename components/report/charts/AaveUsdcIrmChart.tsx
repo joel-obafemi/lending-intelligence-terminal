@@ -115,13 +115,7 @@ export function AaveUsdcIrmChart({ data }: Props) {
               axisLine={false}
               tickLine={false}
               domain={[0, 60]}
-              label={{
-                value: "Borrow APY",
-                position: "insideTopLeft",
-                dy: -4,
-                dx: 14,
-                style: { fontFamily: "var(--report-font-mono)", fontSize: 10, fill: MUTED, letterSpacing: "0.08em" },
-              }}
+              width={48}
             />
             <ReferenceLine
               x={kinkPct}

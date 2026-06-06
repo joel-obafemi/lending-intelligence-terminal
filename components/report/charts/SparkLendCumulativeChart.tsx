@@ -82,13 +82,7 @@ export function SparkLendCumulativeChart({ data }: Props) {
             axisLine={false}
             tickLine={false}
             domain={[0, 3200]}
-            label={{
-              value: "Cumulative USD",
-              position: "insideTopLeft",
-              dy: -4,
-              dx: 14,
-              style: { fontFamily: "var(--report-font-mono)", fontSize: 10, fill: MUTED, letterSpacing: "0.08em" },
-            }}
+            width={72}
           />
           <Area dataKey="cumulativeMUsd" stroke={COBALT} strokeWidth={2.2} fill="url(#sparkFill)" isAnimationActive={false} dot={{ r: 3, fill: COBALT, stroke: CREAM, strokeWidth: 1.5 }} />
           {aprIdx >= 0 && (

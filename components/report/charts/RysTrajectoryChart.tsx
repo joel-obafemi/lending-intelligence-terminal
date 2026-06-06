@@ -86,18 +86,12 @@ export function RysTrajectoryChart({ data }: Props) {
             interval={0}
           />
           <YAxis
-            tickFormatter={(v: number) => `${v >= 0 ? "+" : ""}${v.toFixed(0)}`}
+            tickFormatter={(v: number) => `${v >= 0 ? "+" : ""}${v.toFixed(0)} bps`}
             tick={{ fontFamily: "var(--report-font-mono)", fontSize: 11, fill: MUTED }}
             axisLine={false}
             tickLine={false}
             domain={[-200, 60]}
-            label={{
-              value: "bps",
-              position: "insideTopLeft",
-              dy: -4,
-              dx: 14,
-              style: { fontFamily: "var(--report-font-mono)", fontSize: 10, fill: MUTED, letterSpacing: "0.08em" },
-            }}
+            width={64}
           />
           <ReferenceLine
             y={0}
