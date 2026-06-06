@@ -1,0 +1,265 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>State of DeFi Lending on Ethereum — Issue #002</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Source+Serif+4:ital,wght@0,400;0,600;0,700;1,400&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap');
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  html, body {
+    width: 100%;
+    height: 100%;
+    background: #F7F4ED;
+    overflow: hidden;
+  }
+
+  .cover {
+    width: 1240px;
+    height: 1748px;
+    margin: 0 auto;
+    background: #F7F4ED;
+    position: relative;
+    overflow: hidden;
+    color: #0E1B2C;
+  }
+
+  /* Top accent rail */
+  .rail {
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 16px;
+    background: linear-gradient(90deg, #1F3A5F 0%, #1F3A5F 60%, #C5511A 60%, #C5511A 100%);
+  }
+
+  /* Header band */
+  .header {
+    padding: 80px 80px 0;
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+  }
+
+  .brand {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 13px;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: #1F3A5F;
+    font-weight: 500;
+  }
+
+  .meta {
+    text-align: right;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 13px;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: #595959;
+  }
+
+  .meta .issue {
+    color: #C5511A;
+    font-weight: 500;
+    margin-bottom: 6px;
+  }
+
+  /* Title block */
+  .title-block {
+    position: absolute;
+    bottom: 460px;
+    left: 80px;
+    right: 80px;
+  }
+
+  .eyebrow {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 14px;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    color: #C5511A;
+    font-weight: 500;
+    margin-bottom: 28px;
+  }
+
+  .title {
+    font-family: 'Source Serif 4', serif;
+    font-size: 96px;
+    line-height: 1.0;
+    font-weight: 700;
+    letter-spacing: -0.02em;
+    color: #0E1B2C;
+    margin-bottom: 36px;
+  }
+
+  .title .of {
+    font-style: italic;
+    font-weight: 400;
+    color: #1F3A5F;
+  }
+
+  .divider {
+    width: 80px;
+    height: 4px;
+    background: #C5511A;
+    margin-bottom: 32px;
+  }
+
+  .subtitle {
+    font-family: 'Source Serif 4', serif;
+    font-size: 38px;
+    line-height: 1.2;
+    font-weight: 400;
+    font-style: italic;
+    color: #1F3A5F;
+  }
+
+  /* Tagline / abstract */
+  .tagline {
+    position: absolute;
+    bottom: 240px;
+    left: 80px;
+    right: 80px;
+    max-width: 860px;
+    font-family: 'Source Serif 4', serif;
+    font-size: 22px;
+    line-height: 1.5;
+    color: #404040;
+    font-weight: 400;
+  }
+
+  /* Footer */
+  .footer {
+    position: absolute;
+    bottom: 80px;
+    left: 80px;
+    right: 80px;
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+    padding-top: 40px;
+    border-top: 1px solid #D4CFC2;
+  }
+
+  .footer-left {
+    font-family: 'Inter', sans-serif;
+    font-size: 14px;
+    letter-spacing: 0.06em;
+    color: #595959;
+    text-transform: uppercase;
+    font-weight: 500;
+  }
+
+  .footer-left strong {
+    color: #1F3A5F;
+    display: block;
+    font-size: 18px;
+    letter-spacing: 0.04em;
+    margin-bottom: 6px;
+    font-weight: 600;
+  }
+
+  .protocols {
+    display: flex;
+    gap: 14px;
+    align-items: center;
+    flex-wrap: nowrap;
+  }
+
+  .protocol-pill {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    padding: 7px 11px;
+    border: 1px solid #1F3A5F;
+    border-radius: 999px;
+    color: #1F3A5F;
+    font-weight: 500;
+  }
+
+  /* HHI trajectory chart */
+  .spark {
+    position: absolute;
+    top: 220px;
+    left: 80px;
+    right: 80px;
+    height: 280px;
+    pointer-events: none;
+  }
+</style>
+</head>
+<body>
+<div class="cover">
+  <div class="rail"></div>
+
+  <div class="header">
+    <div class="brand">DatumLabs Research</div>
+    <div class="meta">
+      <div class="issue">Issue №002</div>
+      <div>May 2026</div>
+    </div>
+  </div>
+
+  <svg class="spark" viewBox="0 0 1080 280" preserveAspectRatio="none">
+    <defs>
+      <linearGradient id="grad" x1="0" x2="0" y1="0" y2="1">
+        <stop offset="0%" stop-color="#C5511A" stop-opacity="0.20"/>
+        <stop offset="100%" stop-color="#C5511A" stop-opacity="0"/>
+      </linearGradient>
+    </defs>
+
+    <!-- Threshold line at HHI 2,500 (y = 190 on a y-axis spanning ~1,500–3,400) -->
+    <line x1="0" y1="190" x2="1080" y2="190" stroke="#1F3A5F" stroke-width="1" stroke-dasharray="6 5" opacity="0.45"/>
+    <text x="14" y="184" font-family="JetBrains Mono, monospace" font-size="11" fill="#1F3A5F" letter-spacing="1" opacity="0.7">HHI 2,500 · highly concentrated threshold</text>
+
+    <!-- HHI trajectory: starting around 1,800 (pre-window) and rising through Mar 2,700 / Apr 3,026 / May 3,103 / Jun 3,290 -->
+    <!-- y mapping: 1,500 -> y=240; 3,400 -> y=10. Slope: 1 HHI = -0.121 y -->
+    <!-- Mar 2,700 -> y = 240 - (2700-1500)*0.121 = 240 - 145.2 = 94.8 -->
+    <!-- Apr 3,026 -> y = 240 - 184.5 = 55.5 -->
+    <!-- May 3,103 -> y = 240 - 193.8 = 46.2 -->
+    <!-- Jun 3,290 -> y = 240 - 216.5 = 23.5 -->
+    <path d="M 0 220 L 90 215 L 180 205 L 270 195 L 360 170 L 450 130 L 540 110 L 630 95 L 720 75 L 810 56 L 900 46 L 990 32 L 1080 24"
+          fill="none" stroke="#C5511A" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+    <path d="M 0 220 L 90 215 L 180 205 L 270 195 L 360 170 L 450 130 L 540 110 L 630 95 L 720 75 L 810 56 L 900 46 L 990 32 L 1080 24 L 1080 280 L 0 280 Z"
+          fill="url(#grad)"/>
+
+    <!-- Highlight May 31 reading -->
+    <circle cx="900" cy="46" r="5" fill="#C5511A"/>
+    <circle cx="900" cy="46" r="10" fill="none" stroke="#C5511A" stroke-width="1.5" opacity="0.4"/>
+    <text x="908" y="36" font-family="JetBrains Mono, monospace" font-size="11" fill="#0E1B2C" letter-spacing="1" font-weight="500">May 31 · 3,103</text>
+
+    <!-- Sentora-move annotation around the late-April / May acceleration -->
+    <line x1="720" y1="0" x2="720" y2="280" stroke="#1F3A5F" stroke-width="1" stroke-dasharray="4 4" opacity="0.4"/>
+    <text x="730" y="22" font-family="JetBrains Mono, monospace" font-size="11" fill="#1F3A5F" letter-spacing="1.5">May · Sentora reallocates</text>
+  </svg>
+
+  <div class="title-block">
+    <div class="eyebrow">Monthly Sector Brief</div>
+    <h1 class="title">State <span class="of">of</span> DeFi Lending<br/>on Ethereum</h1>
+    <div class="divider"></div>
+    <div class="subtitle">The Curator Moves</div>
+  </div>
+
+  <div class="tagline">
+    How a single curator's cross-protocol reallocation reshaped two lending protocols in thirty days, while the sector's stablecoin yield closed at parity with T-bills for the first time in eight months and the sector's annualized revenue yield fell below the risk-free rate.
+  </div>
+
+  <div class="footer">
+    <div class="footer-left">
+      <strong>DatumLabs</strong>
+      Lending Terminal · datumlabs.xyz
+    </div>
+    <div class="protocols">
+      <div class="protocol-pill">Aave V3</div>
+      <div class="protocol-pill">SparkLend</div>
+      <div class="protocol-pill">Morpho</div>
+      <div class="protocol-pill">Fluid</div>
+      <div class="protocol-pill">Compound</div>
+      <div class="protocol-pill">Euler</div>
+    </div>
+  </div>
+</div>
+</body>
+</html>
