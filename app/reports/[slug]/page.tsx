@@ -89,9 +89,15 @@ export async function generateMetadata({ params }: RouteParams): Promise<Metadat
   const fm = issue.frontmatter
   const title = `${fm.title} · Issue ${fm.issue_label} · ${fm.theme}`
   const url = `${SITE_URL}/reports/${issue.slug}`
-  // Next will resolve the per-route opengraph-image.tsx automatically;
-  // we still declare the dimensions + alt explicitly so consumers that
-  // read raw meta tags get the right hint.
+  // Prefer the issue's frontmatter `social_image` (a static PNG checked
+  // into /public/reports/<slug>-social.png) over the dynamic
+  // opengraph-image route. The static path is cheap to serve and always
+  // hits HTTP 200. The dynamic Satori-rendered route exists as a
+  // fallback for issues without a pre-rendered social PNG, but it has
+  // hit 500s under Vercel's edge runtime with some configurations.
+  const socialImageUrl = fm.social_image
+    ? `${SITE_URL}${fm.social_image.startsWith("/") ? "" : "/"}${fm.social_image}`
+    : `${SITE_URL}/reports/${issue.slug}/opengraph-image`
   return {
     title,
     description: fm.tagline,
@@ -113,7 +119,7 @@ export async function generateMetadata({ params }: RouteParams): Promise<Metadat
       authors: ["DatumLabs"],
       images: [
         {
-          url: `${SITE_URL}/reports/${issue.slug}/opengraph-image`,
+          url: socialImageUrl,
           width: 1200,
           height: 630,
           alt: `${fm.title} — ${fm.theme}`,
@@ -124,7 +130,7 @@ export async function generateMetadata({ params }: RouteParams): Promise<Metadat
       card: "summary_large_image",
       title,
       description: fm.tagline,
-      images: [`${SITE_URL}/reports/${issue.slug}/opengraph-image`],
+      images: [socialImageUrl],
     },
     other: {
       "article:published_time": fm.publication_date,
@@ -166,7 +172,12 @@ export default async function IssuePage({ params }: RouteParams) {
   const fm = issue.frontmatter
   const pageUrl = `${SITE_URL}/reports/${issue.slug}`
   const publicationYear = new Date(fm.publication_date).getFullYear()
-  const ogImageUrl = `${pageUrl}/opengraph-image`
+  // Same fallback as in generateMetadata above: prefer the static
+  // social_image path when set, only fall through to the dynamic
+  // opengraph-image route as a last resort.
+  const ogImageUrl = fm.social_image
+    ? `${SITE_URL}${fm.social_image.startsWith("/") ? "" : "/"}${fm.social_image}`
+    : `${pageUrl}/opengraph-image`
 
   const articleJsonLd = {
     "@context": "https://schema.org",

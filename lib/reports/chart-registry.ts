@@ -16,6 +16,7 @@
 import { cache } from "react"
 import { loadRates } from "@/lib/rates"
 import { loadOverview } from "@/lib/overview"
+import { loadSectorOverview } from "@/lib/sector-snapshot"
 import { loadProtocolDetail } from "@/lib/protocol-detail"
 import { loadMorphoCuratorLeaderboard } from "@/lib/morpho-api"
 import { loadFluidSmartVaultStats } from "@/lib/fluid-stats"
@@ -52,7 +53,18 @@ import type {
 // ─────────────────────────────────────────────────────────────────────────
 
 const cachedRates = cache(async () => loadRates())
-const cachedOverview = cache(async () => loadOverview())
+// Pull the overview payload from the daily Neon snapshot rather than
+// live `loadOverview()`. Live overview fans out 50+ on-chain reads
+// (Euler EVK vaults, Compound Comet, Aave UiPoolDataProvider) plus
+// 6 DefiLlama protocol fetches; reasonable on the dashboard's ISR
+// path where it runs once per hour, but the report routes render
+// on-demand and were timing out (504) on Vercel after 120s under
+// flaky public-RPC conditions. The Neon snapshot is refreshed once
+// per day at 01:00 UTC by the cron and is plenty fresh for monthly
+// reports. `loadSectorOverview` is the same accessor the /
+// overview page uses; the .payload field IS an OverviewResponse so
+// downstream loaders see identical shape.
+const cachedOverview = cache(async () => (await loadSectorOverview()).payload)
 const cachedRisk = cache(async () => loadRisk())
 const cachedSparkYield = cache(async () => loadSparkYieldPanel())
 const cachedFluidStats = cache(async () => loadFluidSmartVaultStats())
