@@ -111,15 +111,28 @@ async function CoverArtwork({
   variant: "hero" | "thumb"
 }) {
   const fm = issue.frontmatter
+  // Prefer the landscape social_image (Datum Labs editorial Twitter/X
+  // card at 1600×900) for both Latest Issue + Past Issues thumbnails —
+  // it's the canonical landscape artwork going forward. Falls back to
+  // the portrait cover_image if no landscape variant exists, then to
+  // the brand-gradient placeholder.
+  const hasSocial = await coverImageAvailable(fm.social_image)
   const hasCover = await coverImageAvailable(fm.cover_image)
-  const aspectRatio = variant === "hero" ? "1240 / 1748" : "1240 / 800"
+  const artwork = hasSocial
+    ? fm.social_image
+    : hasCover
+    ? fm.cover_image
+    : null
+  // Landscape 16:9 for both variants — same canonical aspect as the
+  // social PNG, sized down for grid thumbnails.
+  const aspectRatio = "1600 / 900"
 
-  if (hasCover) {
+  if (artwork) {
     return (
       <div
         style={{
           aspectRatio,
-          backgroundImage: `url("${fm.cover_image}")`,
+          backgroundImage: `url("${artwork}")`,
           backgroundSize: "cover",
           backgroundPosition: "center",
           borderRadius: 4,
