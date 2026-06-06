@@ -41,6 +41,11 @@ export const METHODOLOGY: Record<string, MethodologyEntry> = {
       "Utilization = active borrows ÷ total supplied, weighted by deposits at the aggregate. The bigger this is, the more capital is being put to work.",
     source: "DefiLlama-derived.",
   },
+  "sector-ldr": {
+    text:
+      "Loan-to-Deposit Ratio = active borrows ÷ total supplied per protocol, plotted over time. Mechanically the same value as utilization but framed as a depositor-efficiency reading rather than a borrow-saturation one. Sector overlay (dashed) is the supplied-weighted average across the six covered protocols.",
+    source: "DefiLlama-derived; Compound V3 + Euler V2 substituted with on-chain Comet / EVK reads.",
+  },
   "sector-market-share-tvl": {
     text:
       "Share of total Ethereum lending TVL held by each protocol over time. Stacked area; sums to 100%.",
