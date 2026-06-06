@@ -6,10 +6,12 @@ import path from "node:path"
 import { promises as fs } from "node:fs"
 
 async function main() {
-  const url = process.argv.find((a) => a.startsWith("--url="))?.slice("--url=".length)
-    ?? "https://lending-intelligence-terminal-8yttnnmtb.vercel.app/reports"
-  const outPath = process.argv.find((a) => a.startsWith("--out="))?.slice("--out=".length)
-    ?? path.join(process.cwd(), "tmp", "reports-index.png")
+  const urlArg = process.argv.find((a) => a.startsWith("--url="))?.slice("--url=".length)
+  const outArg = process.argv.find((a) => a.startsWith("--out="))?.slice("--out=".length)
+  const url = urlArg ?? "https://lending-intelligence-terminal-8yttnnmtb.vercel.app/reports"
+  const outPath = (outArg && path.isAbsolute(outArg))
+    ? outArg
+    : path.join(process.cwd(), outArg ?? "tmp/reports-index.png")
   await fs.mkdir(path.dirname(outPath), { recursive: true })
 
   const { chromium } = await import("playwright")

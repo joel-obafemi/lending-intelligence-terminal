@@ -85,7 +85,7 @@ export function AaveUsdcIrmChart({ data }: Props) {
     <div style={{ display: "grid", gridTemplateColumns: "minmax(0, 1fr) 220px", gap: 24, alignItems: "center" }}>
       <div style={{ height: 320 }}>
         <ResponsiveContainer width="100%" height="100%">
-          <ComposedChart data={curve} margin={{ top: 16, right: 16, bottom: 8, left: 0 }}>
+          <ComposedChart data={curve} margin={{ top: 16, right: 16, bottom: 36, left: 0 }}>
             <defs>
               <linearGradient id="irmFill" x1="0" x2="0" y1="0" y2="1">
                 <stop offset="0%" stopColor={COBALT} stopOpacity={0.18} />
