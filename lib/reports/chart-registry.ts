@@ -38,6 +38,8 @@ import { CapitalEfficiencyBars } from "@/components/report/charts/CapitalEfficie
 import { RecipientBreakdownChart } from "@/components/report/charts/RecipientBreakdownChart"
 import { UsdsYieldCascadeChart } from "@/components/report/charts/UsdsYieldCascadeChart"
 import { SmartVaultAdoptionBars } from "@/components/report/charts/SmartVaultAdoptionBars"
+import { LdrChart } from "@/components/report/charts/LdrChart"
+import { PROTOCOLS } from "@/lib/protocols"
 
 import type {
   ChartRegistry,
@@ -460,14 +462,80 @@ const smartVaultAdoptionEntry: ChartRegistryEntry<{
   Component: SmartVaultAdoptionBars,
 }
 
+/**
+ * Loan-to-Deposit Ratio over time, per protocol + supplied-weighted
+ * sector overlay. Data path: cachedOverview() → utilizationSeries gives
+ * the per-protocol LDR (= utilization, same numerator over same
+ * denominator); supplySeries + borrowedSeries are joined per timestamp
+ * to recompute the supplied-weighted sector LDR per day.
+ *
+ * Compound V3 and Euler V2 are substituted with on-chain figures inside
+ * loadOverview() (see lib/compound-onchain.ts / lib/euler-onchain.ts),
+ * so the chart's per-protocol lines for those two reflect the corrected
+ * values — no extra substitution work here.
+ */
+const ldrEntry: ChartRegistryEntry<{
+  history: Array<{ timestamp: number; sectorLdr: number; [protocolSlug: string]: number }>
+  freezeMarker: number | null
+}> = {
+  defaultParams: { range: "3m" },
+  loader: async (params) => {
+    const overview = await cachedOverview()
+    const supplyByTs = new Map<number, Record<string, any>>()
+    for (const pt of overview.supplySeries) supplyByTs.set(pt.timestamp, pt as any)
+    const borrowByTs = new Map<number, Record<string, any>>()
+    for (const pt of overview.borrowedSeries) borrowByTs.set(pt.timestamp, pt as any)
+    const merged = overview.utilizationSeries.map((pt) => {
+      const sup = supplyByTs.get(pt.timestamp)
+      const bor = borrowByTs.get(pt.timestamp)
+      let sectorSup = 0
+      let sectorBor = 0
+      if (sup) for (const p of PROTOCOLS) sectorSup += (sup[p.slug] as number) || 0
+      if (bor) for (const p of PROTOCOLS) sectorBor += (bor[p.slug] as number) || 0
+      const sectorLdr = sectorSup > 0 ? (sectorBor / sectorSup) * 100 : 0
+      return { ...(pt as Record<string, number>), sectorLdr } as {
+        timestamp: number
+        sectorLdr: number
+        [k: string]: number
+      }
+    })
+    return {
+      history: clampSeriesToWindow(merged, params),
+      freezeMarker: freezeMarkerSeconds(params),
+    }
+  },
+  Component: LdrChart,
+}
+
 // ─────────────────────────────────────────────────────────────────────────
 // Registry export
 // ─────────────────────────────────────────────────────────────────────────
-
+//
+// Source keys follow `<page>.<chart-name>` and mirror the dashboard
+// surface the chart sits on. Issue 001 used the first 14; Issue 002
+// adds `sector.loan-to-deposit-ratio` for §06.4's Fluid finding.
+//
+// Currently available sources (lift these into MDX via <Chart source="…" />):
+//   rates.real-yield-spread          — pp; stables APY minus 4w T-bill
+//   rates.cross-protocol-dispersion  — bps; max minus min supply APY per asset
+//   sector.market-share              — %; per-protocol share of borrows / supply
+//   sector.loan-to-deposit-ratio     — %; per-protocol LDR over time, sector dashed
+//   sector.net-supply-flows          — USD; per-protocol daily net flow stacked
+//   sector.composition               — USD; per-asset-type stacked area
+//   protocol.supply-by-asset         — USD; per-asset stacked, supply or borrow
+//   protocol.usds-yield-cascade      — bps; SSR → sUSDS → Spark
+//   protocol.smart-vault-adoption    — share; Fluid smart-vault adoption bars
+//   compare.supply-apy-history       — %; per-protocol supply APY for one asset
+//   compare.capital-efficiency       — bps; per-protocol APY × utilization
+//   morpho.curator-concentration     — %; top-N curator share over time
+//   morpho.curator-leaderboard       — table; sortable curator ranking
+//   revenue.recipient-breakdown      — %; supply-side / treasury / holders
+//   risk.stablecoin-debt-share       — %; stablecoin share of total borrows
 export const chartRegistry: ChartRegistry = {
   "rates.real-yield-spread": realYieldSpreadEntry,
   "rates.cross-protocol-dispersion": dispersionEntry,
   "sector.market-share": marketShareEntry,
+  "sector.loan-to-deposit-ratio": ldrEntry,
   "sector.net-supply-flows": netSupplyFlowsEntry,
   "sector.composition": compositionEntry,
   "protocol.supply-by-asset": supplyByAssetEntry,
