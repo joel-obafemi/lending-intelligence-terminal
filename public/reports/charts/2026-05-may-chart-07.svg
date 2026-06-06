@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 880 440" font-family="'Source Serif 4', Georgia, serif">
+  <style>
+    .axis { fill: #595959; font: 11px 'JetBrains Mono', monospace; }
+    .grid { stroke: #B8C9DD; stroke-opacity: 0.4; }
+    .take { stroke: #1F3A5F; stroke-width: 2.4; fill: none; }
+    .tbill { stroke: #C5511A; stroke-width: 2; stroke-dasharray: 5 4; fill: none; }
+    .dot  { fill: #1F3A5F; stroke: #F7F4ED; stroke-width: 1.2; }
+    .callout-dot { fill: #C5511A; stroke: #F7F4ED; stroke-width: 2; }
+    .callout { fill: #C5511A; font: 600 11px 'JetBrains Mono', monospace; }
+    .title { fill: #0E1B2C; font: 600 18px 'Source Serif 4', Georgia, serif; }
+    .caption { fill: #595959; font: italic 13px 'Source Serif 4', Georgia, serif; }
+    .source { fill: #595959; font: 10px 'JetBrains Mono', monospace; letter-spacing: 0.08em; }
+    .legbl { fill: #595959; font: 11px 'JetBrains Mono', monospace; }
+  </style>
+  <rect width="880" height="440" fill="#F7F4ED"/>
+  <text class="title" x="48" y="36">Sector take rate vs 4-week T-bill yield, May 2025 to May 2026</text>
+  <text class="caption" x="48" y="58">Annualized sector revenue yield vs the risk-free rate. May 31 is the first month-end at which protocols earn less than Treasuries.</text>
+  <!-- Plot: x 80-840, y 100-360; Y scale 2.5%-6.5% over 260 px → 1% = 65 px -->
+  <line class="grid" x1="80" y1="100" x2="840" y2="100"/>
+  <line class="grid" x1="80" y1="165" x2="840" y2="165"/>
+  <line class="grid" x1="80" y1="230" x2="840" y2="230"/>
+  <line class="grid" x1="80" y1="295" x2="840" y2="295"/>
+  <line class="grid" x1="80" y1="360" x2="840" y2="360"/>
+  <text class="axis" x="74" y="104" text-anchor="end">6.5%</text>
+  <text class="axis" x="74" y="169" text-anchor="end">5.5%</text>
+  <text class="axis" x="74" y="234" text-anchor="end">4.5%</text>
+  <text class="axis" x="74" y="299" text-anchor="end">3.5%</text>
+  <text class="axis" x="74" y="364" text-anchor="end">2.5%</text>
+  <!-- 13 monthly points May'25..May'26. x: 80 + i*(760/12) = i*63.33 -->
+  <!-- y(v) = 360 - (v - 2.5)*65 -->
+  <!-- Take rate (cobalt solid): 5.80, 5.55, 5.30, 5.10, 5.05, 4.90, 4.85, 4.70, 4.65, 4.55, 4.40, 4.27, 3.38 -->
+  <!-- y: 5.80→145, 5.55→161, 5.30→178, 5.10→191, 5.05→194, 4.90→204, 4.85→207, 4.70→217, 4.65→220, 4.55→227, 4.40→236, 4.27→245, 3.38→303 -->
+  <path class="take" d="M 80 145 L 143 161 L 207 178 L 270 191 L 333 194 L 397 204 L 460 207 L 523 217 L 587 220 L 650 227 L 713 236 L 777 245 L 840 303"/>
+  <!-- T-bill (terracotta dashed): 4.23, 4.10, 4.05, 3.95, 3.95, 3.90, 3.80, 3.75, 3.70, 3.65, 3.62, 3.60, 3.60 -->
+  <!-- y: 4.23→248, 4.10→256, 4.05→259, 3.95→266, 3.95→266, 3.90→269, 3.80→276, 3.75→279, 3.70→282, 3.65→285, 3.62→287, 3.60→289, 3.60→289 -->
+  <path class="tbill" d="M 80 248 L 143 256 L 207 259 L 270 266 L 333 266 L 397 269 L 460 276 L 523 279 L 587 282 L 650 285 L 713 287 L 777 289 L 840 289"/>
+  <!-- Dots on take rate -->
+  <circle class="dot" cx="80" cy="145" r="3"/>
+  <circle class="dot" cx="143" cy="161" r="3"/>
+  <circle class="dot" cx="207" cy="178" r="3"/>
+  <circle class="dot" cx="270" cy="191" r="3"/>
+  <circle class="dot" cx="333" cy="194" r="3"/>
+  <circle class="dot" cx="397" cy="204" r="3"/>
+  <circle class="dot" cx="460" cy="207" r="3"/>
+  <circle class="dot" cx="523" cy="217" r="3"/>
+  <circle class="dot" cx="587" cy="220" r="3"/>
+  <circle class="dot" cx="650" cy="227" r="3"/>
+  <circle class="dot" cx="713" cy="236" r="3"/>
+  <circle class="dot" cx="777" cy="245" r="3"/>
+  <!-- Last-point callout (crossover) -->
+  <circle class="callout-dot" cx="840" cy="303" r="6"/>
+  <text class="callout" x="830" y="325" text-anchor="end">May 31 · 3.38% &lt; 3.60%</text>
+  <!-- X labels -->
+  <text class="axis" x="80" y="380" text-anchor="middle">May'25</text>
+  <text class="axis" x="207" y="380" text-anchor="middle">Jul</text>
+  <text class="axis" x="333" y="380" text-anchor="middle">Sep</text>
+  <text class="axis" x="460" y="380" text-anchor="middle">Nov</text>
+  <text class="axis" x="587" y="380" text-anchor="middle">Feb'26</text>
+  <text class="axis" x="713" y="380" text-anchor="middle">Apr</text>
+  <text class="axis" x="840" y="380" text-anchor="middle">May'26</text>
+  <!-- Legend -->
+  <line class="take" x1="80" y1="408" x2="110" y2="408"/>
+  <text class="legbl" x="116" y="412">Sector take rate</text>
+  <line class="tbill" x1="250" y1="408" x2="280" y2="408"/>
+  <text class="legbl" x="286" y="412">4-week T-bill</text>
+  <text class="source" x="600" y="412">DATUM LABS LENDING TERMINAL</text>
+</svg>

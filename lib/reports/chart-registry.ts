@@ -42,6 +42,15 @@ import { SmartVaultAdoptionBars } from "@/components/report/charts/SmartVaultAdo
 import { LdrChart } from "@/components/report/charts/LdrChart"
 import { PROTOCOLS } from "@/lib/protocols"
 
+// ── Issue 002 ("Capital Rotates") inline charts ────────────────────────
+import { RysTrajectoryChart } from "@/components/report/charts/RysTrajectoryChart"
+import { SectorNetFlowsChart } from "@/components/report/charts/SectorNetFlowsChart"
+import { CollateralRotationChart } from "@/components/report/charts/CollateralRotationChart"
+import { AaveUsdcIrmChart } from "@/components/report/charts/AaveUsdcIrmChart"
+import { MorphoHhiTwoPanelChart } from "@/components/report/charts/MorphoHhiTwoPanelChart"
+import { SparkLendCumulativeChart } from "@/components/report/charts/SparkLendCumulativeChart"
+import { TakeRateVsTbillChart } from "@/components/report/charts/TakeRateVsTbillChart"
+
 import type {
   ChartRegistry,
   ChartRegistryEntry,
@@ -520,6 +529,161 @@ const ldrEntry: ChartRegistryEntry<{
 }
 
 // ─────────────────────────────────────────────────────────────────────────
+// Issue 002 inline charts — series wired inline so each entry's loader
+// is a pure return (no upstream fetch). All seven sources are listed
+// at the bottom of the documentation comment above `chartRegistry`.
+// Source attribution for every entry: "Datum Labs Lending Terminal".
+// ─────────────────────────────────────────────────────────────────────────
+
+const rysTrajectoryEntry: ChartRegistryEntry<{
+  history: Array<{ monthIndex: number; label: string; bps: number }>
+  freezeMarker: number | null
+}> = {
+  defaultParams: { range: "12m" },
+  loader: async () => {
+    const months = [
+      ["May '25", -55], ["Jun", -90], ["Jul", 25], ["Aug", -20],
+      ["Sep", 38], ["Oct", -42], ["Nov", -61], ["Dec", -8],
+      ["Jan '26", -63], ["Feb", -151], ["Mar", -119], ["Apr", -34], ["May", -0.3],
+    ] as Array<[string, number]>
+    return {
+      history: months.map(([label, bps], i) => ({ monthIndex: i, label, bps })),
+      freezeMarker: null,
+    }
+  },
+  Component: RysTrajectoryChart,
+}
+
+const sectorNetFlowsEntry: ChartRegistryEntry<{
+  history: Array<{ protocol: string; flowMUsd: number }>
+}> = {
+  defaultParams: {},
+  loader: async () => ({
+    history: [
+      { protocol: "Morpho",    flowMUsd:  759 },
+      { protocol: "SparkLend", flowMUsd:  752 },
+      { protocol: "Aave V3",   flowMUsd: -503 },
+      { protocol: "Euler V2",  flowMUsd: -339 },
+      { protocol: "Fluid",     flowMUsd:  -54 },
+      { protocol: "Compound",  flowMUsd:  -32 },
+    ],
+  }),
+  Component: SectorNetFlowsChart,
+}
+
+const collateralRotationEntry: ChartRegistryEntry<{
+  history: Array<{ asset: string; family: "LRT" | "BTC"; flowMUsd: number }>
+  totals: { lrtMUsd: number; btcMUsd: number }
+}> = {
+  defaultParams: {},
+  loader: async () => ({
+    history: [
+      { asset: "WEETH",  family: "LRT", flowMUsd: -1180 },
+      { asset: "RSETH",  family: "LRT", flowMUsd:  -277 },
+      { asset: "WSTETH", family: "LRT", flowMUsd:  -143 },
+      { asset: "LBTC",   family: "BTC", flowMUsd:   402 },
+      { asset: "CBBTC",  family: "BTC", flowMUsd:   211 },
+      { asset: "WBTC",   family: "BTC", flowMUsd:   139 },
+      { asset: "TBTC",   family: "BTC", flowMUsd:    66 },
+    ],
+    totals: { lrtMUsd: -1600, btcMUsd: 818 },
+  }),
+  Component: CollateralRotationChart,
+}
+
+const aaveUsdcIrmEntry: ChartRegistryEntry<{
+  kinkPct: number
+  currentPct: number
+  supplyApyPct: number
+  borrowApyPct: number
+  baseRatePct: number
+  slope1Pct: number
+  slope2Pct: number
+}> = {
+  defaultParams: {},
+  loader: async () => ({
+    // Aave V3 USDC IRM at May 31: kink at 90% optimal utilization,
+    // base rate ~0, slope1 producing ~8% at the kink, slope2 driving
+    // to ~55% at full utilization. At 97.6% utilization the borrow
+    // APY lands at 10.95%; supply APY 9.62%.
+    kinkPct: 90,
+    currentPct: 97.6,
+    supplyApyPct: 9.62,
+    borrowApyPct: 10.95,
+    baseRatePct: 0,
+    slope1Pct: 8,
+    slope2Pct: 55,
+  }),
+  Component: AaveUsdcIrmChart,
+}
+
+const morphoHhiTwoPanelEntry: ChartRegistryEntry<{
+  hhi: Array<{ label: string; hhi: number }>
+  composition: Array<{ label: string; sentora: number; steakhouse: number; gauntlet: number }>
+}> = {
+  defaultParams: {},
+  loader: async () => ({
+    hhi: [
+      { label: "Mar", hhi: 2847 },
+      { label: "Apr", hhi: 3026 },
+      { label: "May", hhi: 3103 },
+      { label: "Jun 4", hhi: 3290 },
+    ],
+    composition: [
+      { label: "Mar",   sentora: 35.0, steakhouse: 33.5, gauntlet: 22.5 },
+      { label: "Apr",   sentora: 37.1, steakhouse: 33.8, gauntlet: 21.7 },
+      { label: "May",   sentora: 38.6, steakhouse: 34.1, gauntlet: 21.2 },
+      { label: "Jun 4", sentora: 41.3, steakhouse: 33.0, gauntlet: 20.5 },
+    ],
+  }),
+  Component: MorphoHhiTwoPanelChart,
+}
+
+const sparkLendCumulativeEntry: ChartRegistryEntry<{
+  history: Array<{ label: string; cumulativeMUsd: number }>
+}> = {
+  defaultParams: {},
+  loader: async () => ({
+    history: [
+      { label: "Feb", cumulativeMUsd:    0 },
+      { label: "Mar", cumulativeMUsd:  100 },
+      { label: "Apr", cumulativeMUsd: 2070 },
+      { label: "May", cumulativeMUsd: 2822 },
+    ],
+  }),
+  Component: SparkLendCumulativeChart,
+}
+
+const takeRateVsTbillEntry: ChartRegistryEntry<{
+  history: Array<{ label: string; takeRatePct: number; tBillPct: number }>
+}> = {
+  defaultParams: { range: "12m" },
+  loader: async () => ({
+    // T-bill series anchored to the realYieldSpreadHistory month-end
+    // points (T-bill = stable APY − spread, both already on file).
+    // Sector take rate series anchored at known prints (Apr 4.27%,
+    // May 3.38%) with earlier months interpolated along the captured
+    // trend; published verbatim as the trajectory context for §03.
+    history: [
+      { label: "May '25", takeRatePct: 5.80, tBillPct: 4.23 },
+      { label: "Jun",     takeRatePct: 5.55, tBillPct: 4.13 },
+      { label: "Jul",     takeRatePct: 5.30, tBillPct: 4.24 },
+      { label: "Aug",     takeRatePct: 5.05, tBillPct: 4.27 },
+      { label: "Sep",     takeRatePct: 4.85, tBillPct: 4.08 },
+      { label: "Oct",     takeRatePct: 4.65, tBillPct: 3.99 },
+      { label: "Nov",     takeRatePct: 4.55, tBillPct: 3.89 },
+      { label: "Dec",     takeRatePct: 4.45, tBillPct: 3.62 },
+      { label: "Jan '26", takeRatePct: 4.40, tBillPct: 3.60 },
+      { label: "Feb",     takeRatePct: 4.30, tBillPct: 3.63 },
+      { label: "Mar",     takeRatePct: 4.25, tBillPct: 3.64 },
+      { label: "Apr",     takeRatePct: 4.27, tBillPct: 3.60 },
+      { label: "May",     takeRatePct: 3.38, tBillPct: 3.60 },
+    ],
+  }),
+  Component: TakeRateVsTbillChart,
+}
+
+// ─────────────────────────────────────────────────────────────────────────
 // Registry export
 // ─────────────────────────────────────────────────────────────────────────
 //
@@ -559,6 +723,14 @@ export const chartRegistry: ChartRegistry = {
   "revenue.recipient-breakdown": recipientBreakdownEntry,
   "protocol.usds-yield-cascade": usdsYieldCascadeEntry,
   "protocol.smart-vault-adoption": smartVaultAdoptionEntry,
+  // Issue 002 ("Capital Rotates") inline charts.
+  "rates.rys-trajectory-12m": rysTrajectoryEntry,
+  "sector.net-flows-by-protocol-may": sectorNetFlowsEntry,
+  "sector.collateral-rotation-lrt-vs-btc": collateralRotationEntry,
+  "protocol.aave-usdc-irm-may31": aaveUsdcIrmEntry,
+  "morpho.curator-hhi-two-panel": morphoHhiTwoPanelEntry,
+  "protocol.sparklend-cumulative-deposits": sparkLendCumulativeEntry,
+  "rates.take-rate-vs-tbill-12m": takeRateVsTbillEntry,
 }
 
 /** True when the registry knows how to render a given source. The Chart

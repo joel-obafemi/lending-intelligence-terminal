@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 880 440" font-family="'Source Serif 4', Georgia, serif">
+  <style>
+    .axis { fill: #595959; font: 11px 'JetBrains Mono', monospace; }
+    .grid { stroke: #B8C9DD; stroke-opacity: 0.4; }
+    .ref  { stroke: #B8C9DD; stroke-width: 1; }
+    .pos  { fill: #1F3A5F; }
+    .neg  { fill: #C5511A; }
+    .lbl  { fill: #0E1B2C; font: 600 11px 'JetBrains Mono', monospace; }
+    .name { fill: #0E1B2C; font: 13px 'Source Serif 4', Georgia, serif; }
+    .title { fill: #0E1B2C; font: 600 18px 'Source Serif 4', Georgia, serif; }
+    .caption { fill: #595959; font: italic 13px 'Source Serif 4', Georgia, serif; }
+    .source { fill: #595959; font: 10px 'JetBrains Mono', monospace; letter-spacing: 0.08em; }
+    .total-neg { fill: #C5511A; font: 600 13px 'JetBrains Mono', monospace; }
+    .total-pos { fill: #1F3A5F; font: 600 13px 'JetBrains Mono', monospace; }
+    .group { fill: #595959; font: 10px 'JetBrains Mono', monospace; letter-spacing: 0.10em; }
+  </style>
+  <rect width="880" height="440" fill="#F7F4ED"/>
+  <text class="title" x="48" y="36">Collateral rotation by asset family, May 2026</text>
+  <text class="caption" x="48" y="58">USD millions, constant-price net flow. LRT family contracted; BTC family absorbed the inflow.</text>
+  <!-- Zero line at x=440 -->
+  <line class="ref" x1="440" y1="86" x2="440" y2="380"/>
+  <!-- Scale: ±1200 USD-M maps to ±280 px (440-160 to 440+280=720 capped at 820) -->
+  <!-- Use scale 1M = 0.233 px so 1200M = 280 px -->
+  <!-- LRT group label -->
+  <text class="group" x="48" y="90">LRT FAMILY · TOTAL −$1,600M</text>
+  <!-- WEETH -1180 -->
+  <text class="name" x="178" y="118" text-anchor="end">WEETH</text>
+  <rect class="neg" x="165" y="100" width="275" height="30"/>
+  <text class="lbl" x="160" y="120" text-anchor="end">−$1,180M</text>
+  <!-- RSETH -277 -->
+  <text class="name" x="178" y="158" text-anchor="end">RSETH</text>
+  <rect class="neg" x="375" y="140" width="65" height="30"/>
+  <text class="lbl" x="370" y="160" text-anchor="end">−$277M</text>
+  <!-- WSTETH -143 -->
+  <text class="name" x="178" y="198" text-anchor="end">WSTETH</text>
+  <rect class="neg" x="407" y="180" width="33" height="30"/>
+  <text class="lbl" x="403" y="200" text-anchor="end">−$143M</text>
+  <!-- BTC group label -->
+  <text class="group" x="48" y="240">BTC FAMILY · TOTAL +$818M</text>
+  <!-- LBTC +402 -->
+  <text class="name" x="178" y="268" text-anchor="end">LBTC</text>
+  <rect class="pos" x="440" y="250" width="94" height="30"/>
+  <text class="lbl" x="538" y="270">+$402M</text>
+  <!-- CBBTC +211 -->
+  <text class="name" x="178" y="308" text-anchor="end">CBBTC</text>
+  <rect class="pos" x="440" y="290" width="49" height="30"/>
+  <text class="lbl" x="493" y="310">+$211M</text>
+  <!-- WBTC +139 -->
+  <text class="name" x="178" y="348" text-anchor="end">WBTC</text>
+  <rect class="pos" x="440" y="330" width="32" height="30"/>
+  <text class="lbl" x="476" y="350">+$139M</text>
+  <!-- TBTC +66 -->
+  <text class="name" x="178" y="388" text-anchor="end">TBTC</text>
+  <rect class="pos" x="440" y="370" width="15" height="30"/>
+  <text class="lbl" x="459" y="390">+$66M</text>
+  <!-- Tick labels -->
+  <text class="axis" x="160" y="416" text-anchor="middle">−$1.2B</text>
+  <text class="axis" x="300" y="416" text-anchor="middle">−$600M</text>
+  <text class="axis" x="440" y="416" text-anchor="middle">0</text>
+  <text class="axis" x="580" y="416" text-anchor="middle">+$600M</text>
+  <text class="axis" x="720" y="416" text-anchor="middle">+$1.2B</text>
+  <text class="source" x="48" y="436">DATUM LABS LENDING TERMINAL</text>
+</svg>
