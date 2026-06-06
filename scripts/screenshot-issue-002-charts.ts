@@ -11,7 +11,8 @@
 import path from "node:path"
 import { promises as fs } from "node:fs"
 
-const ANCHORS: Array<{ id: string; slug: string; label: string }> = [
+interface ChartAnchor { id: string; slug: string; label: string }
+const ANCHORS: ChartAnchor[] = [
   { id: "chart-rates-rys-trajectory-12m",            slug: "01-rys-trajectory",       label: "Chart 1 · Real Yield Spread 12-month" },
   { id: "chart-sector-net-flows-by-protocol-may",    slug: "02-sector-net-flows",     label: "Chart 2 · Sector net flows by protocol" },
   { id: "chart-sector-collateral-rotation-lrt-vs-btc", slug: "03-collateral-rotation", label: "Chart 3 · LRT vs BTC collateral rotation" },
@@ -46,6 +47,31 @@ async function main() {
   await page.goto(url, { waitUntil: "domcontentloaded", timeout: 90_000 })
   // Wait a beat for Recharts ResponsiveContainer to size itself.
   await page.waitForTimeout(3000)
+
+  // Full-page hero/cover capture (top viewport).
+  await page.evaluate(() => window.scrollTo(0, 0))
+  await page.waitForTimeout(400)
+  const heroPath = path.join(outDir, "00-hero-cover.png")
+  await page.screenshot({ path: heroPath, fullPage: false })
+  console.log(`[screenshot] Hero (above the fold) → ${heroPath}`)
+
+  // §02 Executive Summary — grab the SectionHeading + lead + first prose
+  // block and the first PullQuote underneath it.
+  const sectionTwo = await page.$('h2:has-text("Executive Summary")')
+  if (sectionTwo) {
+    // Build a clipping box from the heading through the chart that follows.
+    const box = await sectionTwo.boundingBox()
+    if (box) {
+      await page.evaluate((y) => window.scrollTo(0, Math.max(0, y - 60)), box.y)
+      await page.waitForTimeout(400)
+      const exSumPath = path.join(outDir, "00-section-02-exec-summary.png")
+      // Capture the viewport at the new scroll position.
+      await page.screenshot({ path: exSumPath, fullPage: false })
+      console.log(`[screenshot] §02 Executive Summary lead → ${exSumPath}`)
+    }
+  } else {
+    console.warn(`[screenshot] §02 heading not found`)
+  }
 
   let captured = 0
   for (const a of ANCHORS) {
