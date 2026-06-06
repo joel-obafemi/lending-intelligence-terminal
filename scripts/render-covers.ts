@@ -65,13 +65,19 @@ function specsForIssue(slug: string): CoverSpec[] {
   // variant per issue without forcing every issue to publish all three.
   // Each one renders at its platform's recommended in-feed image size
   // so the card fills cleanly with no edge cropping:
-  //   - Twitter / X feed:   1600 × 900   (16:9, same crop on web + mobile)
+  //   - Twitter / X feed:   1600 × 900   (16:9, same crop on web + mobile;
+  //                                       used as the reports-index card
+  //                                       and `social_image` OG target)
+  //   - Twitter / X card:   1600 × 640   (5:2, X's recommended ratio for
+  //                                       images attached to a Tweet
+  //                                       compose dialog or Note cover)
   //   - LinkedIn share:     1200 × 627   (1.91:1, link preview standard)
   //   - Medium header:      2000 × 1125  (16:9 at 2x, large-format hero)
   // The original portrait + generic-social variants are kept for
   // back-compat with Issue #001's flow and the per-route OG image.
   const platformVariants: Array<{ key: string; width: number; height: number }> = [
     { key: "twitter", width: 1600, height: 900 },
+    { key: "twitter-card", width: 1600, height: 640 },
     { key: "linkedin", width: 1200, height: 627 },
     { key: "medium", width: 2000, height: 1125 },
   ]
