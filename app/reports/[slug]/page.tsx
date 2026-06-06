@@ -139,7 +139,16 @@ export default async function IssuePage({ params }: RouteParams) {
     getAllIssues(),
   ])
   if (!issue) notFound()
-  if (issue.frontmatter.status !== "published") notFound()
+  // Gate non-published issues behind NEXT_PUBLIC_DRAFT_PREVIEW. Setting
+  // the env var to "1" on the Vercel project surfaces drafts on the
+  // deployed site (useful for pre-publication review). Unsetting it
+  // restores production behavior — drafts 404 the same as today.
+  if (
+    issue.frontmatter.status !== "published" &&
+    process.env.NEXT_PUBLIC_DRAFT_PREVIEW !== "1"
+  ) {
+    notFound()
+  }
 
   // Locate prev / next from the published-issue archive. getAllIssues()
   // sorts by publication_date desc; prev = newer than current,
