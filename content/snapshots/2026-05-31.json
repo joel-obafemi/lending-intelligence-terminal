@@ -1,0 +1,435 @@
+{
+  "snapshot_date": "2026-05-31",
+  "snapshot_time_utc": "23:59:00",
+  "issue": "002",
+  "issue_label": "№002",
+  "source": "Lending Intelligence Terminal dashboard freeze (May 31, 2026)",
+  "scope_change_note": "Issue 002 expands coverage from 4 to 6 protocols. Compound (compound-v3) and Euler (euler-v2) added. MoM comparisons against Apr 30 use the 6-protocol baseline as recorded by the dashboard's own historical sector_snapshots row, not the 4-protocol baseline published in Issue 001.",
+  "sector": {
+    "total_supply_usd": 33060000000,
+    "active_borrows_usd": 13200000000,
+    "available_liquidity_usd": 19860000000,
+    "sector_utilization_pct": 39.9,
+    "real_yield_spread_pp": 1.54,
+    "sector_take_rate_pct": 3.29,
+    "protocol_count": 6,
+    "mom_deltas": {
+      "total_supply_usd": -1580000000,
+      "active_borrows_usd": -1330000000,
+      "available_liquidity_usd": -246730000,
+      "sector_utilization_pp": -2,
+      "real_yield_spread_pp": 0.04
+    },
+    "yoy_deltas": {
+      "total_supply_usd": -17260000000,
+      "active_borrows_usd": -6600000000,
+      "available_liquidity_usd": -10670000000,
+      "sector_utilization_pp": 0.6
+    },
+    "h24_deltas": {
+      "total_supply_usd": 256930000,
+      "active_borrows_usd": -22860000,
+      "available_liquidity_usd": 279790000
+    },
+    "implied_apr_30_total_supply_6protocol": 34640000000,
+    "real_yield_spread_descriptor": "stables yield over T-bills"
+  },
+  "per_protocol_card": {
+    "aave-v3": {
+      "name": "Aave V3",
+      "architecture": "pool",
+      "total_supply_usd": 18610000000,
+      "tvl_usd": 10770000000,
+      "borrows_usd": 7840000000,
+      "utilization_pct": 42.1,
+      "fees_7d_usd": 5550000,
+      "revenue_30d_usd": 36280000,
+      "net_deposits_30d_usd": -813050000
+    },
+    "spark": {
+      "name": "Spark",
+      "architecture": "pool",
+      "total_supply_usd": 5380000000,
+      "tvl_usd": 3630000000,
+      "borrows_usd": 1750000000,
+      "utilization_pct": 32.6,
+      "fees_7d_usd": 1050000,
+      "revenue_30d_usd": 4510000,
+      "net_deposits_30d_usd": 600750000
+    },
+    "morpho-blue": {
+      "name": "Morpho",
+      "architecture": "isolated",
+      "total_supply_usd": 5960000000,
+      "tvl_usd": 3800000000,
+      "borrows_usd": 2160000000,
+      "utilization_pct": 36.2,
+      "fees_7d_usd": 1460000,
+      "revenue_30d_usd": 7880000,
+      "net_deposits_30d_usd": 1170000000
+    },
+    "fluid": {
+      "name": "Fluid",
+      "architecture": "vault",
+      "total_supply_usd": 963050000,
+      "tvl_usd": 428620000,
+      "borrows_usd": 534430000,
+      "utilization_pct": 55.5,
+      "fees_7d_usd": 469720,
+      "revenue_30d_usd": 1730000,
+      "net_deposits_30d_usd": -53180000
+    },
+    "compound-v3": {
+      "name": "Compound",
+      "architecture": "pool",
+      "total_supply_usd": 1267000000,
+      "tvl_usd": 853000000,
+      "borrows_usd": 414000000,
+      "utilization_pct": 32.7,
+      "fees_7d_usd": 377140,
+      "revenue_30d_usd": 1610000,
+      "net_deposits_30d_usd": -68370000,
+      "captured_pre_fix_value": {
+        "total_supply_usd": 1610000000,
+        "tvl_usd": 1070000000,
+        "borrows_usd": 535410000,
+        "utilization_pct": 33.3,
+        "captured_at_utc": "2026-05-31T23:59:00Z",
+        "explanation": "Original May 31 dashboard freeze. The card formula totalSupply = tvl + borrowed read DefiLlama's chainTvls.Ethereum and chainTvls.Ethereum-borrowed for Compound V3. For Aave V3 and Spark that formula is correct (tvl = unborrowed liquidity, adding borrowed reconstructs total supply). For Compound V3, DefiLlama prices some collateral assets off-market and the resulting sum overstated the protocol's Ethereum supply by roughly $340M vs on-chain Comet totals at the May 31 snapshot. The corrected values above replace these for §06.5 and subsequent issues. Pre-fix figures preserved for the audit trail, not for citation. See content/snapshots/2026-06-compound-card-fix.md for the patch detail."
+      },
+      "correction_note": "Compound V3 total_supply_usd / tvl_usd / borrows_usd / utilization_pct above have been restated to match on-chain Comet totals (USDC + USDT + WETH + USDS markets). All other fields (fees_7d_usd, revenue_30d_usd, net_deposits_30d_usd) are unchanged — they were sourced from DefiLlama fee endpoints, not from the buggy supply-card path."
+    },
+    "euler-v2": {
+      "name": "Euler",
+      "architecture": "vault",
+      "total_supply_usd": 469000000,
+      "tvl_usd": 70000000,
+      "borrows_usd": 399000000,
+      "utilization_pct": 85.1,
+      "fees_7d_usd": 363740,
+      "revenue_30d_usd": 1600000,
+      "net_deposits_30d_usd": -310450000,
+      "captured_pre_fix_value": {
+        "total_supply_usd": 539390000,
+        "tvl_usd": 156650000,
+        "borrows_usd": 382730000,
+        "utilization_pct": 71,
+        "captured_at_utc": "2026-05-31T23:59:00Z",
+        "explanation": "Original May 31 dashboard freeze. The card formula totalSupply = tvl + borrowed read DefiLlama's chainTvls.Ethereum and chainTvls.Ethereum-borrowed for Euler V2. Same pattern as Compound V3 (see compound-v3 entry): DefiLlama's protocol-level Ethereum adapter overstates the on-chain truth, in this case by approximately $70M on the supplied leg (entirely on the tvl/available leg; borrowed reconciles within $20M). Verified June 2026 against on-chain reads of 53 of 57 active EVK vaults (the 4 unmatched vaults total roughly $310K of TVL per DefiLlama and cannot account for the gap). The corrected values above reflect the on-chain truth at the time of audit. Pre-fix figures preserved for the audit trail, not for citation. See content/snapshots/2026-06-euler-card-check.md for the verification detail."
+      },
+      "correction_note": "Euler V2 total_supply_usd / tvl_usd / borrows_usd / utilization_pct above have been restated to match on-chain EVK vault totals (Σ totalAssets and Σ totalBorrows across active Ethereum vaults). All other fields (fees_7d_usd, revenue_30d_usd, net_deposits_30d_usd) are unchanged — they were sourced from DefiLlama fee endpoints, not from the buggy supply-card path. The §06.6 protocol-level header in early drafts cited $549M / $896M for May 31 / Apr 30; the corrected May 31 figure is $469M, which changes the MoM percentage from −38.7% to roughly −47.7% if Apr 30 was correctly captured. Re-audit Apr 30 before citing the new MoM number.",
+      "apr_30_onchain_baseline": {
+        "resolved_block_number": 24996362,
+        "block_timestamp_utc": "2026-04-30T23:58:59.000Z",
+        "supplied_usd": 774188756.939704,
+        "tvl_usd": 201915358.85861778,
+        "borrows_usd": 572273398.0810862,
+        "utilization_pct": 73.9191047339966,
+        "vault_count_active_at_apr_30": 50,
+        "vault_count_not_yet_deployed": 3,
+        "audit_symmetric_mom_pct": {
+          "supplied": -39.42045840940479,
+          "tvl": -65.33200822577624,
+          "borrowed": -30.278080138286423
+        },
+        "explanation": "On-chain re-read of Euler V2 EVK vaults at the Ethereum block closest to 2026-04-30T23:59 UTC, sourced via DefiLlama /pools (vault list) + Goldsky euler-v2-mainnet subgraph (vault addresses) + DefiLlama /coins/prices/historical (USD prices at the same timestamp). This baseline coexists with the dashboard-derived Apr 30 figure in content/snapshots/2026-04-30-baseline.json — the two are different methodologies and Issue 002's §06.6 protocol-level header should cite this on-chain reading for apples-to-apples MoM against the corrected May 31 figure. See content/snapshots/2026-06-euler-apr30-reaudit.md."
+      }
+    },
+    "_sum_check": {
+      "card_supply_sum_usd": 33062440000,
+      "matches_sector_total": true,
+      "notes": "Sum of per-protocol card supplies matches sector $33.06B (rounded)"
+    }
+  },
+  "per_protocol_detail": {
+    "_note": "These readings were captured from the per-protocol detail pages on the dashboard. They may differ slightly from the per-protocol card values above due to a few minutes of price/data drift between page loads. For Compound and Euler the detail pages report substantially different totals from the cards; this is flagged below for reconciliation when writing the issue.",
+    "aave-v3": {
+      "total_supply_usd": 18560000000,
+      "total_borrows_usd": 7690000000,
+      "available_liquidity_usd": 10870000000,
+      "utilization_pct": 41.4,
+      "markets_count": 82,
+      "h24_supply_delta_usd": 220210000,
+      "off_sep_2025_peak_pct": -71,
+      "sep_2025_peak_supply_usd": 63080000000
+    },
+    "spark": {
+      "total_supply_usd": 5340000000,
+      "total_borrows_usd": 1730000000,
+      "available_liquidity_usd": 3610000000,
+      "utilization_pct": 32.4,
+      "markets_count": 14,
+      "h24_supply_delta_usd": -112870000,
+      "off_oct_2025_peak_pct": -41,
+      "oct_2025_peak_supply_usd": 9090000000
+    },
+    "morpho-blue": {
+      "total_supply_usd": 5930000000,
+      "total_borrows_usd": 2150000000,
+      "available_liquidity_usd": 3780000000,
+      "utilization_pct": 36.3,
+      "markets_count": 510,
+      "idle_ratio_pct": 63.7,
+      "idle_ratio_descriptor": "vault capital sitting unallocated",
+      "h24_supply_delta_usd": -35720000,
+      "off_sep_2025_peak_pct": -28,
+      "sep_2025_peak_supply_usd": 8210000000
+    },
+    "fluid": {
+      "total_supply_usd": 938060000,
+      "total_borrows_usd": 517510000,
+      "available_liquidity_usd": 420550000,
+      "utilization_pct": 55.2,
+      "markets_count": 102,
+      "h24_supply_delta_usd": -681110,
+      "off_aug_2025_peak_pct": -63,
+      "aug_2025_peak_supply_usd": 2570000000
+    },
+    "compound-v3": {
+      "total_supply_usd": 8340000000,
+      "total_borrows_usd": 8200000000,
+      "available_liquidity_usd": 144820000,
+      "utilization_pct": 98.3,
+      "markets_count": 49,
+      "h24_supply_delta_usd": 6920000,
+      "RECONCILE_NOTE": "Detail page total $8.34B is materially higher than the Ethereum-only card value of $1.61B. The 49 markets count suggests the detail page is aggregating across all chains where Compound V3 is deployed (Ethereum, Base, Arbitrum, Polygon, etc.). The card is the Ethereum-only figure that feeds the sector aggregate. Confirm with check:upstream and the DefiLlama protocol/compound-v3 response before publishing."
+    },
+    "euler-v2": {
+      "total_supply_usd": 447700000,
+      "total_borrows_usd": 367690000,
+      "available_liquidity_usd": 80010000,
+      "utilization_pct": 82.1,
+      "markets_count": 93,
+      "h24_supply_delta_usd": 10950000,
+      "off_sep_2025_peak_pct": -80,
+      "sep_2025_peak_supply_usd": 2210000000,
+      "RECONCILE_NOTE": "Detail $447.70M is lower than card $539.39M. Could be a per-chain filter (Ethereum-only in detail vs Ethereum-only in card, but counted differently — Euler V2's EVK vault topology can lead to double-counting if shared collateral pools across vaults aren't deduped). 93 markets is plausible for Ethereum-only on Euler V2. Reconcile before publishing."
+    }
+  },
+  "net_supply_flows_may": {
+    "period_label": "May 2026 (current month)",
+    "net_inflow_total_usd": 3540000000,
+    "net_outflow_total_usd": 2950000000,
+    "methodology_note": "Net change in deposit base · constant prices · price moves excluded · DefiLlama token quantities",
+    "by_protocol_net_usd": {
+      "aave-v3": -503000000,
+      "spark": 751600000,
+      "compound-v3": -31900000,
+      "fluid": -53700000,
+      "morpho-blue": 758700000,
+      "euler-v2": -338500000
+    },
+    "inflows_by_asset_usd": {
+      "USDT": 525200000,
+      "USDE": 140000000,
+      "TBTC": 152800000,
+      "CBBTC": 479500000,
+      "WBTC": 112900000,
+      "USDS": 475000000,
+      "WETH": 315900000,
+      "WSTETH": 247500000,
+      "Other": 525400000,
+      "USDC": 114900000,
+      "WEETH": 120400000,
+      "PYUSD": 94100000,
+      "PRIME": 84800000,
+      "RLUSD": 74300000,
+      "KBTC": 72500000
+    },
+    "outflows_by_asset_usd": {
+      "WETH": 514700000,
+      "WSTETH": 260100000,
+      "WEETH": 844200000,
+      "OSETH": 45900000,
+      "RSETH": 221000000,
+      "PT-USDG-28MAY2026": 42900000,
+      "EZETH": 64000000,
+      "Other": 179400000,
+      "USDT": 216500000,
+      "USDC": 180900000,
+      "PYUSD": 144800000,
+      "RLUSD": 101000000,
+      "SUSDE": 61100000,
+      "SUSDS": 41400000,
+      "WSRUSD": 34000000
+    },
+    "key_observations": [
+      "LRT outflows (WEETH $844M, RSETH $221M, EZETH $64M, OSETH $46M) totaling ~$1.17B dominate the outflow side, consistent with the rsETH unpause / LRT-loop unwind narrative through May.",
+      "Aave V3 lost $503M net while Spark gained $752M and Morpho gained $759M — capital is rotating between Ethereum lending venues, not leaving the sector.",
+      "BTC-family inflows (CBBTC $479M, TBTC $153M, WBTC $113M, KBTC $73M) totaling ~$818M is the largest non-stable inflow group, reading as a rotation from ETH-collateral loops into BTC-collateral positions.",
+      "Stablecoin inflows (USDT $525M, USDS $475M, USDE $140M, USDC $115M, PYUSD $94M, RLUSD $74M) totaling ~$1.42B suggest fresh stablecoin supply rather than rotation.",
+      "Euler net -$338M is notable given its small absolute size; -$310M card net-deposits-30d confirms this as a real outflow, not a rounding artifact."
+    ]
+  },
+  "collateral_mix_may": {
+    "total_collateral_usd": 33180000000,
+    "shares_pct": {
+      "WETH": 16.1,
+      "WSTETH": 15,
+      "USDT": 11.4,
+      "USDC": 11.1,
+      "WBTC": 10.3,
+      "WEETH": 7.5,
+      "CBBTC": 6.4,
+      "Other": 22.3
+    },
+    "note": "ETH-family (WETH + WSTETH + WEETH) totals 38.6% of collateral. BTC-family (WBTC + CBBTC) totals 16.7%. Stablecoin collateral (USDT + USDC) totals 22.5%. The remaining 22.3% is the long tail."
+  },
+  "borrow_mix_may": {
+    "total_borrowed_usd": 13200000000,
+    "shares_pct": {
+      "WETH": 31,
+      "USDC": 26.2,
+      "USDT": 22.8,
+      "PYUSD": 3.2,
+      "USDS": 2.9,
+      "DAI": 2.2,
+      "USDTB": 2,
+      "Other": 9.6
+    },
+    "stablecoin_debt_share_pct": 59.3,
+    "stablecoin_debt_share_components": [
+      "USDC 26.2",
+      "USDT 22.8",
+      "PYUSD 3.2",
+      "USDS 2.9",
+      "DAI 2.2",
+      "USDTB 2.0"
+    ],
+    "weth_borrow_share_pct": 31,
+    "data_quirk_note": "DefiLlama returns USDS borrows under DAI for some Spark markets; that share is folded into the DAI wedge here."
+  },
+  "top_10_markets_supply": [
+    {
+      "rank": 1,
+      "asset": "WETH",
+      "protocol": "Aave V3",
+      "total_supply_usd": 3860000000,
+      "available_liquidity_usd": 646710000,
+      "borrowed_usd": 3100000000,
+      "utilization_pct": 80.5,
+      "supply_apy_pct": 1.45,
+      "borrow_apy_pct": 2.11
+    },
+    {
+      "rank": 2,
+      "asset": "USDT",
+      "protocol": "Aave V3",
+      "total_supply_usd": 2510000000,
+      "available_liquidity_usd": 532700000,
+      "borrowed_usd": 1970000000,
+      "utilization_pct": 78.8,
+      "supply_apy_pct": 2.43,
+      "borrow_apy_pct": 3.42
+    },
+    {
+      "rank": 3,
+      "asset": "WBTC",
+      "protocol": "Aave V3",
+      "total_supply_usd": 2280000000,
+      "available_liquidity_usd": 2200000000,
+      "borrowed_usd": 73640000,
+      "utilization_pct": 3.2,
+      "supply_apy_pct": 0.01,
+      "borrow_apy_pct": 0.35
+    },
+    {
+      "rank": 4,
+      "asset": "WEETH",
+      "protocol": "Aave V3",
+      "total_supply_usd": 2120000000,
+      "available_liquidity_usd": 2120000000,
+      "borrowed_usd": 112270,
+      "utilization_pct": 0,
+      "supply_apy_pct": 0,
+      "borrow_apy_pct": 1,
+      "note": "E-mode collateral, borrowing disabled for most users by design"
+    },
+    {
+      "rank": 5,
+      "asset": "WSTETH",
+      "protocol": "Spark",
+      "total_supply_usd": 2070000000,
+      "available_liquidity_usd": 2070000000,
+      "borrowed_usd": 28790,
+      "utilization_pct": 0,
+      "supply_apy_pct": 0,
+      "borrow_apy_pct": 0
+    },
+    {
+      "rank": 6,
+      "asset": "USDC",
+      "protocol": "Aave V3",
+      "total_supply_usd": 1910000000,
+      "available_liquidity_usd": 46660000,
+      "borrowed_usd": 1870000000,
+      "utilization_pct": null,
+      "supply_apy_pct": 3.27,
+      "borrow_apy_pct": null,
+      "note": "Corrected 2026-06-07. Supply APY of 3.27% per content/snapshots/2026-05-rate-dispersion.json (the captured-data ground truth for May 31 USDC supply rates). Original hand-typed figures of 97.6% utilization, 9.62% supply APY, 10.95% borrow APY were never backed by captured data and were retracted at publication. Utilization and borrow APY remain unset because they were not captured. Aave V3 USDC was third-lowest of the six covered protocols on supply APY, not the squeeze leader."
+    },
+    {
+      "rank": 7,
+      "asset": "WSTETH",
+      "protocol": "Aave V3",
+      "total_supply_usd": 1530000000,
+      "available_liquidity_usd": 1510000000,
+      "borrowed_usd": 17820000,
+      "utilization_pct": 1.2,
+      "supply_apy_pct": 0,
+      "borrow_apy_pct": 0.01
+    },
+    {
+      "rank": 8,
+      "asset": "CBBTC",
+      "protocol": "Aave V3",
+      "total_supply_usd": 1240000000,
+      "available_liquidity_usd": 1230000000,
+      "borrowed_usd": 14340000,
+      "utilization_pct": 1.2,
+      "supply_apy_pct": 0,
+      "borrow_apy_pct": 0.31
+    },
+    {
+      "rank": 9,
+      "asset": "WETH",
+      "protocol": "Spark",
+      "total_supply_usd": 1020000000,
+      "available_liquidity_usd": 286340000,
+      "borrowed_usd": 731670000,
+      "utilization_pct": 71.9,
+      "supply_apy_pct": 1.25,
+      "borrow_apy_pct": 1.83
+    },
+    {
+      "rank": 10,
+      "asset": "USDS",
+      "protocol": "Spark",
+      "total_supply_usd": 824810000,
+      "available_liquidity_usd": 824810000,
+      "borrowed_usd": 0,
+      "utilization_pct": 0,
+      "supply_apy_pct": null,
+      "borrow_apy_pct": null,
+      "note": "SPK Farming Pool — 0% util by design (incentive program, not a borrow market)"
+    }
+  ],
+  "open_data_gaps_for_issue_002": [
+    "Curator HHI for Morpho on May 31 — pulled in earlier conversation as 3,103. Confirm against blue-api.morpho.org snapshot when running snapshot-curator-hhi.ts.",
+    "Top 3 Morpho curators (May 31): Sentora 38.6%, Steakhouse 34.1%, Gauntlet 21.2%, combined 93.9%. From prior dashboard pull. Reconcile with fresh GraphQL pull.",
+    "Liquidations 90D by protocol — needs liquidator_db read.",
+    "Oracle concentration — needs lib/oracles.ts roll-up against the May 31 sector snapshot.",
+    "Real Yield Spread time series for the month — confirm +1.54pp May 31 reading against FRED TB4WK and the blended stable APY.",
+    "Compound and Euler card-vs-detail reconciliation flagged above. Confirm Ethereum-only figures via DefiLlama /protocol/compound-v3 and /protocol/euler-v2.",
+    "Net supply flows by asset are captured per the Sankey but only the May (current month) view; the W/M/Q toggles weren't dumped. Pull weekly cuts via export-net-flow-daily.ts if granularity is needed in the writeup."
+  ],
+  "narrative_hooks_observed_in_data": [
+    "LRT-loop unwind is the dominant May story on the outflow side. WEETH alone accounts for $844M of outflows. Concentrated in WETH supply on Aave V3 (post-WETH-LTV restoration May 17).",
+    "Spark and Morpho absorbed most of the rotated capital. Net +$752M and +$759M respectively. Aave V3 net -$503M.",
+    "BTC collateral rotation is the May counter-narrative. ~$818M of BTC-family inflows is the largest non-stable inflow group and reads as users moving from leveraged ETH loops to lower-correlation BTC positions.",
+    "Sector USDC supply APY dispersion is 330.5 bps at May 31, 1.33x the 12-month average, with Fluid at 5.93% leading and Euler V2 at 2.62% trailing. Aave V3 USDC sat at 3.27% supply APY, third-lowest of the six. USDT and WETH dispersion both ran below their 12-month baselines, leaving USDC as the only asset still elevated.",
+    "Sector utilization fell 2pp MoM despite borrows falling more in absolute terms than supply. Borrows down $1.33B, supply down $1.58B — supply contracted slightly more, but the utilization decline says the protocol-weighted denominator effect favored supply this month.",
+    "Real Yield Spread closed May at parity (-0.3 bps), up from -34 bps in April. The 33-bps tightening was the largest single-month compression of 2026 and the first month-end at parity since September 2025. The Treasury-bill leg held flat while the blended on-chain stable APY lifted 34 bps from 3.26% to 3.60% — a sector-wide rebalancing distributed across the four protocols in the blended-stable calculation, not concentrated in any single market.",
+    "Morpho idle ratio at 63.7% (vault capital sitting unallocated) is a structural metric worth flagging given the curator HHI context. Curators are holding capital back rather than deploying it into markets they don't trust."
+  ]
+}

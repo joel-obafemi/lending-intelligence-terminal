@@ -1,0 +1,72 @@
+{/*
+  Issue 002 — "Capital Rotates" — §05 The Loop Unwinds, Reframed
+  Status: first draft, ~830 words across Lead + 7 paragraphs
+  Sits between: §04 Sector Overview and §06 Protocol Deep Dives
+  Source data: content/snapshots/2026-05-aave-daily-flows.csv
+               content/snapshots/2026-05-aave-weeth-by-market.json
+               content/snapshots/2026-04-30-baseline.json
+               Dashboard Sankey, May 2026 toggle
+  Major thesis correction from outline: the post-May-14 clustering argument did NOT survive
+  contact with the daily flow data. The corrected story is more rigorous.
+*/}
+
+<SectionHeading number="05">The Loop Unwinds</SectionHeading>
+
+<Lead>Aave V3 lost $1.96 billion of supply at nominal prices across May. At constant prices, the protocol gained $352 million of net deposits in the same window. Both figures are correct from their own definitions; only the second describes depositor behavior.</Lead>
+
+The wedge between the two readings is price decline on existing collateral. Nominal supply on the dashboard marks every position to current price each day, so when WEETH and other ETH-family assets fall in dollar terms, every position holding them shows as "less supply" without any withdrawal occurring. Constant-price accounting measures deposit-quantity flow instead, holding prices fixed at a reference point. May was a month where the two methods told directionally opposite stories on Aave V3. Depositors added net quantity to the protocol. The dollar value of all positions on the protocol fell. Both happened simultaneously, and they answer different questions.
+
+The LRT exit narrative survives in adjusted form. WEETH on Aave V3 lost $681M at constant prices over May, the largest single-asset outflow on the protocol by a wide margin. Depositors did pull WEETH out in real quantity. What does not survive contact with the daily data is the timing argument. The widely-circulated version of the story was that LRT-loop depositors had been waiting since April's rsETH bridge exploit for the May 14 unpause and the May 17 WETH LTV restoration on Aave V3 to clear, and exited in concentrated fashion afterward. The daily flow data refutes this at the asset level.
+
+<DataTable
+  caption="Aave V3 Ethereum net supply flow, May 2026, constant prices"
+  columns={[
+    { key: "window", label: "Window", align: "left" },
+    { key: "totalNet", label: "Total net flow", align: "right" },
+    { key: "weeth", label: "WEETH net flow", align: "right" },
+    { key: "other", label: "All other assets", align: "right" }
+  ]}
+  rows={[
+    { window: "May 1 to May 13 (pre-unpause)", totalNet: "+$99M", weeth: "−$459M", other: "+$558M" },
+    { window: "May 14 to May 31 (post-unpause)", totalNet: "+$253M", weeth: "−$222M", other: "+$475M" },
+    { window: "May full month", totalNet: "+$352M", weeth: "−$681M", other: "+$1,033M" }
+  ]}
+/>
+
+WEETH outflows on Aave V3 in the first half of May totaled $459M at constant prices. In the second half, after the unpause and LTV restoration both cleared, WEETH outflows totaled $222M. The pre-unpause daily outflow rate was roughly double the post-unpause rate. The reason this matters is that WEETH was never frozen on Aave V3 during the April crisis. The Aave Protocol Guardian's freeze actions in April covered rsETH, wrsETH, and WETH only; WEETH does not appear on any Guardian action list between April 18 and May 13. The first WEETH-specific governance action was a supply-cap reduction on May 14, framed in the Risk Stewards post as removing the stale headroom that had accumulated as positions exited the protocol. That was a bookkeeping action to match shrunken supply, not a restriction on new deposits.
+
+The $459M of WEETH supply that left Aave V3 in the first half of May was voluntary depositor derisking, generalizing the rsETH and WETH risk to a sibling LRT that itself remained fully withdrawable throughout. The May 14 unfreeze on rsETH cleared a specific binding constraint on that specific asset. The broader LRT collateral derisking, including the WEETH leg, did not pivot around it. In WEETH's case, there was no constraint to lift in the first place. The depositors who exited WEETH had been doing so on their own initiative since the rsETH event, reading the risk across the LRT category rather than waiting for it to be made explicit on any one asset.
+
+<PullQuote>The May 14 unfreeze on rsETH cleared a specific binding constraint on that specific asset. The broader LRT collateral derisking did not pivot around it.</PullQuote>
+
+The post-unpause outflow spikes were real, but they were not a single story. The three sharpest single-day net supply outflows on Aave V3 in May share a date neighborhood and almost nothing else.
+
+<DataTable
+  caption="Aave V3 Ethereum, three largest single-day net outflows, May 2026"
+  columns={[
+    { key: "date", label: "Date", align: "left" },
+    { key: "total", label: "Total net flow", align: "right" },
+    { key: "driver", label: "Dominant driver", align: "left" }
+  ]}
+  rows={[
+    { date: "May 15", total: "−$128M", driver: "ETH-family rotation ($161M of WETH + LST + LRT out, stables in)" },
+    { date: "May 18", total: "−$139M", driver: "Single asset: USDC out $137M (98% of the day), GHO up $18M same day" },
+    { date: "May 29", total: "−$113M", driver: "Two structural events: TBTCV2 to TBTC migration, Pendle PT-USDG maturity" }
+  ]}
+/>
+
+May 15 was the day the post-unpause LRT-exit thesis fits cleanly. WETH outflow of $120M anchored a $161M combined departure across WETH, WEETH, RSETH, and WSTETH. Stables actually came in on the same day, with USDT supply rising $19M and USDC up $16M. Three days after the rsETH market unpaused and two days before WETH LTV caps were restored, this is the day the procedural-trigger narrative survives at the asset level, even though the WEETH component ($20M) is small relative to the pre-unpause total.
+
+May 18 was almost the opposite. $137M of USDC departed Aave V3 on its own, accounting for 98 percent of the day's net outflow. On the same day, GHO supply on Aave V3 ticked up $18M. The signal reads less like depositors leaving the protocol and more like depositors rotating inside Aave's stables book. With Aave V3 USDC sitting at the third-lowest USDC supply APY in the sector at month-end, an intra-Aave rotation toward GHO is the more parsimonious read than depositors leaving the protocol outright.
+
+May 29 looked like a third bleed day on the dashboard, but two thirds of the move was structural rather than economic. A Threshold protocol migration from TBTCV2 to TBTC moved $143M out of Aave's reserves with $129M of TBTC landing back the same day, a token-upgrade roll-over with no depositor exit. A Pendle principal token, PT-USDG-28MAY2026, matured on May 28 and rolled off Aave's books for $62M the following day, a calendar event rather than a flow event. Strip those two out and the real depositor signal that day was roughly $54M of USDT leaving.
+
+Of the three largest outflow days, one fits the post-unpause LRT narrative, one was an intra-Aave stables rotation, and one was dominated by structural roll-overs. The headline reading of "three large post-May-14 outflow days" obscures that they were three different phenomena. None of the three carries enough WEETH outflow to anchor the LRT-loop-finally-exited interpretation that the original framing assumed.
+
+The sector-wide LRT picture extends the WEETH timing finding to its logical conclusion. Total LRT collateral across all six protocols fell from $5.35 billion at April 30 to $3.73 billion at May 31, a $1.62 billion contraction at actual prices. The constant-price net flow component was $1.17 billion (WEETH $844M, RSETH $221M, EZETH $64M, OSETH $46M); the remaining $443 million was LRT price decline across the month. WEETH alone accounted for $1.18 billion of the actual-price contraction. By May 31, 84 percent of the LRT collateral remaining in the lending sector sat on Aave V3. The broader sector did not absorb the LRT rotation; the LRT collateral stayed on Aave V3 even as its dollar value fell, while the depositor flows rotated into BTC-family and stables instead.
+
+Where the LRT capital went is the cleaner half of the May story. Spark gained $751.6M of net deposits, continuing the migration that began during April's Aave-to-Spark rotation. Morpho gained $758.7M, concentrated in the Sentora cross-protocol expansion documented in §06.6. The BTC-family collateral category (WBTC, CBBTC, TBTC, KBTC) gained roughly $818M in net inflows, the largest non-stable inflow group of the month. The first two are intra-sector rotation between lending protocols. The third is a thesis-level rotation: from leveraged ETH-collateral loops to lower-correlation BTC-collateral positions. None of the three required the May 14 procedural unfreeze to clear before they could begin, and none of the three pivoted around it visibly in the daily data.
+
+The original framing for this section was that the LRT loops finally unwound when the procedural freeze lifted on May 14. The data does not support that, and the section is more rigorous for the correction. What the data supports is that LRT depositors on Aave V3 had been exiting their positions throughout the month without waiting for any single procedural event, that the dollar-headline supply contraction of $1.96 billion is dominated by mark-to-market price decline on collateral that had not actually moved, and that the same protocol that lost $2 billion in headline dollar supply added depositor quantity across both halves of the month. The loop unwound. The procedural calendar did not gate it.
+
+{/* End §05 — total ~830 words, two data tables, one pull quote */}

@@ -1,0 +1,30 @@
+{/*
+  Issue 002 — "Capital Rotates" — §03 Macro Context
+  Status: first draft, ~830 words
+  Sits between: §02 Executive Summary and §04 Sector Overview
+  Source data: 2026-05-rys-historical.json + eom-report:may + 2026-05-rate-dispersion.json
+  Notes: Issue 001's §03 closed with a forward question; this §03 answers it (partially)
+         and hands a sharper version of the same question to §09.
+*/}
+
+<SectionHeading number="03">Macro Context</SectionHeading>
+
+<Lead>The Real Yield Spread closed May 2026 at parity, the first month-end since September 2025 that the blended stablecoin supply rate on Ethereum matched the 4-week US Treasury bill rate. The gap was −0.3 basis points, effectively zero.</Lead>
+
+The mechanical decomposition is the same as April's: stable APYs lifted while T-bill yields held flat. The blended stablecoin supply rate across the six protocols rose from 3.26 percent at April 30 to 3.60 percent at May 31, a 34-basis-point lift. The 4-week T-bill yield drifted at 3.60 percent across the same window, unchanged to two decimal places. The gap closed because on-chain rates moved up to meet TradFi, not because TradFi rates moved down. That is the same recovery mechanism that ran in April, which closed the spread from −127 basis points at March 31 to −34 basis points at April 30.
+
+What May added to the picture is duration. The Real Yield Spread has compressed for four consecutive months from a February 2026 trough at −151 basis points, closing 33 basis points in May alone. The 33-point May tightening is the largest single-month compression of 2026. The last positive month-end print was September 2025 at +38 basis points, eight months before the May parity reading.
+
+<PullQuote>Stablecoin depositors on Ethereum have spent the entirety of 2026 earning less than the risk-free rate. May was the first month-end at which they merely matched it.</PullQuote>
+
+What pushed on-chain rates up was a sector-wide stables APY lift, not a single-protocol borrow squeeze. The blended stablecoin lending APY, TVL-weighted across USDC, USDT, DAI, and USDS on Aave V3, Spark, Morpho, and Fluid, rose from 3.26 percent at the April close to 3.60 percent at the May close, with the 4-week T-bill held flat. The 34-basis-point lift distributed across the protocols rather than concentrating in any one market. At month-end the USDC book ran widest, with Fluid USDC paying 5.93 percent supply APY against Euler V2 USDC at 2.62 percent and Aave V3 USDC at 3.27 percent, the third-lowest reading of the six.
+
+Cross-protocol dispersion adds a second reading. The May 31 dispersion in USDC supply APY across the six protocols was 330.5 basis points, against a 12-month average of 249.3 basis points, a 1.33-multiple. The same dollar of USDC earned 331 basis points more on the most generous of the six protocols than on the least. By contrast, USDT and WETH dispersion are both below their 12-month baselines this month, at 161.7 basis points (0.87× baseline) and 35.2 basis points (0.26× baseline). The persistence of USDC dispersion above baseline while the other two assets have converged below it diagnoses an asset-specific dynamic. USDC, the largest stablecoin in the sector by deposit balance, is the asset where the rate book is least integrated across protocols at month-end.
+
+Issue 001 closed §03 with a forward question. If the spread continued closing through May without further deleveraging, the system was rebalancing organically. If the spread reopened as capital normalized back into the system, April was a short squeeze rather than a regime change. May's answer is partial and instructive. The spread did continue closing, to parity. Deleveraging also continued. The LRT contraction documented in §05 removed roughly $1.62 billion of LRT collateral from the sector at actual prices, and the broader sector supply contracted 4.6 percent against the six-protocol baseline. Both halves of the Issue 001 setup happened together. The spread compressed and the deleveraging continued, on the same protocols, in the same month. The May reading is consistent with the organic-rebalancing thesis if you read it as continued deleveraging pushing rates up. It is also consistent with the short-squeeze thesis if you read it as the squeeze persisting at lower intensity.
+
+A parallel reading sits in §04. The sector take rate at May 31 was 3.38 percent annualized, below the 3.60 percent T-bill yield. The Real Yield Spread tells the parity story from the depositor side. The take rate compression tells the same story from the protocol side. Both readings have crossed thresholds in the same month, in the same direction, on the same underlying mechanism (falling fees against largely-unchanged available liquidity). Whether that crossing is a structural new state for DeFi lending on Ethereum or a transitory artifact of the LRT rotation that drove May is the question §09 carries into June.
+
+The cleaner forward question is which mechanism would close the parity reading in either direction. The spread pushing positive on a sustained basis requires either continued borrow-side pressure at the protocol level (utilization tightening, particularly in USDC markets where dispersion is already running above baseline) or compression on the unborrowed-supply side (depositors continuing to exit idle capital). The spread pushing negative again requires utilization easing across the sector or T-bill yields rising. Neither catalyst is currently visible in the data. The most likely June outcome, absent a new shock, is the spread oscillating around parity until one of those two structural conditions changes.
+
+{/* End §03 — total ~830 words, one pull quote, no data tables (the table is in §01 cheat sheet) */}

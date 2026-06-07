@@ -1,0 +1,55 @@
+{/*
+  Issue 002 — "Capital Rotates" — §06.5 Protocol Deep Dive: Compound V3
+  Status: first draft, ~810 words
+  Sits within §06 Protocol Deep Dives
+  Source data: 2026-05-31.json freeze (corrected Compound figures)
+               2026-05-compound-comet-markets.json (per-Comet on-chain reads)
+               eom-report:may (fees $1.66M, capture 1.1%, first treasury cut)
+               2026-05-oracle-concentration.json (93% Chainlink, most monoculture)
+               Apr 30 baseline: $1.72B (DefiLlama-derived, pre-audit; same formula bug as May)
+  Notes: WETH Comet abandonment is the section's primary editorial finding.
+         Data-quality correction context handled in opening paragraphs.
+*/}
+
+<SectionHeading number="06.5">Protocol Deep Dive: Compound V3</SectionHeading>
+
+Comet architecture. Each market has one borrowable base asset and many collateral assets; collateral does not earn interest.
+
+<Lead>Compound V3 shipped four Comet markets on Ethereum. At May 31, three of them carried meaningful capital and one carried $95,000 across base and collateral combined. The WETH Comet has effectively been abandoned by the protocol's lending base.</Lead>
+
+At May 31, Compound V3 carried $1.267 billion of total supply on Ethereum, against $414 million of active borrows and $853 million of available liquidity, for a 32.7 percent utilization. The figures are restated from the dashboard's pre-audit May 31 capture of $1.61 billion. The dashboard's protocol-level adapter was using a DefiLlama formula that overstated Compound's Ethereum supply by approximately $343 million due to off-market collateral pricing; an on-chain audit against the four Comet contract addresses returned the corrected total. The pattern is structural rather than transient (Euler V2 was affected by the same formula bug to a smaller magnitude, $70 million), and subsequent issues will measure against the corrected baseline.
+
+Compound V3's architecture (Comet) differs structurally from the pooled-liquidity design that Aave V3 and Spark use. Each Comet market has one borrowable base asset and many collateral assets. The base asset is pooled across borrowers within that market; collateral assets sit per-position and do not earn interest. The protocol's Ethereum footprint comprises four Comet markets: USDC base, USDT base, ETH base, and USDS base. There is no shared liquidity across the four. Each market is structurally independent in its rate dynamics, collateral set, and risk parameters.
+
+<DataTable
+  caption="Compound V3 Comet markets on Ethereum, May 31, 2026"
+  columns={[
+    { key: "market", label: "Market", align: "left" },
+    { key: "baseSupply", label: "Base supply", align: "right" },
+    { key: "baseBorrow", label: "Base borrow", align: "right" },
+    { key: "collateral", label: "Collateral USD", align: "right" },
+    { key: "util", label: "Utilization", align: "right" }
+  ]}
+  rows={[
+    { market: "USDC base", baseSupply: "$328.9M", baseBorrow: "$266.9M", collateral: "$473.3M", util: "81.2%" },
+    { market: "USDT base", baseSupply: "$203.3M", baseBorrow: "$145.3M", collateral: "$256.6M", util: "71.5%" },
+    { market: "ETH base", baseSupply: "$50K", baseBorrow: "$40K", collateral: "$45K", util: "79.3%" },
+    { market: "USDS base", baseSupply: "$1.92M", baseBorrow: "$1.74M", collateral: "$2.77M", util: "90.5%" }
+  ]}
+/>
+
+What stands out is the ETH Comet's near-total absence. At $50,000 of base supply and $40,000 of base borrowing, it is three orders of magnitude smaller than the USDC and USDT Comets above it. By contrast, Aave V3's WETH market alone carries $3.86 billion of supply on Ethereum, the largest single market in the sector's top ten by a wide margin. Compound shipped an ETH-base Comet and the lending base did not adopt it.
+
+<PullQuote>Compound shipped an ETH-base Comet and the lending base did not adopt it.</PullQuote>
+
+The reasons are likely competitive and architectural. Aave V3 was already the dominant ETH-supply venue when Compound's ETH Comet launched, and the Comet design (collateral does not earn interest) is less efficient than Aave's interest-bearing-collateral pool for the use case that ETH-against-stable borrowers actually want. Either way, the outcome at May 31 is a near-empty market that occupies a structural slot in the protocol's design without contributing materially to its book.
+
+The USDS Comet's reading is the other distinctive observation. At $1.92 million of base supply against $1.74 million of base borrowing, it runs the highest base-asset utilization of any Compound Ethereum market at 90.5 percent. The base supply APY at May 31 was 4.74 percent, with borrow APY at 5.69 percent. As stablecoin lending venues across the sector compressed toward parity with T-bills in May (the macro story §03 carries), this small USDS market was the only Compound Comet on Ethereum running a meaningful positive Real Yield Spread of its own. The economic significance is limited by the market's size, but the structural observation is worth flagging: the highest stable yield Compound offered on Ethereum at May close was on a $2 million market. The protocol's larger Comets (USDC at $329M base supply, USDT at $203M) ran lower base APYs at higher utilizations.
+
+On the revenue side, Compound produced $1.66 million of Ethereum-only fees in May, against $1.64 million in April, a 1.2 percent expansion. That is the only revenue-side stability of the six protocols in coverage outside Spark's outright growth. More structurally, Compound took its first visible protocol-treasury cut in months on Ethereum in May, $19,000, corresponding to a 1.1 percent capture rate. The dollar figure is small but the direction is the change. Compound's prior months in this report's coverage had run at 0 percent capture, full pass-through to depositors. The May activation is small enough that it could be a one-off rather than a regime change; whether it persists in June will say more.
+
+Oracle dependency on Compound V3 is the highest in the sector. 93 percent of the protocol's Ethereum collateral is priced by Chainlink feeds, against the six-protocol sector average of 83 percent. The dependency is a consequence of the Comet design. A pooled-base market with a standardized collateral set lends itself to a single oracle vendor more cleanly than a per-curator vault economy. Where Morpho's 67 percent Chainlink share reflects curator discretion across hundreds of markets, Compound's 93 percent reflects the architectural decision to standardize. Compound V3 is the most oracle-monoculture protocol in coverage; Morpho is the most diversified.
+
+Compound V3's May was structurally quiet. Net deposit flow was −$68.4 million on the Sankey methodology. Fees were roughly flat. The protocol's ETH-base Comet sat near-empty. The small USDS Comet ran the only meaningfully-yielding stable market on the platform. The data-quality correction that brought the dashboard's $1.61 billion display down to an on-chain $1.27 billion is the most structurally consequential development for Compound this issue. The forward question for §09 is whether the small USDS Comet's positive spread holds in June, or compresses toward T-bill parity along with the rest of the sector's stablecoin yields.
+
+{/* End §06.5 — total ~810 words, one Comet markets table, one pull quote */}

@@ -46,7 +46,7 @@ import { PROTOCOLS } from "@/lib/protocols"
 import { RysTrajectoryChart } from "@/components/report/charts/RysTrajectoryChart"
 import { SectorNetFlowsChart } from "@/components/report/charts/SectorNetFlowsChart"
 import { CollateralRotationChart } from "@/components/report/charts/CollateralRotationChart"
-import { AaveUsdcIrmChart } from "@/components/report/charts/AaveUsdcIrmChart"
+import { UsdcSupplyApyByProtocolChart } from "@/components/report/charts/UsdcSupplyApyByProtocolChart"
 import { MorphoHhiTwoPanelChart } from "@/components/report/charts/MorphoHhiTwoPanelChart"
 import { SparkLendCumulativeChart } from "@/components/report/charts/SparkLendCumulativeChart"
 import { TakeRateVsTbillChart } from "@/components/report/charts/TakeRateVsTbillChart"
@@ -591,30 +591,33 @@ const collateralRotationEntry: ChartRegistryEntry<{
   Component: CollateralRotationChart,
 }
 
-const aaveUsdcIrmEntry: ChartRegistryEntry<{
-  kinkPct: number
-  currentPct: number
-  supplyApyPct: number
-  borrowApyPct: number
-  baseRatePct: number
-  slope1Pct: number
-  slope2Pct: number
+const usdcSupplyApyByProtocolEntry: ChartRegistryEntry<{
+  asOf: string
+  rows: Array<{ protocol: string; supplyApyPct: number; isLeader?: boolean; isLaggard?: boolean }>
+  dispersionBps: number
+  twelveMonthAverageBps: number
+  multipleOfAverage: number
 }> = {
   defaultParams: {},
   loader: async () => ({
-    // Aave V3 USDC IRM at May 31: kink at 90% optimal utilization,
-    // base rate ~0, slope1 producing ~8% at the kink, slope2 driving
-    // to ~55% at full utilization. At 97.6% utilization the borrow
-    // APY lands at 10.95%; supply APY 9.62%.
-    kinkPct: 90,
-    currentPct: 97.6,
-    supplyApyPct: 9.62,
-    borrowApyPct: 10.95,
-    baseRatePct: 0,
-    slope1Pct: 8,
-    slope2Pct: 55,
+    // USDC supply APY by protocol at May 31, 2026.
+    // Source: content/snapshots/2026-05-rate-dispersion.json
+    // Methodology: per-protocol representative USDC pool, sourced from
+    // DefiLlama Yields. Dispersion = max − min across the six protocols.
+    asOf: "2026-05-31",
+    rows: [
+      { protocol: "Fluid",       supplyApyPct: 5.93, isLeader: true },
+      { protocol: "Morpho",      supplyApyPct: 4.78 },
+      { protocol: "SparkLend",   supplyApyPct: 4.00 },
+      { protocol: "Aave V3",     supplyApyPct: 3.27 },
+      { protocol: "Compound V3", supplyApyPct: 3.20 },
+      { protocol: "Euler V2",    supplyApyPct: 2.62, isLaggard: true },
+    ],
+    dispersionBps: 330.5,
+    twelveMonthAverageBps: 249.3,
+    multipleOfAverage: 1.33,
   }),
-  Component: AaveUsdcIrmChart,
+  Component: UsdcSupplyApyByProtocolChart,
 }
 
 const morphoHhiTwoPanelEntry: ChartRegistryEntry<{
@@ -727,7 +730,7 @@ export const chartRegistry: ChartRegistry = {
   "rates.rys-trajectory-12m": rysTrajectoryEntry,
   "sector.net-flows-by-protocol-may": sectorNetFlowsEntry,
   "sector.collateral-rotation-lrt-vs-btc": collateralRotationEntry,
-  "protocol.aave-usdc-irm-may31": aaveUsdcIrmEntry,
+  "rates.usdc-supply-apy-by-protocol-may31": usdcSupplyApyByProtocolEntry,
   "morpho.curator-hhi-two-panel": morphoHhiTwoPanelEntry,
   "protocol.sparklend-cumulative-deposits": sparkLendCumulativeEntry,
   "rates.take-rate-vs-tbill-12m": takeRateVsTbillEntry,

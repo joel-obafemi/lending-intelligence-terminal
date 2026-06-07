@@ -1,0 +1,49 @@
+{/*
+  Issue 002 — "Capital Rotates" — §07 Curator Concentration as a Cross-Protocol Phenomenon
+  Status: first draft, ~870 words
+  Source data: content/snapshots/2026-05-31-curator-hhi.json (HHI 3,103, May 31 freeze)
+               content/snapshots/2026-06-04-curator-hhi.json (HHI 3,290, June 4 follow-on)
+               content/snapshots/2026-05-sentora-cross-protocol.json (Morpho expansion)
+               §06.6 source brief (Euler V2 reallocation context)
+  Depends on: §06.6 having been read first (this section references the Sentora finding)
+*/}
+
+<SectionHeading number="07">Curator Concentration as a Cross-Protocol Phenomenon</SectionHeading>
+
+<Lead>Morpho's curator HHI moved from 3,026 to 3,103 across May, the third consecutive monthly print past the antitrust threshold for highly concentrated markets. The deepening is the easy headline. What May also surfaced, through the Sentora reallocation finding in §06.6, is the layer of concentration that HHI on any single protocol cannot measure.</Lead>
+
+The HHI trajectory on Morpho has held one direction for three months. The March close was 2,700, already over the antitrust threshold of 2,500 that classifies a market as highly concentrated. April closed at 3,026, the first crossing past 3,000. May closed at 3,103. The first programmatic capture of the next month's reading, run on June 4 to validate the snapshot script's schema, came in at 3,290, the largest four-day move in any window we have on record.
+
+<DataTable
+  caption="Morpho curator HHI and top-three composition, March through June 2026"
+  columns={[
+    { key: "date", label: "Snapshot", align: "left" },
+    { key: "hhi", label: "HHI", align: "right" },
+    { key: "sentora", label: "Sentora", align: "right" },
+    { key: "steakhouse", label: "Steakhouse", align: "right" },
+    { key: "gauntlet", label: "Gauntlet", align: "right" },
+    { key: "top3", label: "Top 3 share", align: "right" }
+  ]}
+  rows={[
+    { date: "Mar 31", hhi: "2,700", sentora: "—", steakhouse: "—", gauntlet: "—", top3: "88.6%" },
+    { date: "Apr 30", hhi: "3,026", sentora: "—", steakhouse: "—", gauntlet: "—", top3: "94.4%" },
+    { date: "May 31", hhi: "3,103", sentora: "38.6%", steakhouse: "34.1%", gauntlet: "21.2%", top3: "93.9%" },
+    { date: "Jun 4", hhi: "3,290", sentora: "41.3%", steakhouse: "34.8%", gauntlet: "19.0%", top3: "95.2%" }
+  ]}
+/>
+
+The May reading itself shows the textbook case for using HHI rather than top-three share alone. Top-three share fell slightly between April and May, from 94.4 percent to 93.9 percent. HHI rose in the same window. The composition tightened within the top three even as their combined share softened: one curator pulled further ahead while the other two gave back ground. Top-N share would have flagged "concentration eased." HHI flagged "concentration deepened." Both readings are correct from their own definitions. Only HHI captures the shape.
+
+The May data also surfaces a wrinkle that no prior reading exposed cleanly. Sentora's Morpho TVL grew by $93.94M across the month. As §06.6 documents, that growth came almost one-for-one from Sentora's own reallocation out of their Euler V2 vaults. The HHI deepening on Morpho this month was not solely a function of depositors continuing to gravitate toward the largest curators. It was partly a function of the largest curator moving capital onto their own pile. The mechanism is related to the trend HHI usually measures but interpretively different: the next month's HHI reading is partially predictable from cross-protocol curator behavior, not just from intra-Morpho dynamics.
+
+The trajectory continued past the May 31 freeze. Four days into June, the snapshot script returned a reading of 3,290, up from 3,103 at the May close. That is a 187-point jump in four days, larger than any prior monthly delta in the dataset. Sentora's share moved from 38.6 percent to 41.3 percent, a 2.7 percentage point gain. Steakhouse Financial added 0.7 points to reach 34.8 percent. Gauntlet softened from 21.2 percent to 19.0 percent. Top-three share rose to 95.2 percent. Capital was still moving toward Sentora's Morpho vaults four days past the snapshot. The Sentora-to-Morpho reallocation that drove the May Euler V2 contraction had not stopped.
+
+<PullQuote>HHI measures the concentration that has accumulated within a protocol. It cannot see the concentration that moves between them.</PullQuote>
+
+Three structural risks sit one layer above what HHI measures, and May surfaced new evidence for each. The first is the risk Issue 001 named: correlated exposure within Morpho. The top three vaults share collateral and oracle dependencies, and a single oracle failure in a shared market could trigger drawdowns across 94 percent of curated TVL in one block. That risk was real at Issue 001's writing and remains real now. The second is what May surfaced for the first time with named, traceable evidence. The same curators run vaults across multiple lending protocols, and their footprints stack. Sentora is Morpho's number-one curator and was the operator behind Euler V2's $128M May contraction. The on-chain curator economy is more concentrated than any per-protocol HHI suggests because the same operator names occupy top-curator slots across multiple protocols. The third is the discretionary side of the second. One curator's decision can move material capital between protocols inside a single month, with no flagged event, no oracle failure, no governance vote, and no liquidation cascade. The Sentora reallocation is the first dataset in this publication's coverage where the magnitude of that discretion is empirically quantified.
+
+No single-protocol metric was built to see cross-protocol curator agency. HHI on Morpho captures static concentration within Morpho. It does not capture Sentora's Spark or Aave V3 footprints, which would need to be added to compute a multi-protocol Sentora share. It does not capture the rate of change of capital under any single curator's discretion. And it does not capture the off-chain layer that institutional credit allocation increasingly inhabits: B2B private deal flow, off-platform structured exposure, custom Morpho Blue markets that sit one layer below the curated MetaMorpho aggregation. Every one of those is invisible to the public HHI number. The 3,103 reading at May 31, in other words, is the conservative version of a more concentrated picture. It is the floor, not the ceiling.
+
+What this section does not argue is that the cross-protocol pattern is itself anomalous. Curators choosing where to deploy capital across protocols is the design of the curated-vault architecture, not its failure mode. What May made empirically traceable, for the first time at scale, is the magnitude of capital that can move under a single curator's discretion in a single month. The model of curators as passive index managers, faithfully aggregating depositor capital and earning a service fee, is not what the Sentora data shows. The data shows active reallocation across protocols, at $128M of velocity, with no external trigger required. Whether that pattern recurs at similar scale in June and July is the question §09 carries forward.
+
+{/* End §07 — total ~870 words, one HHI trajectory table, one pull quote */}

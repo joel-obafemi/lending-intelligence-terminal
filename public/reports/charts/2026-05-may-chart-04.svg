@@ -3,62 +3,86 @@
   <style>
     .axis { fill: #595959; font: 11px 'JetBrains Mono', monospace; }
     .grid { stroke: #B8C9DD; stroke-opacity: 0.4; }
-    .ref  { stroke: #595959; stroke-dasharray: 3 4; stroke-opacity: 0.65; }
-    .line { stroke: #1F3A5F; stroke-width: 2.2; fill: none; }
-    .area { fill: rgba(31, 58, 95, 0.18); }
-    .dot  { fill: #C5511A; stroke: #F7F4ED; stroke-width: 2; }
-    .callout { fill: #C5511A; font: 600 11px 'JetBrains Mono', monospace; }
-    .title { fill: #0E1B2C; font: 600 18px 'Source Serif 4', Georgia, serif; }
+    .leader   { fill: #C5511A; }
+    .mid      { fill: #1F3A5F; }
+    .laggard  { fill: #595959; }
+    .name     { fill: #0E1B2C; font: 13px 'JetBrains Mono', monospace; }
+    .lbl-leader  { fill: #C5511A; font: 600 11px 'JetBrains Mono', monospace; }
+    .lbl-mid     { fill: #1F3A5F; font: 600 11px 'JetBrains Mono', monospace; }
+    .lbl-laggard { fill: #595959; font: 600 11px 'JetBrains Mono', monospace; }
+    .title   { fill: #0E1B2C; font: 600 18px 'Source Serif 4', Georgia, serif; }
     .caption { fill: #595959; font: italic 13px 'Source Serif 4', Georgia, serif; }
-    .source { fill: #595959; font: 10px 'JetBrains Mono', monospace; letter-spacing: 0.08em; }
-    .sblabel { fill: #595959; font: 10px 'JetBrains Mono', monospace; letter-spacing: 0.12em; }
-    .sbvalue-c { fill: #C5511A; font: 600 26px 'Source Serif 4', Georgia, serif; }
-    .sbvalue-b { fill: #1F3A5F; font: 600 26px 'Source Serif 4', Georgia, serif; }
-    .sidebar { fill: rgba(31, 58, 95, 0.04); stroke: #B8C9DD; }
+    .source  { fill: #595959; font: 10px 'JetBrains Mono', monospace; letter-spacing: 0.08em; }
+    .sb-label   { fill: #595959; font: 10px 'JetBrains Mono', monospace; letter-spacing: 0.12em; }
+    .sb-value-c { fill: #C5511A; font: 600 22px 'Source Serif 4', Georgia, serif; }
+    .sb-value-b { fill: #1F3A5F; font: 600 22px 'Source Serif 4', Georgia, serif; }
+    .sidebar    { fill: rgba(31, 58, 95, 0.04); stroke: #B8C9DD; }
+    .ref-zero   { stroke: #595959; stroke-opacity: 0.7; }
   </style>
   <rect width="880" height="420" fill="#F7F4ED"/>
-  <text class="title" x="48" y="36">Aave V3 USDC interest rate model at May 31, 2026</text>
-  <text class="caption" x="48" y="58">Borrow APY by utilization. Reading 97.6% sits 7.6 pp past the 90% kink.</text>
-  <!-- Chart area: x 60-600, y 90-360. X = util 0-100, Y = borrow 0-60. Kink at x=60+0.9*(540)=546. -->
-  <!-- Grid y: 90,150,210,270,330 = 60,45,30,15,0% -->
-  <line class="grid" x1="60" y1="90" x2="600" y2="90"/>
-  <line class="grid" x1="60" y1="150" x2="600" y2="150"/>
-  <line class="grid" x1="60" y1="210" x2="600" y2="210"/>
-  <line class="grid" x1="60" y1="270" x2="600" y2="270"/>
-  <line class="grid" x1="60" y1="330" x2="600" y2="330"/>
-  <text class="axis" x="52" y="94" text-anchor="end">60%</text>
-  <text class="axis" x="52" y="154" text-anchor="end">45%</text>
-  <text class="axis" x="52" y="214" text-anchor="end">30%</text>
-  <text class="axis" x="52" y="274" text-anchor="end">15%</text>
-  <text class="axis" x="52" y="334" text-anchor="end">0%</text>
-  <!-- IRM curve: base=0, slope1=8% at 90% kink, slope2=55% at 100%. -->
-  <!-- y(0%) = 330, y(90% util, 8%) = 330 - 8*4 = 298. y(100%, 55%) = 330 - 55*4 = 110. -->
-  <path class="area" d="M 60 330 L 546 298 L 600 110 L 600 360 L 60 360 Z"/>
-  <path class="line" d="M 60 330 L 546 298 L 600 110"/>
-  <!-- Kink reference line -->
-  <line class="ref" x1="546" y1="90" x2="546" y2="330"/>
-  <text class="axis" x="546" y="80" text-anchor="middle">Kink 90%</text>
-  <!-- Current dot: 97.6% util, 10.95% borrow → x = 60 + 0.976*540 = 587, y = 330 - 10.95*4 = 286 -->
-  <circle class="dot" cx="587" cy="286" r="6"/>
-  <text class="callout" x="595" y="284">97.6% · 10.95%</text>
-  <!-- X labels -->
-  <text class="axis" x="60" y="350" text-anchor="middle">0%</text>
-  <text class="axis" x="168" y="350" text-anchor="middle">20%</text>
-  <text class="axis" x="276" y="350" text-anchor="middle">40%</text>
-  <text class="axis" x="384" y="350" text-anchor="middle">60%</text>
-  <text class="axis" x="492" y="350" text-anchor="middle">80%</text>
-  <text class="axis" x="600" y="350" text-anchor="middle">100%</text>
-  <text class="axis" x="330" y="372" text-anchor="middle">UTILIZATION</text>
-  <!-- Sidebar -->
+  <text class="title" x="48" y="36">USDC supply APY by protocol, May 31, 2026</text>
+  <text class="caption" x="48" y="58">Per-protocol USDC supply APY at month-end, sorted leader to laggard. Aave V3 third-lowest of six.</text>
+  <!--
+    Chart area: x 152 - 600 (bar plot), y 90 - 340. Six bars stacked top-to-bottom.
+    Scale: 0%-6.5% across 448 px → 1% ≈ 68.9 px. Bar at x=152 = 0%, x=600 ≈ 6.5%.
+    Rows (sorted descending): Fluid 5.93, Morpho 4.78, SparkLend 4.00, Aave V3 3.27, Compound V3 3.20, Euler V2 2.62.
+    Row height 30, gap 12. Top y=98.
+  -->
+  <!-- Y-axis (protocol names) -->
+  <text class="name" x="146" y="118" text-anchor="end">Fluid</text>
+  <text class="name" x="146" y="160" text-anchor="end">Morpho</text>
+  <text class="name" x="146" y="202" text-anchor="end">SparkLend</text>
+  <text class="name" x="146" y="244" text-anchor="end">Aave V3</text>
+  <text class="name" x="146" y="286" text-anchor="end">Compound V3</text>
+  <text class="name" x="146" y="328" text-anchor="end">Euler V2</text>
+  <!-- Vertical zero ref -->
+  <line class="ref-zero" x1="152" y1="90" x2="152" y2="340"/>
+  <!-- Grid (vertical lines at integer % values) -->
+  <line class="grid" x1="220.9" y1="90" x2="220.9" y2="340"/> <!-- 1% -->
+  <line class="grid" x1="289.8" y1="90" x2="289.8" y2="340"/> <!-- 2% -->
+  <line class="grid" x1="358.7" y1="90" x2="358.7" y2="340"/> <!-- 3% -->
+  <line class="grid" x1="427.6" y1="90" x2="427.6" y2="340"/> <!-- 4% -->
+  <line class="grid" x1="496.5" y1="90" x2="496.5" y2="340"/> <!-- 5% -->
+  <line class="grid" x1="565.4" y1="90" x2="565.4" y2="340"/> <!-- 6% -->
+  <!-- Bars (width = pct * 68.9) -->
+  <!-- Fluid 5.93%, leader (terracotta) -->
+  <rect class="leader" x="152" y="103" width="408.6" height="30"/>
+  <text class="lbl-leader" x="572" y="123">5.93%</text>
+  <!-- Morpho 4.78%, mid (cobalt) -->
+  <rect class="mid" x="152" y="145" width="329.4" height="30"/>
+  <text class="lbl-mid" x="492" y="165">4.78%</text>
+  <!-- SparkLend 4.00%, mid (cobalt) -->
+  <rect class="mid" x="152" y="187" width="275.7" height="30"/>
+  <text class="lbl-mid" x="438" y="207">4.00%</text>
+  <!-- Aave V3 3.27%, mid (cobalt) -->
+  <rect class="mid" x="152" y="229" width="225.3" height="30"/>
+  <text class="lbl-mid" x="388" y="249">3.27%</text>
+  <!-- Compound V3 3.20%, mid (cobalt) -->
+  <rect class="mid" x="152" y="271" width="220.5" height="30"/>
+  <text class="lbl-mid" x="383" y="291">3.20%</text>
+  <!-- Euler V2 2.62%, laggard (muted) -->
+  <rect class="laggard" x="152" y="313" width="180.5" height="30"/>
+  <text class="lbl-laggard" x="343" y="333">2.62%</text>
+  <!-- X-axis tick labels -->
+  <text class="axis" x="152" y="358" text-anchor="middle">0%</text>
+  <text class="axis" x="220.9" y="358" text-anchor="middle">1%</text>
+  <text class="axis" x="289.8" y="358" text-anchor="middle">2%</text>
+  <text class="axis" x="358.7" y="358" text-anchor="middle">3%</text>
+  <text class="axis" x="427.6" y="358" text-anchor="middle">4%</text>
+  <text class="axis" x="496.5" y="358" text-anchor="middle">5%</text>
+  <text class="axis" x="565.4" y="358" text-anchor="middle">6%</text>
+  <text class="axis" x="376" y="378" text-anchor="middle">SUPPLY APY</text>
+  <!-- Sidebar: dispersion stats -->
   <rect class="sidebar" x="630" y="90" width="210" height="270" rx="4"/>
-  <text class="sblabel" x="650" y="120">UTILIZATION</text>
-  <text class="sbvalue-c" x="650" y="150">97.6%</text>
-  <text class="sblabel" x="650" y="186">SUPPLY APY</text>
-  <text class="sbvalue-b" x="650" y="216">9.62%</text>
-  <text class="sblabel" x="650" y="252">BORROW APY</text>
-  <text class="sbvalue-b" x="650" y="282">10.95%</text>
-  <line x1="650" y1="300" x2="820" y2="300" stroke="#B8C9DD"/>
-  <text class="sblabel" x="650" y="324">SITTING 7.6 PP PAST</text>
-  <text class="sblabel" x="650" y="340">THE KINK</text>
-  <text class="source" x="48" y="404">DATUM LABS LENDING TERMINAL</text>
+  <text class="sb-label"   x="650" y="118">DISPERSION (MAX − MIN)</text>
+  <text class="sb-value-c" x="650" y="146">330.5 bps</text>
+  <text class="sb-label"   x="650" y="180">12-MO AVERAGE</text>
+  <text class="sb-value-b" x="650" y="208">249.3 bps</text>
+  <text class="sb-label"   x="650" y="242">MULTIPLE OF AVERAGE</text>
+  <text class="sb-value-b" x="650" y="270">1.33×</text>
+  <line x1="650" y1="290" x2="820" y2="290" stroke="#B8C9DD"/>
+  <text class="sb-label" x="650" y="314">USDC RUNNING WIDEST OF</text>
+  <text class="sb-label" x="650" y="330">THE THREE ASSETS TRACKED</text>
+  <text class="sb-label" x="650" y="346">AT MAY 31</text>
+  <text class="source" x="48" y="408">DATUM LABS LENDING TERMINAL</text>
 </svg>

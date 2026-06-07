@@ -1,0 +1,34 @@
+{/*
+  Issue 002 — "Capital Rotates" — §06.2 Protocol Deep Dive: Spark
+  Status: first draft, ~800 words
+  Sits within §06 Protocol Deep Dives
+  Source data: 2026-05-31.json (freeze) + Issue 001 published Apr 30 baseline ($5.00B)
+               eom-report:may output (fees, capture rate)
+               2026-05-oracle-concentration.json (Chainlink share)
+               Top 10 markets data (WSTETH at $2.07B, SPK Farming Pool at $824M)
+  Note: This section is the migration-beneficiary story, continued from Issue 001 §06.
+*/}
+
+<SectionHeading number="06.2">Protocol Deep Dive: Spark</SectionHeading>
+
+Aave V3 fork by the Sky (MakerDAO) team, tightly integrated with DAI/USDS and sDAI/sUSDS savings rates.
+
+<Lead>Spark was the migration beneficiary again in May, the only protocol in this report's coverage that grew on both depositor flow and Ethereum-only fees. The April rotation that drove $1.97 billion of net deposits into Spark continued at lower intensity, adding another $751.6 million.</Lead>
+
+At May 31, Spark carried $5.38 billion of total supply on Ethereum, up from $5.00 billion at April 30, a $380 million nominal gain of 7.6 percent. Active borrows stood at $1.75 billion against $3.63 billion of available liquidity, for a 32.6 percent utilization. The protocol is now 41 percent below its October 2025 peak of $9.09 billion, a smaller drawdown than Aave V3's 71 percent or Euler V2's 78 percent at the May 31 close. Of the six protocols this issue covers, Spark's contraction from peak is the second-shallowest, behind only Morpho's 28 percent.
+
+The nominal supply gain of $380 million understates the actual depositor flow. At constant prices, Spark added $751.6 million of net depositor quantity across May. The gap is the WSTETH price-decline component, the same accounting wedge that obscures Aave V3's positive depositor flow in §05 in the opposite direction. Spark's collateral base is heavily WSTETH-weighted, and WSTETH lost dollar value across May along with the rest of the ETH-family. The headline supply gain understates the migration; the constant-price flow is closer to the truth of what depositors did.
+
+<PullQuote>Spark's WSTETH market alone is larger than Compound's entire Ethereum supply.</PullQuote>
+
+What is distinctive about Spark's growth pattern is what it grew on. The protocol's collateral base is dominated by WSTETH, which sits as the fifth-largest single market across the six-protocol sector at $2.07 billion of supply. Spark's WSTETH market alone is larger than Compound's entire Ethereum supply, and it carries effectively no borrows; the deposits sit as collateral against stable borrows on the other side of the protocol. That structure makes Spark a yield-on-staked-ETH play more than a leveraged-stablecoin play. April's migration concentrated specifically in WSTETH because the rotating capital was specifically liquid-staked ETH exiting Aave V3's LRT-adjacent risk. May's continuation worked the same way at smaller scale, consistent with the LRT-loop unwind having less remaining mass to redistribute as it consumed itself.
+
+Across April and May together, Spark absorbed roughly $2.72 billion of constant-price net depositor flow, against a Spark supply that began the period at $2.89 billion at March 31. The protocol nearly doubled in two months on flows alone before slowing into its current shape. That is not the trajectory of an organic growth story; it is the trajectory of a destination protocol absorbing capital exiting a stress event elsewhere. Whether Spark retains that capital when the rotation slows further is the open question, and §09 carries it forward.
+
+On the revenue side, Spark was the only protocol in coverage with meaningful Ethereum-only fee expansion. Fees rose from $3.74 million in April to $4.69 million in May, a 25.6 percent increase. The protocol's capture rate softened from 14.2 percent to 11.2 percent across the same window, meaning depositors took a larger share of a larger pie. Holders revenue and treasury revenue both still received their cuts; the proportion shifted, the structure did not. In a month where every other protocol's fees fell within $1 million in either direction (Aave V3 the obvious exception with a $13.32 million decline that accounted for the entire sector compression), Spark adding nearly $1 million of monthly fees is the closest thing to a structural growth story the sector produced.
+
+One oddity worth flagging in any reading of Spark's numbers: the protocol's USDS market on the SPK Farming Pool program holds $824.81 million of supply at May 31, sitting at the bottom of the sector's Top 10 markets, with zero utilization and zero supply or borrow APY because the market exists as an incentive program rather than a borrow market. That is a substantial chunk of Spark's nominal supply that does not behave like the rest of its book: it is parked capital earning SPK token rewards rather than interest rate income. Strip the SPK Farming Pool out and Spark's borrowable supply is closer to $4.56 billion, with the same migration capture on a smaller active base. The 32.6 percent overall utilization figure understates utilization on the protocol's actual borrow markets.
+
+What Spark has not developed is a rate-driven growth signal of its own. Spark USDC paid 4.00 percent supply APY at May 31, mid-pack across the six covered protocols and below Morpho and Fluid. The growth came from the deposit base expanding, not from rate-driven capital pull. Whether the May migration was the tail end of the April rotation or the beginning of a more durable Aave-to-Spark capital reallocation is the question §09 carries forward. If the depositors who held back from migrating in April begin to follow the WSTETH cohort to Spark, the protocol could find itself the natural beneficiary of two distinct rotations at once.
+
+{/* End §06.2 — total ~810 words, one pull quote, no data table */}

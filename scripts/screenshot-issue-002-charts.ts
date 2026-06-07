@@ -16,7 +16,7 @@ const ANCHORS: ChartAnchor[] = [
   { id: "chart-rates-rys-trajectory-12m",            slug: "01-rys-trajectory",       label: "Chart 1 · Real Yield Spread 12-month" },
   { id: "chart-sector-net-flows-by-protocol-may",    slug: "02-sector-net-flows",     label: "Chart 2 · Sector net flows by protocol" },
   { id: "chart-sector-collateral-rotation-lrt-vs-btc", slug: "03-collateral-rotation", label: "Chart 3 · LRT vs BTC collateral rotation" },
-  { id: "chart-protocol-aave-usdc-irm-may31",        slug: "04-aave-usdc-irm",        label: "Chart 4 · Aave V3 USDC IRM at May 31" },
+  { id: "chart-rates-usdc-supply-apy-by-protocol-may31", slug: "04-usdc-supply-apy", label: "Chart 4 · USDC supply APY by protocol" },
   { id: "chart-morpho-curator-hhi-two-panel",        slug: "05-morpho-hhi-two-panel", label: "Chart 5 · Morpho HHI + top-3 composition" },
   { id: "chart-protocol-sparklend-cumulative-deposits", slug: "06-sparklend-cumulative", label: "Chart 6 · SparkLend cumulative deposits" },
   { id: "chart-rates-take-rate-vs-tbill-12m",        slug: "07-take-rate-vs-tbill",   label: "Chart 7 · Sector take rate vs T-bill" },
