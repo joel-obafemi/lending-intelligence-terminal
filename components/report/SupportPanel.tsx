@@ -5,11 +5,15 @@
  * (archive landing + each issue) instead of the dashboard's
  * terminal-mode footer.
  *
- * Same two concerns: a warm, non-aggressive note pointing at the
- * ERC-20 donation address, and a feedback note with X + email links.
+ * Three concerns, stacked in the order a reader who finished the
+ * article is most likely to act on:
+ *   1. Subscribe to the next issue (NewsletterSignup → Beehiiv)
+ *   2. Support the work (ERC-20 donation address)
+ *   3. Feedback (X + email links)
  * Styled to match the report's serif typography and cream surface.
  */
 import { useState, useCallback } from "react"
+import { NewsletterSignup } from "./NewsletterSignup"
 
 const DONATION_ADDRESS = "0xD96A202CD742B00BfdFeb71b3Ce48291Ba3749D1"
 const X_PROFILE_URL = "https://x.com/joel_obafemi"
@@ -45,8 +49,48 @@ export function SupportPanel() {
         gap: 24,
       }}
     >
-      {/* Support */}
+      {/* Subscribe — first because reading-time-zero finishers are
+          most likely to opt in to the next issue. */}
       <div>
+        <h2
+          style={{
+            fontFamily: "var(--report-font-sans)",
+            fontWeight: 600,
+            fontSize: 12,
+            letterSpacing: "0.16em",
+            textTransform: "uppercase",
+            color: "var(--report-brand)",
+            marginBottom: 12,
+            marginTop: 0,
+          }}
+        >
+          Next issue
+        </h2>
+        <p
+          style={{
+            fontFamily: "var(--report-font-serif)",
+            fontSize: 15,
+            lineHeight: 1.6,
+            color: "var(--report-text)",
+            margin: "0 0 14px 0",
+            maxWidth: 640,
+          }}
+        >
+          The next <em>State of DeFi Lending</em> issue lands on the 7th of next
+          month. Drop your email below to get it in your inbox.
+        </p>
+        <div style={{ maxWidth: 420 }}>
+          <NewsletterSignup hideLabel />
+        </div>
+      </div>
+
+      {/* Support */}
+      <div
+        style={{
+          paddingTop: 20,
+          borderTop: "1px solid var(--report-border)",
+        }}
+      >
         <h2
           id="support-heading"
           style={{

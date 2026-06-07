@@ -17,9 +17,16 @@ interface Props {
   /** Where to send the email when no provider is wired. Defaults to a
    *  brand alias the user can manually subscribe via. */
   fallbackMailTo?: string
+  /** Suppress the internal "Get the next issue in your inbox" label.
+   *  Useful when the form sits under a section heading that already
+   *  conveys the intent (e.g. the report-page SupportPanel). */
+  hideLabel?: boolean
 }
 
-export function NewsletterSignup({ fallbackMailTo = "research@datumlab.xyz" }: Props) {
+export function NewsletterSignup({
+  fallbackMailTo = "research@datumlab.xyz",
+  hideLabel = false,
+}: Props) {
   const [email, setEmail] = useState("")
   const [status, setStatus] = useState<"idle" | "loading" | "ok" | "err">("idle")
   const [errMsg, setErrMsg] = useState<string>("")
@@ -75,18 +82,20 @@ export function NewsletterSignup({ fallbackMailTo = "research@datumlab.xyz" }: P
         margin: "0 auto",
       }}
     >
-      <label
-        htmlFor="newsletter-email"
-        style={{
-          fontFamily: "var(--report-font-mono)",
-          fontSize: 11,
-          letterSpacing: "0.1em",
-          textTransform: "uppercase",
-          color: "var(--report-text-muted)",
-        }}
-      >
-        Get the next issue in your inbox
-      </label>
+      {!hideLabel && (
+        <label
+          htmlFor="newsletter-email"
+          style={{
+            fontFamily: "var(--report-font-mono)",
+            fontSize: 11,
+            letterSpacing: "0.1em",
+            textTransform: "uppercase",
+            color: "var(--report-text-muted)",
+          }}
+        >
+          Get the next issue in your inbox
+        </label>
+      )}
       <div style={{ display: "flex", gap: 6 }}>
         <input
           id="newsletter-email"
