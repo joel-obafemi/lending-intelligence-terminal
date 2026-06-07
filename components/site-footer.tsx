@@ -98,18 +98,49 @@ function ColumnHeading({ children }: { children: React.ReactNode }) {
 
 function NewsletterColumn() {
   const [email, setEmail] = useState("")
-  const [status, setStatus] = useState<"idle" | "ok" | "err">("idle")
+  const [status, setStatus] = useState<"idle" | "loading" | "ok" | "err">("idle")
+  const [errMsg, setErrMsg] = useState<string>("")
 
-  function onSubmit(e: FormEvent) {
+  async function onSubmit(e: FormEvent) {
     e.preventDefault()
     if (!email || !/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email)) {
       setStatus("err")
+      setErrMsg("Enter a valid email.")
       return
     }
-    const subject = encodeURIComponent("Subscribe me to State of DeFi Lending")
-    const body = encodeURIComponent(`Please add ${email} to the monthly issue.`)
-    window.location.href = `mailto:${FALLBACK_MAILTO}?subject=${subject}&body=${body}`
-    setStatus("ok")
+    setStatus("loading")
+    setErrMsg("")
+    try {
+      const res = await fetch("/api/subscribe", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          email,
+          utm_source: "datumlabs-website",
+          utm_medium: "site-footer",
+          referring_site: typeof window !== "undefined" ? window.location.host : undefined,
+        }),
+      })
+      if (res.ok) {
+        setStatus("ok")
+        return
+      }
+      if (res.status === 503) {
+        // Provider not configured — fall back to the brand inbox so
+        // readers still have a path.
+        const subject = encodeURIComponent("Subscribe me to State of DeFi Lending")
+        const body = encodeURIComponent(`Please add ${email} to the monthly issue.`)
+        window.location.href = `mailto:${FALLBACK_MAILTO}?subject=${subject}&body=${body}`
+        setStatus("ok")
+        return
+      }
+      const data = (await res.json().catch(() => ({}))) as { error?: string }
+      setStatus("err")
+      setErrMsg(data.error ?? "Something went wrong. Try again in a moment.")
+    } catch {
+      setStatus("err")
+      setErrMsg("Couldn't reach the newsletter service. Try again in a moment.")
+    }
   }
 
   return (
@@ -147,13 +178,15 @@ function NewsletterColumn() {
           />
           <button
             type="submit"
+            disabled={status === "loading"}
             style={{
               padding: "6px 12px",
               background: "var(--accent-orange)",
               color: "#FFFFFF",
               border: "none",
               borderRadius: 3,
-              cursor: "pointer",
+              cursor: status === "loading" ? "wait" : "pointer",
+              opacity: status === "loading" ? 0.7 : 1,
               fontFamily: "inherit",
               fontSize: 10,
               letterSpacing: "0.08em",
@@ -161,9 +194,17 @@ function NewsletterColumn() {
               fontWeight: 600,
             }}
           >
-            {status === "ok" ? "Sent" : "Subscribe"}
+            {status === "ok" ? "Subscribed" : status === "loading" ? "Sending…" : "Subscribe"}
           </button>
         </div>
+        {status === "err" && errMsg && (
+          <p
+            role="alert"
+            style={{ color: "var(--accent-red)", fontSize: 10, margin: 0 }}
+          >
+            {errMsg}
+          </p>
+        )}
       </form>
     </div>
   )

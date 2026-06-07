@@ -21,20 +21,50 @@ interface Props {
 
 export function NewsletterSignup({ fallbackMailTo = "research@datumlab.xyz" }: Props) {
   const [email, setEmail] = useState("")
-  const [status, setStatus] = useState<"idle" | "ok" | "err">("idle")
+  const [status, setStatus] = useState<"idle" | "loading" | "ok" | "err">("idle")
+  const [errMsg, setErrMsg] = useState<string>("")
 
-  function onSubmit(e: FormEvent) {
+  async function onSubmit(e: FormEvent) {
     e.preventDefault()
     if (!email || !/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email)) {
       setStatus("err")
+      setErrMsg("Enter a valid email.")
       return
     }
-    // Provider integration TODO. For now, open mailto so the reader can
-    // self-subscribe via the brand inbox.
-    const subject = encodeURIComponent("Subscribe me to State of DeFi Lending")
-    const body = encodeURIComponent(`Please add ${email} to the monthly issue.`)
-    window.location.href = `mailto:${fallbackMailTo}?subject=${subject}&body=${body}`
-    setStatus("ok")
+    setStatus("loading")
+    setErrMsg("")
+    try {
+      const res = await fetch("/api/subscribe", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          email,
+          utm_source: "datumlabs-website",
+          utm_medium: "report-newsletter-signup",
+          referring_site: typeof window !== "undefined" ? window.location.host : undefined,
+        }),
+      })
+      if (res.ok) {
+        setStatus("ok")
+        return
+      }
+      // 503 = provider not configured — fall back to mailto so the
+      // reader still has a path to subscribe. Other failures surface
+      // their error message.
+      if (res.status === 503) {
+        const subject = encodeURIComponent("Subscribe me to State of DeFi Lending")
+        const body = encodeURIComponent(`Please add ${email} to the monthly issue.`)
+        window.location.href = `mailto:${fallbackMailTo}?subject=${subject}&body=${body}`
+        setStatus("ok")
+        return
+      }
+      const data = (await res.json().catch(() => ({}))) as { error?: string }
+      setStatus("err")
+      setErrMsg(data.error ?? "Something went wrong. Try again in a moment.")
+    } catch {
+      setStatus("err")
+      setErrMsg("Couldn't reach the newsletter service. Try again in a moment.")
+    }
   }
 
   return (
@@ -85,13 +115,15 @@ export function NewsletterSignup({ fallbackMailTo = "research@datumlab.xyz" }: P
         />
         <button
           type="submit"
+          disabled={status === "loading"}
           style={{
             padding: "8px 14px",
             background: "var(--report-brand)",
             color: "#F7F4ED",
             border: "none",
             borderRadius: 4,
-            cursor: "pointer",
+            cursor: status === "loading" ? "wait" : "pointer",
+            opacity: status === "loading" ? 0.7 : 1,
             fontFamily: "var(--report-font-mono)",
             fontSize: 11,
             letterSpacing: "0.08em",
@@ -99,9 +131,22 @@ export function NewsletterSignup({ fallbackMailTo = "research@datumlab.xyz" }: P
             fontWeight: 500,
           }}
         >
-          {status === "ok" ? "Sent" : "Subscribe"}
+          {status === "ok" ? "Subscribed" : status === "loading" ? "Sending…" : "Subscribe"}
         </button>
       </div>
+      {status === "err" && errMsg && (
+        <p
+          role="alert"
+          style={{
+            fontFamily: "var(--report-font-mono)",
+            fontSize: 10,
+            color: "var(--report-accent)",
+            margin: 0,
+          }}
+        >
+          {errMsg}
+        </p>
+      )}
       <p
         style={{
           fontFamily: "var(--report-font-mono)",
