@@ -20,6 +20,7 @@
     "query:sentora-morpho-reallocation": "tsx scripts/query-sentora-morpho-reallocation.ts",
     "query:sentora-morpho-variants": "tsx scripts/query-sentora-morpho-variants.ts",
     "query:sentora-multisig-holdings": "tsx scripts/query-sentora-multisig-holdings.ts",
+    "screenshot:sentora-evidence": "tsx scripts/screenshot-sentora-evidence.ts",
     "query:liquidations-may": "tsx scripts/query-liquidations-may.ts",
     "snapshot:curator-hhi": "tsx scripts/snapshot-curator-hhi.ts",
     "query:aave-weeth-by-market": "tsx scripts/query-aave-weeth-by-market.ts",
