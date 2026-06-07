@@ -192,6 +192,7 @@ function LatestIssueColumn({ featured }: { featured: FeaturedIssueSummary | null
             aria-hidden="true"
             style={{
               width: "100%",
+              maxWidth: 320,
               aspectRatio: "1600 / 900",
               backgroundImage: `url("${featured.socialImage}"), linear-gradient(135deg, #F7F4ED 0%, #1F3A5F 100%)`,
               backgroundSize: "cover",
