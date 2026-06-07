@@ -62,7 +62,7 @@ export interface ChartRegistryParams {
   /** Range token from the MDX prop, e.g. "30d", "90d", "12m", "18m",
    *  "24m", "all". Each registry entry decides how to interpret. */
   range?: string
-  /** Asset symbol when the chart is asset-scoped (e.g. "USDC", "WSTETH"). */
+  /** Asset symbol when the chart is asset-scoped (e.g. "USDC", "wstETH"). */
   asset?: string
   /** Protocol slug when the chart is protocol-scoped (e.g. "aave-v3"). */
   protocol?: string

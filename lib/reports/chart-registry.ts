@@ -578,13 +578,13 @@ const collateralRotationEntry: ChartRegistryEntry<{
   defaultParams: {},
   loader: async () => ({
     history: [
-      { asset: "WEETH",  family: "LRT", flowMUsd: -1180 },
-      { asset: "RSETH",  family: "LRT", flowMUsd:  -277 },
-      { asset: "WSTETH", family: "LRT", flowMUsd:  -143 },
+      { asset: "weETH",  family: "LRT", flowMUsd: -1180 },
+      { asset: "rsETH",  family: "LRT", flowMUsd:  -277 },
+      { asset: "wstETH", family: "LRT", flowMUsd:  -143 },
       { asset: "LBTC",   family: "BTC", flowMUsd:   402 },
-      { asset: "CBBTC",  family: "BTC", flowMUsd:   211 },
+      { asset: "cbBTC",  family: "BTC", flowMUsd:   211 },
       { asset: "WBTC",   family: "BTC", flowMUsd:   139 },
-      { asset: "TBTC",   family: "BTC", flowMUsd:    66 },
+      { asset: "tBTC",   family: "BTC", flowMUsd:    66 },
     ],
     totals: { lrtMUsd: -1600, btcMUsd: 818 },
   }),

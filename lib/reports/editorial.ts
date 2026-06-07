@@ -52,7 +52,7 @@ const ISSUE_001_EDITORIAL: IssueEditorial = {
     },
     spark: {
       headline:
-        "Why Spark captured the WSTETH migration that left Aave V3.",
+        "Why Spark captured the wstETH migration that left Aave V3.",
       sectionAnchor: "protocol-deep-dive-sparklend",
     },
     "morpho-blue": {

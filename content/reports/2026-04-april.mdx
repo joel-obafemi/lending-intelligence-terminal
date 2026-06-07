@@ -98,7 +98,7 @@ Snapshot date: April 30, 2026, 23:59 UTC. All month-over-month comparisons again
     { indicator: "Oracle concentration", reading: "Chainlink 94.0%, Redstone 4.5%, other ~1.5%" },
     { indicator: "Liquidation intensity 90D", reading: "Fluid 10.0%, Aave V3 2.2%, Morpho 0.5%, Spark 0.04%" },
     { indicator: "Liquidation efficiency", reading: "Fluid 1.92%, Spark ~5%, Aave V3 ~6%, Morpho ~18% (effective penalty)" },
-    { indicator: "WSTETH largest 30d move", reading: "+$980M (Spark), −$1.39B (Aave V3)" },
+    { indicator: "wstETH largest 30d move", reading: "+$980M (Spark), −$1.39B (Aave V3)" },
     { indicator: "Cross-protocol USDC supply APY dispersion", reading: "833 bps (12-month avg: 232 bps)" },
     { indicator: "Morpho curator HHI", reading: "3,026 (highly concentrated; up from 2,700 in March)" }
   ]}
@@ -114,15 +114,15 @@ The Real Yield Spread, the gap between blended stablecoin lending yields on the 
 
 <PullQuote>Borrow demand stayed sticky into the deleveraging, even as deposits exited, and that asymmetry pushed supply rates higher across the four protocols.</PullQuote>
 
-Aave V3 was the stress center. Total supply contracted from $31.87B to $20.46B over the month, a 36% decline that dwarfs the sector aggregate. USDT supply fell 61%, USDC supply fell 41%, and WSTETH supply fell 39%. On the borrow side, USDT debt collapsed 49% and USDC debt 32%, an empirical signature of borrowers closing leveraged positions through whatever paths remained available after the WETH freeze. Aave still earns 77% of all Ethereum-only sector fees ($50.35M of the sector's $65.31M in April), a moat that survived the month intact.
+Aave V3 was the stress center. Total supply contracted from $31.87B to $20.46B over the month, a 36% decline that dwarfs the sector aggregate. USDT supply fell 61%, USDC supply fell 41%, and wstETH supply fell 39%. On the borrow side, USDT debt collapsed 49% and USDC debt 32%, an empirical signature of borrowers closing leveraged positions through whatever paths remained available after the WETH freeze. Aave still earns 77% of all Ethereum-only sector fees ($50.35M of the sector's $65.31M in April), a moat that survived the month intact.
 
-Spark was the migration beneficiary. The protocol gained $1.97B in net deposits, the only positive flow in the sector, and grew supply from $2.89B to $5.00B. The driver was WSTETH, which roughly doubled from $1.13B to $2.11B as depositors rotated from restaked-ETH exposure on Aave into Lido's plain liquid-staked ETH on a venue that had no rsETH or LRT contamination. Borrow demand on Spark grew alongside, with USDT borrowing rising 216% as the new arrivals opened fresh leveraged positions.
+Spark was the migration beneficiary. The protocol gained $1.97B in net deposits, the only positive flow in the sector, and grew supply from $2.89B to $5.00B. The driver was wstETH, which roughly doubled from $1.13B to $2.11B as depositors rotated from restaked-ETH exposure on Aave into Lido's plain liquid-staked ETH on a venue that had no rsETH or LRT contamination. Borrow demand on Spark grew alongside, with USDT borrowing rising 216% as the new arrivals opened fresh leveraged positions.
 
 Morpho held aggregate share but consolidated underneath. The protocol's vault economy moved from $6.01B to $5.71B in supply, a modest 5% decline, while curator concentration intensified. The top three curators (Steakhouse Financial, Sentora, and Gauntlet) now control 94.4% of curated TVL. The Herfindahl-Hirschman Index reads 3,026, well past the antitrust threshold for a highly concentrated market.
 
 Fluid was the protocol April mostly skipped. Total supply moved from $1.15B to $1.08B, a 6% decline, with no meaningful migration capture and no exposure to the rsETH bridge to be stressed by. Its identity remains its liquidation engine: 10.0% of TVL liquidated over the trailing 90 days at an average penalty of 1.92%, which is roughly seven percentage points cheaper than the sector mean.
 
-The risk in focus is structural, and most of it sits one layer below the lending protocols themselves. Stablecoin debt share fell because borrowers were repaying, not because the system rebalanced toward leveraged longs. Oracle concentration sits at 94% Chainlink. WEETH and RSETH collateral at $5.4B across the four protocols remains a templated event waiting to recur, and the gap in the Kelp adapter (40,373 rsETH backing 152,577 rsETH in remote-chain claims) creates an open question about how losses get allocated. The April recovery on the rate side is real, but the conditions that produced the bridge exploit have not been resolved.
+The risk in focus is structural, and most of it sits one layer below the lending protocols themselves. Stablecoin debt share fell because borrowers were repaying, not because the system rebalanced toward leveraged longs. Oracle concentration sits at 94% Chainlink. weETH and rsETH collateral at $5.4B across the four protocols remains a templated event waiting to recur, and the gap in the Kelp adapter (40,373 rsETH backing 152,577 rsETH in remote-chain claims) creates an open question about how losses get allocated. The April recovery on the rate side is real, but the conditions that produced the bridge exploit have not been resolved.
 
 <SectionHeading number="03">Macro Context</SectionHeading>
 
@@ -177,7 +177,7 @@ Net flows tell the cleanest version of the story. Aave V3 saw $14.57B leave in A
   height={340}
 />
 
-The composition of what remains has shifted toward stablecoins on the borrow side and ETH-family collateral on the supply side. Stablecoins now account for 49% of all on-chain credit denominated in this report's coverage, with WETH the single largest borrowed asset at 41.4% of the total. Collateral is more diversified, with WETH at 18.1%, WSTETH at 16.9%, and WEETH at 11.2% as the top three. ETH-family assets together back 61% of the deposit base, up from 53% in March.
+The composition of what remains has shifted toward stablecoins on the borrow side and ETH-family collateral on the supply side. Stablecoins now account for 49% of all on-chain credit denominated in this report's coverage, with WETH the single largest borrowed asset at 41.4% of the total. Collateral is more diversified, with WETH at 18.1%, wstETH at 16.9%, and weETH at 11.2% as the top three. ETH-family assets together back 61% of the deposit base, up from 53% in March.
 
 <Chart
   source="sector.composition"
@@ -204,15 +204,15 @@ Aave V3 sits at $20.46B in supply at the end of April, down from $31.87B in Marc
   height={380}
 />
 
-The April story for Aave V3 is best read on the asset level. USDT supply fell 61% over the month, from $4.98B to $1.93B, the single largest dollar contraction. USDC supply fell 41% to $1.90B. WSTETH supply fell 39% to $2.22B. WETH, WBTC, and WEETH each contracted roughly 20% to 22%. The pattern reflects a deleveraging where stablecoin lenders supplying liquidity to leveraged ETH positions exit alongside the leverage they were funding. The borrow side confirms the mechanism: USDT debt fell 49% and USDC debt fell 32%, a combined repayment of approximately $2.56B in stablecoin liabilities.
+The April story for Aave V3 is best read on the asset level. USDT supply fell 61% over the month, from $4.98B to $1.93B, the single largest dollar contraction. USDC supply fell 41% to $1.90B. wstETH supply fell 39% to $2.22B. WETH, WBTC, and weETH each contracted roughly 20% to 22%. The pattern reflects a deleveraging where stablecoin lenders supplying liquidity to leveraged ETH positions exit alongside the leverage they were funding. The borrow side confirms the mechanism: USDT debt fell 49% and USDC debt fell 32%, a combined repayment of approximately $2.56B in stablecoin liabilities.
 
 WETH borrows held more steadily, falling 10% to $4.80B. The asymmetry is informative. Borrowers were closing positions whose funding leg was stablecoin debt, not positions whose funding leg was WETH itself. The leveraged stablecoin-against-LST trade is what unwound. Native WETH borrowing for spot leverage held roughly intact, with much of the residual demand pinned by the WETH freeze imposed on April 20 (discussed in the rsETH theme essay below).
 
-### The RSETH anomaly, explained
+### The rsETH anomaly, explained
 
-One asset on Aave V3 grew during April: RSETH supply rose from $932M to $1.19B, a 28% increase in the month the asset was the source of sector stress. The increase is not organic. On April 18 at 17:35 UTC, an attacker exploited a LayerZero V2 bridge configuration on Kelp's Unichain-to-Ethereum route and minted 116,500 unbacked rsETH. Within minutes, the attacker fanned the stolen tokens across seven branch addresses and deposited 89,567 of those rsETH as collateral on Aave V3, split between Ethereum Core and Arbitrum, borrowing approximately $191M in WETH and $2.3M in wstETH against the position before being detected.
+One asset on Aave V3 grew during April: rsETH supply rose from $932M to $1.19B, a 28% increase in the month the asset was the source of sector stress. The increase is not organic. On April 18 at 17:35 UTC, an attacker exploited a LayerZero V2 bridge configuration on Kelp's Unichain-to-Ethereum route and minted 116,500 unbacked rsETH. Within minutes, the attacker fanned the stolen tokens across seven branch addresses and deposited 89,567 of those rsETH as collateral on Aave V3, split between Ethereum Core and Arbitrum, borrowing approximately $191M in WETH and $2.3M in wstETH against the position before being detected.
 
-Aave's Protocol Guardian froze rsETH and wrsETH across all 11 of Aave V3's deployments at 19:00 UTC the same day, setting LTV (the maximum debt allowed against the collateral) to zero. The attacker's collateral is now stuck on the protocol, frozen and incapable of further borrowing, with health factors that settled between 1.01 and 1.03. The 28% RSETH supply increase visible at April 30 is the residue of that frozen position. Net of the exploit-related deposit, organic RSETH supply on Aave V3 declined modestly during April, consistent with the broader retreat from restaked-ETH exposure visible across all four protocols.
+Aave's Protocol Guardian froze rsETH and wrsETH across all 11 of Aave V3's deployments at 19:00 UTC the same day, setting LTV (the maximum debt allowed against the collateral) to zero. The attacker's collateral is now stuck on the protocol, frozen and incapable of further borrowing, with health factors that settled between 1.01 and 1.03. The 28% rsETH supply increase visible at April 30 is the residue of that frozen position. Net of the exploit-related deposit, organic rsETH supply on Aave V3 declined modestly during April, consistent with the broader retreat from restaked-ETH exposure visible across all four protocols.
 
 ### Revenue and the fee moat
 
@@ -250,9 +250,9 @@ If Aave V3 was the stress center, Spark was the pressure valve. The protocol gre
   height={380}
 />
 
-The driver was WSTETH. Lido's liquid-staked ETH on Spark roughly doubled, from $1.13B to $2.11B. Capital migrated from Aave V3, where WSTETH supply fell $1.39B, into Spark, where it gained $980M. The size of the rotation, plus its near-coincidence in timing, makes the migration thesis empirically clean. Depositors did not exit liquid-staked ETH; they moved it to a venue that had no rsETH or WEETH exposure to be tainted by association.
+The driver was wstETH. Lido's liquid-staked ETH on Spark roughly doubled, from $1.13B to $2.11B. Capital migrated from Aave V3, where wstETH supply fell $1.39B, into Spark, where it gained $980M. The size of the rotation, plus its near-coincidence in timing, makes the migration thesis empirically clean. Depositors did not exit liquid-staked ETH; they moved it to a venue that had no rsETH or weETH exposure to be tainted by association.
 
-Spark's other inflows reinforce the same pattern. WBTC supply rose from $24M to $224M, an order-of-magnitude increase. WETH supply rose 58% to $848M. USDT supply more than doubled to $621M. The protocol absorbed both the safe-haven flow (WSTETH, WETH) and the new leveraged-position-opening flow (USDT, WBTC). New depositors arrived, and many of them immediately borrowed against their collateral. USDT borrow demand on Spark grew 216% over the month, from $177M to $559M.
+Spark's other inflows reinforce the same pattern. WBTC supply rose from $24M to $224M, an order-of-magnitude increase. WETH supply rose 58% to $848M. USDT supply more than doubled to $621M. The protocol absorbed both the safe-haven flow (wstETH, WETH) and the new leveraged-position-opening flow (USDT, WBTC). New depositors arrived, and many of them immediately borrowed against their collateral. USDT borrow demand on Spark grew 216% over the month, from $177M to $559M.
 
 ### The economics are thinner than they look
 
@@ -287,7 +287,7 @@ What changed at Morpho in April was not aggregate TVL but the distribution of ri
 
 The pattern reveals something specific about how sophisticated capital behaves under stress. The depositors who stayed in Morpho during April mostly stayed in vaults run by curators with established track records. The April rsETH event did not produce direct losses on the most-allocated curators; it tested confidence in the architecture that supports them. Confidence concentrated rather than diffused.
 
-Morpho's WSTETH supply rose 59% in April, from $592M to $941M, mirroring the broader flight from restaked to liquid-staked ETH that flowed primarily to Spark. WBTC supply rose 30% to $453M. USDT supply contracted 24%, USDT borrow demand fell 21%, and USDC supply rose 6%, with USDC borrow demand actually growing 8% (the only protocol where USDC borrow demand grew in April). Morpho was insulated from the rsETH stress but not isolated from the rotation.
+Morpho's wstETH supply rose 59% in April, from $592M to $941M, mirroring the broader flight from restaked to liquid-staked ETH that flowed primarily to Spark. WBTC supply rose 30% to $453M. USDT supply contracted 24%, USDT borrow demand fell 21%, and USDC supply rose 6%, with USDC borrow demand actually growing 8% (the only protocol where USDC borrow demand grew in April). Morpho was insulated from the rsETH stress but not isolated from the rotation.
 
 ### Revenue and the pass-through model
 
@@ -301,7 +301,7 @@ Instadapp's vault-based lending with smart collateral and smart debt, enabling D
 
 Fluid was the protocol April mostly skipped. Total supply moved from $1.15B to $1.08B, a 6% decline. Borrows fell from $642M to $575M. Smart-vault share of vault TVL held at 58%, essentially unchanged from March's 58.3%. None of the structural metrics moved meaningfully. The protocol that pitches itself on capital efficiency was, this month, capital-quiet.
 
-The reason is straightforward. Fluid did not have meaningful rsETH or WEETH exposure to be stressed by, and its WSTETH market was small enough that it could not absorb the migration that flowed to Spark and Morpho. Fluid's WSTETH supply actually contracted 14% in April, from $228M to $196M.
+The reason is straightforward. Fluid did not have meaningful rsETH or weETH exposure to be stressed by, and its wstETH market was small enough that it could not absorb the migration that flowed to Spark and Morpho. Fluid's wstETH supply actually contracted 14% in April, from $228M to $196M.
 
 <Chart
   source="protocol.smart-vault-adoption"
@@ -311,7 +311,7 @@ The reason is straightforward. Fluid did not have meaningful rsETH or WEETH expo
   height={280}
 />
 
-What did move on Fluid in April was its WEETH market, which grew from $51M to $86M (a 67% increase). This mirrors the RSETH-on-Aave anomaly: an LRT (liquid restaking token) asset growing on a venue during a month its asset class was the source of stress. The likely explanation is similar (locked positions during the WEETH withdrawal queue stress that followed the rsETH event), but the mechanism on Fluid specifically remains unconfirmed.
+What did move on Fluid in April was its weETH market, which grew from $51M to $86M (a 67% increase). This mirrors the rsETH-on-Aave anomaly: an LRT (liquid restaking token) asset growing on a venue during a month its asset class was the source of stress. The likely explanation is similar (locked positions during the weETH withdrawal queue stress that followed the rsETH event), but the mechanism on Fluid specifically remains unconfirmed.
 
 ### The liquidation engine
 
@@ -365,7 +365,7 @@ Cross-protocol rate dispersion peaked in the same window. USDC supply APY across
 
 ### Stage four: the deposit migration
 
-Once the immediate stress subsided, the broader depositor base reacted to what had just played out across approximately 96 hours. Capital began rotating away from Aave V3, primarily toward Spark. The trade had two distinct legs. The first was an exit from restaked-ETH exposure: Aave V3's WEETH supply fell $870M, RSETH stayed elevated by the attacker's frozen collateral, and depositors using restaked LRTs as collateral either closed out or rotated. The second was a flight to plain liquid-staked ETH on a venue without LRT exposure: Spark's WSTETH grew $980M in April, almost exactly matching the $1.39B WSTETH outflow from Aave V3. Morpho captured a smaller share at $349M of WSTETH inflows. Fluid captured none.
+Once the immediate stress subsided, the broader depositor base reacted to what had just played out across approximately 96 hours. Capital began rotating away from Aave V3, primarily toward Spark. The trade had two distinct legs. The first was an exit from restaked-ETH exposure: Aave V3's weETH supply fell $870M, rsETH stayed elevated by the attacker's frozen collateral, and depositors using restaked LRTs as collateral either closed out or rotated. The second was a flight to plain liquid-staked ETH on a venue without LRT exposure: Spark's wstETH grew $980M in April, almost exactly matching the $1.39B wstETH outflow from Aave V3. Morpho captured a smaller share at $349M of wstETH inflows. Fluid captured none.
 
 The migration is consistent with a re-pricing of the staking-stack risk premium. Plain liquid staking via Lido carries one layer of validator risk (Ethereum's own slashing conditions). Restaking adds an additional layer, with operators acting on multiple AVSs (actively validated services), each with its own slashing surface. The April event raised the implicit cost of that additional layer, even though the actual exploit was on the bridge rather than on the underlying restaking infrastructure. Capital responded by un-stacking, moving back to plain liquid staking on a venue without LRT exposure.
 
@@ -376,13 +376,13 @@ The migration is consistent with a re-pricing of the staking-stack risk premium.
   height={300}
 />
 
-Spark captured roughly 70% of the migrated WSTETH, Morpho about 25%, and Fluid none. Three explanations are consistent with the data. First, Spark's WSTETH market was the deepest pool that had no restaking-LRT contamination. Second, Spark's brand association with Sky and its USDS yield mechanics made it the natural safe-haven destination for capital with a trustworthy-stablecoin-economics preference. Third, the SPK farming pool incentives, while small in absolute terms, provided a yield justification for arrivals that needed one. None of these can be cleanly weighted independently from the others, but the venue selectivity itself is unambiguous.
+Spark captured roughly 70% of the migrated wstETH, Morpho about 25%, and Fluid none. Three explanations are consistent with the data. First, Spark's wstETH market was the deepest pool that had no restaking-LRT contamination. Second, Spark's brand association with Sky and its USDS yield mechanics made it the natural safe-haven destination for capital with a trustworthy-stablecoin-economics preference. Third, the SPK farming pool incentives, while small in absolute terms, provided a yield justification for arrivals that needed one. None of these can be cleanly weighted independently from the others, but the venue selectivity itself is unambiguous.
 
-Spark also gained on the borrow side. USDT borrow demand on the protocol grew 216% over the month, from $177M to $559M. The new arrivals did not all sit on idle WSTETH; many of them immediately leveraged. The same trade that was unwound on Aave V3 (LST collateral plus stablecoin debt) was being reopened on Spark, with WSTETH as the collateral instead of WEETH or RSETH. The leverage did not leave the system. It changed venue and changed the LST under it.
+Spark also gained on the borrow side. USDT borrow demand on the protocol grew 216% over the month, from $177M to $559M. The new arrivals did not all sit on idle wstETH; many of them immediately leveraged. The same trade that was unwound on Aave V3 (LST collateral plus stablecoin debt) was being reopened on Spark, with wstETH as the collateral instead of weETH or rsETH. The leverage did not leave the system. It changed venue and changed the LST under it.
 
 Morpho's role was structurally different. Capital that flowed to Morpho mostly went to vaults curated by the top three managers (Steakhouse, Sentora, Gauntlet), reinforcing the curator concentration discussed in the next theme essay. Morpho's vault-curator architecture, in this case, acted as a flight-to-quality filter. Capital looking for safety found it inside the most-allocated vaults, not by spreading across the long tail.
 
-Fluid's exclusion is informative for a different reason. The protocol's capital-efficiency advantages were not what depositors selected for during the April stress. What depositors wanted was deep liquidity in WSTETH on a venue without LRT exposure. Fluid's WSTETH market was small, which made it functionally unable to absorb the migrating flow even if depositors had been inclined to choose it. Capital efficiency mattered less than capital depth for this particular trade.
+Fluid's exclusion is informative for a different reason. The protocol's capital-efficiency advantages were not what depositors selected for during the April stress. What depositors wanted was deep liquidity in wstETH on a venue without LRT exposure. Fluid's wstETH market was small, which made it functionally unable to absorb the migrating flow even if depositors had been inclined to choose it. Capital efficiency mattered less than capital depth for this particular trade.
 
 ### Stage five: the unresolved question
 
@@ -396,11 +396,11 @@ Aave's Umbrella WETH safety module currently holds approximately 23,508 aWETH ($
 
 The exploit was not a flaw in DeFi lending mechanics or in restaking economics. It was a bridge configuration error: a 1-of-1 DVN path is a single point of failure, and that single point failed. Aave's contracts performed correctly; the Protocol Guardian and Risk Steward responded within the operational windows for which the framework is designed. The infrastructure that propagated the event has not been changed by the event. Bridge configurations like this exist on other LRT and LST tokens. The composability that connects these tokens to lending markets remains a contagion vector that any future bridge stress can travel through.
 
-WEETH and RSETH together back $5.4B of collateral across the four protocols at the end of April, up from approximately $5.0B at the end of March. The total grew despite the rsETH stress, primarily because the attacker's frozen rsETH on Aave inflated the apparent supply. Net of the exploit-related growth, organic LRT collateral declined modestly. The exposure to a templated repeat of the April mechanism is structurally unchanged. Aave's risk framework demonstrated its containment capability in April. The conditions that made containment necessary remain in place.
+weETH and rsETH together back $5.4B of collateral across the four protocols at the end of April, up from approximately $5.0B at the end of March. The total grew despite the rsETH stress, primarily because the attacker's frozen rsETH on Aave inflated the apparent supply. Net of the exploit-related growth, organic LRT collateral declined modestly. The exposure to a templated repeat of the April mechanism is structurally unchanged. Aave's risk framework demonstrated its containment capability in April. The conditions that made containment necessary remain in place.
 
 ### The May test
 
-The structural test of all of this is whether the migrated capital sticks. If Spark net deposits remain positive in May and the WSTETH inflows continue, the rotation from Aave was structural rather than panic-driven. If Spark sees net withdrawals as SPK incentive-yield depositors rotate again, April's flow was opportunistic and the system's center of gravity has not actually moved. The same question applies to Aave V3 in reverse. A stabilization in net deposits would suggest the depositor base has finished the unwind. A second consecutive month of $5B-plus net withdrawals would suggest the migration trade has further to run, possibly accelerated by whatever decision Kelp reaches on the rsETH allocation.
+The structural test of all of this is whether the migrated capital sticks. If Spark net deposits remain positive in May and the wstETH inflows continue, the rotation from Aave was structural rather than panic-driven. If Spark sees net withdrawals as SPK incentive-yield depositors rotate again, April's flow was opportunistic and the system's center of gravity has not actually moved. The same question applies to Aave V3 in reverse. A stabilization in net deposits would suggest the depositor base has finished the unwind. A second consecutive month of $5B-plus net withdrawals would suggest the migration trade has further to run, possibly accelerated by whatever decision Kelp reaches on the rsETH allocation.
 
 <SectionHeading number="10">Theme: The Curator Concentration</SectionHeading>
 
@@ -439,7 +439,7 @@ Stablecoin debt share of cross-protocol borrows fell from 48.3% to 43.6% over Ap
 
 Falling stablecoin debt share is usually a constructive signal: it indicates the lending system is becoming less rate-sensitive, which means a shock to the rates curve has less leverage on the system's stress level. In April, the share fell because borrowers were closing leveraged positions, not because new directional borrowing arrived. The signal is conditioned on the mechanism.
 
-Oracle concentration moved 96% to 94% Chainlink. Redstone now prices roughly 4.5% of priced collateral, mostly through Spark's WEETH market. The 94% concentration figure is a slight improvement but remains structurally fragile. A Chainlink-wide incident affecting any of the WETH, USDC, USDT, WSTETH, or WBTC feeds would propagate to roughly $30B of collateral simultaneously across the four protocols.
+Oracle concentration moved 96% to 94% Chainlink. Redstone now prices roughly 4.5% of priced collateral, mostly through Spark's weETH market. The 94% concentration figure is a slight improvement but remains structurally fragile. A Chainlink-wide incident affecting any of the WETH, USDC, USDT, wstETH, or WBTC feeds would propagate to roughly $30B of collateral simultaneously across the four protocols.
 
 <DataTable
   caption="Liquidation Intensity by Protocol, trailing 90 days"
@@ -458,7 +458,7 @@ Oracle concentration moved 96% to 94% Chainlink. Redstone now prices roughly 4.5
 
 Liquidation efficiency, defined as the ratio of dollar collateral seized to dollar debt repaid, sits at 1.00x on Fluid (a 1.92% effective penalty), 1.05x on Spark, 1.06x on Aave V3, and 1.18x on Morpho. Fluid's sub-2% effective penalty is roughly seven percentage points cheaper than the sector mean of 9.54%, the empirical version of Fluid's marketing claim.
 
-The combined WEETH and RSETH supply across the four protocols stands at approximately $5.4B at the end of April, against $5.0B at the end of March. The total grew despite April's rsETH stress, primarily because RSETH on Aave grew (the attacker's frozen collateral) and Fluid's WEETH grew. The exposure to a templated repeat of the April mechanism is now larger than it was before the event in nominal terms, even though the organic position contracted.
+The combined weETH and rsETH supply across the four protocols stands at approximately $5.4B at the end of April, against $5.0B at the end of March. The total grew despite April's rsETH stress, primarily because rsETH on Aave grew (the attacker's frozen collateral) and Fluid's weETH grew. The exposure to a templated repeat of the April mechanism is now larger than it was before the event in nominal terms, even though the organic position contracted.
 
 The Kelp resolution is the central open question for May. How Kelp allocates the unbacked rsETH supply and what oracle adjustments follow will determine the realized bad debt across Aave V3's seven affected markets. Until the allocation is settled, the rsETH oracle continues quoting the pre-exploit rate.
 
@@ -482,7 +482,7 @@ Morpho's curator HHI tells the reader whether April's consolidation peaked. The 
 
 ### 5. Kelp's allocation decision and the rsETH oracle
 
-The combined WEETH and RSETH collateral position across the four protocols stands at approximately $5.4B. Kelp's decision on whether to socialize the unbacked supply uniformly or isolate losses to L2 rsETH determines roughly $107M of difference in implied bad debt on Aave V3 alone. The rsETH oracle on each chain will need to be updated to reflect whatever resolution emerges.
+The combined weETH and rsETH collateral position across the four protocols stands at approximately $5.4B. Kelp's decision on whether to socialize the unbacked supply uniformly or isolate losses to L2 rsETH determines roughly $107M of difference in implied bad debt on Aave V3 alone. The rsETH oracle on each chain will need to be updated to reflect whatever resolution emerges.
 
 <MethodologyNote>
 This issue draws on data from the DefiLlama Yields and Fees APIs, on-chain reads of Aave V3 and SparkLend reserve configurations and live state via UiPoolDataProviderV3, the Morpho API for vault-level data, the Fluid subgraph for vault-level data, the Datum Labs Liquidator Economy database, and the FRED API for the 4-week T-bill rate (DFF series). The Aave incident report dated April 20, 2026 is the source for all event-specific details on the Kelp rsETH bridge exploit and Aave's defensive response.

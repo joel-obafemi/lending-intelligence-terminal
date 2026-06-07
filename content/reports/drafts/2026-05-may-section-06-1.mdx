@@ -19,18 +19,18 @@ The canonical multi-asset lending pool. Shared liquidity, isolation mode for ris
 
 At May 31, Aave V3 carried $18.61 billion of total supply on Ethereum, down from approximately $20.18 billion at April 30, a $1.57 billion contraction of 7.8 percent. Active borrows fell to $7.84 billion. Available liquidity sat at $10.77 billion. Utilization edged up to 42.1 percent. The protocol is now 71 percent below its September 2025 peak of $63.08 billion, a contraction that has compounded for nine consecutive months. May extended that trajectory; it did not break it.
 
-What the nominal numbers obscure is the depositor-flow picture documented in §05. At constant prices, with structural events filtered out (the Threshold TBTCV2-to-TBTC migration on May 29, the Pendle PT-USDG-28MAY2026 maturity), Aave V3 added $352 million of net depositor quantity across the month, split $99 million in the first half and $253 million in the second. The dashboard's net-deposits-30d card reads −$503 million using a different methodology that includes those structural roll-overs and the LRT category in aggregate. Both readings are correct from their own definitions; the constant-price daily series is the one that isolates depositor behavior from accounting effects.
+What the nominal numbers obscure is the depositor-flow picture documented in §05. At constant prices, with structural events filtered out (the Threshold tBTCv2-to-tBTC migration on May 29, the Pendle PT-USDG-28MAY2026 maturity), Aave V3 added $352 million of net depositor quantity across the month, split $99 million in the first half and $253 million in the second. The dashboard's net-deposits-30d card reads −$503 million using a different methodology that includes those structural roll-overs and the LRT category in aggregate. Both readings are correct from their own definitions; the constant-price daily series is the one that isolates depositor behavior from accounting effects.
 
 <PullQuote>The protocol the headline says lost two billion dollars of supply added depositor quantity in both halves of the month.</PullQuote>
 
-The single asset that fell hardest in dollar terms on Aave V3 was WEETH. The protocol's market structure (Core, Prime, Horizon) raises the question of where the LRT outflow concentrated; DefiLlama's per-pool data answers it definitively. Exactly one WEETH pool exists across the three Aave V3 Ethereum markets, and it sits in Core.
+The single asset that fell hardest in dollar terms on Aave V3 was weETH. The protocol's market structure (Core, Prime, Horizon) raises the question of where the LRT outflow concentrated; DefiLlama's per-pool data answers it definitively. Exactly one weETH pool exists across the three Aave V3 Ethereum markets, and it sits in Core.
 
 <DataTable
-  caption="WEETH on Aave V3 by market, April 30 to May 31, 2026"
+  caption="weETH on Aave V3 by market, April 30 to May 31, 2026"
   columns={[
     { key: "market", label: "Market", align: "left" },
-    { key: "apr", label: "Apr 30 WEETH", align: "right" },
-    { key: "may", label: "May 31 WEETH", align: "right" },
+    { key: "apr", label: "Apr 30 weETH", align: "right" },
+    { key: "may", label: "May 31 weETH", align: "right" },
     { key: "change", label: "Δ", align: "right" }
   ]}
   rows={[
@@ -40,13 +40,13 @@ The single asset that fell hardest in dollar terms on Aave V3 was WEETH. The pro
   ]}
 />
 
-The Core market absorbed the entire LRT exposure to WEETH at both endpoints; there was no Prime or Horizon redistribution to disaggregate. The $1.06 billion nominal decline at actual prices is materially larger than the $681 million decline at constant prices reported in §05. The roughly $380 million gap is the WEETH price-decline component, the same accounting wedge that explains why protocol-level nominal supply fell $1.96 billion while constant-price net deposits rose $352 million.
+The Core market absorbed the entire LRT exposure to weETH at both endpoints; there was no Prime or Horizon redistribution to disaggregate. The $1.06 billion nominal decline at actual prices is materially larger than the $681 million decline at constant prices reported in §05. The roughly $380 million gap is the weETH price-decline component, the same accounting wedge that explains why protocol-level nominal supply fell $1.96 billion while constant-price net deposits rose $352 million.
 
 On the rate side, Aave V3 USDC ended May at 3.27 percent supply APY, the third-lowest reading of the six covered protocols. The sector-wide stables APY lift that closed the Real Yield Spread (3.26 percent at April 30 to 3.60 percent at May 31, blended) ran past Aave V3 USDC rather than through it. Of the four protocols in the blended-stable calculation, the lift concentrated at Fluid (5.93 percent USDC supply APY) and Morpho (4.78 percent), with Spark at 4.00 percent and Aave V3 the laggard of that group. The macro parity story §03 carries is a sector-distributed rebalancing, and Aave V3's USDC market is not its proximate driver this month.
 
 On the revenue side, Aave V3 produced $37.03 million of Ethereum-only fees in May, down from $50.35 million in April, a 26.5 percent decline. That single-protocol drop of $13.32 million accounted for substantially the entire sector fee compression of $13.54 million. Every other protocol moved within roughly $1 million in either direction. The protocol's capture rate held effectively flat at 13.4 percent in May, against 13.6 percent in April, meaning depositors and the treasury took proportional haircuts. The split between them did not change. The fee story at the sector level is, statistically, an Aave V3 story.
 
-Two structural concentrations sit on Aave V3 at May 31, both of which the rest of the report references but neither of which is May-specific in origin. The first is oracle dependency: 87 percent of the protocol's collateral is priced by Chainlink feeds, against a six-protocol sector average of 83 percent. Within Aave V3, Chainlink is the dominant oracle and any single failure in a Chainlink feed serving a Top 10 market would cascade across material protocol TVL in a single block. The second is LRT exposure: 84 percent of the LRT collateral remaining in the lending sector at May 31 sat on Aave V3, with WEETH at $2.12 billion, RSETH at $951 million, and OSETH at $213 million. The sector did not absorb the LRT rotation. The LRT collateral stayed on Aave V3 even as its dollar value fell, while the depositor flows rotated into BTC-family and stables instead.
+Two structural concentrations sit on Aave V3 at May 31, both of which the rest of the report references but neither of which is May-specific in origin. The first is oracle dependency: 87 percent of the protocol's collateral is priced by Chainlink feeds, against a six-protocol sector average of 83 percent. Within Aave V3, Chainlink is the dominant oracle and any single failure in a Chainlink feed serving a Top 10 market would cascade across material protocol TVL in a single block. The second is LRT exposure: 84 percent of the LRT collateral remaining in the lending sector at May 31 sat on Aave V3, with weETH at $2.12 billion, rsETH at $951 million, and osETH at $213 million. The sector did not absorb the LRT rotation. The LRT collateral stayed on Aave V3 even as its dollar value fell, while the depositor flows rotated into BTC-family and stables instead.
 
 What is structurally May-specific about Aave V3 is the fee compression. The LRT contraction extends an April pattern and the oracle concentration is a long-running condition; both are continuations rather than turns. The 26.5 percent fee drop is the month-specific shift, and Aave V3's $13.32 million decline accounting for substantially the entire sector compression of $13.54 million is what makes the sector-level take-rate crossing §04 documents an Aave V3 story at root. §09 carries the forward question of whether fees recover.
 

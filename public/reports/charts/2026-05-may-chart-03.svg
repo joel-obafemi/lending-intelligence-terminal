@@ -24,16 +24,16 @@
   <!-- Use scale 1M = 0.233 px so 1200M = 280 px -->
   <!-- LRT group label -->
   <text class="group" x="48" y="90">LRT FAMILY · TOTAL −$1,600M</text>
-  <!-- WEETH -1180 -->
-  <text class="name" x="178" y="118" text-anchor="end">WEETH</text>
+  <!-- weETH -1180 -->
+  <text class="name" x="178" y="118" text-anchor="end">weETH</text>
   <rect class="neg" x="165" y="100" width="275" height="30"/>
   <text class="lbl" x="160" y="120" text-anchor="end">−$1,180M</text>
-  <!-- RSETH -277 -->
-  <text class="name" x="178" y="158" text-anchor="end">RSETH</text>
+  <!-- rsETH -277 -->
+  <text class="name" x="178" y="158" text-anchor="end">rsETH</text>
   <rect class="neg" x="375" y="140" width="65" height="30"/>
   <text class="lbl" x="370" y="160" text-anchor="end">−$277M</text>
-  <!-- WSTETH -143 -->
-  <text class="name" x="178" y="198" text-anchor="end">WSTETH</text>
+  <!-- wstETH -143 -->
+  <text class="name" x="178" y="198" text-anchor="end">wstETH</text>
   <rect class="neg" x="407" y="180" width="33" height="30"/>
   <text class="lbl" x="403" y="200" text-anchor="end">−$143M</text>
   <!-- BTC group label -->
@@ -42,16 +42,16 @@
   <text class="name" x="178" y="268" text-anchor="end">LBTC</text>
   <rect class="pos" x="440" y="250" width="94" height="30"/>
   <text class="lbl" x="538" y="270">+$402M</text>
-  <!-- CBBTC +211 -->
-  <text class="name" x="178" y="308" text-anchor="end">CBBTC</text>
+  <!-- cbBTC +211 -->
+  <text class="name" x="178" y="308" text-anchor="end">cbBTC</text>
   <rect class="pos" x="440" y="290" width="49" height="30"/>
   <text class="lbl" x="493" y="310">+$211M</text>
   <!-- WBTC +139 -->
   <text class="name" x="178" y="348" text-anchor="end">WBTC</text>
   <rect class="pos" x="440" y="330" width="32" height="30"/>
   <text class="lbl" x="476" y="350">+$139M</text>
-  <!-- TBTC +66 -->
-  <text class="name" x="178" y="388" text-anchor="end">TBTC</text>
+  <!-- tBTC +66 -->
+  <text class="name" x="178" y="388" text-anchor="end">tBTC</text>
   <rect class="pos" x="440" y="370" width="15" height="30"/>
   <text class="lbl" x="459" y="390">+$66M</text>
   <!-- Tick labels -->

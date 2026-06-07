@@ -181,9 +181,9 @@ function LatestIssueColumn({ featured }: { featured: FeaturedIssueSummary | null
         <Link
           href={featured.url.replace(/^https?:\/\/[^/]+/, "")}
           style={{
-            display: "grid",
-            gridTemplateColumns: "72px 1fr",
-            gap: 12,
+            display: "flex",
+            flexDirection: "column",
+            gap: 10,
             textDecoration: "none",
             color: "inherit",
           }}
@@ -191,8 +191,9 @@ function LatestIssueColumn({ featured }: { featured: FeaturedIssueSummary | null
           <div
             aria-hidden="true"
             style={{
-              aspectRatio: "1240 / 1748",
-              backgroundImage: `url("${featured.coverImage}"), linear-gradient(135deg, #F7F4ED 0%, #1F3A5F 100%)`,
+              width: "100%",
+              aspectRatio: "1600 / 900",
+              backgroundImage: `url("${featured.socialImage}"), linear-gradient(135deg, #F7F4ED 0%, #1F3A5F 100%)`,
               backgroundSize: "cover",
               backgroundPosition: "center",
               borderRadius: 3,

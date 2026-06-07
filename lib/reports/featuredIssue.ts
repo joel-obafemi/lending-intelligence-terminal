@@ -53,6 +53,10 @@ export interface FeaturedIssueSummary {
   publicationDate: string
   readingTimeMin: number
   coverImage: string
+  /** Landscape social/twitter PNG used in horizontal thumbnail surfaces
+   *  (site footer Latest issue card, nav header preview). Populated from
+   *  frontmatter.social_image. Falls back to coverImage when absent. */
+  socialImage: string
 }
 
 function isFresh(publicationDate: string): boolean {

@@ -52,6 +52,7 @@ export default async function OverviewPage() {
         publicationDate: featured.record.frontmatter.publication_date,
         readingTimeMin: featured.record.frontmatter.reading_time_min,
         coverImage: featured.record.frontmatter.cover_image,
+        socialImage: featured.record.frontmatter.social_image ?? featured.record.frontmatter.cover_image,
       }
     : null
   const { snapshot, protocols, revenueSnapshot } = data
