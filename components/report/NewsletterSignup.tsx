@@ -48,19 +48,15 @@ export function NewsletterSignup({ fallbackMailTo = "research@datumlab.xyz" }: P
         setStatus("ok")
         return
       }
-      // 503 = provider not configured — fall back to mailto so the
-      // reader still has a path to subscribe. Other failures surface
-      // their error message.
-      if (res.status === 503) {
-        const subject = encodeURIComponent("Subscribe me to State of DeFi Lending")
-        const body = encodeURIComponent(`Please add ${email} to the monthly issue.`)
-        window.location.href = `mailto:${fallbackMailTo}?subject=${subject}&body=${body}`
-        setStatus("ok")
-        return
-      }
       const data = (await res.json().catch(() => ({}))) as { error?: string }
       setStatus("err")
-      setErrMsg(data.error ?? "Something went wrong. Try again in a moment.")
+      if (res.status === 503) {
+        // Provider not configured. Show the brand inbox as a manual
+        // path rather than silently launching a mail client.
+        setErrMsg(`Newsletter not connected yet. Email ${fallbackMailTo} to subscribe.`)
+      } else {
+        setErrMsg(data.error ?? "Something went wrong. Try again in a moment.")
+      }
     } catch {
       setStatus("err")
       setErrMsg("Couldn't reach the newsletter service. Try again in a moment.")
@@ -134,6 +130,23 @@ export function NewsletterSignup({ fallbackMailTo = "research@datumlab.xyz" }: P
           {status === "ok" ? "Subscribed" : status === "loading" ? "Sending…" : "Subscribe"}
         </button>
       </div>
+      {status === "ok" && (
+        <div
+          role="status"
+          style={{
+            fontFamily: "var(--report-font-mono)",
+            fontSize: 11,
+            color: "var(--report-brand)",
+            background: "rgba(31, 58, 95, 0.08)",
+            border: "1px solid var(--report-brand)",
+            borderRadius: 4,
+            padding: "8px 10px",
+            margin: 0,
+          }}
+        >
+          ✓ Subscribed. The next issue lands in your inbox on the 7th.
+        </div>
+      )}
       {status === "err" && errMsg && (
         <p
           role="alert"

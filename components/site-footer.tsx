@@ -125,18 +125,13 @@ function NewsletterColumn() {
         setStatus("ok")
         return
       }
-      if (res.status === 503) {
-        // Provider not configured — fall back to the brand inbox so
-        // readers still have a path.
-        const subject = encodeURIComponent("Subscribe me to State of DeFi Lending")
-        const body = encodeURIComponent(`Please add ${email} to the monthly issue.`)
-        window.location.href = `mailto:${FALLBACK_MAILTO}?subject=${subject}&body=${body}`
-        setStatus("ok")
-        return
-      }
       const data = (await res.json().catch(() => ({}))) as { error?: string }
       setStatus("err")
-      setErrMsg(data.error ?? "Something went wrong. Try again in a moment.")
+      if (res.status === 503) {
+        setErrMsg(`Newsletter not connected yet. Email ${FALLBACK_MAILTO} to subscribe.`)
+      } else {
+        setErrMsg(data.error ?? "Something went wrong. Try again in a moment.")
+      }
     } catch {
       setStatus("err")
       setErrMsg("Couldn't reach the newsletter service. Try again in a moment.")
@@ -197,6 +192,24 @@ function NewsletterColumn() {
             {status === "ok" ? "Subscribed" : status === "loading" ? "Sending…" : "Subscribe"}
           </button>
         </div>
+        {status === "ok" && (
+          <div
+            role="status"
+            style={{
+              fontSize: 11,
+              color: "var(--accent-orange)",
+              background: "rgba(197, 81, 26, 0.10)",
+              border: "1px solid var(--accent-orange)",
+              borderRadius: 3,
+              padding: "6px 10px",
+              margin: 0,
+              marginTop: 4,
+              lineHeight: 1.4,
+            }}
+          >
+            ✓ Subscribed. The next issue lands in your inbox on the 7th.
+          </div>
+        )}
         {status === "err" && errMsg && (
           <p
             role="alert"
