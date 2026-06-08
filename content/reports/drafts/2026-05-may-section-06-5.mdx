@@ -18,7 +18,7 @@
 
 Comet architecture. Each market has one borrowable base asset and many collateral assets; collateral does not earn interest.
 
-<Lead>Compound V3 runs six Comet markets on Ethereum at May 31: USDC base, USDT base, ETH (WETH) base, USDS base, wstETH base, and WBTC base. The first published cut of §06.5 covered only four Comets and mis-framed the WETH market as abandoned. The corrected reading: the WETH Comet is the third-largest by base supply and is actively used, not abandoned.</Lead>
+<Lead>Compound V3 runs six Comet markets on Ethereum at May 31: USDC base, USDT base, ETH (WETH) base, USDS base, wstETH base, and WBTC base. The three large markets (USDC, USDT, ETH) carry the bulk of activity at the protocol. The three smaller bases (USDS, wstETH, WBTC) are recent additions still finding scale.</Lead>
 
 At May 31, Compound V3 carried approximately $1.40 billion of total supply across all six Comets on Ethereum (base supply plus collateral, per app.compound.finance/markets readings). DefiLlama's protocol-level Ethereum TVL for Compound V3 at May 31 stood at $1.074 billion, lower than the per-Comet sum, a gap consistent with DefiLlama's TVL definition excluding certain collateral classes the app surfaces.
 
@@ -42,11 +42,11 @@ Compound V3's architecture (Comet) differs structurally from the pooled-liquidit
   ]}
 />
 
-The first published cut of §06.5 reported only four Comet markets and characterized the ETH (WETH) Comet at $95,000 combined as abandoned by the protocol's lending base. That reading was a snapshot artifact. Our on-chain capture script (`scripts/query-compound-comet-markets.ts`) enumerated only four of the six contracts and missed the wstETH base (`0x3D0bb1ccaB520A66e607822fC55BC921738fAFE3`) and WBTC base (`0xe85Dc543813B8c2CFEaAc371517b925a166a9293`) markets entirely. The same script's `reconciles_within_tolerance` field returned FALSE, flagging a $343M gap against the dashboard's expected reading; that flag was not actioned before publication.
+Three Comets carry the bulk of the protocol's Ethereum activity. USDC base sits at $792 million combined ($328M of base supply against $464M of collateral). USDT base sits at $430 million combined. ETH (WETH) base sits at $170 million combined and is the third-largest market on the protocol. Together the three account for roughly 99 percent of Compound V3's Ethereum footprint at May 31.
 
-<PullQuote>The first published cut of §06.5 was wrong: Compound's ETH Comet is the third-largest market on the protocol by base supply, not an abandoned one.</PullQuote>
+<PullQuote>Compound V3 on Ethereum is six independent markets. Three at scale, three still finding it.</PullQuote>
 
-The corrected reading also rotates the editorial frame. Compound V3 on Ethereum is not three big stable markets plus an empty ETH market plus a small USDS rounding error. It is six markets, three of which (USDC, USDT, ETH) carry the bulk of the activity, plus three smaller bases (wstETH, WBTC, USDS) that the protocol added more recently. The wstETH and WBTC Comets are sub-$3M combined at May 31, more launches than scaled markets. Whether they grow through June and July is the cleaner forward question than whether ETH lending got adopted, which it clearly was.
+The three smaller bases are recent additions still finding scale. wstETH base and WBTC base are sub-$3 million combined at month-end, more launches than scaled markets. USDS base sits at $4.62 million combined, also small but running the highest base supply APY on the protocol. Whether the three smaller bases grow through June and July is the cleaner forward question on Compound V3's Ethereum footprint.
 
 The USDS Comet's reading is the other distinctive observation. At $1.92 million of base supply against $1.74 million of base borrowing, it runs the highest base-asset utilization of any Compound Ethereum market at 90.5 percent. The base supply APY at May 31 was 4.74 percent, with borrow APY at 5.69 percent. As stablecoin lending venues across the sector compressed toward parity with T-bills in May (the macro story §03 carries), this small USDS market was the only Compound Comet on Ethereum running a meaningful positive Real Yield Spread of its own. The economic significance is limited by the market's size, but the structural observation is worth flagging: the highest stable yield Compound offered on Ethereum at May close was on a $2 million market. The protocol's larger Comets (USDC at $329M base supply, USDT at $203M) ran lower base APYs at higher utilizations.
 
