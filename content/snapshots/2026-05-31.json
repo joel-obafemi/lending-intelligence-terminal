@@ -421,7 +421,7 @@
     "Liquidations 90D by protocol — needs liquidator_db read.",
     "Oracle concentration — needs lib/oracles.ts roll-up against the May 31 sector snapshot.",
     "Real Yield Spread time series for the month — confirm +1.54pp May 31 reading against FRED TB4WK and the blended stable APY.",
-    "Compound and Euler card-vs-detail reconciliation flagged above. Confirm Ethereum-only figures via DefiLlama /protocol/compound-v3 and /protocol/euler-v2.",
+    "Compound and Euler card-vs-detail check noted above. Confirm Ethereum-only figures via DefiLlama /protocol/compound-v3 and /protocol/euler-v2.",
     "Net supply flows by asset are captured per the Sankey but only the May (current month) view; the W/M/Q toggles weren't dumped. Pull weekly cuts via export-net-flow-daily.ts if granularity is needed in the writeup."
   ],
   "narrative_hooks_observed_in_data": [
