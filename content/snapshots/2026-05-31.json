@@ -169,8 +169,9 @@
       "available_liquidity_usd": 3780000000,
       "utilization_pct": 36.3,
       "markets_count": 510,
-      "idle_ratio_pct": 63.7,
-      "idle_ratio_descriptor": "vault capital sitting unallocated",
+      "idle_ratio_pct": 10.01,
+      "idle_ratio_descriptor": "vault capital sitting unallocated (verified via scripts/verify-morpho-idle-ratio.ts; see 2026-05-morpho-idle-ratio.json)",
+      "idle_ratio_erratum_2026_06_08": "Original snapshot value was a bare 63.7 with no derivation trail. Verified May 31 23:59:59 UTC reading at block 25218793 is 10.01 percent sector-wide across 273 vaults with complete historical state. Issue 002 §06.3 and supporting copy were revised; this value is the corrected reading.",
       "h24_supply_delta_usd": -35720000,
       "off_sep_2025_peak_pct": -28,
       "sep_2025_peak_supply_usd": 8210000000
@@ -430,6 +431,6 @@
     "Sector USDC supply APY dispersion is 330.5 bps at May 31, 1.33x the 12-month average, with Fluid at 5.93% leading and Euler V2 at 2.62% trailing. Aave V3 USDC sat at 3.27% supply APY, third-lowest of the six. USDT and WETH dispersion both ran below their 12-month baselines, leaving USDC as the only asset still elevated.",
     "Sector utilization fell 2pp MoM despite borrows falling more in absolute terms than supply. Borrows down $1.33B, supply down $1.58B — supply contracted slightly more, but the utilization decline says the protocol-weighted denominator effect favored supply this month.",
     "Real Yield Spread closed May at parity (-0.3 bps), up from -34 bps in April. The 33-bps tightening was the largest single-month compression of 2026 and the first month-end at parity since September 2025. The Treasury-bill leg held flat while the blended on-chain stable APY lifted 34 bps from 3.26% to 3.60% — a sector-wide rebalancing distributed across the four protocols in the blended-stable calculation, not concentrated in any single market.",
-    "Morpho idle ratio at 63.7% (vault capital sitting unallocated) is a structural metric worth flagging given the curator HHI context. Curators are holding capital back rather than deploying it into markets they don't trust."
+    "Morpho idle ratio verified at 10.01 percent at May 31 23:59:59 UTC (block 25218793) via scripts/verify-morpho-idle-ratio.ts across 273 vaults with complete historical state. The original 63.7 figure in this snapshot was a bare value with no derivation trail and has been superseded; the curator-caution thesis the original framing carried does not hold. See content/snapshots/2026-05-morpho-idle-ratio.json for the verified figure and methodology."
   ]
 }

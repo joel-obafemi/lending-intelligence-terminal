@@ -1,35 +1,43 @@
 {/*
   Issue 002 — "Capital Rotates" — §06.3 Protocol Deep Dive: Morpho
-  Status: first draft, ~760 words
+  Status: revised, ~720 words
   Sits within §06 Protocol Deep Dives
+  Erratum 2026-06-08 — the original MetaMorpho idle-ratio finding was
+         based on a bare snapshot value with no derivation trail. The
+         verify-morpho-idle-ratio.ts harness, run against blue-api at the
+         May 31 23:59:59 UTC block (25218793), returned a sector-wide
+         reading of ten percent across 273 vaults with complete historical
+         state. The original Lead's caution thesis does not hold; this
+         rewrite leads with the depositor inflow and pivots the structural
+         caveat into the curator-concentration story (which IS reproducible
+         via snapshot-curator-hhi.ts). See content/snapshots/2026-05-morpho
+         -idle-ratio.json for the verified figure and methodology.
   Hand-off: curator concentration argument lives in §07; the Sentora cross-protocol
-            reallocation lives in §06.6. §06.3 covers protocol-level data and the
-            idle-ratio finding, with references but no re-litigation.
+            reallocation lives in §06.6.
   Source data: 2026-05-31.json freeze + Issue 001 published Apr 30 baseline ($5.71B)
                eom-report:may (fees $8.24M, capture 0%)
                2026-05-oracle-concentration.json (67% Chainlink, most diversified)
+               2026-05-morpho-idle-ratio.json (verified May 31 reading; supersedes original snapshot)
 */}
 
 <SectionHeading number="06.3">Protocol Deep Dive: Morpho</SectionHeading>
 
 Permissionless isolated lending primitives. Each market is a single tuple of loan asset, collateral, LLTV, oracle, and IRM. Vaults aggregate across markets.
 
-<Lead>Morpho ended May with 63.7 percent of its MetaMorpho vault capital sitting in idle markets, unallocated to any underlying lending market. On a protocol where curators are paid to deploy capital, that reading is the cleanest signal of curator caution the data exposes.</Lead>
+<Lead>Morpho absorbed the largest absolute depositor inflow on Ethereum lending in May: +$759 million in net deposits. The protocol closed the month at $4.91 billion of total supply, +18.3 percent month-over-month and the highest single-protocol absolute inflow in this report's coverage. SparkLend's $751.6 million in the same window put the two protocols within $8 million of each other at the top of the inflow ranking. What separates Morpho's reading is where the inflow concentrated at the curator layer — and how concentrated that layer already was when it arrived.</Lead>
 
 At May 31, Morpho carried $5.96 billion of total supply on Ethereum, up from $5.71 billion at April 30, a 4.4 percent nominal gain. Active borrows stood at $2.16 billion against $3.80 billion of available liquidity, for a 36.2 percent utilization. Across 510 active markets at month-end, Morpho is the most fragmented protocol in coverage, with isolated-market topology that lets curators construct vaults at the granularity their depositor base allows. The protocol now sits 28 percent below its September 2025 peak of $8.21 billion, the smallest contraction from peak of any of the six protocols this issue covers. Of the six, Morpho is the most resilient to the LRT-loop unwind that has driven the broader sector contraction since April.
 
-The 63.7 percent idle ratio is a Morpho-specific metric, applicable only because the protocol's MetaMorpho vault architecture exposes an explicit idle market where depositor capital can sit unallocated. The other five protocols in coverage use pooled or per-market architectures that do not expose this concept directly; their unborrowed-liquidity figures and Morpho's idle-ratio figure are not directly comparable. In Morpho's case, when a curator believes the markets available for deployment do not adequately reward risk, the depositor capital their vault collects accumulates in the idle market rather than being deployed.
+The curator-concentration reading sits at HHI 3,103 at May 31, the third consecutive month past the antitrust threshold for highly concentrated markets. The top three curators (Sentora 38.6 percent, Steakhouse 34.1 percent, Gauntlet 21.2 percent) hold 93.9 percent of curated TVL combined. Of the $759 million in depositor inflow, the fraction that arrived at those three curators was high, by construction of the share. Whether that mattered structurally depends on whether the curators redirected it identically or differently, which is the §07 cross-protocol question that the Sentora $128M move makes empirically visible.
 
-<PullQuote>The 63.7 percent reading is curators collectively deciding that more than half of the capital they manage on behalf of depositors is not worth deploying under current conditions.</PullQuote>
-
-That reading is consistent with the curator-concentration findings developed in §07 and the Sentora cross-protocol reallocation documented in §06.6. Curators that increasingly move capital between protocols hold inflows in vault reserves before allocating into markets, particularly when the curator believes a better destination may emerge. Read alongside the Morpho curator HHI at 3,103 at May close (and 3,290 at the June 4 follow-on reading), the idle ratio says concentration is deepening at the vault level while deployment slows at the market level. Capital is consolidating onto the largest curators, who are then declining to deploy it.
-
-On the revenue side, Morpho remains the cleanest pass-through architecture in the sector. Fees in May were $8.24 million Ethereum-only, against $8.69 million in April, a 5.2 percent decline. Every dollar of that $8.24 million passed through to depositors and curators. The protocol treasury took zero. MORPHO holders received zero. Both readings held for both months and have held for longer. There is no protocol-level capture mechanism on Morpho's fee path, which is an architectural choice rather than a temporary state. The contrast against Compound V3's first protocol-treasury cut in months (1.1 percent at May close) is structurally telling: even as the broader sector compressed and protocols sought to preserve treasury revenue, Morpho's design choice held the pass-through invariant.
+<PullQuote>The top three curators hold 93.9 percent of curated TVL. The inflow arrived at a layer that was already past the antitrust threshold for highly concentrated markets, for the third consecutive month.</PullQuote>
 
 The protocol absorbed +$758.7 million of constant-price net depositor flow in May, the largest absolute inflow of any of the six protocols this issue covers, against a four percent nominal supply gain. The gap of roughly $500 million is the LRT and LST price decline on Morpho's collateral mix that obscures the depositor-flow magnitude. The single largest contribution to the inflow was Sentora's $93.94 million expansion, almost all of which traced to the cross-protocol Euler-to-Morpho move §06.6 documents. The remaining $665 million of net depositor flow on Morpho is distributed across Steakhouse Financial, Gauntlet, and the smaller curators in the leaderboard's long tail.
 
+On the revenue side, Morpho remains the cleanest pass-through architecture in the sector. Fees in May were $8.24 million Ethereum-only, against $8.69 million in April, a 5.2 percent decline. Every dollar of that $8.24 million passed through to depositors and curators. The protocol treasury took zero. MORPHO holders received zero. Both readings held for both months and have held for longer. There is no protocol-level capture mechanism on Morpho's fee path, which is an architectural choice rather than a temporary state. The contrast against Compound V3's first protocol-treasury cut in months (1.1 percent at May close) is structurally telling: even as the broader sector compressed and protocols sought to preserve treasury revenue, Morpho's design choice held the pass-through invariant.
+
 Oracle diversification is the other structural distinction worth noting. Morpho's Chainlink dependency at May 31 was 67 percent, the lowest of any of the six protocols in coverage, against a six-protocol sector average of 83 percent. The remaining oracle exposure is distributed across Redstone (notable on the Morpho LRT markets specifically), Curve EMA on certain stablecoin pools, and a long tail of asset-specific oracle configurations curators have selected. The fragmentation is consistent with the protocol's overall architecture: where Compound V3 at 93 percent Chainlink reflects a pooled-protocol design choice to standardize, Morpho's 67 percent reflects the per-market freedom curators have to pick oracle sources they trust.
 
-What Morpho did not develop in May was a rate-driven growth signal of its own. Vault APYs moved with the rest of the sector through the compression toward T-bill parity documented in §03, neither leading nor lagging. The protocol's growth came from the deposit base expanding under curator discretion, not from rate-driven capital pull. The 63.7 percent idle ratio is the structural counter-signal: even as deposits flowed in at the largest absolute volume of the six protocols, deployment fell behind. Whether that gap closes in June, with curators eventually deploying parked capital, or widens further as curator caution persists, is the question §09 carries forward.
+What Morpho did not develop in May was a rate-driven growth signal of its own. Vault APYs moved with the rest of the sector through the compression toward T-bill parity documented in §03, neither leading nor lagging. The protocol's growth came from the deposit base expanding under curator discretion, not from rate-driven capital pull. The structural counter-signal is the curator layer the inflow arrived at: HHI 3,103 at May 31, deepening to 3,290 by June 4, and the top three curators holding 93.9 percent of curated TVL combined. Whether the concentration deepens further as the inflow continues, or attracts a fourth curator with the standing to break the top-three lock, is the question §09 carries forward.
 
-{/* End §06.3 — total ~810 words, one pull quote, no data table */}
+{/* End §06.3 — revised, one pull quote, no data table */}

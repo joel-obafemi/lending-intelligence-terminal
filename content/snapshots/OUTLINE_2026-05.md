@@ -89,7 +89,7 @@ Same four-table structure as Issue 001, with these adjustments:
 | Liquidation efficiency | _DATA NEEDED — same as above_ |
 | Morpho curator HHI | 3,103 (highly concentrated; up from 3,026 in April) |
 | Morpho top 3 share | 93.9% (Sentora 38.6, Steakhouse 34.1, Gauntlet 21.2) |
-| Morpho idle ratio | 63.7% (vault capital sitting unallocated — new metric) |
+| Morpho idle ratio | ~10% verified May 31 (was 63.7 unverified in this outline — see 2026-05-morpho-idle-ratio.json; thesis dropped from Issue 002) |
 | Aave V3 USDC market | 97.6% utilization, 9.62% supply APY (borrow squeeze) |
 
 ### §02 Executive Summary
@@ -108,7 +108,7 @@ Paragraphs to land in this section:
 
 5. **Coverage expanded to six protocols.** Compound and Euler enter the report. Compound contributes ~$1.61B of Ethereum supply at 33.3% utilization, with Comet's one-base-many-collateral structure. Euler contributes ~$539M at 71% utilization, with its modular EVK vault topology. Both are smaller than Fluid in supply but together add ~$2.15B to sector total, which is non-trivial against a $33B sector.
 
-6. **Risk in focus.** Morpho idle ratio at 63.7% — curators are holding ~$2.4B of vault capital unallocated, which says they don't trust the markets they're being asked to deploy into. That's a quiet signal that deserves attention.
+6. **Risk in focus.** _[Erratum 2026-06-08 — outline originally framed a high idle ratio (bare unverified value) as the structural Morpho story. The verified May 31 reading is ~10 percent (see content/snapshots/2026-05-morpho-idle-ratio.json), which is at typical Morpho operating levels. The structural Morpho risk reading shifted to the curator concentration story: HHI 3,103, top three at 93.9 percent.]_ Curator concentration: HHI 3,103 deepening, top three curators on 93.9 percent of curated TVL — the inflow concentrated at a layer that was already past the antitrust threshold for the third consecutive month.
 
 ### §03 Macro Context (Real Yield Spread)
 
@@ -212,7 +212,7 @@ Themes: another +$600M card / +$751M Sankey month of inflow; WSTETH supply traje
 
 **§06.3 Morpho** (anchor section for the HHI angle — but the HHI gets its own §07, so keep this focused on protocol-level data)
 
-Themes: +$759M inflow despite curator concentration deepening; idle ratio at 63.7% (a new metric to surface); 510 markets; the Morpho-Blue architecture story. Hand off to §07 for the curator concentration analysis.
+Themes: +$759M inflow into a curator layer already past the antitrust threshold (HHI 3,103, top three at 93.9 percent); 510 markets; the Morpho-Blue architecture story. Hand off to §07 for the curator concentration analysis. _[Erratum 2026-06-08 — outline originally flagged the idle ratio (bare value, no derivation trail) as the structural surface. Verified May 31 reading ~10 percent supersedes; thesis dropped. See content/snapshots/2026-05-morpho-idle-ratio.json.]_
 
 **§06.4 Fluid** (short — Fluid's story is consistent across months)
 
@@ -318,7 +318,7 @@ A consolidated risk dashboard for May. Most data points are flagged elsewhere in
    - **Alternative:** use median per-event penalty across all four protocols and footnote the dollar-weighted aggregate.
    - **Note:** Compound V3 and Euler V2 are not yet ingested by `liquidator_db` — both protocols show zeros and a `not_ingested: true` flag in the JSON. For Issue 002 they belong in the table as "not yet covered" rather than "zero liquidations." This is a backlog item worth surfacing in the appendix; for Euler in particular, the liquidations question matters for §06.6's borrow-runoff explanation.
 - **Stablecoin debt share trajectory.** 43.6% (Apr) → 59.3% (May). Material rebound, driven by LRT loops repaying WETH and rotating into stables.
-- **Morpho idle ratio.** 63.7% — flagged in §02 and §06.3.
+- **Morpho idle ratio.** _[Erratum 2026-06-08 — original outline pinned a bare unverified value here; verified May 31 reading is ~10 percent (see 2026-05-morpho-idle-ratio.json). Thesis dropped from Issue 002. Morpho structural risk in §08 is the curator concentration reading.]_
 - **Aave V3 USDC borrow squeeze.** Flagged in §01 and §03.
 - **LRT collateral remaining across protocols.** _DATA NEEDED — how much WEETH / RSETH / EZETH / OSETH still on-protocol at May 31._
 
