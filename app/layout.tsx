@@ -46,6 +46,21 @@ export async function generateMetadata(): Promise<Metadata> {
     title: "Lending Intelligence Terminal · Datum Labs",
     description: "Multi-protocol lending analytics: Aave V3, SparkLend, Morpho, Fluid, Compound V3, Euler V2",
     metadataBase: new URL(SITE_URL),
+    // Favicon wired explicitly here AS WELL as via the file convention
+    // (app/icon.png + app/apple-icon.png). The file convention alone
+    // sometimes doesn't fire on the first deploy after introduction —
+    // the explicit declaration makes it deterministic.
+    icons: {
+      icon: [
+        { url: "/branding/datumlabs-icon.png", type: "image/png" },
+      ],
+      shortcut: [
+        { url: "/branding/datumlabs-icon.png", type: "image/png" },
+      ],
+      apple: [
+        { url: "/branding/datumlabs-icon.png", type: "image/png" },
+      ],
+    },
     alternates: {
       types: {
         "application/rss+xml": [
