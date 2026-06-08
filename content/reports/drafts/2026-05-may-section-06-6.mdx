@@ -1,0 +1,94 @@
+{/*
+  Issue 002 — "Capital Rotates" — §06.6 Euler V2 draft
+  Status: first draft, ~860 words
+  Source brief: content/snapshots/SOURCE_BRIEF_section_06_6.md
+  Supporting JSONs: 2026-05-euler-vault-flows.json, 2026-05-euler-vault-apys.json,
+                    2026-05-euler-vault-curators.json, 2026-05-sentora-cross-protocol.json,
+                    2026-05-sentora-morpho-variants.json, 2026-05-sentora-multisig-holdings.json
+*/}
+
+<SectionHeading number="06.6">Protocol Deep Dive: Euler V2</SectionHeading>
+
+Modular vault-based lending. Each EVK vault is an isolated market with its own risk parameters, oracle, and IRM.
+
+<Lead>Euler V2's total supply on Ethereum contracted 39.4 percent in May, the steepest single-month decline of any protocol in this report's coverage. The question is not whether the decline happened. It is who drove it, and the answer is specific enough to name.</Lead>
+
+At May 31, an on-chain audit of Euler V2's active EVK vaults on Ethereum returned $469.3M of total supplied capital, against $399.4M of active borrows and $70.0M of unborrowed liquidity, for an 85.1 percent utilization. At April 30, the same on-chain method against the historical block timestamped 2026-04-30T23:58:59 UTC returned $774.2M of supplied capital, $572.3M of active borrows, and $201.9M of unborrowed liquidity, for a 73.9 percent utilization. The audit-symmetric month-over-month contraction is 39.4 percent on supplied, 30.3 percent on borrows, and 65.3 percent on unborrowed liquidity. Both endpoints replace the dashboard's pre-audit figures of $539.4M / $896.3M, which were derived from the same DefiLlama protocol-level formula that overstated Compound V3 by $343M; in Euler's case the overstatement ran approximately $70M at May 31 and approximately $122M at April 30, both concentrated on the unborrowed-supply leg.
+
+The Sankey net deposit flow of −$338.5M for Euler V2 in May, denominated independently of the protocol-level formula, is unchanged by the audit and remains the cleanest single-figure indicator of depositor-quantity exit across the month. The protocol-level contraction and the depositor-flow figure both point at the same magnitude. By every measure, the protocol shrank materially in May. The audit confirms it, the Sankey confirms it, and the vault-level Sentora finding documented below explains what drove it.
+
+The natural read for a contraction of that magnitude on a protocol of that size is depositor flight: lenders losing confidence in the platform and pulling capital across the board. The vault-level data tells a different story. Of the roughly $130M of outflow that is cleanly attributable at the vault level (the rest is borrow runoff and mid-month vault creation noise), $128.39M sits in just four EVK vaults. All four share a single on-chain governor. All four are USD-denominated. Every other Euler V2 curator on Ethereum ran vaults that grew TVL or moved by a few hundred thousand dollars at most. May's Euler V2 contraction was not a protocol-wide event. It was one operator.
+
+The four vaults are ePYUSD-6, eRLUSD-7, eUSDC-80, and eUSDC-70. Each lost between 64 and 84 percent of its TVL across the month.
+
+<DataTable
+  caption="Sentora-governed Euler V2 vault outflows, May 2026"
+  columns={[
+    { key: "vault", label: "Vault", align: "left" },
+    { key: "may1", label: "May 1 TVL", align: "right" },
+    { key: "may31", label: "May 31 TVL", align: "right" },
+    { key: "change", label: "Δ", align: "right" }
+  ]}
+  rows={[
+    { vault: "EVK Vault ePYUSD-6", may1: "$63.12M", may31: "$10.31M", change: "−$52.80M (−83.7%)" },
+    { vault: "EVK Vault eRLUSD-7", may1: "$43.78M", may31: "$11.09M", change: "−$32.68M (−74.7%)" },
+    { vault: "EVK Vault eUSDC-80", may1: "$37.93M", may31: "$13.55M", change: "−$24.38M (−64.3%)" },
+    { vault: "EVK Vault eUSDC-70", may1: "$28.06M", may31: "$9.55M", change: "−$18.52M (−66.0%)" },
+    { vault: "Sentora total", may1: "$172.89M", may31: "$44.50M", change: "−$128.39M (−74.3%)" }
+  ]}
+/>
+
+The shared governor is a Safe multisig at `0x9453ee262d7C95955e690AE7aBBD82a08B135685`. Each vault's "Risk Manager" badge on the Euler app's vault page identifies the operator as Sentora. The next-largest outflow vault on Euler V2, eUSDe-6, drained only $350,000 over the same month, three orders of magnitude smaller than any of the four named bleeders. The fall-off is not a long tail. It is a step change from the four Sentora vaults to everything else.
+
+A natural counter-hypothesis is yield-chasing: stablecoin lenders saw rates fall on these vaults during May and rotated to better-paying venues. The data contradicts this directly. The four bleeders' supply APYs softened across the month by 0.6 to 1.1 percentage points each, ending in the 1.2 to 3.2 percent range. Two K3 Capital vaults under a different operator saw substantially steeper APY drops over the same window and attracted capital rather than losing it.
+
+<DataTable
+  caption="May 2026 APY drift, Euler V2 vaults compared"
+  columns={[
+    { key: "vault", label: "Vault", align: "left" },
+    { key: "may1", label: "APY May 1", align: "right" },
+    { key: "may31", label: "APY May 31", align: "right" },
+    { key: "drop", label: "Δ", align: "right" },
+    { key: "flow", label: "May TVL flow", align: "right" }
+  ]}
+  rows={[
+    { vault: "ePYUSD-6 (Sentora)", may1: "2.31%", may31: "1.60%", drop: "−0.71 pp", flow: "−$52.80M" },
+    { vault: "eRLUSD-7 (Sentora)", may1: "2.07%", may31: "1.21%", drop: "−0.85 pp", flow: "−$32.68M" },
+    { vault: "eUSDC-80 (Sentora)", may1: "3.68%", may31: "2.62%", drop: "−1.06 pp", flow: "−$24.38M" },
+    { vault: "eUSDC-70 (Sentora)", may1: "3.81%", may31: "3.19%", drop: "−0.62 pp", flow: "−$18.52M" },
+    { vault: "eWETH-2 (K3 Capital)", may1: "4.32%", may31: "1.34%", drop: "−2.98 pp", flow: "net inflow" },
+    { vault: "eUSDC-22 (K3 Capital)", may1: "3.76%", may31: "2.00%", drop: "−1.76 pp", flow: "net inflow" }
+  ]}
+/>
+
+If May's outflows had been driven by depositors chasing yield, the steeper-decline K3 Capital vaults should have lost the most capital, and the modest-decline Sentora vaults should have held. The data shows the opposite. The exit decision was operator-specific, not yield-specific.
+
+<PullQuote>Sentora moved from one set of vaults they operated to another set of vaults they operated, on a different protocol, in the same asset shapes.</PullQuote>
+
+What Sentora was doing instead becomes clear once the lens moves to Morpho. Across the same 30-day window, Sentora's MetaMorpho footprint expanded by $93.94M.
+
+<DataTable
+  caption="Sentora MetaMorpho vault flows, May 2026"
+  columns={[
+    { key: "vault", label: "Vault", align: "left" },
+    { key: "may1", label: "May 1 TVL", align: "right" },
+    { key: "may31", label: "May 31 TVL", align: "right" },
+    { key: "change", label: "Δ", align: "right" }
+  ]}
+  rows={[
+    { vault: "Sentora RLUSD", may1: "$132.09M", may31: "$209.65M", change: "+$77.56M (+58.7%)" },
+    { vault: "Sentora PYUSD", may1: "$230.16M", may31: "$296.70M", change: "+$66.54M (+28.9%)" },
+    { vault: "Sentora PYUSD Core", may1: "$50.16M", may31: "~$165 (literal)", change: "−$50.16M (−100%)" },
+    { vault: "Sentora Morpho total", may1: "$412.41M", may31: "$506.35M", change: "+$93.94M" }
+  ]}
+/>
+
+The pattern is deliberate. One Morpho vault, Sentora PYUSD Core, was drained to dust ($165 in literal dollars, not millions). The two primary Sentora Morpho vaults absorbed the new capital. The naming makes the move legible: Sentora's bleeding Euler vaults were ePYUSD-6 and eRLUSD-7; their Morpho expansion concentrated in Sentora PYUSD and Sentora RLUSD. They moved from one set of vaults they operated to another set of vaults they operated, on a different protocol, in the same asset shapes. The arithmetic closes at 73 percent: $93.94M of Morpho inflow against $128.39M of Euler outflow leaves $34M unaccounted at the curator layer.
+
+We checked the obvious explanations for the residual. The first was that Sentora might have moved capital through a sub-label on Morpho that our strict curator-name match missed. A permissive query pulling every Morpho vault with a curator name containing "sentora" returned exactly the three vaults already in the table. No sub-labels, no rebrands inside the window. The second was that the multisig at `0x9453ee...5685` might have held the missing capital directly. An on-chain ERC-20 balance read at the May 1 and May 31 block heights returned zero across every relevant stablecoin and lending receipt token at both endpoints. No idle treasury, no direct LP positions on other protocols.
+
+<Annotation>By elimination, the $34M residual is downstream LP behavior: individual depositors who withdrew from the Sentora Euler vaults and made their own redeployment decisions across other lending venues, off-chain custody, or stablecoin reserves. Tracing the rest would require following the actual depositor wallets, which is the kind of investigation we will undertake when a finding warrants it. For May, 73-percent curator-level coverage is sufficient to credibly explain the protocol-level move.</Annotation>
+
+Two implications follow. The first is local to Euler V2. The May contraction is not evidence that depositors lost faith in the protocol. It is evidence that one operator chose to consolidate their stable-vault footprint on a different platform. K3 Capital ran the same protocol over the same window and grew TVL on every named vault they operate. The second implication is broader and gets its full treatment in §07. The curators who allocate capital across vault-aggregation lending architectures are not passive index managers. Their decisions can move material capital between protocols inside a single month, with no flagged event, no oracle failure, no governance vote, and no liquidation cascade. The Sentora reallocation is the clearest empirical demonstration of that pattern this publication has covered to date.
+
+{/* End §06.6 — total ~860 words, three data tables, one pull quote, one annotation */}

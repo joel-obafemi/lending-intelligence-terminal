@@ -1,0 +1,93 @@
+{/*
+  Issue 002 — "Capital Rotates" — §01 The Cheat Sheet
+  Status: first draft
+  Sits between: §00 How to Read This Report and §02 Executive Summary
+  Source data: All freeze JSONs + eom-report:may output
+  Structure mirrors Issue 001 §01: snapshot statement + four data tables (no inter-table prose).
+  HHI graduates to the sector aggregate table this issue.
+*/}
+
+<SectionHeading number="01">The Cheat Sheet</SectionHeading>
+
+Snapshot date: May 31, 2026, 23:59 UTC. All month-over-month comparisons against April 30, 2026.
+
+Coverage expanded from four protocols (Aave V3, Spark, Morpho, Fluid) to six this issue, adding Compound V3 and Euler V2. The April 30 baselines below are the six-protocol equivalents, reconstructed where Issue 001's published four-protocol baseline does not cover the addition. Issue 001's headline April figures will not reconcile against the six-protocol April column here; that is the scope change, not a data change.
+
+<DataTable
+  caption="Sector aggregate"
+  columns={[
+    { key: "metric", label: "Metric", align: "left" },
+    { key: "apr", label: "Apr 30", align: "right" },
+    { key: "may", label: "May 31", align: "right" },
+    { key: "delta", label: "May − Apr", align: "right" }
+  ]}
+  rows={[
+    { metric: "Total Supply", apr: "$34.64B", may: "$33.06B", delta: "−$1.58B (−4.6%)" },
+    { metric: "Active Borrows", apr: "$14.53B", may: "$13.20B", delta: "−$1.33B (−9.2%)" },
+    { metric: "Available Liquidity", apr: "$20.10B", may: "$19.86B", delta: "−$0.25B (−1.2%)" },
+    { metric: "Sector Utilization", apr: "41.9%", may: "39.9%", delta: "−2.0 pp" },
+    { metric: "Real Yield Spread", apr: "−34 bps", may: "−0.3 bps", delta: "+33 bps (parity)" },
+    { metric: "Sector Take Rate (annualized)", apr: "4.27%", may: "3.38%", delta: "−89 bps" },
+    { metric: "Morpho Curator HHI", apr: "3,026", may: "3,103", delta: "+77" }
+  ]}
+/>
+
+<DataTable
+  caption="Net flows by protocol, May 2026"
+  columns={[
+    { key: "protocol", label: "Protocol", align: "left" },
+    { key: "flow", label: "Net deposits 30d", align: "right" },
+    { key: "supply", label: "May 31 supply", align: "right" },
+    { key: "mom", label: "MoM change", align: "right" }
+  ]}
+  rows={[
+    { protocol: "Aave V3", flow: "−$503M", supply: "$18.61B", mom: "−7.8%" },
+    { protocol: "Spark", flow: "+$752M", supply: "$5.38B", mom: "+16.2% (largest expansion)" },
+    { protocol: "Morpho", flow: "+$759M", supply: "$5.96B", mom: "+14.6%" },
+    { protocol: "Fluid", flow: "−$54M", supply: "$963M", mom: "−5.9%" },
+    { protocol: "Compound", flow: "−$32M", supply: "$1.61B", mom: "−6.4%" },
+    { protocol: "Euler", flow: "−$339M", supply: "$549M", mom: "−38.7% (steepest contraction)" },
+    { protocol: "Sector total", flow: "+$583M", supply: "$33.06B", mom: "−4.6%" }
+  ]}
+/>
+
+<DataTable
+  caption="Ethereum-only fees, calendar month"
+  columns={[
+    { key: "protocol", label: "Protocol", align: "left" },
+    { key: "apr", label: "Apr 2026", align: "right" },
+    { key: "may", label: "May 2026", align: "right" },
+    { key: "delta", label: "MoM Δ", align: "right" },
+    { key: "pct", label: "MoM %", align: "right" }
+  ]}
+  rows={[
+    { protocol: "Aave V3", apr: "$50.35M", may: "$37.03M", delta: "−$13.32M", pct: "−26.5%" },
+    { protocol: "Morpho", apr: "$8.69M", may: "$8.24M", delta: "−$0.45M", pct: "−5.2%" },
+    { protocol: "Spark", apr: "$3.74M", may: "$4.69M", delta: "+$0.96M", pct: "+25.6%" },
+    { protocol: "Fluid", apr: "$2.12M", may: "$1.81M", delta: "−$0.31M", pct: "−14.4%" },
+    { protocol: "Euler", apr: "$2.09M", may: "$1.64M", delta: "−$0.44M", pct: "−21.3%" },
+    { protocol: "Compound", apr: "$1.64M", may: "$1.66M", delta: "+$0.02M", pct: "+1.2%" },
+    { protocol: "Sector total", apr: "$68.62M", may: "$55.08M", delta: "−$13.54M", pct: "−19.7%" }
+  ]}
+/>
+
+<DataTable
+  caption="Risk indicators, May 31 close"
+  columns={[
+    { key: "indicator", label: "Indicator", align: "left" },
+    { key: "reading", label: "Reading", align: "left" }
+  ]}
+  rows={[
+    { indicator: "Stablecoin debt share", reading: "59.3% (up from 43.6% in April; LRT-loop unwind rotated debt into stablecoins)" },
+    { indicator: "ETH-family collateral share", reading: "38.6% (down from approximately 61% in April; LRT and LST price decline plus net outflows)" },
+    { indicator: "Oracle concentration (sector, USD-weighted)", reading: "Chainlink 82.6%, Redstone 7.4%, other / long-tail 10.0% (Compound 93% Chainlink, Aave V3 87%, Spark 86%, Fluid 77%, Morpho 67%, Euler V2 51%)" },
+    { indicator: "Sector LRT collateral remaining", reading: "$3.73B at May 31 (down from $5.35B at April 30, −30.3%); 84% of remaining LRT sits on Aave V3" },
+    { indicator: "Cross-protocol USDC supply APY dispersion", reading: "330.5 bps (1.33× 12-month average; USDT and WETH dispersion both below baseline)" },
+    { indicator: "Liquidation effective penalty (trailing 90d)", reading: "Spark 4.87%, Morpho 24.10%, Fluid 1.68%; Aave V3 reading under investigation; Compound + Euler not yet covered" },
+    { indicator: "Morpho curator HHI", reading: "3,103 (highly concentrated; up from 3,026 in April; June 4 follow-on reading 3,290)" },
+    { indicator: "Morpho top-3 curator share", reading: "93.9% (Sentora 38.6%, Steakhouse 34.1%, Gauntlet 21.2%)" },
+    { indicator: "USDC supply APY by protocol", reading: "Fluid 5.93% (leader), Morpho 4.78%, Spark 4.00%, Aave V3 3.27%, Compound V3 3.20%, Euler V2 2.62% (laggard); 330.5 bps dispersion (see §03)" }
+  ]}
+/>
+
+{/* End §01 — four data tables, snapshot statement, coverage-change footnote */}

@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 880 420" font-family="'Source Serif 4', Georgia, serif">
+  <style>
+    .axis { fill: #595959; font: 11px 'JetBrains Mono', monospace; }
+    .grid { stroke: #B8C9DD; stroke-opacity: 0.4; }
+    .line { stroke: #1F3A5F; stroke-width: 2.4; fill: none; }
+    .area { fill: rgba(31, 58, 95, 0.22); }
+    .dot  { fill: #1F3A5F; stroke: #F7F4ED; stroke-width: 1.4; }
+    .callout-dot { fill: #C5511A; stroke: #F7F4ED; stroke-width: 2; }
+    .callout { fill: #C5511A; font: 600 10px 'JetBrains Mono', monospace; }
+    .title { fill: #0E1B2C; font: 600 18px 'Source Serif 4', Georgia, serif; }
+    .caption { fill: #595959; font: italic 13px 'Source Serif 4', Georgia, serif; }
+    .source { fill: #595959; font: 10px 'JetBrains Mono', monospace; letter-spacing: 0.08em; }
+  </style>
+  <rect width="880" height="420" fill="#F7F4ED"/>
+  <text class="title" x="48" y="36">SparkLend cumulative net deposits, February to May 2026</text>
+  <text class="caption" x="48" y="58">Constant-price USD cumulative flow; the April migration was followed by a continuation in May.</text>
+  <!-- Plot area x 80-840, y 100-360 -->
+  <!-- Y scale: 0 at 360, 3200 at 100 → 3200M = 260 px → 1M = 0.08125 px -->
+  <line class="grid" x1="80" y1="100" x2="840" y2="100"/>
+  <line class="grid" x1="80" y1="165" x2="840" y2="165"/>
+  <line class="grid" x1="80" y1="230" x2="840" y2="230"/>
+  <line class="grid" x1="80" y1="295" x2="840" y2="295"/>
+  <line class="grid" x1="80" y1="360" x2="840" y2="360"/>
+  <text class="axis" x="74" y="104" text-anchor="end">+$3.2B</text>
+  <text class="axis" x="74" y="169" text-anchor="end">+$2.4B</text>
+  <text class="axis" x="74" y="234" text-anchor="end">+$1.6B</text>
+  <text class="axis" x="74" y="299" text-anchor="end">+$800M</text>
+  <text class="axis" x="74" y="364" text-anchor="end">0</text>
+  <!-- Data: Feb 0, Mar 100, Apr 2070, May 2822 -->
+  <!-- x: 4 points across 80-840, spacing 253.3 → 80, 333, 587, 840 -->
+  <!-- y(v) = 360 - v*0.08125 -->
+  <!-- y(0)=360; y(100)=352; y(2070)=192; y(2822)=131.7 -->
+  <path class="area" d="M 80 360 L 333 352 L 587 192 L 840 132 L 840 360 L 80 360 Z"/>
+  <path class="line" d="M 80 360 L 333 352 L 587 192 L 840 132"/>
+  <circle class="dot" cx="80" cy="360" r="4"/>
+  <circle class="dot" cx="333" cy="352" r="4"/>
+  <circle class="callout-dot" cx="587" cy="192" r="6"/>
+  <text class="callout" x="587" y="178" text-anchor="middle">Apr step-up +$1.97B</text>
+  <circle class="callout-dot" cx="840" cy="132" r="6"/>
+  <text class="callout" x="830" y="118" text-anchor="end">May +$751.6M</text>
+  <text class="axis" x="80" y="380" text-anchor="middle">Feb</text>
+  <text class="axis" x="333" y="380" text-anchor="middle">Mar</text>
+  <text class="axis" x="587" y="380" text-anchor="middle">Apr</text>
+  <text class="axis" x="840" y="380" text-anchor="middle">May</text>
+  <text class="source" x="48" y="404">DATUM LABS LENDING TERMINAL</text>
+</svg>

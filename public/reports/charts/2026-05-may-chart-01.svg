@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 880 420" font-family="'Source Serif 4', Georgia, serif">
+  <style>
+    .axis { fill: #595959; font: 11px 'JetBrains Mono', monospace; }
+    .grid { stroke: #B8C9DD; stroke-opacity: 0.4; }
+    .ref  { stroke: #595959; stroke-dasharray: 4 4; stroke-opacity: 0.7; }
+    .line { stroke: #1F3A5F; stroke-width: 2.4; fill: none; }
+    .area { fill: rgba(31, 58, 95, 0.18); }
+    .dot  { fill: #1F3A5F; stroke: #F7F4ED; stroke-width: 1.4; }
+    .callout-dot { fill: #C5511A; stroke: #F7F4ED; stroke-width: 2; }
+    .callout { fill: #C5511A; font: 600 11px 'JetBrains Mono', monospace; }
+    .title { fill: #0E1B2C; font: 600 18px 'Source Serif 4', Georgia, serif; }
+    .caption { fill: #595959; font: italic 13px 'Source Serif 4', Georgia, serif; }
+    .source { fill: #595959; font: 10px 'JetBrains Mono', monospace; letter-spacing: 0.08em; }
+  </style>
+  <rect width="880" height="420" fill="#F7F4ED"/>
+  <text class="title" x="48" y="36">Real Yield Spread, May 2025 to May 2026</text>
+  <!-- Axes -->
+  <line class="grid" x1="60" y1="100" x2="840" y2="100"/>
+  <line class="grid" x1="60" y1="160" x2="840" y2="100" stroke-opacity="0"/>
+  <line class="grid" x1="60" y1="160" x2="840" y2="160"/>
+  <line class="grid" x1="60" y1="220" x2="840" y2="220"/>
+  <line class="grid" x1="60" y1="280" x2="840" y2="280"/>
+  <line class="grid" x1="60" y1="340" x2="840" y2="340"/>
+  <text class="axis" x="48" y="105" text-anchor="end">+50</text>
+  <text class="axis" x="48" y="165" text-anchor="end">0</text>
+  <text class="axis" x="48" y="225" text-anchor="end">−50</text>
+  <text class="axis" x="48" y="285" text-anchor="end">−100</text>
+  <text class="axis" x="48" y="345" text-anchor="end">−150</text>
+  <!-- Parity reference at 0 bps (y=160) -->
+  <line class="ref" x1="60" y1="160" x2="840" y2="160"/>
+  <text class="axis" x="836" y="155" text-anchor="end" fill="#595959">Parity</text>
+  <!-- Series: 13 months, May'25 (-55) through May'26 (-0.3) -->
+  <!-- x mapping: 60 + i*(780/12) ; values: -55,-15,5,38,15,-40,-85,-120,-151,-127,-72,-34,-0.3 -->
+  <!-- y(0)=160, y unit = 60/50 -->
+  <path class="area" d="M 60 226 L 125 178 L 190 154 L 255 114 L 320 142 L 385 208 L 450 262 L 515 304 L 580 341 L 645 312 L 710 246 L 775 201 L 840 160 L 840 380 L 60 380 Z"/>
+  <path class="line" d="M 60 226 L 125 178 L 190 154 L 255 114 L 320 142 L 385 208 L 450 262 L 515 304 L 580 341 L 645 312 L 710 246 L 775 201 L 840 160"/>
+  <!-- Dots -->
+  <circle class="dot" cx="60" cy="226" r="3.5"/>
+  <circle class="dot" cx="125" cy="178" r="3.5"/>
+  <circle class="dot" cx="190" cy="154" r="3.5"/>
+  <circle class="dot" cx="255" cy="114" r="3.5"/>
+  <circle class="dot" cx="320" cy="142" r="3.5"/>
+  <circle class="dot" cx="385" cy="208" r="3.5"/>
+  <circle class="dot" cx="450" cy="262" r="3.5"/>
+  <circle class="dot" cx="515" cy="304" r="3.5"/>
+  <circle class="dot" cx="645" cy="312" r="3.5"/>
+  <circle class="dot" cx="710" cy="246" r="3.5"/>
+  <circle class="dot" cx="775" cy="201" r="3.5"/>
+  <!-- Callouts: Feb trough (-151) and May 31 parity -->
+  <circle class="callout-dot" cx="580" cy="341" r="6"/>
+  <text class="callout" x="580" y="368" text-anchor="middle">Feb · −151 bps</text>
+  <circle class="callout-dot" cx="840" cy="160" r="6"/>
+  <text class="callout" x="830" y="148" text-anchor="end">May 31 · parity</text>
+  <!-- X labels -->
+  <text class="axis" x="60" y="400" text-anchor="middle">May'25</text>
+  <text class="axis" x="190" y="400" text-anchor="middle">Jul</text>
+  <text class="axis" x="320" y="400" text-anchor="middle">Sep</text>
+  <text class="axis" x="450" y="400" text-anchor="middle">Nov</text>
+  <text class="axis" x="580" y="400" text-anchor="middle">Feb'26</text>
+  <text class="axis" x="710" y="400" text-anchor="middle">Apr</text>
+  <text class="axis" x="840" y="400" text-anchor="middle">May'26</text>
+  <text class="caption" x="48" y="58">Monthly close. Parity reference at 0 bps.</text>
+  <text class="source" x="48" y="417">DATUM LABS LENDING TERMINAL</text>
+</svg>

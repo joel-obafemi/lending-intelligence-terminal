@@ -1,0 +1,648 @@
+---
+title: "State of DeFi Lending on Ethereum"
+issue_number: 2
+issue_label: "№002"
+date: "2026-05-31"
+publication_date: "2026-06-07"
+theme: "Capital Rotates"
+tagline: "How $1.6 billion of LRT collateral exited Ethereum lending while $818 million of BTC-family collateral arrived in its place, Morpho absorbed the sector's largest absolute depositor inflow at $759 million, and stablecoin yields closed at parity with T-bills for the first time in eight months."
+reading_time_min: 28
+cover_image: "/reports/2026-05-may-cover.png"
+social_image: "/reports/2026-05-may-twitter.png"
+protocols: ["Aave V3", "SparkLend", "Morpho", "Fluid", "Compound V3", "Euler V2"]
+freeze_date: "2026-05-31T23:59:00Z"
+status: "draft"
+---
+
+<Hero />
+
+
+<SectionHeading number="01">The Cheat Sheet</SectionHeading>
+
+Snapshot date: May 31, 2026, 23:59 UTC. All month-over-month comparisons against April 30, 2026.
+
+Coverage expanded from four protocols (Aave V3, SparkLend, Morpho, Fluid) to six this issue, adding Compound V3 and Euler V2. The April 30 baselines below are the six-protocol equivalents, reconstructed where Issue 001's published four-protocol baseline does not cover the addition. Issue 001's headline April figures will not reconcile against the six-protocol April column here; that is the scope change, not a data change.
+
+<DataTable
+  caption="Sector aggregate"
+  columns={[
+    { key: "metric", label: "Metric", align: "left" },
+    { key: "apr", label: "Apr 30", align: "right" },
+    { key: "may", label: "May 31", align: "right" },
+    { key: "delta", label: "May − Apr", align: "right" }
+  ]}
+  rows={[
+    { metric: "Total Supply", apr: "$34.64B", may: "$33.06B", delta: "−$1.58B (−4.6%)" },
+    { metric: "Active Borrows", apr: "$14.53B", may: "$13.20B", delta: "−$1.33B (−9.2%)" },
+    { metric: "Available Liquidity", apr: "$20.10B", may: "$19.86B", delta: "−$0.25B (−1.2%)" },
+    { metric: "Sector Utilization", apr: "41.9%", may: "39.9%", delta: "−2.0 pp" },
+    { metric: "Real Yield Spread", apr: "−34 bps", may: "−0.3 bps", delta: "+33 bps (parity)" },
+    { metric: "Sector Take Rate (annualized)", apr: "4.27%", may: "3.38%", delta: "−89 bps" },
+    { metric: "Morpho Curator HHI", apr: "3,026", may: "3,103", delta: "+77" }
+  ]}
+/>
+
+<DataTable
+  caption="Net flows by protocol, May 2026"
+  columns={[
+    { key: "protocol", label: "Protocol", align: "left" },
+    { key: "flow", label: "Net deposits 30d", align: "right" },
+    { key: "supply", label: "May 31 supply", align: "right" },
+    { key: "mom", label: "MoM change", align: "right" }
+  ]}
+  rows={[
+    { protocol: "Aave V3", flow: "−$503M", supply: "$18.61B", mom: "−7.8%" },
+    { protocol: "SparkLend", flow: "+$752M", supply: "$5.38B", mom: "+16.2% (largest expansion)" },
+    { protocol: "Morpho", flow: "+$759M", supply: "$5.96B", mom: "+14.6%" },
+    { protocol: "Fluid", flow: "−$54M", supply: "$963M", mom: "−5.9%" },
+    { protocol: "Compound", flow: "−$32M", supply: "$1.40B", mom: "−6.4%" },
+    { protocol: "Euler", flow: "−$339M", supply: "$469M", mom: "−39.4% (steepest contraction)" },
+    { protocol: "Sector total", flow: "+$583M", supply: "$33.06B", mom: "−4.6%" }
+  ]}
+/>
+
+<DataTable
+  caption="Ethereum-only fees, calendar month"
+  columns={[
+    { key: "protocol", label: "Protocol", align: "left" },
+    { key: "apr", label: "Apr 2026", align: "right" },
+    { key: "may", label: "May 2026", align: "right" },
+    { key: "delta", label: "MoM Δ", align: "right" },
+    { key: "pct", label: "MoM %", align: "right" }
+  ]}
+  rows={[
+    { protocol: "Aave V3", apr: "$50.35M", may: "$37.03M", delta: "−$13.32M", pct: "−26.5%" },
+    { protocol: "Morpho", apr: "$8.69M", may: "$8.24M", delta: "−$0.45M", pct: "−5.2%" },
+    { protocol: "SparkLend", apr: "$3.74M", may: "$4.69M", delta: "+$0.96M", pct: "+25.6%" },
+    { protocol: "Fluid", apr: "$2.12M", may: "$1.81M", delta: "−$0.31M", pct: "−14.4%" },
+    { protocol: "Euler", apr: "$2.09M", may: "$1.64M", delta: "−$0.44M", pct: "−21.3%" },
+    { protocol: "Compound", apr: "$1.64M", may: "$1.66M", delta: "+$0.02M", pct: "+1.2%" },
+    { protocol: "Sector total", apr: "$68.62M", may: "$55.08M", delta: "−$13.54M", pct: "−19.7%" }
+  ]}
+/>
+
+<DataTable
+  caption="Risk indicators, May 31 close"
+  columns={[
+    { key: "indicator", label: "Indicator", align: "left" },
+    { key: "reading", label: "Reading", align: "left" }
+  ]}
+  rows={[
+    { indicator: "Stablecoin debt share", reading: "59.3% (up from 43.6% in April; LRT-loop unwind rotated debt into stablecoins)" },
+    { indicator: "ETH-family collateral share", reading: "38.6% (down from approximately 61% in April; LRT and LST price decline plus net outflows)" },
+    { indicator: "Oracle concentration (sector, USD-weighted)", reading: "Chainlink 82.6%, Redstone 7.4%, other / long-tail 10.0% (Compound 93% Chainlink, Aave V3 87%, SparkLend 86%, Fluid 77%, Morpho 67%, Euler V2 51%)" },
+    { indicator: "Sector LRT collateral remaining", reading: "$3.73B at May 31 (down from $5.35B at April 30, −30.3%); 84% of remaining LRT sits on Aave V3" },
+    { indicator: "Cross-protocol USDC supply APY dispersion", reading: "330.5 bps (1.33× 12-month average; USDT and WETH dispersion both below baseline)" },
+    { indicator: "Liquidation effective penalty (trailing 90d)", reading: "SparkLend 4.87%, Morpho 24.10%, Fluid 1.68%; Aave V3 reading under investigation; Compound + Euler not yet covered" },
+    { indicator: "Morpho curator HHI", reading: "3,103 (highly concentrated; up from 3,026 in April; June 4 follow-on reading 3,290)" },
+    { indicator: "Morpho top-3 curator share", reading: "93.9% (Sentora 38.6%, Steakhouse 34.1%, Gauntlet 21.2%)" },
+    { indicator: "USDC supply APY by protocol", reading: "Fluid 5.93% (leader), Morpho 4.78%, Spark 4.00%, Aave V3 3.27%, Compound V3 3.20%, Euler V2 2.62% (laggard); 330.5 bps dispersion (see §03)" }
+  ]}
+/>
+
+
+
+<SectionHeading number="02">Executive Summary</SectionHeading>
+
+<Lead>May was the month the sector's economics crossed a threshold.</Lead>
+
+Stablecoin lending yields on Ethereum closed at parity with the 4-week US Treasury bill for the first time since September 2025, and the sector's annualized revenue yield fell below the risk-free rate in the same window. The crossing showed up from both sides of the protocol: the depositor's APY and the sector's revenue yield. Lending capital across the six protocols this report covers no longer pays a premium over Treasuries, whether the comparison is run from one side or the other.
+
+The Real Yield Spread, the gap between blended stablecoin lending APY across the six protocols and the 4-week T-bill, closed May at −0.3 basis points, against −34 basis points at the April close. The 33-basis-point tightening is the largest single-month compression of 2026 and closes a four-month rally from a February trough at −151 basis points. The last positive month-end print was September 2025 at +38 basis points, eight months before the May parity reading. The sector take rate, the protocol-side version of the same comparison, fell from 4.27 percent to 3.38 percent across the month against a T-bill yield of 3.60 percent. The May 31 reading is the first month-end at which the sector's annualized revenue yield has run below the risk-free rate in the captured series.
+
+Beneath that crossing, the sector contracted 4.6 percent in May, from $34.64 billion at April 30 to $33.06 billion at May 31 on the six-protocol comparison. The shape of the contraction matters more than the magnitude. Borrows fell harder than supply (down 9.2 percent against the 4.6 percent supply decline), which means leverage compressed faster than total capital. Available liquidity barely moved, down only 1.2 percent. Depositors did not pull idle capital materially. The compression sat specifically on the borrow side, consistent with LRT loops continuing to unwind throughout May: as LRT collateral exited, the WETH debt it had financed got repaid, and the protocol-level borrow figure fell with it.
+
+Two protocols absorbed the capital that exited Aave V3. SparkLend was the only protocol in this report's coverage that grew on both depositor flow and Ethereum-only fees, adding $751.6 million of net deposits in May after April's $1.97 billion migration. Across April and May together, SparkLend absorbed roughly $2.72 billion of constant-price net depositor flow against a SparkLend supply that began the period at $2.89 billion at March 31; the protocol nearly doubled in two months on flows alone. Morpho absorbed +$758.7 million of constant-price net depositor flow in May, the largest absolute inflow of any of the six protocols this issue covers. Together SparkLend and Morpho took roughly $1.5 billion of net depositor flow while the sector overall contracted.
+
+<Chart
+  source="sector.net-flows-by-protocol-may"
+  title="Net depositor flow by protocol, May 2026"
+  caption="SparkLend and Morpho together absorbed roughly $1.5 billion of net deposits while Aave V3, Euler V2, Fluid, and Compound V3 all contracted."
+  source_label="Datum Labs Lending Terminal"
+  height={360}
+/>
+
+<PullQuote>Capital was not leaving DeFi lending so much as relocating within it.</PullQuote>
+
+The mechanism behind the relocation continued the LRT-loop unwind story. Total LRT collateral across the sector fell from $5.35 billion at April 30 to $3.73 billion at May 31, a $1.62 billion contraction at actual prices. weETH alone accounted for $1.18 billion of that move; per-unit, weETH lost 10.99 percent across May, in line with ETH's 11.16 percent decline and bracketed by the other LRT assets. Even as the dollar value fell, the concentration did not redistribute. By May 31, 84 percent of the LRT collateral remaining in the lending sector sat on Aave V3. The LRT collateral stayed on Aave V3 even as its dollar value fell, while the depositor flows that exited the LRT category rotated into BTC-family collateral instead. The BTC-family category (WBTC, cbBTC, tBTC, kBTC) gained roughly $818 million in net inflows, the largest non-stable inflow group of the month. The thesis-level move was from leveraged ETH-collateral loops toward lower-correlation BTC-collateral positions.
+
+One further reading shapes the May picture. The stablecoin debt share rebounded from 43.6 percent at the April close to 59.3 percent at the May close, driven by LRT loops repaying WETH debt and rotating into stablecoin borrowing. The 15.7-percentage-point shift toward stablecoin debt is the mechanical signature of the LRT-loop unwind, and it surfaced in the same month the macro economics crossed parity, which is not a coincidence.
+
+Coverage this issue expands from four protocols to six, adding Compound V3 and Euler V2 to the Aave V3, SparkLend, Morpho, and Fluid baseline carried from Issue 001. Both new protocols are smaller than the original four in absolute supply terms (Compound V3 at $1.27B Ethereum supply, Euler V2 at $469M), but together they add roughly $1.74B to the six-protocol sector. The expansion changes how month-over-month comparisons read. The six-protocol April 30 baseline is $34.64B against the four-protocol $32.26B published in Issue 001. The sector contracted 4.6 percent on the honest six-protocol comparison, not the +1.3 percent that a naïve juxtaposition of the two baselines would imply.
+
+The structural-risk reading underneath May's macro story is curator concentration on Morpho. The HHI sat at 3,103 at May 31, the third consecutive month past the antitrust threshold for highly concentrated markets, with a June 4 follow-on capture at 3,290. The Sentora cross-protocol reallocation documented in §06.6 and §07 is the empirical demonstration of what concentrated curators can do: one operator moved $128 million from Euler V2 into Morpho in thirty days, with $94 million reappearing as Sentora-curated Morpho inflow in the same window. May's headline reading was the sector-economic threshold crossing. The structural reading underneath is that the curators who allocate capital across vault-aggregation lending architectures can move material capital between protocols inside a single month, with no flagged event, no oracle break, no governance vote, and no liquidation cascade.
+
+
+
+<SectionHeading number="03">Macro Context</SectionHeading>
+
+<Lead>The Real Yield Spread closed May 2026 at parity, the first month-end since September 2025 that the blended stablecoin supply rate on Ethereum matched the 4-week US Treasury bill rate. The gap was −0.3 basis points, effectively zero.</Lead>
+
+The mechanical decomposition is the same as April's: stable APYs lifted while T-bill yields held flat. The blended stablecoin supply rate across the six protocols rose from 3.26 percent at April 30 to 3.60 percent at May 31, a 34-basis-point lift. The 4-week T-bill yield drifted at 3.60 percent across the same window, unchanged to two decimal places. The gap closed because on-chain rates moved up to meet TradFi, not because TradFi rates moved down. That is the same recovery mechanism that ran in April, which closed the spread from −127 basis points at March 31 to −34 basis points at April 30.
+
+What May added to the picture is duration. The Real Yield Spread has compressed for four consecutive months from a February 2026 trough at −151 basis points, closing 33 basis points in May alone. The 33-point May tightening is the largest single-month compression of 2026. The last positive month-end print was September 2025 at +38 basis points, eight months before the May parity reading.
+
+<Chart
+  source="rates.rys-trajectory-12m"
+  title="Real Yield Spread, May 2025 to May 2026"
+  caption="Blended stablecoin supply APY minus 4-week T-bill yield. The May close at parity ends an eight-month run below the risk-free rate."
+  source_label="Datum Labs Lending Terminal"
+  height={380}
+/>
+
+<PullQuote>Stablecoin depositors on Ethereum have spent the entirety of 2026 earning less than the risk-free rate. May was the first month-end at which they merely matched it.</PullQuote>
+
+What pushed on-chain rates up was a sector-wide stables APY lift, not a single-protocol borrow squeeze. The blended stablecoin lending APY, TVL-weighted across USDC, USDT, DAI, and USDS on Aave V3, SparkLend, Morpho, and Fluid, rose from 3.26 percent at the April close to 3.60 percent at the May close, with the 4-week T-bill held flat. The 34-basis-point lift distributed across the protocols rather than concentrating in any one market. At month-end the USDC book ran widest, with Fluid USDC paying 5.93 percent supply APY against Euler V2 USDC at 2.62 percent and Aave V3 USDC at 3.27 percent, the third-lowest reading of the six.
+
+<Chart
+  source="rates.usdc-supply-apy-by-protocol-may31"
+  title="USDC supply APY by protocol, May 31, 2026"
+  caption="Per-protocol USDC supply APY at month-end, sorted from leader (Fluid 5.93%) to laggard (Euler V2 2.62%). Cross-protocol dispersion 330.5 bps, 1.33× the trailing 12-month average."
+  source_label="Datum Labs Lending Terminal"
+  height={360}
+/>
+
+Cross-protocol dispersion adds a second reading. The May 31 dispersion in USDC supply APY across the six protocols was 330.5 basis points, against a 12-month average of 249.3 basis points, a 1.33-multiple. The same dollar of USDC earned 331 basis points more on the most generous of the six protocols than on the least. By contrast, USDT and WETH dispersion are both below their 12-month baselines this month, at 161.7 basis points (0.87× baseline) and 35.2 basis points (0.26× baseline). The persistence of USDC dispersion above baseline while the other two assets have converged below it diagnoses an asset-specific dynamic. USDC, the largest stablecoin in the sector by deposit balance, is the asset where the rate book is least integrated across protocols at month-end.
+
+Issue 001 closed §03 with a forward question. If the spread continued closing through May without further deleveraging, the system was rebalancing organically. If the spread reopened as capital normalized back into the system, April was a short squeeze rather than a regime change. May's answer is partial and instructive.
+
+<PullQuote>The spread did continue closing, to parity. Deleveraging also continued. Both halves of the Issue 001 setup happened together, on the same protocols, in the same month.</PullQuote>
+
+The LRT contraction documented in §05 removed roughly $1.62 billion of LRT collateral from the sector at actual prices, and the broader sector supply contracted 4.6 percent against the six-protocol baseline. The May reading is consistent with the organic-rebalancing thesis if you read it as continued deleveraging pushing rates up. It is also consistent with the short-squeeze thesis if you read it as the squeeze persisting at lower intensity. May did not pick a winner between the two readings; it confirmed that both mechanisms were active simultaneously, which is itself the more rigorous finding.
+
+A parallel reading sits in §04. The sector take rate at May 31 was 3.38 percent annualized, below the 3.60 percent T-bill yield. The Real Yield Spread tells the parity story from the depositor side. The take rate compression tells the same story from the protocol side. Both readings have crossed thresholds in the same month, in the same direction, on the same underlying mechanism (falling fees against largely-unchanged available liquidity). Whether that crossing is a structural new state for DeFi lending on Ethereum or a transitory artifact of the LRT rotation that drove May is the question §08 carries into June.
+
+<Chart
+  source="rates.take-rate-vs-tbill-12m"
+  title="Sector take rate vs 4-week T-bill yield, May 2025 to May 2026"
+  caption="Annualized sector revenue yield against the risk-free rate. The May 31 cross is the first month-end in the captured series at which protocols earn less than Treasuries."
+  source_label="Datum Labs Lending Terminal"
+  height={380}
+/>
+
+The cleaner forward question is which mechanism would close the parity reading in either direction. The spread pushing positive on a sustained basis requires either continued borrow-side pressure at the protocol level (utilization tightening, particularly in USDC markets where dispersion is already running above baseline) or compression on the unborrowed-supply side (depositors continuing to exit idle capital). The spread pushing negative again requires utilization easing across the sector or T-bill yields rising. Neither catalyst is currently visible in the data. The most likely June outcome, absent a new shock, is the spread oscillating around parity until one of those two structural conditions changes.
+
+
+
+<SectionHeading number="04">Sector Overview</SectionHeading>
+
+<Lead>Six protocols, $33.06 billion of total supply at the May close, and an annualized revenue yield that just fell below the risk-free rate. Both halves of that sentence are May's structural findings; the first is the continuation of a nine-month sector contraction, the second is a state change.</Lead>
+
+The sector aggregate fell 4.6 percent in May on the six-protocol comparison, from $34.64 billion at April 30 to $33.06 billion at May 31. Active borrows fell harder at 9.2 percent, from $14.53 billion to $13.20 billion. Available liquidity declined 1.2 percent, from $20.10 billion to $19.86 billion. Sector utilization fell 2.0 percentage points to 39.9 percent. The shape is continuation, not stabilization. The September 2025 sector peak was $63.08 billion in total supply on Aave V3 alone; the entire six-protocol May reading sits 48 percent below that single-protocol peak nine months prior.
+
+<DataTable
+  caption="Sector aggregate, six-protocol view, April 30 to May 31, 2026"
+  columns={[
+    { key: "metric", label: "Metric", align: "left" },
+    { key: "apr", label: "Apr 30", align: "right" },
+    { key: "may", label: "May 31", align: "right" },
+    { key: "delta", label: "May − Apr", align: "right" }
+  ]}
+  rows={[
+    { metric: "Total Supply", apr: "$34.64B", may: "$33.06B", delta: "−$1.58B (−4.6%)" },
+    { metric: "Active Borrows", apr: "$14.53B", may: "$13.20B", delta: "−$1.33B (−9.2%)" },
+    { metric: "Available Liquidity", apr: "$20.10B", may: "$19.86B", delta: "−$0.25B (−1.2%)" },
+    { metric: "Sector Utilization", apr: "41.9%", may: "39.9%", delta: "−2.0 pp" },
+    { metric: "Sector Take Rate (annualized)", apr: "4.27%", may: "3.38%", delta: "−89 bps" }
+  ]}
+/>
+
+The contraction shape tells a story the headline number doesn't. Borrows fell faster than supply, which means leverage compressed harder than total capital across the month. Available liquidity barely moved, which means depositors did not pull idle capital materially. That asymmetry is the structural signature of the month: depositors stayed, leverage unwound. The compression was specifically on the borrow side, consistent with the §05 finding that LRT loops continued to unwind throughout May: as LRT collateral exited, the WETH debt it had financed got repaid, and the protocol-level borrow figure fell with it. The unborrowed-supply side was largely unchanged. A sector contracting because borrowers are deleveraging is a different state from a sector contracting because depositors are withdrawing, even when the headline aggregate move is identical.
+
+This issue's six-protocol scope adds Compound V3 and Euler V2 to the four-protocol Issue 001 baseline. The two new protocols are smaller in absolute supply than the original four (Compound V3 at $1.27 billion and Euler V2 at $469 million at May 31), but they substantially change how month-over-month comparisons read. The April 30 sector total against the four-protocol baseline was $32.26 billion as published in Issue 001; against the six-protocol baseline reconstructed here, it was $34.64 billion. Anyone comparing Issue 001's published April figure to May's $33.06 billion six-protocol headline will conclude the sector grew. It did not. The honest comparison is four-protocol-vs-four-protocol or six-protocol-vs-six-protocol; both show contraction. Subsequent issues carry the six-protocol baseline forward.
+
+Composition on the collateral side reflects the LRT contraction documented in §05. ETH-family collateral (WETH at 16.1 percent, wstETH at 15.0 percent, weETH at 7.5 percent) totals 38.6 percent of the sector's collateral base at May 31. BTC-family collateral (WBTC and cbBTC combined) is 16.7 percent, with tBTC pushing the broader BTC bucket higher still. Stablecoin collateral (USDT and USDC) is 22.5 percent. The shift since April is material: ETH-family share of collateral fell from approximately 61 percent at April 30 to 38.6 percent at May 31, a 22-percentage-point composition swing in one month. The roughly $818M of BTC-family inflows documented in §05 explain part of the reweighting; LRT and LST price decline explains the rest.
+
+On the borrow side, stablecoins regained the dominant share. The May 31 borrow mix is 59.3 percent stablecoin (USDC 26.2 percent, USDT 22.8 percent, plus PYUSD 3.2, USDS 2.9, DAI 2.2, USDTB 2.0), up from 43.6 percent at April 30. WETH borrow share fell from 41.4 percent to 31.0 percent over the same window. The 15.7-percentage-point shift toward stablecoin debt is the mechanical signature of the LRT-loop unwind: as depositors exited LRT collateral and the leveraged WETH debt that financed it, both sides of the loop compressed, and the share of the remaining borrow base tilted toward whatever was left, which was mostly stablecoin loans against stablecoin collateral.
+
+The sector earned $55.08 million in Ethereum-only fees in May, down from $68.62 million in April, a 19.7-percent compression. Almost all of it was a single protocol. Aave V3's Ethereum fees fell $13.32 million, from $50.35M to $37.03M, a 26.5-percent decline, against a sector-wide fee decline of $13.54 million. Every other protocol moved within roughly $1 million in either direction. SparkLend was the only protocol with meaningful expansion, adding $0.96 million of monthly fees, a 25.6-percent increase as April's migration capture continued to compound. Morpho ticked down 5.2 percent, Fluid down 14.4 percent, Euler down 21.3 percent, Compound roughly flat. The fee story at the sector level is, statistically, an Aave V3 story.
+
+<DataTable
+  caption="Ethereum-only fees and capture rates, April vs May 2026"
+  columns={[
+    { key: "protocol", label: "Protocol", align: "left" },
+    { key: "aprFees", label: "Apr fees", align: "right" },
+    { key: "mayFees", label: "May fees", align: "right" },
+    { key: "feeMom", label: "MoM Δ", align: "right" },
+    { key: "captureMay", label: "May capture rate", align: "right" }
+  ]}
+  rows={[
+    { protocol: "Aave V3", aprFees: "$50.35M", mayFees: "$37.03M", feeMom: "−26.5%", captureMay: "13.4%" },
+    { protocol: "SparkLend", aprFees: "$3.74M", mayFees: "$4.69M", feeMom: "+25.6%", captureMay: "11.2%" },
+    { protocol: "Morpho", aprFees: "$8.69M", mayFees: "$8.24M", feeMom: "−5.2%", captureMay: "0.0%" },
+    { protocol: "Fluid", aprFees: "$2.12M", mayFees: "$1.81M", feeMom: "−14.4%", captureMay: "13.0%" },
+    { protocol: "Compound", aprFees: "$1.64M", mayFees: "$1.66M", feeMom: "+1.2%", captureMay: "1.1%" },
+    { protocol: "Euler", aprFees: "$2.09M", mayFees: "$1.64M", feeMom: "−21.3%", captureMay: "3.9%" },
+    { protocol: "Sector", aprFees: "$68.62M", mayFees: "$55.08M", feeMom: "−19.7%", captureMay: "—" }
+  ]}
+/>
+
+Capture rates tell a complementary story. Morpho continued running at zero percent capture, where every dollar of the $8.24M in May fees passed through to depositors and curators with nothing taken by the protocol treasury or MORPHO holders. That is the cleanest pass-through architecture in the sector. Aave V3 held its capture rate effectively flat at 13.4 percent even as fees fell 26 percent, meaning depositors and the treasury took proportional haircuts and the split between them did not change. Compound V3 took its first protocol-treasury cut in months at 1.1 percent ($19,000); the dollar figure is small but the direction is the change. Euler's capture rate halved from 7.5 percent to 3.9 percent in May, with holder revenue going to zero, which means EUL token buybacks paused for the month.
+
+<PullQuote>Lending capital across the six protocols this report covers no longer pays a premium over Treasuries.</PullQuote>
+
+The combination of falling fees against largely-unchanged available liquidity is the sector take rate compression. Trailing-30-day Ethereum-only fees annualized against available liquidity fell from 4.27 percent at April 30 to 3.38 percent at May 31, an 89-basis-point compression. The May 31 take rate of 3.38 percent now sits below the 4-week T-bill yield of 3.60 percent, the first month-end at which the sector's annualized revenue yield has run below the risk-free rate in the captured series. The depositor-side version of the same comparison is in §03: the Real Yield Spread closed May at parity with T-bills for the first time since September 2025. Both readings deliver the same observation from the two sides of the protocol. Lending capital across the six protocols this report covers no longer pays a premium over Treasuries, whether the comparison is run from the depositor's APY or from the sector's revenue yield.
+
+The change worth flagging is not the supply or the borrows or even the utilization. Those have been falling for nine months. What May added to the picture is that the sector's economics crossed a threshold. Whether the May reading is a transitory parity print or the start of a sustained sub-T-bill regime is the question §08 carries forward. The mechanism that would close it (stable APYs rising back above 3.60 percent on a sustained basis) requires either higher utilization or lower available liquidity, both of which currently lack a visible catalyst.
+
+
+
+<SectionHeading number="05">The Loop Unwinds</SectionHeading>
+
+<Lead>Aave V3 lost $1.96 billion of supply at nominal prices across May. At constant prices, the protocol gained $352 million of net deposits in the same window. Both figures are correct from their own definitions; only the second describes depositor behavior.</Lead>
+
+The wedge between the two readings is price decline on existing collateral. Nominal supply on the dashboard marks every position to current price each day, so when weETH and other ETH-family assets fall in dollar terms, every position holding them shows as "less supply" without any withdrawal occurring. Constant-price accounting measures deposit-quantity flow instead, holding prices fixed at a reference point. May was a month where the two methods told directionally opposite stories on Aave V3. Depositors added net quantity to the protocol. The dollar value of all positions on the protocol fell. Both happened simultaneously, and they answer different questions.
+
+The asset-level LRT exit holds in adjusted form. weETH on Aave V3 lost $681M at constant prices over May, the largest single-asset outflow on the protocol by a wide margin. Depositors did pull weETH out in real quantity. What does not survive contact with the daily data is the timing argument. A natural reading of the May 14 unpause and the May 17 WETH LTV restoration on Aave V3 would be that LRT-loop depositors had been waiting since April's rsETH bridge exploit for the procedural unfreeze to clear, and exited in concentrated fashion afterward. The daily flow data does not support that reading at the asset level.
+
+<DataTable
+  caption="Aave V3 Ethereum net supply flow, May 2026, constant prices"
+  columns={[
+    { key: "window", label: "Window", align: "left" },
+    { key: "totalNet", label: "Total net flow", align: "right" },
+    { key: "weeth", label: "weETH net flow", align: "right" },
+    { key: "other", label: "All other assets", align: "right" }
+  ]}
+  rows={[
+    { window: "May 1 to May 13 (pre-unpause)", totalNet: "+$99M", weeth: "−$459M", other: "+$558M" },
+    { window: "May 14 to May 31 (post-unpause)", totalNet: "+$253M", weeth: "−$222M", other: "+$475M" },
+    { window: "May full month", totalNet: "+$352M", weeth: "−$681M", other: "+$1,033M" }
+  ]}
+/>
+
+weETH outflows on Aave V3 in the first half of May totaled $459M at constant prices. In the second half, after the unpause and LTV restoration both cleared, weETH outflows totaled $222M. The pre-unpause daily outflow rate was roughly double the post-unpause rate. The reason this matters is that weETH was never frozen on Aave V3 during the April crisis. The Aave Protocol Guardian's freeze actions in April covered rsETH, wrsETH, and WETH only; weETH does not appear on any Guardian action list between April 18 and May 13. The first weETH-specific governance action was a supply-cap reduction on May 14, framed in the Risk Stewards post as removing the stale headroom that had accumulated as positions exited the protocol. That was a bookkeeping action to match shrunken supply, not a restriction on new deposits.
+
+The $459M of weETH supply that left Aave V3 in the first half of May was voluntary depositor derisking, generalizing the rsETH and WETH risk to a sibling LRT that itself remained fully withdrawable throughout. The May 14 unfreeze on rsETH cleared a specific binding constraint on that specific asset. The broader LRT collateral derisking, including the weETH leg, did not pivot around it. In weETH's case, there was no constraint to lift in the first place. The depositors who exited weETH had been doing so on their own initiative since the rsETH event, reading the risk across the LRT category rather than waiting for it to be made explicit on any one asset.
+
+<PullQuote>The May 14 unfreeze on rsETH cleared a specific binding constraint on that specific asset. The broader LRT collateral derisking did not pivot around it.</PullQuote>
+
+The post-unpause outflow spikes were real, but they were not a single story. The three sharpest single-day net supply outflows on Aave V3 in May share a date neighborhood and almost nothing else.
+
+<DataTable
+  caption="Aave V3 Ethereum, three largest single-day net outflows, May 2026"
+  columns={[
+    { key: "date", label: "Date", align: "left" },
+    { key: "total", label: "Total net flow", align: "right" },
+    { key: "driver", label: "Dominant driver", align: "left" }
+  ]}
+  rows={[
+    { date: "May 15", total: "−$128M", driver: "ETH-family rotation ($161M of WETH + LST + LRT out, stables in)" },
+    { date: "May 18", total: "−$139M", driver: "Single asset: USDC out $137M (98% of the day), GHO up $18M same day" },
+    { date: "May 29", total: "−$113M", driver: "Two structural events: tBTCv2 to tBTC migration, Pendle PT-USDG maturity" }
+  ]}
+/>
+
+May 15 was the day the post-unpause LRT-exit reading would fit cleanly. WETH outflow of $120M anchored a $161M combined departure across WETH, weETH, rsETH, and wstETH. Stables actually came in on the same day, with USDT supply rising $19M and USDC up $16M. Three days after the rsETH market unpaused and two days before WETH LTV caps were restored, this is the day the procedural-trigger reading would fit the asset-level data, even though the weETH component ($20M) is small relative to the pre-unpause total.
+
+May 18 was almost the opposite. $137M of USDC departed Aave V3 on its own, accounting for 98 percent of the day's net outflow. On the same day, GHO supply on Aave V3 ticked up $18M. The signal reads less like depositors leaving the protocol and more like depositors rotating inside Aave's stables book. With Aave V3 USDC sitting at the third-lowest USDC supply APY in the sector at month-end, an intra-Aave rotation toward GHO is the more parsimonious read than depositors leaving the protocol outright.
+
+May 29 looked like a third bleed day on the dashboard, but two thirds of the move was structural rather than economic. A Threshold protocol migration from tBTCv2 to tBTC moved $143M out of Aave's reserves with $129M of tBTC landing back the same day, a token-upgrade roll-over with no depositor exit. A Pendle principal token, PT-USDG-28MAY2026, matured on May 28 and rolled off Aave's books for $62M the following day, a calendar event rather than a flow event. Strip those two out and the real depositor signal that day was roughly $54M of USDT leaving.
+
+Of the three largest outflow days, one fits the post-unpause LRT reading, one was an intra-Aave stables rotation, and one was dominated by structural roll-overs. The headline reading of "three large post-May-14 outflow days" obscures that they were three different phenomena. None of the three carries enough weETH outflow to anchor an LRT-loop-finally-exited interpretation of the post-May-14 window.
+
+The sector-wide LRT picture extends the weETH timing finding to its logical conclusion. Total LRT collateral across all six protocols fell from $5.35 billion at April 30 to $3.73 billion at May 31, a $1.62 billion contraction at actual prices. The constant-price net flow component was $1.17 billion (weETH $844M, rsETH $221M, ezETH $64M, osETH $46M); the remaining $443 million was LRT price decline across the month. weETH alone accounted for $1.18 billion of the actual-price contraction. By May 31, 84 percent of the LRT collateral remaining in the lending sector sat on Aave V3. The broader sector did not absorb the LRT rotation; the LRT collateral stayed on Aave V3 even as its dollar value fell, while the depositor flows rotated into BTC-family and stables instead.
+
+Where the LRT capital went is the cleaner half of the May story. SparkLend gained $751.6M of net deposits, continuing the migration that began during April's Aave-to-SparkLend rotation. Morpho gained $758.7M, the largest absolute depositor inflow of any of the six covered protocols. Together SparkLend and Morpho absorbed roughly $1.5 billion of net depositor flow while the broader sector contracted. The BTC-family collateral category (WBTC, cbBTC, tBTC, kBTC) gained roughly $818M in net inflows, the largest non-stable inflow group of the month.
+
+<Chart
+  source="sector.collateral-rotation-lrt-vs-btc"
+  title="Collateral rotation by asset family, May 2026"
+  caption="LRT family lost roughly $1.6 billion of supply while BTC family gained roughly $818 million, the cleanest rotation signal of the month."
+  source_label="Datum Labs Lending Terminal"
+  height={380}
+/>
+
+<PullQuote>The thesis-level move was from leveraged ETH-collateral loops to lower-correlation BTC-collateral positions.</PullQuote>
+
+The first two are intra-sector rotation between lending protocols. The third is the thesis-level rotation that gives the May data its frame: from leveraged ETH-collateral loops to lower-correlation BTC-collateral positions. None of the three required the May 14 procedural unfreeze to clear before they could begin, and none of the three pivoted around it visibly in the daily data.
+
+The original framing for this section was that the LRT loops finally unwound when the procedural freeze lifted on May 14. The data does not support that, and the section is more rigorous for the correction. What the data supports is that LRT depositors on Aave V3 had been exiting their positions throughout the month without waiting for any single procedural event, that the dollar-headline supply contraction of $1.96 billion is dominated by mark-to-market price decline on collateral that had not actually moved, and that the same protocol that lost $2 billion in headline dollar supply added depositor quantity across both halves of the month. The loop unwound. The procedural calendar did not gate it.
+
+
+<SectionHeading number="06">Protocol Deep Dives</SectionHeading>
+
+Six protocols are covered individually in this section, ordered by total supply on Ethereum at the May 31 close: Aave V3 (§06.1), SparkLend (§06.2), Morpho (§06.3), Fluid (§06.4), Compound V3 (§06.5), and Euler V2 (§06.6). Each subsection carries the protocol's standalone story; cross-references between them are noted explicitly where the analysis travels across protocols.
+
+
+<SectionHeading number="06.1">Protocol Deep Dive: Aave V3</SectionHeading>
+
+The canonical multi-asset lending pool. Shared liquidity, isolation mode for risky assets, E-mode for correlated pairs.
+
+<Lead>Aave V3 sits at the center of most major threads in this issue. Four threads find their mechanism in this one protocol: the constant-price-vs-nominal accounting distinction, the LRT contraction, the sector fee compression, and the cross-protocol Chainlink dependency.</Lead>
+
+At May 31, Aave V3 carried $18.61 billion of total supply on Ethereum, down from approximately $20.18 billion at April 30, a $1.57 billion contraction of 7.8 percent. Active borrows fell to $7.84 billion. Available liquidity sat at $10.77 billion. Utilization edged up to 42.1 percent. The protocol is now 71 percent below its September 2025 peak of $63.08 billion, a contraction that has compounded for nine consecutive months. May extended that trajectory; it did not break it.
+
+What the nominal numbers obscure is the depositor-flow picture documented in §05. At constant prices, with structural events filtered out (the Threshold tBTCv2-to-tBTC migration on May 29, the Pendle PT-USDG-28MAY2026 maturity), Aave V3 added $352 million of net depositor quantity across the month, split $99 million in the first half and $253 million in the second. The dashboard's net-deposits-30d card reads −$503 million using a different methodology that includes those structural roll-overs and the LRT category in aggregate. Both readings are correct from their own definitions; the constant-price daily series is the one that isolates depositor behavior from accounting effects.
+
+<PullQuote>The protocol the headline says lost two billion dollars of supply added depositor quantity in both halves of the month.</PullQuote>
+
+The single asset that fell hardest in dollar terms on Aave V3 was weETH. The protocol's market structure (Core, Prime, Horizon) raises the question of where the LRT outflow concentrated; DefiLlama's per-pool data answers it definitively. Exactly one weETH pool exists across the three Aave V3 Ethereum markets, and it sits in Core.
+
+<DataTable
+  caption="weETH on Aave V3 by market, April 30 to May 31, 2026"
+  columns={[
+    { key: "market", label: "Market", align: "left" },
+    { key: "apr", label: "Apr 30 weETH", align: "right" },
+    { key: "may", label: "May 31 weETH", align: "right" },
+    { key: "change", label: "Δ", align: "right" }
+  ]}
+  rows={[
+    { market: "Core", apr: "$3.17B", may: "$2.11B", change: "−$1.06B (−33.4%)" },
+    { market: "Prime", apr: "not listed", may: "not listed", change: "—" },
+    { market: "Horizon", apr: "not listed", may: "not listed", change: "—" }
+  ]}
+/>
+
+The Core market absorbed the entire LRT exposure to weETH at both endpoints; there was no Prime or Horizon redistribution to disaggregate. The $1.06 billion nominal decline at actual prices is materially larger than the $681 million decline at constant prices reported in §05. The roughly $380 million gap is the weETH price-decline component, the same accounting wedge that explains why protocol-level nominal supply fell $1.96 billion while constant-price net deposits rose $352 million.
+
+On the rate side, Aave V3 USDC ended May at 3.27 percent supply APY, the third-lowest reading of the six covered protocols. The sector-wide stables APY lift that closed the Real Yield Spread (3.26 percent at April 30 to 3.60 percent at May 31, blended) ran past Aave V3 USDC rather than through it. Of the four protocols in the blended-stable calculation, the lift concentrated at Fluid (5.93 percent USDC supply APY) and Morpho (4.78 percent), with SparkLend at 4.00 percent and Aave V3 the laggard of that group. The macro parity story §03 carries is a sector-distributed rebalancing, and Aave V3's USDC market is not its proximate driver this month.
+
+On the revenue side, Aave V3 produced $37.03 million of Ethereum-only fees in May, down from $50.35 million in April, a 26.5 percent decline. That single-protocol drop of $13.32 million accounted for substantially the entire sector fee compression of $13.54 million. Every other protocol moved within roughly $1 million in either direction. The protocol's capture rate held effectively flat at 13.4 percent in May, against 13.6 percent in April, meaning depositors and the treasury took proportional haircuts. The split between them did not change. The fee story at the sector level is, statistically, an Aave V3 story.
+
+Two structural concentrations sit on Aave V3 at May 31, both of which the rest of the report references but neither of which is May-specific in origin. The first is oracle dependency: 87 percent of the protocol's collateral is priced by Chainlink feeds, against a six-protocol sector average of 83 percent. Within Aave V3, Chainlink is the dominant oracle and any single failure in a Chainlink feed serving a Top 10 market would cascade across material protocol TVL in a single block. The second is LRT exposure: 84 percent of the LRT collateral remaining in the lending sector at May 31 sat on Aave V3, with weETH at $2.12 billion, rsETH at $951 million, and osETH at $213 million. The sector did not absorb the LRT rotation. The LRT collateral stayed on Aave V3 even as its dollar value fell, while the depositor flows rotated into BTC-family and stables instead.
+
+What is structurally May-specific about Aave V3 is the fee compression. The LRT contraction extends an April pattern and the oracle concentration is a long-running condition; both are continuations rather than turns. The 26.5 percent fee drop is the month-specific shift, and Aave V3's $13.32 million decline accounting for substantially the entire sector compression of $13.54 million is what makes the sector-level take-rate crossing §04 documents an Aave V3 story at root. §08 carries the forward question of whether fees recover.
+
+
+
+<SectionHeading number="06.2">Protocol Deep Dive: SparkLend</SectionHeading>
+
+Aave V3 fork by the Sky (MakerDAO) team, tightly integrated with DAI/USDS and sDAI/sUSDS savings rates.
+
+<Lead>SparkLend was the migration beneficiary again in May, the only protocol in this report's coverage that grew on both depositor flow and Ethereum-only fees. The April rotation that drove $1.97 billion of net deposits into SparkLend continued at lower intensity, adding another $751.6 million.</Lead>
+
+At May 31, SparkLend carried $5.38 billion of total supply on Ethereum, up from $5.00 billion at April 30, a $380 million nominal gain of 7.6 percent. Active borrows stood at $1.75 billion against $3.63 billion of available liquidity, for a 32.6 percent utilization. The protocol is now 41 percent below its October 2025 peak of $9.09 billion, a smaller drawdown than Aave V3's 71 percent or Euler V2's 78 percent at the May 31 close. Of the six protocols this issue covers, SparkLend's contraction from peak is the second-shallowest, behind only Morpho's 28 percent.
+
+The nominal supply gain of $380 million understates the actual depositor flow. At constant prices, SparkLend added $751.6 million of net depositor quantity across May. The gap is the wstETH price-decline component, the same accounting wedge that obscures Aave V3's positive depositor flow in §05 in the opposite direction. SparkLend's collateral base is heavily wstETH-weighted, and wstETH lost dollar value across May along with the rest of the ETH-family. The headline supply gain understates the migration; the constant-price flow is closer to the truth of what depositors did.
+
+<Chart
+  source="protocol.sparklend-cumulative-deposits"
+  title="SparkLend cumulative net deposits, February to May 2026"
+  caption="April's $1.97 billion step-up was followed by another $751.6 million in May, taking the cumulative Feb-to-May depositor flow past $2.8 billion."
+  source_label="Datum Labs Lending Terminal"
+  height={360}
+/>
+
+<PullQuote>SparkLend's wstETH market alone is larger than Compound's entire Ethereum supply.</PullQuote>
+
+What is distinctive about SparkLend's growth pattern is what it grew on. The protocol's collateral base is dominated by wstETH, which sits as the fifth-largest single market across the six-protocol sector at $2.07 billion of supply. SparkLend's wstETH market alone is larger than Compound's entire Ethereum supply, and it carries effectively no borrows; the deposits sit as collateral against stable borrows on the other side of the protocol. That structure makes SparkLend a yield-on-staked-ETH play more than a leveraged-stablecoin play. April's migration concentrated specifically in wstETH because the rotating capital was specifically liquid-staked ETH exiting Aave V3's LRT-adjacent risk. May's continuation worked the same way at smaller scale, consistent with the LRT-loop unwind having less remaining mass to redistribute as it consumed itself.
+
+Across April and May together, SparkLend absorbed roughly $2.72 billion of constant-price net depositor flow, against a SparkLend supply that began the period at $2.89 billion at March 31. The protocol nearly doubled in two months on flows alone before slowing into its current shape. That is not the trajectory of an organic growth story; it is the trajectory of a destination protocol absorbing capital exiting a stress event elsewhere. Whether SparkLend retains that capital when the rotation slows further is the open question, and §08 carries it forward.
+
+On the revenue side, SparkLend was the only protocol in coverage with meaningful Ethereum-only fee expansion. Fees rose from $3.74 million in April to $4.69 million in May, a 25.6 percent increase. The protocol's capture rate softened from 14.2 percent to 11.2 percent across the same window, meaning depositors took a larger share of a larger pie. Holders revenue and treasury revenue both still received their cuts; the proportion shifted, the structure did not. In a month where every other protocol's fees fell within $1 million in either direction (Aave V3 the obvious exception with a $13.32 million decline that accounted for the entire sector compression), SparkLend adding nearly $1 million of monthly fees is the closest thing to a structural growth story the sector produced.
+
+One oddity worth flagging in any reading of SparkLend's numbers: the protocol's USDS market on the SPK Farming Pool program holds $824.81 million of supply at May 31, sitting at the bottom of the sector's Top 10 markets, with zero utilization and zero supply or borrow APY because the market exists as an incentive program rather than a borrow market. That is a substantial chunk of SparkLend's nominal supply that does not behave like the rest of its book: it is parked capital earning SPK token rewards rather than interest rate income. Strip the SPK Farming Pool out and SparkLend's borrowable supply is closer to $4.56 billion, with the same migration capture on a smaller active base. The 32.6 percent overall utilization figure understates utilization on the protocol's actual borrow markets.
+
+What SparkLend has not developed is a rate-driven growth signal of its own. SparkLend USDC paid 4.00 percent supply APY at May 31, mid-pack across the six covered protocols and below Morpho and Fluid. The growth came from the deposit base expanding, not from rate-driven capital pull. Whether the May migration was the tail end of the April rotation or the beginning of a more durable Aave-to-SparkLend capital reallocation is the question §08 carries forward. If the depositors who held back from migrating in April begin to follow the wstETH cohort to SparkLend, the protocol could find itself the natural beneficiary of two distinct rotations at once.
+
+
+
+<SectionHeading number="06.3">Protocol Deep Dive: Morpho</SectionHeading>
+
+Permissionless isolated lending primitives. Each market is a single tuple of loan asset, collateral, LLTV, oracle, and IRM. Vaults aggregate across markets.
+
+<Lead>Morpho absorbed the largest absolute depositor inflow on Ethereum lending in May: +$759 million in net deposits. The protocol closed the month at $4.91 billion of total supply, +18.3 percent month-over-month and the highest single-protocol absolute inflow in this report's coverage. SparkLend's $751.6 million in the same window put the two protocols within $8 million of each other at the top of the inflow ranking. What separates Morpho's reading is where the inflow concentrated at the curator layer — and how concentrated that layer already was when it arrived.</Lead>
+
+At May 31, Morpho carried $5.96 billion of total supply on Ethereum, up from $5.71 billion at April 30, a 4.4 percent nominal gain. Active borrows stood at $2.16 billion against $3.80 billion of available liquidity, for a 36.2 percent utilization. Across 510 active markets at month-end, Morpho is the most fragmented protocol in coverage, with isolated-market topology that lets curators construct vaults at the granularity their depositor base allows. The protocol now sits 28 percent below its September 2025 peak of $8.21 billion, the smallest contraction from peak of any of the six protocols this issue covers. Of the six, Morpho is the most resilient to the LRT-loop unwind that has driven the broader sector contraction since April.
+
+The curator-concentration reading sits at HHI 3,103 at May 31, the third consecutive month past the antitrust threshold for highly concentrated markets. The top three curators (Sentora 38.6 percent, Steakhouse 34.1 percent, Gauntlet 21.2 percent) hold 93.9 percent of curated TVL combined. Of the $759 million in depositor inflow, the fraction that arrived at those three curators was high, by construction of the share. Whether that mattered structurally depends on whether the curators redirected it identically or differently, which is the §07 cross-protocol question that the Sentora $128M move makes empirically visible.
+
+<PullQuote>The top three curators hold 93.9 percent of curated TVL. The inflow arrived at a layer that was already past the antitrust threshold for highly concentrated markets, for the third consecutive month.</PullQuote>
+
+The protocol absorbed +$758.7 million of constant-price net depositor flow in May, the largest absolute inflow of any of the six protocols this issue covers, against a four percent nominal supply gain. The gap of roughly $500 million is the LRT and LST price decline on Morpho's collateral mix that obscures the depositor-flow magnitude. The single largest contribution to the inflow was Sentora's $93.94 million expansion, almost all of which traced to the cross-protocol Euler-to-Morpho move §06.6 documents. The remaining $665 million of net depositor flow on Morpho is distributed across Steakhouse Financial, Gauntlet, and the smaller curators in the leaderboard's long tail.
+
+On the revenue side, Morpho remains the cleanest pass-through architecture in the sector. Fees in May were $8.24 million Ethereum-only, against $8.69 million in April, a 5.2 percent decline. Every dollar of that $8.24 million passed through to depositors and curators. The protocol treasury took zero. MORPHO holders received zero. Both readings held for both months and have held for longer. There is no protocol-level capture mechanism on Morpho's fee path, which is an architectural choice rather than a temporary state. The contrast against Compound V3's first protocol-treasury cut in months (1.1 percent at May close) is structurally telling: even as the broader sector compressed and protocols sought to preserve treasury revenue, Morpho's design choice held the pass-through invariant.
+
+Oracle diversification is the other structural distinction worth noting. Morpho's Chainlink dependency at May 31 was 67 percent, the lowest of any of the six protocols in coverage, against a six-protocol sector average of 83 percent. The remaining oracle exposure is distributed across Redstone (notable on the Morpho LRT markets specifically), Curve EMA on certain stablecoin pools, and a long tail of asset-specific oracle configurations curators have selected. The fragmentation is consistent with the protocol's overall architecture: where Compound V3 at 93 percent Chainlink reflects a pooled-protocol design choice to standardize, Morpho's 67 percent reflects the per-market freedom curators have to pick oracle sources they trust.
+
+What Morpho did not develop in May was a rate-driven growth signal of its own. Vault APYs moved with the rest of the sector through the compression toward T-bill parity documented in §03, neither leading nor lagging. The protocol's growth came from the deposit base expanding under curator discretion, not from rate-driven capital pull. The structural counter-signal is the curator layer the inflow arrived at: HHI 3,103 at May 31, deepening to 3,290 by June 4, and the top three curators holding 93.9 percent of curated TVL combined. Whether the concentration deepens further as the inflow continues, or attracts a fourth curator with the standing to break the top-three lock, is the question §08 carries forward.
+
+
+
+<SectionHeading number="06.4">Protocol Deep Dive: Fluid</SectionHeading>
+
+Instadapp's vault-based lending with smart collateral and smart debt, enabling DEX-like capital efficiency on paired assets.
+
+<Lead>Fluid was the protocol May mostly skipped, again. The distinguishing feature continued to be the liquidation engine, which ran the lowest effective penalty in the sector at 1.68 percent across the trailing 90 days, against a sector mean roughly three times that.</Lead>
+
+At May 31, Fluid carried $963 million of total supply on Ethereum, down from $1.08 billion at April 30, a 5.9 percent nominal contraction. Active borrows stood at $534 million against $429 million of available liquidity, for a 55.5 percent utilization. That utilization is the highest of any pooled or vault protocol in coverage except Euler V2, and it reflects an architectural choice rather than a market-stress signal: the smart-collateral and smart-debt model is designed to run hotter than a traditional pool because positions are mathematically constrained to remain liquidatable. Fluid sits 63 percent below its August 2025 peak of $2.57 billion, the steepest contraction from peak of any of the six protocols this issue covers.
+
+What sets Fluid structurally apart is the construction of collateral and debt. Smart collateral lets depositors position paired assets together as a single unit of collateral, with the pair's price relationship managed by the protocol's design. Smart debt allows the borrow side to be similarly paired. The architectural result is positions inherently more capital-efficient than on a traditional pooled protocol, at the cost of design complexity and an addressable market limited to the asset pairs the protocol supports. That tradeoff is also the reason Fluid did not benefit from May's migration flows: the rotation out of Aave V3 carried assets that did not naturally map onto Fluid's supported pair set, and the capital instead found SparkLend's wstETH market or Morpho's vault economy.
+
+<PullQuote>Fluid is structurally cheaper to be liquidated on by a wide margin, and the architecture that makes that true is the same architecture that limits the protocol's addressable market.</PullQuote>
+
+The protocol's most distinctive metric remains the liquidation engine. Across the trailing 90 days ending May 31, Fluid's effective liquidation penalty averaged 1.68 percent. SparkLend's was 4.87 percent across the same window. Morpho's was 24.10 percent. The Aave V3 figure came back at 261 percent and is under investigation as a likely event-recording artifact in the underlying liquidator-economy database. Compound V3 and Euler V2 are not yet ingested by that database, so their comparable figures are unavailable. Among the protocols where the trailing-90-day figure is currently reliable, Fluid is structurally cheaper to be liquidated on by a wide margin. The smart-collateral architecture is the mechanism: when liquidations execute against paired-asset positions with a mathematically managed price relationship, the slippage and overshoot that drive penalty elsewhere are absent or substantially reduced.
+
+On the revenue side, Fluid produced $1.81 million of Ethereum-only fees in May, against $2.12 million in April, a 14.4 percent decline. The protocol's capture rate held at 13.0 percent across the two months. The pattern is the same as Aave V3's: proportional haircuts as the pie shrank, no regime change in the split. Net deposit flow on Fluid was −$53.7 million on the Sankey methodology, a small absolute number that is consistent with the steady contraction the protocol has run for nine months. Fluid's oracle dependency on Chainlink at May 31 was 76.6 percent, lower than Aave V3 or SparkLend but higher than Morpho or Euler V2, reflecting the mix of paired-asset positions the protocol supports.
+
+What "mostly skipped" obscures is the efficiency. Fluid's loan-to-deposit ratio at May 31 was 55.49 percent, the highest of any major lending venue in this report's coverage. The six covered protocols ranked: Euler V2 85.23 percent, Fluid 55.49 percent, Aave V3 42.13 percent, Morpho 36.20 percent, Compound V3 33.96 percent, SparkLend 32.55 percent. The sector-weighted LDR sat at 40.22 percent across $13.13 billion of active borrows against $32.64 billion of supplied capital. Euler V2's 85.23 percent reading is partly an artifact of the protocol-level contraction documented in §06.6 and partly the consequence of running on a sub-$1B supplied base; among the protocols operating at scale, Fluid is the leader by 13 percentage points over Aave V3 and 23 points over SparkLend. Fluid does not absorb migration flows the way SparkLend does, but the capital it holds is more productively deployed per dollar of deposit than at any of the major lending venues this report tracks. That efficiency is the structural value the smart-collateral architecture produces, and it sits alongside the liquidation engine as the second case the protocol makes for what it does well.
+
+<Chart
+  source="sector.loan-to-deposit-ratio"
+  range="3m"
+  caption="Loan-to-Deposit Ratio by protocol, March–May 2026. Fluid sits roughly 13 percentage points above the next major venue."
+  source_label="DefiLlama Yields; on-chain reads for Compound V3 (Comet markets) and Euler V2 (EVK vaults)"
+  height={380}
+/>
+
+Fluid's May story is the absence of one in the sense that the protocol did not absorb the migration flows that lifted SparkLend, did not bleed at the magnitude that hit Aave V3 nominally, did not experience the curator-driven event that defined Euler V2's contraction, and did not develop a rate signal of its own. Its identity continues to be the liquidation engine running on the most efficient capital base in the coverage set: cheaper to be liquidated on, structurally narrower in addressable market, more deployed per dollar of deposit than any tracked peer, and visibly resilient to the macro story that drove the rest of the sector in May. That stability has a cost (the contraction from peak is the steepest in coverage) and a value (the protocol is consistently the place where a liquidatable position pays the least to be unwound, on capital that is being put to work rather than sitting idle). For depositors and borrowers prioritizing predictable execution and high deployment efficiency, Fluid's May reading is the same case it has been making since Issue 001.
+
+
+
+<SectionHeading number="06.5">Protocol Deep Dive: Compound V3</SectionHeading>
+
+Comet architecture. Each market has one borrowable base asset and many collateral assets; collateral does not earn interest.
+
+<Lead>Compound V3 runs six Comet markets on Ethereum at May 31: USDC base, USDT base, ETH (WETH) base, USDS base, wstETH base, and WBTC base. The three large markets (USDC, USDT, ETH) carry the bulk of activity at the protocol. The three smaller bases (USDS, wstETH, WBTC) are recent additions still finding scale.</Lead>
+
+At May 31, Compound V3 carried approximately $1.40 billion of total supply across all six Comets on Ethereum (base supply plus collateral, per app.compound.finance/markets readings). DefiLlama's protocol-level Ethereum TVL for Compound V3 at May 31 stood at $1.074 billion, lower than the per-Comet sum, a gap consistent with DefiLlama's TVL definition excluding certain collateral classes the app surfaces.
+
+Compound V3's architecture (Comet) differs structurally from the pooled-liquidity design that Aave V3 and SparkLend use. Each Comet market has one borrowable base asset and many collateral assets. The base asset is pooled across borrowers within that market; collateral assets sit per-position and do not earn interest. The protocol's Ethereum footprint comprises six Comet markets: USDC base, USDT base, ETH (WETH) base, USDS base, wstETH base, and WBTC base. There is no shared liquidity across the six. Each market is structurally independent in its rate dynamics, collateral set, and risk parameters.
+
+<DataTable
+  caption="Compound V3 Comet markets on Ethereum, May 31, 2026"
+  columns={[
+    { key: "market", label: "Market", align: "left" },
+    { key: "baseSupply", label: "Base supply", align: "right" },
+    { key: "collateral", label: "Collateral USD", align: "right" },
+    { key: "combined", label: "Combined", align: "right" }
+  ]}
+  rows={[
+    { market: "USDC base", baseSupply: "$328M", collateral: "$464M", combined: "$792M" },
+    { market: "USDT base", baseSupply: "$187M", collateral: "$243M", combined: "$430M" },
+    { market: "ETH (WETH) base", baseSupply: "$83.6M", collateral: "$86.4M", combined: "$170.0M" },
+    { market: "WBTC base", baseSupply: "$1.58M", collateral: "$497K", combined: "$2.08M" },
+    { market: "USDS base", baseSupply: "$1.90M", collateral: "$2.72M", combined: "$4.62M" },
+    { market: "wstETH base", baseSupply: "$494K", collateral: "$56K", combined: "$550K" }
+  ]}
+/>
+
+Three Comets carry the bulk of the protocol's Ethereum activity. USDC base sits at $792 million combined ($328M of base supply against $464M of collateral). USDT base sits at $430 million combined. ETH (WETH) base sits at $170 million combined and is the third-largest market on the protocol. Together the three account for roughly 99 percent of Compound V3's Ethereum footprint at May 31.
+
+<PullQuote>Compound V3 on Ethereum is six independent markets. Three at scale, three still finding it.</PullQuote>
+
+The three smaller bases are recent additions still finding scale. wstETH base and WBTC base are sub-$3 million combined at month-end, more launches than scaled markets. USDS base sits at $4.62 million combined, also small but running the highest base supply APY on the protocol. Whether the three smaller bases grow through June and July is the cleaner forward question on Compound V3's Ethereum footprint.
+
+The USDS Comet's reading is the other observation worth flagging. At $1.90 million of base supply, it remains small, but the base-asset utilization was the highest of any Compound Ethereum market at the May close, and the base supply APY ran the most generous on the protocol. As stablecoin lending venues across the sector compressed toward parity with T-bills in May (the macro story §03 carries), this small USDS market was the only Compound Comet on Ethereum running a meaningful positive Real Yield Spread of its own. The economic significance is limited by the market's size, but the structural observation holds: the highest stable yield Compound offered on Ethereum at May close was on a $2 million market.
+
+On the revenue side, Compound produced $1.66 million of Ethereum-only fees in May, against $1.64 million in April, a 1.2 percent expansion. That is the only revenue-side stability of the six protocols in coverage outside SparkLend's outright growth. More structurally, Compound took its first visible protocol-treasury cut in months on Ethereum in May, $19,000, corresponding to a 1.1 percent capture rate. The dollar figure is small but the direction is the change. Compound's prior months in this report's coverage had run at 0 percent capture, full pass-through to depositors. The May activation is small enough that it could be a one-off rather than a regime change; whether it persists in June will say more.
+
+Oracle dependency on Compound V3 is the highest in the sector. 93 percent of the protocol's Ethereum collateral is priced by Chainlink feeds, against the six-protocol sector average of 83 percent. The dependency is a consequence of the Comet design. A pooled-base market with a standardized collateral set lends itself to a single oracle vendor more cleanly than a per-curator vault economy. Where Morpho's 67 percent Chainlink share reflects curator discretion across hundreds of markets, Compound's 93 percent reflects the architectural decision to standardize. Compound V3 is the most oracle-monoculture protocol in coverage; Morpho is the most diversified.
+
+Compound V3's May was structurally quiet at the protocol level. Net deposit flow was negative on the Sankey methodology. Fees were roughly flat. The wstETH and WBTC Comets sat sub-scale. The small USDS Comet ran the only meaningfully-yielding stable market on the platform. The forward question for §08 is whether the wstETH and WBTC Comets grow through June, and whether the small USDS Comet's positive spread holds or compresses toward T-bill parity along with the rest of the sector's stablecoin yields.
+
+
+
+<SectionHeading number="06.6">Protocol Deep Dive: Euler V2</SectionHeading>
+
+Modular vault-based lending. Each EVK vault is an isolated market with its own risk parameters, oracle, and IRM.
+
+<Lead>Euler V2's total supply on Ethereum contracted 39.4 percent in May, the steepest single-month decline of any protocol in this report's coverage. The question is not whether the decline happened. It is who drove it, and the answer is specific enough to name.</Lead>
+
+At May 31, Euler V2 carried $469.3M of total supplied capital on Ethereum, against $399.4M of active borrows and $70.0M of unborrowed liquidity, for an 85.1 percent utilization. At April 30, the comparable figures were $774.2M of supplied capital, $572.3M of active borrows, and $201.9M of unborrowed liquidity, for a 73.9 percent utilization. The month-over-month contraction is 39.4 percent on supplied, 30.3 percent on borrows, and 65.3 percent on unborrowed liquidity.
+
+The Sankey net deposit flow of −$338.5M for Euler V2 in May is the cleanest single-figure indicator of depositor-quantity exit across the month. The protocol-level contraction and the depositor-flow figure both point at the same magnitude. By every measure, the protocol shrank materially in May, and the vault-level Sentora finding documented below explains what drove it.
+
+The natural read for a contraction of that magnitude on a protocol of that size is depositor flight: lenders losing confidence in the platform and pulling capital across the board. The vault-level data tells a different story. Of the roughly $130M of outflow that is cleanly attributable at the vault level (the rest is borrow runoff and mid-month vault creation noise), $128.39M sits in just four EVK vaults. All four share a single on-chain governor. All four are USD-denominated. Every other Euler V2 curator on Ethereum ran vaults that grew TVL or moved by a few hundred thousand dollars at most. May's Euler V2 contraction was not a protocol-wide event. It was one operator.
+
+The four vaults are ePYUSD-6, eRLUSD-7, eUSDC-80, and eUSDC-70. Each lost between 64 and 84 percent of its TVL across the month.
+
+<DataTable
+  caption="Sentora-governed Euler V2 vault outflows, May 2026"
+  columns={[
+    { key: "vault", label: "Vault", align: "left" },
+    { key: "may1", label: "May 1 TVL", align: "right" },
+    { key: "may31", label: "May 31 TVL", align: "right" },
+    { key: "change", label: "Δ", align: "right" }
+  ]}
+  rows={[
+    { vault: "EVK Vault ePYUSD-6", may1: "$63.12M", may31: "$10.31M", change: "−$52.80M (−83.7%)" },
+    { vault: "EVK Vault eRLUSD-7", may1: "$43.78M", may31: "$11.09M", change: "−$32.68M (−74.7%)" },
+    { vault: "EVK Vault eUSDC-80", may1: "$37.93M", may31: "$13.55M", change: "−$24.38M (−64.3%)" },
+    { vault: "EVK Vault eUSDC-70", may1: "$28.06M", may31: "$9.55M", change: "−$18.52M (−66.0%)" },
+    { vault: "Sentora total", may1: "$172.89M", may31: "$44.50M", change: "−$128.39M (−74.3%)" }
+  ]}
+/>
+
+The shared governor is a Safe multisig at `0x9453ee262d7C95955e690AE7aBBD82a08B135685`. Each vault's "Risk Manager" badge on the Euler app's vault page identifies the operator as Sentora. The next-largest outflow vault on Euler V2, eUSDe-6, drained only $350,000 over the same month, three orders of magnitude smaller than any of the four named bleeders. The fall-off is not a long tail. It is a step change from the four Sentora vaults to everything else.
+
+A natural counter-hypothesis is yield-chasing: stablecoin lenders saw rates fall on these vaults during May and rotated to better-paying venues. The data contradicts this directly. The four bleeders' supply APYs softened across the month by 0.6 to 1.1 percentage points each, ending in the 1.2 to 3.2 percent range. Two K3 Capital vaults under a different operator saw substantially steeper APY drops over the same window and attracted capital rather than losing it.
+
+<DataTable
+  caption="May 2026 APY drift, Euler V2 vaults compared"
+  columns={[
+    { key: "vault", label: "Vault", align: "left" },
+    { key: "may1", label: "APY May 1", align: "right" },
+    { key: "may31", label: "APY May 31", align: "right" },
+    { key: "drop", label: "Δ", align: "right" },
+    { key: "flow", label: "May TVL flow", align: "right" }
+  ]}
+  rows={[
+    { vault: "ePYUSD-6 (Sentora)", may1: "2.31%", may31: "1.60%", drop: "−0.71 pp", flow: "−$52.80M" },
+    { vault: "eRLUSD-7 (Sentora)", may1: "2.07%", may31: "1.21%", drop: "−0.85 pp", flow: "−$32.68M" },
+    { vault: "eUSDC-80 (Sentora)", may1: "3.68%", may31: "2.62%", drop: "−1.06 pp", flow: "−$24.38M" },
+    { vault: "eUSDC-70 (Sentora)", may1: "3.81%", may31: "3.19%", drop: "−0.62 pp", flow: "−$18.52M" },
+    { vault: "eWETH-2 (K3 Capital)", may1: "4.32%", may31: "1.34%", drop: "−2.98 pp", flow: "net inflow" },
+    { vault: "eUSDC-22 (K3 Capital)", may1: "3.76%", may31: "2.00%", drop: "−1.76 pp", flow: "net inflow" }
+  ]}
+/>
+
+If May's outflows had been driven by depositors chasing yield, the steeper-decline K3 Capital vaults should have lost the most capital, and the modest-decline Sentora vaults should have held. The data shows the opposite. The exit decision was operator-specific, not yield-specific.
+
+<PullQuote>Sentora moved from one set of vaults they operated to another set of vaults they operated, on a different protocol, in the same asset shapes.</PullQuote>
+
+What Sentora was doing instead becomes clear once the lens moves to Morpho. Across the same 30-day window, Sentora's MetaMorpho footprint expanded by $93.94M.
+
+<DataTable
+  caption="Sentora MetaMorpho vault flows, May 2026"
+  columns={[
+    { key: "vault", label: "Vault", align: "left" },
+    { key: "may1", label: "May 1 TVL", align: "right" },
+    { key: "may31", label: "May 31 TVL", align: "right" },
+    { key: "change", label: "Δ", align: "right" }
+  ]}
+  rows={[
+    { vault: "Sentora RLUSD", may1: "$132.09M", may31: "$209.65M", change: "+$77.56M (+58.7%)" },
+    { vault: "Sentora PYUSD", may1: "$230.16M", may31: "$296.70M", change: "+$66.54M (+28.9%)" },
+    { vault: "Sentora PYUSD Core", may1: "$50.16M", may31: "~$165 (literal)", change: "−$50.16M (−100%)" },
+    { vault: "Sentora Morpho total", may1: "$412.41M", may31: "$506.35M", change: "+$93.94M" }
+  ]}
+/>
+
+The pattern is deliberate. One Morpho vault, Sentora PYUSD Core, was drained to dust ($165 in literal dollars, not millions). The two primary Sentora Morpho vaults absorbed the new capital. The naming makes the move legible: Sentora's bleeding Euler vaults were ePYUSD-6 and eRLUSD-7; their Morpho expansion concentrated in Sentora PYUSD and Sentora RLUSD. They moved from one set of vaults they operated to another set of vaults they operated, on a different protocol, in the same asset shapes. The arithmetic closes at 73 percent: $93.94M of Morpho inflow against $128.39M of Euler outflow leaves $34M unaccounted at the curator layer.
+
+We checked the obvious explanations for the residual. The first was that Sentora might have moved capital through a sub-label on Morpho that our strict curator-name match missed. A permissive query pulling every Morpho vault with a curator name containing "sentora" returned exactly the three vaults already in the table. No sub-labels, no rebrands inside the window. The second was that the multisig at `0x9453ee...5685` might have held the missing capital directly. An on-chain ERC-20 balance read at the May 1 and May 31 block heights returned zero across every relevant stablecoin and lending receipt token at both endpoints. No idle treasury, no direct LP positions on other protocols.
+
+<Annotation>By elimination, the $34M residual is downstream LP behavior: individual depositors who withdrew from the Sentora Euler vaults and made their own redeployment decisions across other lending venues, off-chain custody, or stablecoin reserves. Tracing the rest would require following the actual depositor wallets, which is the kind of investigation we will undertake when a finding warrants it. For May, 73-percent curator-level coverage is sufficient to credibly explain the protocol-level move.</Annotation>
+
+Two implications follow. The first is local to Euler V2. The May contraction is not evidence that depositors lost faith in the protocol. It is evidence that one operator chose to consolidate their stable-vault footprint on a different platform. K3 Capital ran the same protocol over the same window and grew TVL on every named vault they operate. The second implication is broader and gets its full treatment in §07. The curators who allocate capital across vault-aggregation lending architectures are not passive index managers. Their decisions can move material capital between protocols inside a single month, with no flagged event, no oracle failure, no governance vote, and no liquidation cascade. The Sentora reallocation is the clearest empirical demonstration of that pattern this publication has covered to date.
+
+
+
+<SectionHeading number="07">Curator Concentration as a Cross-Protocol Phenomenon</SectionHeading>
+
+<Lead>Morpho's curator HHI moved from 3,026 to 3,103 across May, the third consecutive monthly print past the antitrust threshold for highly concentrated markets. The deepening is the easy headline. What May also surfaced, through the Sentora reallocation finding in §06.6, is the layer of concentration that HHI on any single protocol cannot measure.</Lead>
+
+The HHI trajectory on Morpho has held one direction for three months. The March close was 2,700, already over the antitrust threshold of 2,500 that classifies a market as highly concentrated. April closed at 3,026, the first crossing past 3,000. May closed at 3,103. The first programmatic capture of the next month's reading, run on June 4 to validate the snapshot script's schema, came in at 3,290, the largest four-day move in any window we have on record.
+
+<DataTable
+  caption="Morpho curator HHI and top-three composition, March through June 2026"
+  columns={[
+    { key: "date", label: "Snapshot", align: "left" },
+    { key: "hhi", label: "HHI", align: "right" },
+    { key: "sentora", label: "Sentora", align: "right" },
+    { key: "steakhouse", label: "Steakhouse", align: "right" },
+    { key: "gauntlet", label: "Gauntlet", align: "right" },
+    { key: "top3", label: "Top 3 share", align: "right" }
+  ]}
+  rows={[
+    { date: "Mar 31", hhi: "2,700", sentora: "—", steakhouse: "—", gauntlet: "—", top3: "88.6%" },
+    { date: "Apr 30", hhi: "3,026", sentora: "—", steakhouse: "—", gauntlet: "—", top3: "94.4%" },
+    { date: "May 31", hhi: "3,103", sentora: "38.6%", steakhouse: "34.1%", gauntlet: "21.2%", top3: "93.9%" },
+    { date: "Jun 4", hhi: "3,290", sentora: "41.3%", steakhouse: "34.8%", gauntlet: "19.0%", top3: "95.2%" }
+  ]}
+/>
+
+<Chart
+  source="morpho.curator-hhi-two-panel"
+  title="Morpho curator HHI and top-three composition, March to June 2026"
+  caption="The HHI trajectory has held one direction for three months past the 2,500 antitrust threshold, while the top-three composition tightened toward the leading curator."
+  source_label="Datum Labs Lending Terminal"
+  height={360}
+/>
+
+The May reading itself shows the textbook case for using HHI rather than top-three share alone. Top-three share fell slightly between April and May, from 94.4 percent to 93.9 percent. HHI rose in the same window. The composition tightened within the top three even as their combined share softened: one curator pulled further ahead while the other two gave back ground. Top-N share would have flagged "concentration eased." HHI flagged "concentration deepened." Both readings are correct from their own definitions. Only HHI captures the shape.
+
+The May data also surfaces a wrinkle that no prior reading exposed cleanly. Sentora's Morpho TVL grew by $93.94M across the month. As §06.6 documents, that growth came almost one-for-one from Sentora's own reallocation out of their Euler V2 vaults. The HHI deepening on Morpho this month was not solely a function of depositors continuing to gravitate toward the largest curators. It was partly a function of the largest curator moving capital onto their own pile. The mechanism is related to the trend HHI usually measures but interpretively different: the next month's HHI reading is partially predictable from cross-protocol curator behavior, not just from intra-Morpho dynamics.
+
+The trajectory continued past the May 31 freeze. Four days into June, the snapshot script returned a reading of 3,290, up from 3,103 at the May close. That is a 187-point jump in four days, larger than any prior monthly delta in the dataset. Sentora's share moved from 38.6 percent to 41.3 percent, a 2.7 percentage point gain. Steakhouse Financial added 0.7 points to reach 34.8 percent. Gauntlet softened from 21.2 percent to 19.0 percent. Top-three share rose to 95.2 percent. Capital was still moving toward Sentora's Morpho vaults four days past the snapshot. The Sentora-to-Morpho reallocation that drove the May Euler V2 contraction had not stopped.
+
+<PullQuote>HHI measures the concentration that has accumulated within a protocol. It cannot see the concentration that moves between them.</PullQuote>
+
+Three structural risks sit one layer above what HHI measures, and May surfaced new evidence for each. The first is the risk Issue 001 named: correlated exposure within Morpho. The top three vaults share collateral and oracle dependencies, and a single oracle failure in a shared market could trigger drawdowns across 94 percent of curated TVL in one block. That risk was real at Issue 001's writing and remains real now. The second is what May surfaced for the first time with named, traceable evidence. The same curators run vaults across multiple lending protocols, and their footprints stack. Sentora is Morpho's number-one curator and was the operator behind Euler V2's $128M May contraction. The on-chain curator economy is more concentrated than any per-protocol HHI suggests because the same operator names occupy top-curator slots across multiple protocols. The third is the discretionary side of the second. One curator's decision can move material capital between protocols inside a single month, with no flagged event, no oracle failure, no governance vote, and no liquidation cascade. The Sentora reallocation is the first dataset in this publication's coverage where the magnitude of that discretion is empirically quantified.
+
+No single-protocol metric was built to see cross-protocol curator agency. HHI on Morpho captures static concentration within Morpho. It does not capture Sentora's SparkLend or Aave V3 footprints, which would need to be added to compute a multi-protocol Sentora share. It does not capture the rate of change of capital under any single curator's discretion. And it does not capture the off-chain layer that institutional credit allocation increasingly inhabits: B2B private deal flow, off-platform structured exposure, custom Morpho markets that sit one layer below the curated MetaMorpho aggregation. Every one of those is invisible to the public HHI number. The 3,103 reading at May 31, in other words, is the conservative version of a more concentrated picture. It is the floor, not the ceiling.
+
+What this section does not argue is that the cross-protocol pattern is itself anomalous. Curators choosing where to deploy capital across protocols is the design of the curated-vault architecture, not its failure mode. What May made empirically traceable, for the first time at scale, is the magnitude of capital that can move under a single curator's discretion in a single month. The model of curators as passive index managers, faithfully aggregating depositor capital and earning a service fee, is not what the Sentora data shows. The data shows active reallocation across protocols, at $128M of velocity, with no external trigger required. Whether that pattern recurs at similar scale in June and July is the question §08 carries forward.
+
+
+
+<SectionHeading number="08">What to Watch in June</SectionHeading>
+
+<Lead>May's data closes several questions Issue 001 left open, opens two that the parity print at month-end made newly relevant, and leaves the curator concentration story to a forward trajectory that has not yet stopped. Six questions warrant tracking into June.</Lead>
+
+The first question is the one §03 leaves directly. The Real Yield Spread closed May at parity for the first month-end since September 2025. The mechanism that closed it was a sector-wide on-chain stables APY lift, distributed across the four protocols in the blended-stable calculation rather than concentrated in any single market. June's spread depends on whether the lift holds. If on-chain stable APYs fall back through 3.60 percent against an unchanged T-bill, the spread reopens negative and May reads as a transitory parity print. If the on-chain side holds or rises further while T-bills stay flat, the spread crosses positive for the first time in eight months. Both outcomes are plausible. The data does not yet favor either.
+
+The second question is the protocol-side version of the same comparison. The sector take rate at May 31 was 3.38 percent annualized, below the 4-week T-bill at 3.60 percent. Section §04 frames this as the first month-end at which the sector's annualized revenue yield has run below the risk-free rate in the captured series. Whether that crossing is the start of a sustained sub-T-bill regime or a one-month artifact of the LRT rotation that drove May's fee compression is the same question from the protocol side. The arithmetic that would close it requires sector fees lifting back above $60 million Ethereum-only for the trailing 30 days against unchanged available liquidity, which in turn requires either Aave V3 fees recovering from the May contraction or another protocol's fees expanding to fill the gap. Neither catalyst is currently visible.
+
+The third question is whether the cross-protocol USDC rate book integrates or remains spread out. The May 31 USDC supply APY dispersion was 330.5 basis points (1.33× the 12-month average), against USDT and WETH dispersion both running below their baselines (0.87× and 0.26× respectively). The persistence of USDC dispersion above baseline while the other two assets have converged below it is a sector-structural reading, not a single-market one. Whether June compresses that gap (depositors moving USDC toward the higher-paying protocols, eroding Fluid and Morpho's advantage) or persists it (the laggards continuing to underperform without rebalancing) is the cleanest forward indicator on the rate-side mechanism behind §03.
+
+The fourth question is the one §07 explicitly leaves to June. Morpho's curator HHI sat at 3,103 at the May close, and the June 4 follow-on capture returned 3,290, a 187-point jump in four days. That trajectory suggests the Sentora-to-Morpho cross-protocol reallocation documented in §06.6 had not stopped past the freeze. The natural forward markers are whether the June 30 capture lands above or below 3,300, and whether Sentora's share of curated Morpho TVL crosses 45 percent. Both are within reach if the four-day trend extends. Neither is mechanically necessary if curators choose differently. Whether this is multi-month structural deepening or a transient post-rotation tightening is a question only the June capture answers.
+
+The fifth question is whether Euler V2 stabilizes or continues contracting. May's contraction was operator-specific rather than protocol-wide; Sentora's reallocation was the dominant driver. The remaining $130 million of Sentora-governed Euler V2 TVL at May 31 is the natural next variable. If Sentora continues redistributing it into Morpho or to other destinations, Euler shrinks further. If Sentora stops moving and K3 Capital's vaults continue absorbing capital, Euler stabilizes or recovers. The protocol-level data needs the April 30 on-chain re-audit before June's month-over-month percentage can be cited cleanly; that audit is queued and will close in time for Issue 003's capture.
+
+The sixth question is whether the BTC-family collateral rotation that lifted approximately $818 million of net inflow in May continues into June. The rotation is the strongest non-stable inflow group of the month and represents the thesis shift §05 documents: from leveraged ETH-collateral loops toward BTC-collateral positions. Persistence into June extends the thesis. Reversal makes May a one-month rotation tied specifically to the LRT-unwind cycle. The asset-level tracking will surface in next month's net-flows data.
+
+None of the six questions has a forced answer. Each depends on conditions that have not yet developed in the data. What May added to the picture was not certainty about June's direction; it was clarity about what each forward question is actually asking. That is the small structural progress this issue carries. The sector's economics crossed a threshold at the May close. Whether the crossing is a regime change or a transient parity print is what the next reading will say.
+
+

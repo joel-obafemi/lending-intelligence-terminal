@@ -1,0 +1,75 @@
+{/*
+  Issue 002 — "Capital Rotates" — §04 Sector Overview
+  Status: first draft, ~1,050 words across Lead + 9 paragraphs
+  Sits between: §03 Macro Context and §05 The Loop Unwinds
+  Source data: content/snapshots/2026-05-31.json (May 31 freeze)
+               content/snapshots/2026-04-30-baseline.json (6-protocol Apr 30 baseline)
+               eom-report:may output (fees, capture, take rate, RYS components)
+  Major new findings absorbed:
+   - Sector fees fell 19.7% MoM, 98% of which was Aave V3 alone
+   - Sector take rate at 3.38% sits below T-bill 3.60% for first time in series
+   - Morpho's 0% capture rate, Compound's first treasury cut, Euler's buyback pause
+*/}
+
+<SectionHeading number="04">Sector Overview</SectionHeading>
+
+<Lead>Six protocols, $33.06 billion of total supply at the May close, and an annualized revenue yield that just fell below the risk-free rate. Both halves of that sentence are May's structural findings; the first is the continuation of a nine-month sector contraction, the second is a state change.</Lead>
+
+The sector aggregate fell 4.6 percent in May on the six-protocol comparison, from $34.64 billion at April 30 to $33.06 billion at May 31. Active borrows fell harder at 9.2 percent, from $14.53 billion to $13.20 billion. Available liquidity declined 1.2 percent, from $20.10 billion to $19.86 billion. Sector utilization fell 2.0 percentage points to 39.9 percent. The shape is continuation, not stabilization. The September 2025 sector peak was $63.08 billion in total supply on Aave V3 alone; the entire six-protocol May reading sits 48 percent below that single-protocol peak nine months prior.
+
+<DataTable
+  caption="Sector aggregate, six-protocol view, April 30 to May 31, 2026"
+  columns={[
+    { key: "metric", label: "Metric", align: "left" },
+    { key: "apr", label: "Apr 30", align: "right" },
+    { key: "may", label: "May 31", align: "right" },
+    { key: "delta", label: "May − Apr", align: "right" }
+  ]}
+  rows={[
+    { metric: "Total Supply", apr: "$34.64B", may: "$33.06B", delta: "−$1.58B (−4.6%)" },
+    { metric: "Active Borrows", apr: "$14.53B", may: "$13.20B", delta: "−$1.33B (−9.2%)" },
+    { metric: "Available Liquidity", apr: "$20.10B", may: "$19.86B", delta: "−$0.25B (−1.2%)" },
+    { metric: "Sector Utilization", apr: "41.9%", may: "39.9%", delta: "−2.0 pp" },
+    { metric: "Sector Take Rate (annualized)", apr: "4.27%", may: "3.38%", delta: "−89 bps" }
+  ]}
+/>
+
+The contraction shape tells a story the headline number doesn't. Borrows fell faster than supply, which means leverage compressed harder than total capital across the month. Available liquidity barely moved, which means depositors did not pull idle capital materially. The compression was specifically on the borrow side, consistent with the §05 finding that LRT loops continued to unwind throughout May: as LRT collateral exited, the WETH debt it had financed got repaid, and the protocol-level borrow figure fell with it. The unborrowed-supply side was largely unchanged.
+
+This issue's six-protocol scope adds Compound V3 and Euler V2 to the four-protocol Issue 001 baseline. The two new protocols are smaller in absolute supply than the original four (Compound V3 at $1.61 billion and Euler V2 at $549 million at May 31), but they substantially change how month-over-month comparisons read. The Apr 30 sector total against the four-protocol baseline was $32.39 billion; against the six-protocol baseline it was $34.64 billion. Anyone comparing Issue 001's published $32.26 billion April figure to May's $33.06 billion headline will conclude the sector grew. It did not. The honest comparison is four-protocol-vs-four-protocol or six-protocol-vs-six-protocol; both show contraction. Subsequent issues carry the six-protocol baseline forward.
+
+Composition on the collateral side reflects the LRT contraction documented in §05. ETH-family collateral (WETH at 16.1 percent, wstETH at 15.0 percent, weETH at 7.5 percent) totals 38.6 percent of the sector's collateral base at May 31. BTC-family collateral (WBTC and cbBTC combined) is 16.7 percent, with tBTC pushing the broader BTC bucket higher still. Stablecoin collateral (USDT and USDC) is 22.5 percent. The shift since April is material: ETH-family share of collateral fell from approximately 61 percent at April 30 to 38.6 percent at May 31, a 22-percentage-point composition swing in one month. The roughly $818M of BTC-family inflows documented in §05 explain part of the reweighting; LRT and LST price decline explains the rest.
+
+On the borrow side, stablecoins regained the dominant share. The May 31 borrow mix is 59.3 percent stablecoin (USDC 26.2 percent, USDT 22.8 percent, plus PYUSD 3.2, USDS 2.9, DAI 2.2, USDTB 2.0), up from 43.6 percent at April 30. WETH borrow share fell from 41.4 percent to 31.0 percent over the same window. The 15.7-percentage-point shift toward stablecoin debt is the mechanical signature of the LRT-loop unwind: as depositors exited LRT collateral and the leveraged WETH debt that financed it, both sides of the loop compressed, and the share of the remaining borrow base tilted toward whatever was left, which was mostly stablecoin loans against stablecoin collateral.
+
+The sector earned $55.08 million in Ethereum-only fees in May, down from $68.62 million in April, a 19.7-percent compression. Almost all of it was a single protocol. Aave V3's Ethereum fees fell $13.32 million, from $50.35M to $37.03M, a 26.5-percent decline, against a sector-wide fee decline of $13.54 million. Every other protocol moved within roughly $1 million in either direction. Spark was the only protocol with meaningful expansion, adding $0.96 million of monthly fees, a 25.6-percent increase as April's migration capture continued to compound. Morpho ticked down 5.2 percent, Fluid down 14.4 percent, Euler down 21.3 percent, Compound roughly flat. The fee story at the sector level is, statistically, an Aave V3 story.
+
+<DataTable
+  caption="Ethereum-only fees and capture rates, April vs May 2026"
+  columns={[
+    { key: "protocol", label: "Protocol", align: "left" },
+    { key: "aprFees", label: "Apr fees", align: "right" },
+    { key: "mayFees", label: "May fees", align: "right" },
+    { key: "feeMom", label: "MoM Δ", align: "right" },
+    { key: "captureMay", label: "May capture rate", align: "right" }
+  ]}
+  rows={[
+    { protocol: "Aave V3", aprFees: "$50.35M", mayFees: "$37.03M", feeMom: "−26.5%", captureMay: "13.4%" },
+    { protocol: "Spark", aprFees: "$3.74M", mayFees: "$4.69M", feeMom: "+25.6%", captureMay: "11.2%" },
+    { protocol: "Morpho", aprFees: "$8.69M", mayFees: "$8.24M", feeMom: "−5.2%", captureMay: "0.0%" },
+    { protocol: "Fluid", aprFees: "$2.12M", mayFees: "$1.81M", feeMom: "−14.4%", captureMay: "13.0%" },
+    { protocol: "Compound", aprFees: "$1.64M", mayFees: "$1.66M", feeMom: "+1.2%", captureMay: "1.1%" },
+    { protocol: "Euler", aprFees: "$2.09M", mayFees: "$1.64M", feeMom: "−21.3%", captureMay: "3.9%" },
+    { protocol: "Sector", aprFees: "$68.62M", mayFees: "$55.08M", feeMom: "−19.7%", captureMay: "—" }
+  ]}
+/>
+
+Capture rates tell a complementary story. Morpho continued running at zero percent capture, where every dollar of the $8.24M in May fees passed through to depositors and curators with nothing taken by the protocol treasury or MORPHO holders. That is the cleanest pass-through architecture in the sector. Aave V3 held its capture rate effectively flat at 13.4 percent even as fees fell 26 percent, meaning depositors and the treasury took proportional haircuts and the split between them did not change. Compound V3 took its first protocol-treasury cut in months at 1.1 percent ($19,000); the dollar figure is small but the direction is the change. Euler's capture rate halved from 7.5 percent to 3.9 percent in May, with holder revenue going to zero, which means EUL token buybacks paused for the month.
+
+<PullQuote>Lending capital across the six protocols this report covers no longer pays a premium over Treasuries.</PullQuote>
+
+The combination of falling fees against largely-unchanged available liquidity is the sector take rate compression. Trailing-30-day Ethereum-only fees annualized against available liquidity fell from 4.27 percent at April 30 to 3.38 percent at May 31, an 89-basis-point compression. The May 31 take rate of 3.38 percent now sits below the 4-week T-bill yield of 3.60 percent, the first month-end at which the sector's annualized revenue yield has run below the risk-free rate in the captured series. The depositor-side version of the same comparison is in §03: the Real Yield Spread closed May at parity with T-bills for the first time since September 2025. Both readings deliver the same observation from the two sides of the protocol. Lending capital across the six protocols this report covers no longer pays a premium over Treasuries, whether the comparison is run from the depositor's APY or from the sector's revenue yield.
+
+The change worth flagging is not the supply or the borrows or even the utilization. Those have been falling for nine months. What May added to the picture is that the sector's economics crossed a threshold. Whether the May reading is a transitory parity print or the start of a sustained sub-T-bill regime is the question §09 carries forward. The mechanism that would close it (stable APYs rising back above 3.60 percent on a sustained basis) requires either higher utilization or lower available liquidity, both of which currently lack a visible catalyst.
+
+{/* End §04 — total ~1,050 words, two data tables, one pull quote */}

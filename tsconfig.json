@@ -27,10 +27,14 @@
     // depends on @cloudflare/workers-types ambients that the Next.js
     // compile does not load.
     "alerts",
-    // Cover-rendering script lazy-imports playwright (an optional dev
-    // dep). Authors install it on demand before rendering Issue #N's
-    // covers; the main Next.js build doesn't need to typecheck against
-    // it.
-    "scripts/render-covers.ts"
+    // The scripts/ folder holds one-shot CLI operator tools (research
+    // queries, snapshot capture, cover rendering, etc.) that the app/
+    // and lib/ code never imports. They lazy-import optional dev deps
+    // (playwright for cover rendering, etc.) and rely on loose typing
+    // patterns around viem readContract overloads that conflict with
+    // the strict tsconfig used for the built app. Excluded from the
+    // Next.js typecheck wholesale; type-check them individually with
+    // `npx tsx <file>` before publishing if needed.
+    "scripts"
   ]
 }

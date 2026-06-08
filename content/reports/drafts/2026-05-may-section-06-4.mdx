@@ -1,0 +1,31 @@
+{/*
+  Issue 002 — "Capital Rotates" — §06.4 Protocol Deep Dive: Fluid
+  Status: first draft, ~650 words
+  Sits within §06 Protocol Deep Dives
+  Source data: 2026-05-31.json freeze + Issue 001 published Apr 30 baseline ($1.08B)
+               eom-report:may (fees $1.81M, capture 13.0%)
+               2026-05-liquidations-90d.json (Fluid effective penalty 1.68%)
+               2026-05-oracle-concentration.json (Fluid Chainlink 76.59%)
+  Note: Shortest protocol section in §06. Fluid had a quiet month with no surprise findings;
+        the liquidation-engine identity from Issue 001 continues and is the section's anchor.
+*/}
+
+<SectionHeading number="06.4">Protocol Deep Dive: Fluid</SectionHeading>
+
+Instadapp's vault-based lending with smart collateral and smart debt, enabling DEX-like capital efficiency on paired assets.
+
+<Lead>Fluid was the protocol May mostly skipped, again. The distinguishing feature continued to be the liquidation engine, which ran the lowest effective penalty in the sector at 1.68 percent across the trailing 90 days, against a sector mean roughly three times that.</Lead>
+
+At May 31, Fluid carried $963 million of total supply on Ethereum, down from $1.08 billion at April 30, a 5.9 percent nominal contraction. Active borrows stood at $534 million against $429 million of available liquidity, for a 55.5 percent utilization. That utilization is the highest of any pooled or vault protocol in coverage except Euler V2, and it reflects an architectural choice rather than a market-stress signal: the smart-collateral and smart-debt model is designed to run hotter than a traditional pool because positions are mathematically constrained to remain liquidatable. Fluid sits 63 percent below its August 2025 peak of $2.57 billion, the steepest contraction from peak of any of the six protocols this issue covers.
+
+What sets Fluid structurally apart is the construction of collateral and debt. Smart collateral lets depositors position paired assets together as a single unit of collateral, with the pair's price relationship managed by the protocol's design. Smart debt allows the borrow side to be similarly paired. The architectural result is positions inherently more capital-efficient than on a traditional pooled protocol, at the cost of design complexity and an addressable market limited to the asset pairs the protocol supports. That tradeoff is also the reason Fluid did not benefit from May's migration flows: the rotation out of Aave V3 carried assets that did not naturally map onto Fluid's supported pair set, and the capital instead found Spark's wstETH market or Morpho's vault economy.
+
+<PullQuote>Fluid is structurally cheaper to be liquidated on by a wide margin, and the architecture that makes that true is the same architecture that limits the protocol's addressable market.</PullQuote>
+
+The protocol's most distinctive metric remains the liquidation engine. Across the trailing 90 days ending May 31, Fluid's effective liquidation penalty averaged 1.68 percent. Spark's was 4.87 percent across the same window. Morpho's was 24.10 percent. The Aave V3 figure came back at 261 percent and is under investigation as a likely event-recording artifact in the underlying liquidator-economy database. Compound V3 and Euler V2 are not yet ingested by that database, so their comparable figures are unavailable. Among the protocols where the trailing-90-day figure is currently reliable, Fluid is structurally cheaper to be liquidated on by a wide margin. The smart-collateral architecture is the mechanism: when liquidations execute against paired-asset positions with a mathematically managed price relationship, the slippage and overshoot that drive penalty elsewhere are absent or substantially reduced.
+
+On the revenue side, Fluid produced $1.81 million of Ethereum-only fees in May, against $2.12 million in April, a 14.4 percent decline. The protocol's capture rate held at 13.0 percent across the two months. The pattern is the same as Aave V3's: proportional haircuts as the pie shrank, no regime change in the split. Net deposit flow on Fluid was −$53.7 million on the Sankey methodology, a small absolute number that is consistent with the steady contraction the protocol has run for nine months. Fluid's oracle dependency on Chainlink at May 31 was 76.6 percent, lower than Aave V3 or Spark but higher than Morpho or Euler V2, reflecting the mix of paired-asset positions the protocol supports.
+
+Fluid's May story is the absence of one. The protocol did not absorb the migration flows that lifted Spark, did not bleed at the magnitude that hit Aave V3 nominally, did not experience the curator-driven event that defined Euler V2's contraction, and did not develop a rate signal of its own. Its identity continues to be the liquidation engine: cheaper to be liquidated on, structurally narrower in addressable market, and visibly resilient to the macro story that drove the rest of the sector in May. That stability has a cost (the contraction from peak is the steepest in coverage) and a value (the protocol is consistently the place where a liquidatable position pays the least to be unwound). For depositors and borrowers prioritizing predictable execution, Fluid's May reading is the same case it has been making since Issue 001.
+
+{/* End §06.4 — total ~700 words, one pull quote, no data table */}

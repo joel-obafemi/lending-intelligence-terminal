@@ -66,7 +66,12 @@ function styleTitle(title: string) {
 }
 
 export async function Hero({ issue, citeAnchor = "cite-this-issue", aside }: Props) {
-  const hasCover = await coverImageAvailable(issue.cover_image)
+  // We deliberately do NOT use cover_image as a Hero background here.
+  // The print/PDF portrait cover bakes the title text into the artwork,
+  // which on the article page bled through the fade gradient and read
+  // as a duplicated, blurry headline below the editorial title block.
+  // The clean gradient backdrop keeps the typography sharp; the cover
+  // PNG continues to serve as the canonical print artwork elsewhere.
 
   return (
     <header
@@ -77,11 +82,7 @@ export async function Hero({ issue, citeAnchor = "cite-this-issue", aside }: Pro
         padding: 0,
         minHeight: 480,
         overflow: "hidden",
-        background: hasCover
-          ? `linear-gradient(180deg, rgba(247,244,237,0) 0%, rgba(247,244,237,0) 55%, rgba(14,27,44,0.55) 100%), url("${issue.cover_image}")`
-          : "linear-gradient(135deg, var(--report-bg) 0%, rgba(31, 58, 95, 0.08) 100%)",
-        backgroundSize: hasCover ? "cover, cover" : undefined,
-        backgroundPosition: hasCover ? "center, center" : undefined,
+        background: "linear-gradient(135deg, var(--report-bg) 0%, rgba(31, 58, 95, 0.08) 100%)",
         borderBottom: "1px solid var(--report-border)",
       }}
     >

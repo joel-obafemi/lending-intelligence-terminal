@@ -111,15 +111,28 @@ async function CoverArtwork({
   variant: "hero" | "thumb"
 }) {
   const fm = issue.frontmatter
+  // Prefer the landscape social_image (Datum Labs editorial Twitter/X
+  // card at 1600×900) for both Latest Issue + Past Issues thumbnails —
+  // it's the canonical landscape artwork going forward. Falls back to
+  // the portrait cover_image if no landscape variant exists, then to
+  // the brand-gradient placeholder.
+  const hasSocial = await coverImageAvailable(fm.social_image)
   const hasCover = await coverImageAvailable(fm.cover_image)
-  const aspectRatio = variant === "hero" ? "1240 / 1748" : "1240 / 800"
+  const artwork = hasSocial
+    ? fm.social_image
+    : hasCover
+    ? fm.cover_image
+    : null
+  // Landscape 16:9 for both variants — same canonical aspect as the
+  // social PNG, sized down for grid thumbnails.
+  const aspectRatio = "1600 / 900"
 
-  if (hasCover) {
+  if (artwork) {
     return (
       <div
         style={{
           aspectRatio,
-          backgroundImage: `url("${fm.cover_image}")`,
+          backgroundImage: `url("${artwork}")`,
           backgroundSize: "cover",
           backgroundPosition: "center",
           borderRadius: 4,
@@ -332,6 +345,13 @@ async function HeroCard({ issue }: { issue: IssueRecord }) {
 // ─────────────────────────────────────────────────────────────────────────
 
 async function ArchiveCard({ issue }: { issue: IssueRecord }) {
+  // Past Issues use the same two-column row layout as the Latest Issue
+  // HeroCard above — landscape cover on the left, kicker / theme /
+  // tagline / meta stacked on the right. This keeps every archive
+  // tile filling the row regardless of how many past issues exist
+  // (no awkward right-side empty space when there's a single past
+  // issue), and the visual rhythm between Latest and Past stays
+  // consistent.
   const fm = issue.frontmatter
   return (
     <Link
@@ -344,65 +364,88 @@ async function ArchiveCard({ issue }: { issue: IssueRecord }) {
       }}
     >
       <article
+        className="report-archive-row"
         style={{
-          padding: 16,
+          display: "grid",
+          gridTemplateColumns: "1fr",
+          gap: 24,
+          padding: 24,
           background: "var(--report-bg)",
           border: "1px solid var(--report-border)",
-          borderRadius: 4,
-          height: "100%",
-          display: "flex",
-          flexDirection: "column",
-          gap: 14,
+          borderRadius: 6,
+          transition: "border-color 100ms ease",
         }}
       >
-        <CoverArtwork issue={issue} variant="thumb" />
-        <span
+        <div className="report-archive-row-cover">
+          <CoverArtwork issue={issue} variant="thumb" />
+        </div>
+        <div
+          className="report-archive-row-text"
           style={{
-            fontFamily: "var(--report-font-mono)",
-            fontSize: 10,
-            letterSpacing: "0.14em",
-            textTransform: "uppercase",
-            color: "var(--report-accent)",
+            display: "flex",
+            flexDirection: "column",
+            gap: 14,
+            justifyContent: "center",
           }}
         >
-          Issue {fm.issue_label} · {fmtMonthYear(fm.publication_date)}
-        </span>
-        <h3
-          style={{
-            fontFamily: "var(--report-font-serif)",
-            fontWeight: 600,
-            fontSize: 20,
-            lineHeight: 1.2,
-            margin: 0,
-          }}
-        >
-          {fm.theme}
-        </h3>
-        <p
-          style={{
-            fontFamily: "var(--report-font-serif)",
-            fontStyle: "italic",
-            fontSize: 14,
-            lineHeight: 1.5,
-            color: "var(--report-text-muted)",
-            margin: 0,
-            flex: 1,
-          }}
-        >
-          {fm.tagline}
-        </p>
-        <span
-          style={{
-            fontFamily: "var(--report-font-mono)",
-            fontSize: 10,
-            letterSpacing: "0.08em",
-            color: "var(--report-text-muted)",
-            paddingTop: 4,
-            borderTop: "1px solid var(--report-border)",
-          }}
-        >
-          {fm.reading_time_min} min read
-        </span>
+          <span
+            style={{
+              fontFamily: "var(--report-font-mono)",
+              fontSize: 11,
+              letterSpacing: "0.16em",
+              textTransform: "uppercase",
+              color: "var(--report-accent)",
+            }}
+          >
+            Issue {fm.issue_label} · {fmtMonthYear(fm.publication_date)}
+          </span>
+          <h3
+            style={{
+              fontFamily: "var(--report-font-serif)",
+              fontWeight: 700,
+              fontSize: "clamp(22px, 2.6vw, 32px)",
+              lineHeight: 1.15,
+              letterSpacing: "-0.015em",
+              margin: 0,
+              color: "var(--report-text)",
+            }}
+          >
+            {fm.theme}
+          </h3>
+          <p
+            style={{
+              fontFamily: "var(--report-font-serif)",
+              fontStyle: "italic",
+              fontSize: 16,
+              lineHeight: 1.55,
+              color: "var(--report-brand)",
+              margin: 0,
+            }}
+          >
+            {fm.tagline}
+          </p>
+          <span
+            style={{
+              fontFamily: "var(--report-font-mono)",
+              fontSize: 10,
+              letterSpacing: "0.12em",
+              textTransform: "uppercase",
+              color: "var(--report-text-muted)",
+              marginTop: 4,
+            }}
+          >
+            {fm.reading_time_min} min read
+          </span>
+        </div>
+        <style>{`
+          @media (min-width: 900px) {
+            .report-archive-row {
+              grid-template-columns: minmax(260px, 380px) 1fr !important;
+              gap: 40px !important;
+              padding: 32px !important;
+            }
+          }
+        `}</style>
       </article>
     </Link>
   )
@@ -571,20 +614,14 @@ export default async function ReportsArchivePage() {
                 <ArchiveCard key={i.slug} issue={i} />
               ))}
               <style>{`
+                /* Single-column stack of full-width rows. Each
+                   ArchiveCard internally switches from stacked-mobile
+                   to cover-left / text-right at 900px+, matching the
+                   Latest Issue HeroCard above. */
                 .report-archive-grid {
-                  display: grid;
-                  grid-template-columns: 1fr;
+                  display: flex;
+                  flex-direction: column;
                   gap: 20px;
-                }
-                @media (min-width: 700px) {
-                  .report-archive-grid {
-                    grid-template-columns: 1fr 1fr;
-                  }
-                }
-                @media (min-width: 1000px) {
-                  .report-archive-grid {
-                    grid-template-columns: 1fr 1fr 1fr;
-                  }
                 }
               `}</style>
             </div>

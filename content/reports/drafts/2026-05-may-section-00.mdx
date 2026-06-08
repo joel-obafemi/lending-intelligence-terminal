@@ -1,0 +1,30 @@
+{/*
+  Issue 002 — "Capital Rotates" — §00 How to Read This Report
+  Status: first draft, ~740 words
+  Sits at the top of the issue, before §01
+  Updates from Issue 001's §00:
+   - Real Yield Spread definition extended to six protocols, parity reference added
+   - HHI convention added (new for Issue 002)
+   - Constant-price vs nominal accounting note added (new for Issue 002, recurs across body)
+   - Coverage paragraph updated for the six-protocol scope and the Issue 001 baseline note
+*/}
+
+<SectionHeading number="00">How to Read This Report</SectionHeading>
+
+This report uses a handful of conventions that recur throughout. Five are worth flagging up front, since most of the analysis depends on them.
+
+A basis point (often abbreviated as bps) is one-hundredth of a percentage point. So 100 basis points equals 1 percentage point, 50 basis points equals 0.5 percentage points, and 10 basis points equals 0.1 percentage points. The convention exists because saying "rates rose 10%" is ambiguous: it could mean rates moved from 4% to 14% (a 10 percentage point change) or from 4% to 4.4% (a 10% relative change). Saying "rates rose 10 basis points" unambiguously means the rate moved up by 0.10 percentage points.
+
+A percentage point (often abbreviated as pp) is the arithmetic difference between two percentages. A move from 4% to 6% is a 2 percentage point increase, not a 2% increase. The two scales are interchangeable: 100 basis points equals 1 percentage point.
+
+The Real Yield Spread is the central macro metric used throughout. It measures the gap between the blended stablecoin lending APY across the six protocols covered and the 4-week US Treasury bill rate. The Treasury bill is the closest TradFi reference point: a known yield, fully backed by the US government, accessible to most institutional dollar holders, and the conventional risk-free benchmark for short-duration cash. The spread tells the reader whether DeFi stablecoin lending is paying a premium for the additional risks that come with being on-chain. When the spread is positive, depositors are earning a meaningful reward for those risks. When it is zero, they are at parity. When it is negative, depositors are accepting less yield on Ethereum than they could earn from a Treasury bill of similar duration. At the May 31 close covered in this issue, the spread sat at parity for the first time since September 2025; the regime question that opens is covered in §03.
+
+The Herfindahl-Hirschman Index (HHI) is a single-number measure of how concentrated a market is. It is computed as the sum of the squared market shares, expressed as percentages, of every participant. A market with ten equal participants at 10 percent each scores 1,000. A market with one dominant participant at 55 percent plus nine smaller participants at 5 percent each scores 3,250. The convention from antitrust practice classifies markets below 1,500 as competitive, 1,500 to 2,500 as moderately concentrated, and above 2,500 as highly concentrated. The threshold has practical force: in banking, crossing 2,500 typically triggers merger review in most jurisdictions. This report uses HHI primarily to measure curator concentration on Morpho's MetaMorpho vault economy. The May reading and its broader cross-protocol implications are covered in §07.
+
+Constant-price accounting versus nominal accounting is the methodological distinction that recurs across §05, §06.1, and §06.2. Nominal supply figures mark every position to current price each day, so when collateral assets fall in dollar terms, every existing position holding them shows as "less supply" without any withdrawal occurring. Constant-price accounting measures deposit-quantity flow instead, holding prices fixed at a reference point. The two methods can tell directionally opposite stories during months when collateral prices move materially. Issue 002 carries both readings where they diverge, and the body sections name explicitly which measurement each figure uses.
+
+<Annotation>LTV refers to loan-to-value, the maximum debt allowed against a unit of collateral. The IRM (interest rate model) is the formula each protocol uses to set borrow rates as a function of utilization, with a "kink" inflection point above which rates rise much more steeply.</Annotation>
+
+Coverage in this issue expands from four protocols to six. Aave V3, SparkLend, Morpho, and Fluid carry forward from Issue 001. Compound V3 and Euler V2 enter coverage with this issue. All six are measured on Ethereum mainnet; cross-chain footprints are noted but not included in aggregate metrics. April 30 baselines below are restated to the six-protocol scope where the data supports it. Issue 001's published April 30 figures were four-protocol and will not reconcile against the six-protocol April column in §01 unless that scope difference is held in mind. Wallet-level metrics including health-factor distributions and top-borrower concentration are not yet in coverage; they will be added when the supporting data layer is operational.
+
+{/* End §00 — total ~740 words, mostly inherited from Issue 001 with HHI, constant-price, and six-protocol coverage updates */}

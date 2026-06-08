@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 880 420" font-family="'Source Serif 4', Georgia, serif">
+  <style>
+    .axis { fill: #595959; font: 11px 'JetBrains Mono', monospace; }
+    .grid { stroke: #B8C9DD; stroke-opacity: 0.4; }
+    .ref  { stroke: #B8C9DD; stroke-width: 1; }
+    .pos  { fill: #1F3A5F; }
+    .neg  { fill: #C5511A; }
+    .lbl  { fill: #0E1B2C; font: 600 11px 'JetBrains Mono', monospace; }
+    .name { fill: #0E1B2C; font: 13px 'Source Serif 4', Georgia, serif; }
+    .title { fill: #0E1B2C; font: 600 18px 'Source Serif 4', Georgia, serif; }
+    .caption { fill: #595959; font: italic 13px 'Source Serif 4', Georgia, serif; }
+    .source { fill: #595959; font: 10px 'JetBrains Mono', monospace; letter-spacing: 0.08em; }
+  </style>
+  <rect width="880" height="420" fill="#F7F4ED"/>
+  <text class="title" x="48" y="36">Net depositor flow by protocol, May 2026</text>
+  <text class="caption" x="48" y="58">Constant-price net deposits, USD millions. Sorted by absolute magnitude.</text>
+  <!-- Layout: name col 48-178, bars 200-820, zero axis at 510. Bar height 30, gap 16, top y 90. -->
+  <!-- Scale: 800 USD-M = 310 px → 1M = 0.3875 px. -->
+  <!-- Zero line -->
+  <line class="ref" x1="510" y1="86" x2="510" y2="396"/>
+  <!-- Tick labels -->
+  <text class="axis" x="200" y="404" text-anchor="middle">−800</text>
+  <text class="axis" x="355" y="404" text-anchor="middle">−400</text>
+  <text class="axis" x="510" y="404" text-anchor="middle">0</text>
+  <text class="axis" x="665" y="404" text-anchor="middle">+400</text>
+  <text class="axis" x="820" y="404" text-anchor="middle">+800 USD M</text>
+  <!-- Rows: Morpho +759, SparkLend +752, Aave V3 -503, Euler V2 -339, Fluid -54, Compound -32 -->
+  <!-- Row 1: Morpho +759 -->
+  <text class="name" x="178" y="111" text-anchor="end">Morpho</text>
+  <rect class="pos" x="510" y="93" width="294" height="30"/>
+  <text class="lbl" x="810" y="113" text-anchor="end">+$759M</text>
+  <!-- Row 2: SparkLend +752 -->
+  <text class="name" x="178" y="157" text-anchor="end">SparkLend</text>
+  <rect class="pos" x="510" y="139" width="291" height="30"/>
+  <text class="lbl" x="807" y="159" text-anchor="end">+$752M</text>
+  <!-- Row 3: Aave V3 -503 -->
+  <text class="name" x="178" y="203" text-anchor="end">Aave V3</text>
+  <rect class="neg" x="315" y="185" width="195" height="30"/>
+  <text class="lbl" x="311" y="205" text-anchor="end">−$503M</text>
+  <!-- Row 4: Euler V2 -339 -->
+  <text class="name" x="178" y="249" text-anchor="end">Euler V2</text>
+  <rect class="neg" x="379" y="231" width="131" height="30"/>
+  <text class="lbl" x="375" y="251" text-anchor="end">−$339M</text>
+  <!-- Row 5: Fluid -54 -->
+  <text class="name" x="178" y="295" text-anchor="end">Fluid</text>
+  <rect class="neg" x="489" y="277" width="21" height="30"/>
+  <text class="lbl" x="485" y="297" text-anchor="end">−$54M</text>
+  <!-- Row 6: Compound V3 -32 -->
+  <text class="name" x="178" y="341" text-anchor="end">Compound V3</text>
+  <rect class="neg" x="498" y="323" width="12" height="30"/>
+  <text class="lbl" x="494" y="343" text-anchor="end">−$32M</text>
+  <!-- Legend dots -->
+  <rect class="pos" x="48" y="376" width="10" height="10"/>
+  <text class="axis" x="64" y="386">Inflow</text>
+  <rect class="neg" x="124" y="376" width="10" height="10"/>
+  <text class="axis" x="140" y="386">Outflow</text>
+  <text class="source" x="48" y="417">DATUM LABS LENDING TERMINAL</text>
+</svg>

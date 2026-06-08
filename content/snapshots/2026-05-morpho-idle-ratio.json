@@ -1,0 +1,97 @@
+{
+  "source": {
+    "script": "scripts/verify-morpho-idle-ratio.ts",
+    "generated_at_utc": "2026-06-08T12:41:39Z",
+    "data_source": "blue-api.morpho.org/graphql",
+    "methodology": "Enumerate every MetaMorpho vault on Ethereum (chainId 1) via the vaults paginated query. For each vault, pull vault.historicalState.totalAssetsUsd and vault.historicalState.allocation at the May 31, 2026 23:59:59 UTC timestamp (Morpho daily-bucket nearest point). The Idle bucket per vault is identified by allocation rows whose market.collateralAsset is null (same definition lib/morpho-api.ts uses for the per-vault detail page). Sector ratio = sum(idle_usd) / sum(totalAssetsUsd) across all vaults with complete history at the timestamp.",
+    "caveats": "1. Idle measure is vault-side only; users supplying directly to raw Morpho Blue markets (not via a MetaMorpho vault) are not in scope and not part of the denominator. 2. The DAILY interval introduces sub-day rounding to the closest historical bucket; reading is approximately ±12 hours from the target UTC instant. 3. Vaults reporting no historicalState (newly deployed, deprecated, or schema mismatch) are excluded from the aggregate; the count is reported in source.exclusions."
+  },
+  "target_date": "2026-05-31",
+  "target_timestamp_utc": 1780271999,
+  "resolved_block": 25218793,
+  "resolved_block_iso": "2026-05-31T23:59:11Z",
+  "vaults_enumerated": 445,
+  "vaults_counted": 273,
+  "exclusions": {
+    "no_history": 0,
+    "no_allocation_history": 82
+  },
+  "sector_vault_tvl_usd": 1371589368.3998134,
+  "sector_idle_usd": 137339985.75841975,
+  "idle_ratio_pct": 10.01,
+  "comparison_to_current_block_pct": -7.06,
+  "top_10_vaults_at_may_31": [
+    {
+      "symbol": "senPYUSD",
+      "address": "0x19b3cD7032B8C062E8d44EaCad661a0970DD8c55",
+      "may31_total_usd": 296700846.03735155,
+      "may31_idle_usd": 10681747.749540025,
+      "may31_idle_pct": 3.6
+    },
+    {
+      "symbol": "senRLUSD",
+      "address": "0x71cb2F8038B2C5D65ddc740B2F3268890CD2A89C",
+      "may31_total_usd": 209651668.9794528,
+      "may31_idle_usd": 51411482.120615095,
+      "may31_idle_pct": 24.52
+    },
+    {
+      "symbol": "steakUSDTBethena",
+      "address": "0xBeEFC1CDAfc5b4a649b54D07AFc6bF0f75C6F4E2",
+      "may31_total_usd": 120174118.73831199,
+      "may31_idle_usd": 0,
+      "may31_idle_pct": 0
+    },
+    {
+      "symbol": "steakUSDC",
+      "address": "0xBEEF01735c132Ada46AA9aA4c54623cAA92A64CB",
+      "may31_total_usd": 109431214.05515155,
+      "may31_idle_usd": 0,
+      "may31_idle_pct": 0
+    },
+    {
+      "symbol": "steakUSDT",
+      "address": "0xbEef047a543E45807105E51A8BBEFCc5950fcfBa",
+      "may31_total_usd": 92219379.66046567,
+      "may31_idle_usd": 0,
+      "may31_idle_pct": 0
+    },
+    {
+      "symbol": "vbgtWBTC",
+      "address": "0x812B2C6Ab3f4471c0E43D4BB61098a9211017427",
+      "may31_total_usd": 55139737.923354186,
+      "may31_idle_usd": 55136487.55555472,
+      "may31_idle_pct": 99.99
+    },
+    {
+      "symbol": "gtUSDC",
+      "address": "0xdd0f28e19C1780eb6396170735D45153D261490d",
+      "may31_total_usd": 38189239.16389552,
+      "may31_idle_usd": 0,
+      "may31_idle_pct": 0
+    },
+    {
+      "symbol": "vbgtWETH",
+      "address": "0x31A5684983EeE865d943A696AAC155363bA024f9",
+      "may31_total_usd": 36853281.20805534,
+      "may31_idle_usd": 3688267.4667380066,
+      "may31_idle_pct": 10.01
+    },
+    {
+      "symbol": "adpUSDC",
+      "address": "0x55555815a5595991C3A0Ff119B59AEF6C8B55555",
+      "may31_total_usd": 28770925.67471592,
+      "may31_idle_usd": 0,
+      "may31_idle_pct": 0
+    },
+    {
+      "symbol": "steakETH",
+      "address": "0xBEEf050ecd6a16c4e7bfFbB52Ebba7846C4b8cD4",
+      "may31_total_usd": 27148994.839323983,
+      "may31_idle_usd": 0,
+      "may31_idle_pct": 0
+    }
+  ],
+  "issue_002_citation_pct": 63.7,
+  "delta_vs_citation_pp": -53.69
+}

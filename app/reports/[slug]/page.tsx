@@ -42,9 +42,16 @@ import { SupportPanel } from "@/components/report/SupportPanel"
 // Next's 60s build worker timeout, the build fails outright. Reverting
 // to default ISR semantics lets timeouts on one route fall through to
 // on-demand rendering at first request instead of aborting the deploy.
-// `dynamicParams = false` stays so unknown slugs still 404 cleanly.
+// `dynamicParams = true` + empty generateStaticParams means NO slugs are
+// prerendered at build time. The build no longer depends on whether
+// DefiLlama / FRED / Aave's UiPoolDataProviderV3 RPCs are reachable from
+// Vercel's build machine — historically the build has been killed by
+// Ankr or Cloudflare RPC returning "Internal error" on the report charts'
+// on-chain reads during build. Each slug renders on first request and
+// then sits in ISR cache for an hour. Unknown slugs still 404 via the
+// notFound() call inside the page (getIssueBySlug returns null).
 export const revalidate = 3600
-export const dynamicParams = false
+export const dynamicParams = true
 export const maxDuration = 120
 
 interface RouteParams {
@@ -68,8 +75,10 @@ function nextIssueDateLabel(publicationDate: string): string | undefined {
 }
 
 export async function generateStaticParams() {
-  const issues = await getAllIssues()
-  return issues.map((i) => ({ slug: i.slug }))
+  // Returning [] (with dynamicParams = true above) skips all build-time
+  // prerendering. Each slug renders on first request instead, which keeps
+  // the build green when public RPCs are flaky from Vercel's IPs.
+  return [] as Array<{ slug: string }>
 }
 
 const SITE_URL = "https://lending-intelligence-terminal.vercel.app"
@@ -80,9 +89,15 @@ export async function generateMetadata({ params }: RouteParams): Promise<Metadat
   const fm = issue.frontmatter
   const title = `${fm.title} · Issue ${fm.issue_label} · ${fm.theme}`
   const url = `${SITE_URL}/reports/${issue.slug}`
-  // Next will resolve the per-route opengraph-image.tsx automatically;
-  // we still declare the dimensions + alt explicitly so consumers that
-  // read raw meta tags get the right hint.
+  // Prefer the issue's frontmatter `social_image` (a static PNG checked
+  // into /public/reports/<slug>-social.png) over the dynamic
+  // opengraph-image route. The static path is cheap to serve and always
+  // hits HTTP 200. The dynamic Satori-rendered route exists as a
+  // fallback for issues without a pre-rendered social PNG, but it has
+  // hit 500s under Vercel's edge runtime with some configurations.
+  const socialImageUrl = fm.social_image
+    ? `${SITE_URL}${fm.social_image.startsWith("/") ? "" : "/"}${fm.social_image}`
+    : `${SITE_URL}/reports/${issue.slug}/opengraph-image`
   return {
     title,
     description: fm.tagline,
@@ -104,7 +119,7 @@ export async function generateMetadata({ params }: RouteParams): Promise<Metadat
       authors: ["DatumLabs"],
       images: [
         {
-          url: `${SITE_URL}/reports/${issue.slug}/opengraph-image`,
+          url: socialImageUrl,
           width: 1200,
           height: 630,
           alt: `${fm.title} — ${fm.theme}`,
@@ -115,7 +130,7 @@ export async function generateMetadata({ params }: RouteParams): Promise<Metadat
       card: "summary_large_image",
       title,
       description: fm.tagline,
-      images: [`${SITE_URL}/reports/${issue.slug}/opengraph-image`],
+      images: [socialImageUrl],
     },
     other: {
       "article:published_time": fm.publication_date,
@@ -130,7 +145,16 @@ export default async function IssuePage({ params }: RouteParams) {
     getAllIssues(),
   ])
   if (!issue) notFound()
-  if (issue.frontmatter.status !== "published") notFound()
+  // Gate non-published issues behind NEXT_PUBLIC_DRAFT_PREVIEW. Setting
+  // the env var to "1" on the Vercel project surfaces drafts on the
+  // deployed site (useful for pre-publication review). Unsetting it
+  // restores production behavior — drafts 404 the same as today.
+  if (
+    issue.frontmatter.status !== "published" &&
+    process.env.NEXT_PUBLIC_DRAFT_PREVIEW !== "1"
+  ) {
+    notFound()
+  }
 
   // Locate prev / next from the published-issue archive. getAllIssues()
   // sorts by publication_date desc; prev = newer than current,
@@ -148,7 +172,12 @@ export default async function IssuePage({ params }: RouteParams) {
   const fm = issue.frontmatter
   const pageUrl = `${SITE_URL}/reports/${issue.slug}`
   const publicationYear = new Date(fm.publication_date).getFullYear()
-  const ogImageUrl = `${pageUrl}/opengraph-image`
+  // Same fallback as in generateMetadata above: prefer the static
+  // social_image path when set, only fall through to the dynamic
+  // opengraph-image route as a last resort.
+  const ogImageUrl = fm.social_image
+    ? `${SITE_URL}${fm.social_image.startsWith("/") ? "" : "/"}${fm.social_image}`
+    : `${pageUrl}/opengraph-image`
 
   const articleJsonLd = {
     "@context": "https://schema.org",
