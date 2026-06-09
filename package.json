@@ -39,7 +39,11 @@
     "export:net-flow-daily": "tsx scripts/export-net-flow-daily.ts",
     "eom-report": "tsx scripts/eom-report-fixed.ts",
     "eom-report:may": "tsx scripts/eom-report-may.ts",
-    "render-covers": "tsx scripts/render-covers.ts"
+    "render-covers": "tsx scripts/render-covers.ts",
+    "gate": "tsx scripts/reconciliation-gate.ts",
+    "gate:json": "tsx scripts/reconciliation-gate.ts --report-json gate-report.json",
+    "gate:derivation-trail": "tsx scripts/derivation-trail-check.ts",
+    "gate:full": "tsx scripts/reconciliation-gate.ts && tsx scripts/derivation-trail-check.ts --quiet"
   },
   "dependencies": {
     "@neondatabase/serverless": "^1.0.2",

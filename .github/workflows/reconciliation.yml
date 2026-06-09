@@ -1,0 +1,179 @@
+name: Reconciliation Gate
+
+# Fires on every PR targeting main and on direct pushes to main from a
+# release/* branch. Runs the manifest cross-checks and the derivation
+# trail detector, posts a structured PR comment, and blocks merge on
+# failure.
+#
+# Critical design choice: the workflow checks out the MERGE TARGET'S
+# manifest, not the feature branch's. This means a PR that introduces a
+# breaking citation cannot silence the gate by editing the manifest in
+# the same PR. The gate compares the PR's *prose* against main's *manifest*.
+
+on:
+  pull_request:
+    branches:
+      - main
+    paths:
+      - "content/reports/**"
+      - "content/snapshots/**"
+      - "scripts/reconciliation-gate.ts"
+      - "scripts/derivation-trail-check.ts"
+      - "scripts/lib/reconciliation-checks.ts"
+      - ".github/workflows/reconciliation.yml"
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pull-requests: write
+
+jobs:
+  reconciliation:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Check out PR branch (the prose under review)
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          path: pr-branch
+
+      - name: Check out merge target's manifest
+        if: github.event_name == 'pull_request'
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.pull_request.base.sha }}
+          fetch-depth: 1
+          path: base-branch
+          sparse-checkout: |
+            content/snapshots/manifest.json
+            content/snapshots
+            scripts/reconciliation-gate.ts
+            scripts/derivation-trail-check.ts
+            scripts/lib/reconciliation-checks.ts
+          sparse-checkout-cone-mode: false
+
+      - name: Set up Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          cache: "npm"
+          cache-dependency-path: pr-branch/package-lock.json
+
+      - name: Install dependencies (PR branch)
+        working-directory: pr-branch
+        run: npm ci --no-audit --no-fund
+
+      - name: Stage manifest from merge target
+        if: github.event_name == 'pull_request'
+        run: |
+          # Replace PR-branch manifest with merge target's manifest, so the
+          # gate cannot be silenced by a same-PR manifest edit. Snapshots in
+          # the PR branch are kept as-is — the snapshots that the manifest's
+          # cross-checks reference must be present.
+          cp base-branch/content/snapshots/manifest.json pr-branch/content/snapshots/manifest.json
+          echo "Manifest staged from base ref: ${{ github.event.pull_request.base.sha }}"
+
+      - name: Run reconciliation gate
+        id: gate
+        working-directory: pr-branch
+        run: |
+          set +e
+          # The prose-side check fires alarms on regressions of historical
+          # wrong values. The merge target's manifest already carries the
+          # alarm list, so the PR branch can't sneak a deprecated figure
+          # past the gate.
+          npx tsx scripts/reconciliation-gate.ts \
+            --prose content/reports/2026-05-may.mdx \
+            --report-json gate-report.json \
+            --pr-comment > gate-output.txt 2>&1
+          echo "exit_code=$?" >> $GITHUB_OUTPUT
+          cat gate-output.txt
+          # Capture the PR-comment block for the next step.
+          awk '/---PR_COMMENT_START---/{flag=1; next} /---PR_COMMENT_END---/{flag=0} flag' gate-output.txt > pr-comment-gate.md || true
+
+      - name: Run derivation trail check
+        id: derivation
+        working-directory: pr-branch
+        run: |
+          set +e
+          npx tsx scripts/derivation-trail-check.ts \
+            --report-json derivation-report.json \
+            --quiet > derivation-output.txt 2>&1
+          echo "exit_code=$?" >> $GITHUB_OUTPUT
+          cat derivation-output.txt
+
+      - name: Compose PR comment
+        if: github.event_name == 'pull_request'
+        working-directory: pr-branch
+        run: |
+          {
+            cat pr-comment-gate.md 2>/dev/null || echo "_(no PR-comment block emitted)_"
+            echo ""
+            echo "---"
+            echo ""
+            echo "#### Derivation Trail"
+            echo ""
+            head -4 derivation-output.txt | tail -2
+            echo ""
+            echo "_Uncovered citations are warnings only by default. Flip \`global_config.derivation_trail_warnings_block_merge\` in the manifest to enforce coverage._"
+          } > pr-comment.md
+          cat pr-comment.md
+
+      - name: Post PR comment
+        if: github.event_name == 'pull_request'
+        uses: marocchino/sticky-pull-request-comment@v2
+        with:
+          path: pr-branch/pr-comment.md
+          header: reconciliation-gate
+
+      - name: Check for override label
+        if: github.event_name == 'pull_request'
+        id: override
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const { data: labels } = await github.rest.issues.listLabelsOnIssue({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: context.issue.number,
+            })
+            const hasOverride = labels.some(l => l.name === 'reconciliation-override')
+            core.setOutput('present', hasOverride ? 'true' : 'false')
+            if (hasOverride) {
+              core.warning('reconciliation-override label is present; gate failure will not block merge. Reviewer attestation required.')
+            }
+
+      - name: Enforce gate result
+        run: |
+          GATE_EXIT="${{ steps.gate.outputs.exit_code }}"
+          DERIV_EXIT="${{ steps.derivation.outputs.exit_code }}"
+          OVERRIDE="${{ steps.override.outputs.present }}"
+          echo "Gate exit: $GATE_EXIT"
+          echo "Derivation exit: $DERIV_EXIT"
+          echo "Override label: $OVERRIDE"
+          if [ "$GATE_EXIT" != "0" ] && [ "$OVERRIDE" != "true" ]; then
+            echo "::error::Reconciliation gate failed (exit $GATE_EXIT) and no override label is present. Merge blocked."
+            exit 1
+          fi
+          if [ "$DERIV_EXIT" != "0" ] && [ "$OVERRIDE" != "true" ]; then
+            echo "::error::Derivation trail check failed (strict mode) and no override label is present. Merge blocked."
+            exit 1
+          fi
+          if [ "$OVERRIDE" = "true" ]; then
+            echo "::notice::Override label present; gate failures are not blocking. Reviewer must attest in the PR thread."
+          fi
+          echo "Gate enforced. No blocking failure."
+
+      - name: Upload structured reports as artifacts
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: reconciliation-reports
+          path: |
+            pr-branch/gate-report.json
+            pr-branch/derivation-report.json
+          retention-days: 30

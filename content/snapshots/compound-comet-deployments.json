@@ -1,0 +1,61 @@
+{
+  "source": {
+    "purpose": "Authoritative list of Compound V3 Comet markets deployed on Ethereum mainnet. Used by the reconciliation gate as the cross-check source for the cited Comet count in the report prose.",
+    "maintenance_protocol": "Every time a new Comet ships on Ethereum, the maintainer adds the entry here AND updates the manifest entry compound_v3_comet_count.cited_value to match. The gate fails on drift between this file and the manifest cited value. Authoritative reference is the compound-finance/comet repository deployments/mainnet/ directory and Compound governance proposals announcing each Comet deployment.",
+    "verified_at_utc": "2026-06-09T00:00:00Z",
+    "verified_against": "app.compound.finance/markets at May 31, 2026; cross-checked against compound-finance/comet GitHub deployments/mainnet/ directory and Compound governance forum announcements."
+  },
+  "as_of_date": "2026-05-31",
+  "chain": "ethereum",
+  "chain_id": 1,
+  "markets": [
+    {
+      "label": "USDC base",
+      "base_symbol": "USDC",
+      "comet_address": "0xc3d688B66703497DAA19211EEdff47f25384cdc3",
+      "first_block": 16400000,
+      "category": "established"
+    },
+    {
+      "label": "USDT base",
+      "base_symbol": "USDT",
+      "comet_address": "0x3Afdc9BCA9213A35503b077a6072F3D0d5AB0840",
+      "first_block": 18068000,
+      "category": "established"
+    },
+    {
+      "label": "WETH base",
+      "base_symbol": "WETH",
+      "comet_address": "0xA17581A9E3356d9A858b789D68B4d866e593aE94",
+      "first_block": 16970000,
+      "category": "established"
+    },
+    {
+      "label": "USDS base",
+      "base_symbol": "USDS",
+      "comet_address": "0x5D409e56D886231aDAf00c8775665AD0f9897b56",
+      "first_block": 22000000,
+      "category": "newer_small"
+    },
+    {
+      "label": "wstETH base",
+      "base_symbol": "wstETH",
+      "comet_address": "0x3D0bb1ccaB520A66e607822fC55BC921738fAFE3",
+      "first_block": 24500000,
+      "category": "newer_small"
+    },
+    {
+      "label": "WBTC base",
+      "base_symbol": "WBTC",
+      "comet_address": "0xe85Dc543813B8c2CFEaAc371517b925a166a9293",
+      "first_block": 24800000,
+      "category": "newer_small"
+    }
+  ],
+  "count_total": 6,
+  "count_by_category": {
+    "established": 3,
+    "newer_small": 3
+  },
+  "erratum_2026_06_08": "Original 2026-05-compound-comet-markets.json enumerated only the four established markets. The wstETH and WBTC bases were missed. This file is the canonical inventory going forward; the markets snapshot should be regenerated against this list."
+}

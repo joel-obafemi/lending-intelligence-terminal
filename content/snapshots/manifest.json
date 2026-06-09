@@ -1,0 +1,165 @@
+{
+  "schema_version": 1,
+  "description": "Reconciliation manifest. Every figure cited in the published report has an entry here with an independent cross-check. The reconciliation gate runs each cross-check and fails the publish workflow if any reading drifts beyond its threshold. See docs/reconciliation-gate.md for the operator guide.",
+  "global_config": {
+    "default_threshold_pct": 2.0,
+    "derivation_trail_warnings_block_merge": false,
+    "derivation_trail_warning_severity": "warning"
+  },
+  "entries": [
+    {
+      "id": "aave_v3_lrt_share",
+      "issue": "002",
+      "section_anchors": ["§01", "§05", "§06.1", "§08"],
+      "cited_value": 88.37,
+      "unit": "%",
+      "rounded_cited_in_prose": 88,
+      "alt_forms_in_prose": ["88%", "88 percent"],
+      "cross_check": {
+        "method": "derived_from_snapshot",
+        "snapshot": "content/snapshots/2026-05-lrt-collateral.json",
+        "derive": "aave_v3_lrt_share_pct",
+        "params": {
+          "target_date": "2026-05-31"
+        }
+      },
+      "threshold_pct": 1.0,
+      "historical_wrong_alarms": [
+        "84 percent of the LRT collateral",
+        "84% of remaining LRT",
+        "84% of the LRT",
+        "84% of all LRT"
+      ],
+      "last_verified_at": "2026-06-09T00:00:00Z",
+      "notes": "Sum Aave V3's per-LRT-asset May 31 totals (WEETH + RSETH + EZETH + OSETH) and divide by sector.may_31.total_usd. Issue 002 originally cited 84% — corrected to 88% post-publish per content/snapshots/2026-05-lrt-collateral.json."
+    },
+    {
+      "id": "morpho_idle_ratio",
+      "issue": "002",
+      "section_anchors": ["§06.3 (historical reference)"],
+      "cited_value": 10.01,
+      "unit": "%",
+      "rounded_cited_in_prose": 10,
+      "alt_forms_in_prose": ["10 percent", "ten percent", "~10%"],
+      "cross_check": {
+        "method": "derived_from_snapshot",
+        "snapshot": "content/snapshots/2026-05-morpho-idle-ratio.json",
+        "derive": "field",
+        "params": {
+          "field_path": "idle_ratio_pct"
+        }
+      },
+      "threshold_pct": 2.0,
+      "historical_wrong_alarms": [
+        "63.7%",
+        "63.7 percent",
+        "sitting in idle markets",
+        "curator caution"
+      ],
+      "last_verified_at": "2026-06-08T12:41:39Z",
+      "notes": "Verified May 31 sector-wide MetaMorpho idle ratio. Issue 002 originally cited 63.7% (bare snapshot value, no derivation trail) — corrected after scripts/verify-morpho-idle-ratio.ts re-ran the full per-vault historicalState query against blue-api.morpho.org/graphql at block 25218793. The idle-ratio thesis was dropped from §06.3 entirely; this entry guards against re-introduction."
+    },
+    {
+      "id": "compound_v3_comet_count",
+      "issue": "002",
+      "section_anchors": ["§06.5"],
+      "cited_value": 6,
+      "unit": "absolute",
+      "rounded_cited_in_prose": 6,
+      "alt_forms_in_prose": ["six Comets", "six Comet markets", "6 Comets"],
+      "cross_check": {
+        "method": "derived_from_snapshot",
+        "snapshot": "content/snapshots/compound-comet-deployments.json",
+        "derive": "field",
+        "params": {
+          "field_path": "count_total"
+        }
+      },
+      "threshold_pct": 0.0,
+      "historical_wrong_alarms": [
+        "shipped four Comets",
+        "four Comets",
+        "four Comet markets",
+        "WETH Comet abandoned",
+        "WETH Comet holds $95K",
+        "$95,000"
+      ],
+      "last_verified_at": "2026-06-09T00:00:00Z",
+      "notes": "Authoritative count from content/snapshots/compound-comet-deployments.json. When a new Comet ships on Ethereum, update BOTH the deployments file AND this entry's cited_value. Threshold 0 = exact-match required (counts must equal). Issue 002 originally cited 'four Comets' because scripts/query-compound-comet-markets.ts enumerated only the four established markets — the wstETH and WBTC bases were missed. Corrected pre-publish, post-erratum."
+    },
+    {
+      "id": "aave_v3_usdc_supply_apy",
+      "issue": "002",
+      "section_anchors": ["§01", "§03", "§06.1"],
+      "cited_value": 3.27,
+      "unit": "%",
+      "rounded_cited_in_prose": 3.27,
+      "alt_forms_in_prose": ["3.27%", "3.27 percent"],
+      "cross_check": {
+        "method": "derived_from_snapshot",
+        "snapshot": "content/snapshots/2026-05-rate-dispersion.json",
+        "derive": "per_asset_per_protocol_apy",
+        "params": {
+          "asset": "USDC",
+          "protocol_slug": "aave-v3",
+          "field_path": "may31.per_protocol[].supply_apy_pct"
+        }
+      },
+      "threshold_pct": 3.0,
+      "historical_wrong_alarms": [
+        "9.62%",
+        "9.62 percent",
+        "10.95%",
+        "10.95 percent",
+        "97.6%",
+        "97.6 percent utilization",
+        "Aave V3 USDC at 9."
+      ],
+      "last_verified_at": "2026-06-04T08:39:43Z",
+      "notes": "DefiLlama Yields pool aa70268e-4b52-42bf-a116-608b370f9501 (Aave V3 USDC, Ethereum). Cross-checked via the rate-dispersion snapshot's may31.per_protocol[] field. Issue 002's pre-fix drafts carried 9.62%, 10.95%, and other bad figures derived from a broken upstream pull; the corrected reading is 3.27%. Threshold 3% to absorb intraday APY noise around the month-end timestamp."
+    },
+    {
+      "id": "rys_may_31",
+      "issue": "002",
+      "section_anchors": ["§01", "§02", "§03"],
+      "cited_value": -0.3,
+      "unit": "bps",
+      "rounded_cited_in_prose": -0.3,
+      "alt_forms_in_prose": ["−0.3 bps", "-0.3 basis points", "approximately zero", "effectively zero", "parity"],
+      "cross_check": {
+        "method": "derived_from_snapshot",
+        "snapshot": "content/snapshots/2026-05-rys-historical.json",
+        "derive": "field",
+        "params": {
+          "field_path": "target_anchor.spread_bps"
+        }
+      },
+      "threshold_pct": 50.0,
+      "threshold_pct_notes": "Threshold is generous (50%) because the spread is near zero — absolute divergence is what matters, not relative. The gate also applies an absolute_threshold for near-zero readings.",
+      "absolute_threshold": 2.0,
+      "last_verified_at": "2026-06-04T08:39:43Z",
+      "notes": "Real Yield Spread at the May 31 close. Blended stables APY 3.597% minus 4-week T-bill 3.60% = −0.294 bps. Reported in prose as 'parity'. Threshold logic uses absolute_threshold of 2.0 bps when the cited value sits within ±5 bps of zero."
+    },
+    {
+      "id": "sector_take_rate",
+      "issue": "002",
+      "section_anchors": ["§01", "§02", "§04"],
+      "cited_value": 3.38,
+      "unit": "%",
+      "rounded_cited_in_prose": 3.38,
+      "alt_forms_in_prose": ["3.38%", "3.38 percent"],
+      "cross_check": {
+        "method": "derived_from_snapshot",
+        "snapshot": "content/snapshots/2026-05-sector-take-rate-inputs.json",
+        "derive": "take_rate_formula",
+        "params": {
+          "fees_field": "trailing_30d_ethereum_fees_usd",
+          "liquidity_field": "available_liquidity_usd"
+        }
+      },
+      "threshold_pct": 2.0,
+      "last_verified_at": "2026-06-04T17:01:53Z",
+      "notes": "take_rate = trailing_30d_fees × (365/30) ÷ available_liquidity × 100. May 31 inputs: $55.08M fees ÷ $19.85B liquidity, annualised by 365/30. Computed: 3.376% → rounds to 3.38%."
+    }
+  ]
+}

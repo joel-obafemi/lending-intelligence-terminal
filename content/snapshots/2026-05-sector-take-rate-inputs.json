@@ -1,0 +1,22 @@
+{
+  "source": {
+    "purpose": "Inputs to the sector take rate formula at May 31, 2026 close. Captured from the end-of-month report (scripts/eom-report-may.ts) and the 2026-05-31.json freeze. Used by the reconciliation gate to recompute the cited 3.38% reading.",
+    "formula": "take_rate_pct = trailing_30d_ethereum_fees_usd × (365 / 30) ÷ available_liquidity_usd × 100",
+    "source_documents": [
+      "content/snapshots/2026-05-eom-report.txt (CORRECTED KNOCK-ON section)",
+      "content/snapshots/2026-05-31.json (sector.available_liquidity_usd)"
+    ],
+    "captured_at_utc": "2026-06-04T17:01:53Z"
+  },
+  "target_date": "2026-05-31",
+  "trailing_30d_ethereum_fees_usd": 55080000,
+  "available_liquidity_usd": 19850000000,
+  "computed_take_rate_pct": 3.376,
+  "computed_take_rate_pct_rounded": 3.38,
+  "comparison_apr_30": {
+    "trailing_30d_ethereum_fees_usd": 70210000,
+    "available_liquidity_usd": 20000000000,
+    "computed_take_rate_pct": 4.272
+  },
+  "notes": "Formula reads 'trailing-30d Ethereum-only fees annualised by 365/30, divided by available liquidity at month-end'. The May reading of 3.38% is the first month-end on the captured series at which the sector's annualised revenue yield ran below the 4-week T-bill yield (3.60%)."
+}
