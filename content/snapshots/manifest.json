@@ -160,6 +160,37 @@
       "threshold_pct": 2.0,
       "last_verified_at": "2026-06-04T17:01:53Z",
       "notes": "take_rate = trailing_30d_fees × (365/30) ÷ available_liquidity × 100. May 31 inputs: $55.08M fees ÷ $19.85B liquidity, annualised by 365/30. Computed: 3.376% → rounds to 3.38%."
+    },
+    {
+      "id": "euler_v2_ldr",
+      "issue": "002",
+      "section_anchors": ["§06.4"],
+      "cited_value": 85.23,
+      "unit": "%",
+      "rounded_cited_in_prose": 85.23,
+      "alt_forms_in_prose": ["85.23%", "85.23 percent"],
+      "cross_check": {
+        "method": "derived_from_snapshot",
+        "snapshot": "content/snapshots/2026-05-ldr-per-protocol.json",
+        "derive": "find_in_array_field",
+        "params": {
+          "array_path": "ranking",
+          "match_key": "slug",
+          "match_value": "euler-v2",
+          "field": "ldr_pct"
+        }
+      },
+      "threshold_pct": 1.0,
+      "historical_wrong_alarms": [
+        "operating at scale",
+        "13 percentage points over Aave V3",
+        "at-scale leader",
+        "highest of any major lending venue",
+        "Fluid leads at scale",
+        "reading is cyclical"
+      ],
+      "last_verified_at": "2026-06-09T00:00:00Z",
+      "notes": "Authoritative on-chain reading via lib/euler-onchain.ts (Σ totalAssets / Σ totalBorrows across active EVK vaults). Reconciled with Apr 30 audit's may_31_corrected_reference (399/469 = 85.07%) and the runtime override in lib/overview.ts:425-427 — all three sources agree within 0.2pp. See content/snapshots/2026-05-euler-ldr-reconciliation.md. Threshold 1% guards the architecture-not-scale framing this entry encodes."
     }
   ]
 }

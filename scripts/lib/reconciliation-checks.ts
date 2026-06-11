@@ -130,6 +130,35 @@ const DERIVERS: Record<string, DeriveFn> = {
   },
 
   /**
+   * Find a numeric field on the matching entry in an array.
+   * params: { array_path, match_key, match_value, field }
+   * Example for Euler V2 LDR from 2026-05-ldr-per-protocol.json:
+   *   { array_path: "ranking", match_key: "slug", match_value: "euler-v2", field: "ldr_pct" }
+   */
+  find_in_array_field: (snap, params) => {
+    const arrayPath = String(params.array_path ?? "")
+    const matchKey = String(params.match_key ?? "")
+    const matchValue = params.match_value
+    const field = String(params.field ?? "")
+    if (!arrayPath || !matchKey || matchValue == null || !field) {
+      throw new Error("find_in_array_field requires array_path, match_key, match_value, field")
+    }
+    const arr = fieldByPath(snap, arrayPath)
+    if (!Array.isArray(arr)) {
+      throw new Error(`find_in_array_field: ${arrayPath} is not an array`)
+    }
+    const row = arr.find((r) => (r as Record<string, unknown>)[matchKey] === matchValue)
+    if (!row) {
+      throw new Error(`find_in_array_field: no entry where ${matchKey}=${matchValue} in ${arrayPath}`)
+    }
+    const v = (row as Record<string, unknown>)[field]
+    if (typeof v !== "number") {
+      throw new Error(`find_in_array_field: ${field} is not a number on matched entry`)
+    }
+    return v
+  },
+
+  /**
    * Sector take rate from raw inputs:
    *   trailing_30d_fees × (365/30) ÷ available_liquidity × 100
    */
