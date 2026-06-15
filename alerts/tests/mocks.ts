@@ -33,6 +33,15 @@ export class FakeD1 {
     this.ensureTable("rule_errors", { pk: null, autoIncrement: { col: "id", next: 1 } });
     this.ensureTable("hhi_snapshots", { pk: ["snapshot_at"] });
     this.ensureTable("digest_runs", { pk: ["ran_at"] });
+    // Moonwell rule tables.
+    this.ensureTable("moonwell_market_snapshots", {
+      pk: ["chain", "market_symbol", "snapshot_at"],
+    });
+    this.ensureTable("moonwell_revenue_ath", { pk: ["metric_key"] });
+    this.ensureTable("moonwell_liquidation_daily_count", { pk: ["chain", "day"] });
+    this.ensureTable("moonwell_oev_wrapper_capture_fires", {
+      pk: ["wrapper_address"],
+    });
   }
 
   private ensureTable(name: string, opts: Omit<Table, "rows">) {
@@ -270,6 +279,110 @@ class FakeD1Statement {
         "digest_runs",
         ["ran_at", "alerts_count", "recipients", "status", "error_message"],
         this.params,
+      );
+      return;
+    }
+
+    // ── Moonwell tables ───────────────────────────────────────────────
+
+    if (upper.startsWith("INSERT INTO MOONWELL_MARKET_SNAPSHOTS")) {
+      this.db.applyInsert(
+        "moonwell_market_snapshots",
+        [
+          "chain",
+          "market_symbol",
+          "snapshot_at",
+          "total_supply",
+          "total_borrow",
+          "supply_usd",
+          "borrow_usd",
+        ],
+        this.params,
+        {
+          keys: ["chain", "market_symbol", "snapshot_at"],
+          updateCols: ["total_supply", "total_borrow", "supply_usd", "borrow_usd"],
+        },
+      );
+      return;
+    }
+
+    if (upper.startsWith("SELECT CHAIN, MARKET_SYMBOL, SNAPSHOT_AT")) {
+      const [chain, marketSymbol, cutoff] = this.params as [string, string, number];
+      const rows = this.db
+        .selectAll(
+          "moonwell_market_snapshots",
+          (r) =>
+            r["chain"] === chain &&
+            r["market_symbol"] === marketSymbol &&
+            (r["snapshot_at"] as number) <= cutoff,
+        )
+        .sort((a, b) => (b["snapshot_at"] as number) - (a["snapshot_at"] as number));
+      return rows.slice(0, 1);
+    }
+
+    if (upper.startsWith("INSERT INTO MOONWELL_REVENUE_ATH")) {
+      this.db.applyInsert(
+        "moonwell_revenue_ath",
+        ["metric_key", "peak_value", "peak_date", "updated_at"],
+        this.params,
+        {
+          keys: ["metric_key"],
+          updateCols: ["peak_value", "peak_date", "updated_at"],
+        },
+      );
+      return;
+    }
+
+    if (upper.startsWith("SELECT METRIC_KEY, PEAK_VALUE, PEAK_DATE")) {
+      const [metricKey] = this.params as [string];
+      const rows = this.db.selectAll(
+        "moonwell_revenue_ath",
+        (r) => r["metric_key"] === metricKey,
+      );
+      return rows.slice(0, 1);
+    }
+
+    if (upper.startsWith("INSERT INTO MOONWELL_LIQUIDATION_DAILY_COUNT")) {
+      this.db.applyInsert(
+        "moonwell_liquidation_daily_count",
+        ["chain", "day", "count", "volume_usd", "largest_usd"],
+        this.params,
+        {
+          keys: ["chain", "day"],
+          updateCols: ["count", "volume_usd", "largest_usd"],
+        },
+      );
+      return;
+    }
+
+    if (upper.startsWith("SELECT CHAIN, DAY, COUNT, VOLUME_USD")) {
+      const [chain, fromDay, toDay] = this.params as [string, string, string];
+      return this.db
+        .selectAll(
+          "moonwell_liquidation_daily_count",
+          (r) =>
+            r["chain"] === chain &&
+            (r["day"] as string) >= fromDay &&
+            (r["day"] as string) <= toDay,
+        )
+        .sort((a, b) => ((a["day"] as string) < (b["day"] as string) ? -1 : 1));
+    }
+
+    if (upper.startsWith("SELECT 1 FROM MOONWELL_OEV_WRAPPER_CAPTURE_FIRES")) {
+      const [wrapper] = this.params as [string];
+      const rows = this.db.selectAll(
+        "moonwell_oev_wrapper_capture_fires",
+        (r) => r["wrapper_address"] === wrapper,
+      );
+      return rows.slice(0, 1);
+    }
+
+    if (upper.startsWith("INSERT INTO MOONWELL_OEV_WRAPPER_CAPTURE_FIRES")) {
+      this.db.applyInsert(
+        "moonwell_oev_wrapper_capture_fires",
+        ["wrapper_address", "wrapper_label", "chain", "capture_rate_pct", "fired_at"],
+        this.params,
+        { keys: ["wrapper_address"], updateCols: [] },
       );
       return;
     }

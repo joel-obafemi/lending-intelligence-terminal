@@ -190,3 +190,87 @@ export const DEFILLAMA_YIELDS_PROJECT: Record<Protocol, string[]> = {
   "compound-v3": ["compound-v3"],
   "euler-v2": ["euler-v2"],
 };
+
+// ─── Moonwell ──────────────────────────────────────────────────────────
+// Moonwell is NOT part of the Protocol union because the lending-terminal
+// rules iterate over Protocol values and Moonwell is its own product with
+// its own dashboard. All Moonwell-keyed constants live in this block so
+// the lending rules ignore them, and the Moonwell rules don't need to
+// fan out across the Protocol union.
+
+export const MOONWELL_HANDLE = "@MoonwellDeFi";
+export const MOONWELL_DISPLAY_NAME = "Moonwell";
+
+/** DefiLlama protocol slug for parent (lending + vaults combined TVL). */
+export const MOONWELL_DEFILLAMA_SLUG = "moonwell";
+/** DefiLlama slug for Moonwell vault TVL only. */
+export const MOONWELL_VAULTS_DEFILLAMA_SLUG = "moonwell-vaults";
+/** DefiLlama slug for monthly fees + revenue endpoint. */
+export const MOONWELL_FEES_DEFILLAMA_SLUG = "moonwell";
+
+/** Chains Moonwell currently runs on. Display labels mirror dashboard styling. */
+export type MoonwellChain = "base" | "optimism" | "ethereum" | "moonbeam" | "moonriver";
+export const MOONWELL_CHAINS: MoonwellChain[] = ["base", "optimism", "ethereum"];
+export const MOONWELL_CHAIN_DISPLAY: Record<MoonwellChain, string> = {
+  base: "Base",
+  optimism: "Optimism",
+  ethereum: "Ethereum",
+  moonbeam: "Moonbeam",
+  moonriver: "Moonriver",
+};
+
+/**
+ * TVL threshold crossings, in USD. One-shot per threshold (cooldown is
+ * managed by the rule's per-threshold key). Pick round numbers that make
+ * good tweets and are spaced wide enough to avoid noise.
+ */
+export const MOONWELL_TVL_THRESHOLDS_USD: number[] = [
+  70_000_000, 75_000_000, 80_000_000, 90_000_000, 100_000_000, 125_000_000, 150_000_000,
+];
+
+/** Cumulative V2 OEV protocol revenue thresholds (since MIP-X56). */
+export const MOONWELL_OEV_REVENUE_THRESHOLDS_USD: number[] = [
+  1_000, 5_000, 10_000, 25_000, 50_000, 100_000,
+];
+
+/** Per-wrapper capture-rate one-shot threshold, in percent. */
+export const MOONWELL_OEV_CAPTURE_TARGET_PCT = 70;
+
+/** Combined Morpho-vault TVL milestones. Matches OKR KR4.3. */
+export const MOONWELL_VAULT_TVL_THRESHOLDS_USD: number[] = [
+  25_000_000, 30_000_000, 35_000_000, 40_000_000, 50_000_000,
+];
+
+/** Single vault deposit/withdraw spike floor — fires per-tx above this. */
+export const MOONWELL_VAULT_TX_SPIKE_USD = 1_000_000;
+
+/**
+ * Monthly (trailing-30d) protocol-revenue threshold crossings.
+ * Matches OKR KR2.1 (baseline 200K, target 350K).
+ */
+export const MOONWELL_MONTHLY_REVENUE_THRESHOLDS_USD: number[] = [
+  225_000, 250_000, 275_000, 300_000, 325_000, 350_000, 400_000,
+];
+
+/** Whale liquidation severity floors. */
+export const MOONWELL_LIQ_WHALE_NORMAL_USD = 100_000;
+export const MOONWELL_LIQ_WHALE_CRITICAL_USD = 500_000;
+
+/**
+ * Per-market 7-day Δ thresholds for supply/borrow alerts.
+ * Below NORMAL → silent; NORMAL ≤ |Δ%| < CRITICAL → NORMAL severity;
+ * |Δ%| ≥ CRITICAL → CRITICAL severity.
+ */
+export const MOONWELL_MARKET_DELTA_NORMAL_PCT = 10;
+export const MOONWELL_MARKET_DELTA_CRITICAL_PCT = 25;
+/** A market needs at least this many days of accumulated snapshots before its Δ7d can fire. */
+export const MOONWELL_MARKET_DELTA_MIN_SAMPLE_DAYS = 7;
+
+/**
+ * Liquidation count daily-spike threshold: fires when today's count is
+ * at least this many σ above the 30d rolling mean.
+ */
+export const MOONWELL_LIQ_SPIKE_STDDEV = 3;
+export const MOONWELL_LIQ_SPIKE_BASELINE_WINDOW_DAYS = 30;
+/** Don't fire spike alerts unless the absolute count itself is meaningful. */
+export const MOONWELL_LIQ_SPIKE_MIN_COUNT = 10;

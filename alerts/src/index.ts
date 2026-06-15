@@ -52,7 +52,9 @@ export default {
     if (req.method === "POST" && url.pathname === "/run") {
       const scheduleParam = url.searchParams.get("schedule") ?? "fast";
       const schedule: Schedule =
-        scheduleParam === "hourly" || scheduleParam === "daily"
+        scheduleParam === "hourly" ||
+        scheduleParam === "daily" ||
+        scheduleParam === "weekly"
           ? (scheduleParam as Schedule)
           : "fast";
       const engine = new AlertEngine(env);
@@ -97,5 +99,9 @@ export function inferSchedule(cron: string): Schedule {
   const c = cron.trim();
   if (c.startsWith("*/5")) return "fast";
   if (c.startsWith("0 */1") || c.startsWith("0 * ")) return "hourly";
+  // Monday 10:00 UTC weekly recap — match on the explicit Moonwell cron.
+  // Any other day-of-week pattern (1-6 in the 5th field) would also map
+  // to weekly, but right now only this one cron uses that slot.
+  if (c === "0 10 * * 1") return "weekly";
   return "daily";
 }
