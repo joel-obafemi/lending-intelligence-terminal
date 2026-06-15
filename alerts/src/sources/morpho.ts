@@ -90,13 +90,20 @@ export class MorphoGraphQLClient {
       if (items.length >= (data.vaults?.pageInfo.countTotal ?? items.length)) break;
     }
 
+    // HHI is computed on the CURATED market only — matches the dashboard's
+    // antitrust-convention definition (<1,500 competitive · 1,500-2,500
+    // moderate · >2,500 highly concentrated). Vaults with no curator name
+    // are excluded from numerator AND denominator. Including them would
+    // dilute every named curator's share and push HHI lower in a way that
+    // doesn't reflect competitive structure among the actual curators.
     const tvlByCurator = new Map<string, number>();
     let totalAssetsUsd = 0;
     let vaultCount = 0;
     for (const v of items) {
       const tvl = v.state?.totalAssetsUsd ?? 0;
       if (tvl <= 0) continue;
-      const primary = v.state?.curators?.[0]?.name?.trim() || "Uncurated";
+      const primary = v.state?.curators?.[0]?.name?.trim();
+      if (!primary) continue; // skip uncurated entirely
       tvlByCurator.set(primary, (tvlByCurator.get(primary) ?? 0) + tvl);
       totalAssetsUsd += tvl;
       vaultCount += 1;
