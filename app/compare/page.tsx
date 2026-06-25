@@ -11,6 +11,7 @@
  */
 
 import { loadCompareForAsset, loadCompareHistory, COMPARE_ASSETS, type CompareView } from "@/lib/compare"
+import { withTimeout, DEFAULT_LOAD_BUDGET_MS } from "@/lib/with-timeout"
 import { QuickCompareBar } from "@/components/compare/quick-compare-bar"
 import { YieldComparator } from "@/components/compare/yield-comparator"
 import { BestVenueHistory } from "@/components/compare/best-venue-history"
@@ -47,11 +48,13 @@ export default async function ComparePage({
   const asset = normalizeAsset(searchParams.asset)
   const view = normalizeView(searchParams.view)
 
-  // Wrapped so a transient DefiLlama / on-chain blip can't 500 the page.
-  const response = await loadCompareForAsset(asset).catch((err) => {
-    console.error(`[compare] loadCompareForAsset failed for ${asset}:`, err?.message ?? err)
-    return null
-  })
+  // Wrapped in a timeout race so a slow DefiLlama (current /pools is
+  // 29s vs typical <5s) can't blow past the page's maxDuration.
+  const response = await withTimeout(
+    `compare.loadCompareForAsset[${asset}]`,
+    loadCompareForAsset(asset),
+    DEFAULT_LOAD_BUDGET_MS,
+  )
 
   if (!response) {
     return (
@@ -73,10 +76,11 @@ export default async function ComparePage({
   // failure falls back to no chart rather than 500ing the page.
   const history =
     view === "yields"
-      ? await loadCompareHistory(asset, response.cells, 365).catch((err) => {
-          console.error(`[compare] loadCompareHistory failed for ${asset}:`, err?.message ?? err)
-          return null
-        })
+      ? await withTimeout(
+          `compare.loadCompareHistory[${asset}]`,
+          loadCompareHistory(asset, response.cells, 365),
+          DEFAULT_LOAD_BUDGET_MS,
+        )
       : null
 
   return (

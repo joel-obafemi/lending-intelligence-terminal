@@ -1,4 +1,5 @@
 import { loadOverview } from "@/lib/overview"
+import { withTimeout, DEFAULT_LOAD_BUDGET_MS } from "@/lib/with-timeout"
 import { TopAssetsTable } from "@/components/overview/top-assets-table"
 import { AssetStackChart } from "@/components/overview/asset-stack-chart"
 import { CollateralTypeChart } from "@/components/overview/collateral-type-chart"
@@ -13,11 +14,9 @@ export const dynamic = "force-dynamic"
 export const maxDuration = 60
 
 export default async function CollateralPage() {
-  // Wrapped so a transient DefiLlama / on-chain blip can't 500 the page.
-  const data = await loadOverview().catch((err) => {
-    console.error("[collateral] loadOverview failed:", err?.message ?? err)
-    return null
-  })
+  // Wrapped in a timeout race so a slow DefiLlama can't blow past
+  // the page's maxDuration. Fallback notice renders below if it does.
+  const data = await withTimeout("collateral.loadOverview", loadOverview(), DEFAULT_LOAD_BUDGET_MS)
 
   if (!data) {
     return (

@@ -41,6 +41,7 @@ import {
   loadSparkYieldPanel,
   type SparkYieldPanelResponse,
 } from "@/lib/spark-yield-panel"
+import { withTimeout, DEFAULT_LOAD_BUDGET_MS } from "@/lib/with-timeout"
 
 // Reads searchParams (?p=slug) + live on-chain + DefiLlama (cache:
 // 'no-store'), so this route is dynamic regardless of revalidate (verified:
@@ -92,13 +93,11 @@ export default async function ProtocolsPage({ searchParams }: { searchParams: Se
     morphoVaultIndex,
     morphoMarkets,
   ] = await Promise.all([
-    // Wrapped in catch so a transient DefiLlama / on-chain blip can't 500
-    // the whole page — the `if (!detail)` fallback below takes over and
-    // renders the "Couldn't load data for X" notice instead.
-    loadProtocolDetail(slug).catch((err) => {
-      console.error(`[protocols] protocol detail failed for ${slug}:`, err?.message ?? err)
-      return null
-    }),
+    // Wrapped in a timeout race so a slow DefiLlama (current /pools is
+    // 29s vs typical <5s) can't blow past the page's maxDuration — the
+    // `if (!detail)` fallback below renders the "Couldn't load data for
+    // X" notice instead.
+    withTimeout(`protocols.loadProtocolDetail[${slug}]`, loadProtocolDetail(slug), DEFAULT_LOAD_BUDGET_MS),
     slug === "morpho-blue"
       ? loadMorphoCuratorLeaderboard().catch((err) => {
           console.error("[protocols] curator leaderboard failed:", err?.message ?? err)

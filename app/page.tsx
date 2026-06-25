@@ -10,6 +10,7 @@ import { AsOfFooter } from "@/components/overview/as-of-footer"
 import { FeaturedIssueBanner } from "@/components/featured-issue-banner"
 import { loadSectorOverview } from "@/lib/sector-snapshot"
 import { getFeaturedIssue } from "@/lib/reports/featuredIssue"
+import { withTimeout, DEFAULT_LOAD_BUDGET_MS } from "@/lib/with-timeout"
 import {
   buildDailyDeltaTriple,
   buildHeroLenses,
@@ -31,10 +32,7 @@ export const maxDuration = 60
 
 export default async function OverviewPage() {
   const [overview, featured] = await Promise.all([
-    loadSectorOverview().catch((err) => {
-      console.error("[overview] loadSectorOverview failed:", err?.message ?? err)
-      return null
-    }),
+    withTimeout("overview.loadSectorOverview", loadSectorOverview(), DEFAULT_LOAD_BUDGET_MS),
     getFeaturedIssue().catch(() => null),
   ])
 

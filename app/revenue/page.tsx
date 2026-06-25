@@ -1,6 +1,7 @@
 import { loadOverview } from "@/lib/overview"
 import { loadLiquidations } from "@/lib/liquidations"
 import { loadRevenueDecomp } from "@/lib/revenue-decomp"
+import { withTimeout, DEFAULT_LOAD_BUDGET_MS } from "@/lib/with-timeout"
 import { buildTakeRateSeries } from "@/lib/take-rate"
 import {
   computeRevenueVerdict,
@@ -25,20 +26,12 @@ export const dynamic = "force-dynamic"
 export const maxDuration = 60
 
 export default async function RevenuePage() {
-  // Wrapped so a transient blip on any upstream can't 500 the page.
+  // Wrapped in a timeout race so a slow upstream can't blow past
+  // the page's maxDuration. Fallback notice renders if any fails.
   const [data, liq, decomp] = await Promise.all([
-    loadOverview().catch((err) => {
-      console.error("[revenue] loadOverview failed:", err?.message ?? err)
-      return null
-    }),
-    loadLiquidations(90).catch((err) => {
-      console.error("[revenue] loadLiquidations failed:", err?.message ?? err)
-      return null
-    }),
-    loadRevenueDecomp(90, 365).catch((err) => {
-      console.error("[revenue] loadRevenueDecomp failed:", err?.message ?? err)
-      return null
-    }),
+    withTimeout("revenue.loadOverview", loadOverview(), DEFAULT_LOAD_BUDGET_MS),
+    withTimeout("revenue.loadLiquidations", loadLiquidations(90), DEFAULT_LOAD_BUDGET_MS),
+    withTimeout("revenue.loadRevenueDecomp", loadRevenueDecomp(90, 365), DEFAULT_LOAD_BUDGET_MS),
   ])
 
   if (!data || !liq || !decomp) {

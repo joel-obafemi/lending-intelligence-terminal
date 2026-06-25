@@ -13,6 +13,7 @@
 import { ExternalLink } from "lucide-react"
 import { loadRisk } from "@/lib/risk"
 import { loadLiquidations } from "@/lib/liquidations"
+import { withTimeout, DEFAULT_LOAD_BUDGET_MS } from "@/lib/with-timeout"
 import { RiskVerdictStrip } from "@/components/risk/risk-verdict-strip"
 import { OracleMapTable } from "@/components/risk/oracle-map-table"
 import { StablecoinDebtShareTrend } from "@/components/risk/stablecoin-debt-share-trend"
@@ -39,16 +40,11 @@ export default async function RiskPage() {
   // decommissioned /events page (Liquidation Concentration by
   // Collateral + Largest 20 Liquidation Events). Load 90d
   // liquidations alongside the existing risk aggregate.
-  // Wrapped so a transient blip on either upstream can't 500 the page.
+  // Wrapped in a timeout race so a slow upstream can't blow past
+  // the page's maxDuration. Fallback notice renders if either fails.
   const [risk, liq] = await Promise.all([
-    loadRisk().catch((err) => {
-      console.error("[risk] loadRisk failed:", err?.message ?? err)
-      return null
-    }),
-    loadLiquidations(90).catch((err) => {
-      console.error("[risk] loadLiquidations failed:", err?.message ?? err)
-      return null
-    }),
+    withTimeout("risk.loadRisk", loadRisk(), DEFAULT_LOAD_BUDGET_MS),
+    withTimeout("risk.loadLiquidations", loadLiquidations(90), DEFAULT_LOAD_BUDGET_MS),
   ])
 
   if (!risk || !liq) {

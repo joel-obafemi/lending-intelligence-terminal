@@ -1,5 +1,6 @@
 import { loadRates } from "@/lib/rates"
 import { loadOverview } from "@/lib/overview"
+import { withTimeout, DEFAULT_LOAD_BUDGET_MS } from "@/lib/with-timeout"
 import { computeRateKpis } from "@/lib/rates-kpi"
 import { RateMatrixTable } from "@/components/overview/rate-matrix-table"
 import { RatesKpiCards } from "@/components/overview/rates-kpi-cards"
@@ -26,53 +27,13 @@ export const maxDuration = 60
  *  Same set used for the dispersion chart's selector. */
 const CHART_ASSETS = ["USDC", "USDT", "DAI", "USDS", "WETH", "WSTETH", "WBTC"]
 
-/**
- * Race a promise against a timeout. Resolves to the promise value on
- * success, or `null` on timeout / rejection — the calling page checks
- * for null and renders its fallback notice.
- *
- * The previous /rates failure mode wasn't a rejected promise (which
- * .catch() handled) but a HANGING promise — Vercel killed the function
- * at maxDuration = 60s, the RSC stream closed mid-render, and the
- * client surfaced "Application error: ... Connection closed". A
- * Promise.race against a setTimeout that resolves to null guarantees
- * we exit the load step within the page's render budget.
- */
-async function withTimeout<T>(
-  label: string,
-  promise: Promise<T>,
-  ms: number,
-): Promise<T | null> {
-  let timer: ReturnType<typeof setTimeout> | undefined
-  try {
-    return await Promise.race([
-      promise.catch((err) => {
-        console.error(`[rates] ${label} rejected:`, err?.message ?? err)
-        return null
-      }),
-      new Promise<null>((resolve) => {
-        timer = setTimeout(() => {
-          console.error(`[rates] ${label} timed out after ${ms}ms`)
-          resolve(null)
-        }, ms)
-      }),
-    ])
-  } finally {
-    if (timer) clearTimeout(timer)
-  }
-}
-
-// Per-loader budget. /rates has maxDuration = 60, so we cap each load
-// at 45s — leaves ~15s for compute + RSC stream framing + cold-start.
-const LOAD_BUDGET_MS = 45_000
-
 export default async function RatesPage() {
   // Both fetches wrapped in a timeout race so a hanging upstream
   // (DefiLlama Yields, FRED, on-chain RPC) can't blow past the
   // page's maxDuration. The fallback notice below renders instead.
   const [data, overview] = await Promise.all([
-    withTimeout("loadRates", loadRates(), LOAD_BUDGET_MS),
-    withTimeout("loadOverview", loadOverview(), LOAD_BUDGET_MS),
+    withTimeout("rates.loadRates", loadRates(), DEFAULT_LOAD_BUDGET_MS),
+    withTimeout("rates.loadOverview", loadOverview(), DEFAULT_LOAD_BUDGET_MS),
   ])
 
   if (!data || !overview) {
