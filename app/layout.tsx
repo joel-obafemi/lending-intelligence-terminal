@@ -30,18 +30,16 @@ const THEME_INIT_SCRIPT = `
 const SITE_URL = "https://lending-intelligence-terminal.vercel.app"
 
 export async function generateMetadata(): Promise<Metadata> {
-  // Default OG image falls back to the latest issue's social card so a
-  // shared dashboard link surfaces the publication in link previews.
-  // Per-route metadata (e.g. /reports/[slug]) overrides this default.
-  const featured = await getFeaturedIssue()
-  const ogImage = featured
-    ? {
-        url: featured.socialImageUrl,
-        width: 1200,
-        height: 630,
-        alt: `DatumLabs Research · ${featured.record.frontmatter.theme}`,
-      }
-    : null
+  // Default OG image is the dashboard-branded lending-terminal card at
+  // public/og-lending-terminal.png. Per-route metadata (e.g.
+  // /reports/[slug]) overrides this default with the issue-specific
+  // social card via its own generateMetadata.
+  const ogImage = {
+    url: "/og-lending-terminal.png",
+    width: 1200,
+    height: 630,
+    alt: "Lending Intelligence Terminal · Datum Labs Research",
+  }
   return {
     title: "Lending Intelligence Terminal · Datum Labs",
     description: "Multi-protocol lending analytics: Aave V3, SparkLend, Morpho, Fluid, Compound V3, Euler V2",
@@ -68,18 +66,14 @@ export async function generateMetadata(): Promise<Metadata> {
         ],
       },
     },
-    openGraph: ogImage
-      ? {
-          siteName: "DatumLabs Research",
-          images: [ogImage],
-        }
-      : { siteName: "DatumLabs Research" },
-    twitter: ogImage
-      ? {
-          card: "summary_large_image",
-          images: [ogImage.url],
-        }
-      : undefined,
+    openGraph: {
+      siteName: "DatumLabs Research",
+      images: [ogImage],
+    },
+    twitter: {
+      card: "summary_large_image",
+      images: [ogImage.url],
+    },
   }
 }
 
