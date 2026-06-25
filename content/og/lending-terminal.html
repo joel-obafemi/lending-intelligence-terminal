@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<title>Lending Intelligence Terminal — OG Card</title>
+<title>Ethereum Lending Terminal — OG Card</title>
 <style>
   @import url('https://fonts.googleapis.com/css2?family=Source+Serif+4:ital,wght@0,400;0,600;0,700;1,400&family=JetBrains+Mono:wght@400;500;600&display=swap');
 
@@ -23,20 +23,16 @@
     position: relative;
     overflow: hidden;
     background:
-      radial-gradient(circle at 88% 25%, rgba(31, 58, 95, 0.55) 0%, rgba(14, 27, 44, 0) 55%),
-      linear-gradient(180deg, #0E1B2C 0%, #0E1B2C 70%, #F7F4ED 70%, #F7F4ED 100%);
-  }
-
-  /* Top dark hero zone */
-  .hero {
-    padding: 60px 70px 36px 70px;
-    height: 441px;
+      radial-gradient(ellipse 70% 50% at 50% 50%, rgba(31, 58, 95, 0.45) 0%, rgba(14, 27, 44, 0) 70%),
+      radial-gradient(circle at 85% 15%, rgba(31, 58, 95, 0.35) 0%, rgba(14, 27, 44, 0) 50%),
+      #0E1B2C;
     display: flex;
     flex-direction: column;
-    justify-content: space-between;
   }
 
-  .top-row {
+  /* Top chrome row */
+  .chrome-top {
+    padding: 44px 60px 0 60px;
     display: flex;
     justify-content: space-between;
     align-items: center;
@@ -64,131 +60,103 @@
     font-weight: 500;
   }
 
-  .label-row {
-    font-family: 'JetBrains Mono', monospace;
-    font-size: 13px;
-    letter-spacing: 0.22em;
-    text-transform: uppercase;
-    color: rgba(247, 244, 237, 0.55);
-    font-weight: 500;
+  .brand-icon {
+    width: 56px;
+    height: 56px;
+    background: rgba(247, 244, 237, 0.04);
+    border: 1px solid rgba(247, 244, 237, 0.10);
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
   }
 
-  .title-block {
+  .brand-icon img {
+    width: 44px;
+    height: 44px;
+    display: block;
+  }
+
+  /* Center hero */
+  .hero {
+    flex: 1;
     display: flex;
     flex-direction: column;
-    gap: 22px;
+    justify-content: center;
+    align-items: center;
+    padding: 0 80px;
   }
 
-  .title {
+  .wordmark {
     font-family: 'Source Serif 4', 'Liberation Serif', Georgia, serif;
-    font-size: 78px;
-    line-height: 0.96;
+    font-size: 76px;
+    line-height: 1.0;
     font-weight: 700;
-    letter-spacing: -0.020em;
+    letter-spacing: -0.022em;
     color: #F7F4ED;
-  }
-
-  .title .accent {
-    color: #C5511A;
-  }
-
-  .subtitle {
-    font-family: 'Source Serif 4', 'Liberation Serif', Georgia, serif;
-    font-size: 28px;
-    line-height: 1.25;
-    font-style: italic;
-    font-weight: 400;
-    color: #B8C9DD;
-    max-width: 880px;
-  }
-
-  /* Bottom cream strip */
-  .footer {
-    height: 189px;
-    padding: 30px 70px 32px 70px;
-    background: #F7F4ED;
-    color: #0E1B2C;
-    display: flex;
-    flex-direction: column;
-    justify-content: space-between;
-    position: relative;
-  }
-
-  .footer::before {
-    content: "";
-    position: absolute;
-    top: 0;
-    left: 70px;
-    width: 64px;
-    height: 4px;
-    background: #C5511A;
-  }
-
-  .protocols-row {
-    font-family: 'JetBrains Mono', 'Liberation Mono', monospace;
-    font-size: 17px;
-    letter-spacing: 0.06em;
-    color: #0E1B2C;
-    font-weight: 600;
-    display: flex;
-    gap: 12px;
-    flex-wrap: wrap;
+    text-align: center;
+    white-space: nowrap;
+    display: inline-flex;
     align-items: baseline;
-    padding-top: 8px;
+    gap: 14px;
   }
 
-  .protocols-row .sep {
-    color: #C5511A;
-    font-weight: 400;
+  .wordmark .cursor {
+    display: inline-block;
+    width: 44px;
+    height: 7px;
+    background: #C5511A;
+    border-radius: 1px;
+    transform: translateY(-8px);
   }
 
-  .meta-row {
+  /* Bottom chrome row */
+  .chrome-bottom {
+    padding: 0 60px 44px 60px;
     display: flex;
     justify-content: space-between;
-    align-items: flex-end;
+    align-items: center;
   }
 
   .url {
     font-family: 'JetBrains Mono', 'Liberation Mono', monospace;
-    font-size: 17px;
-    color: #1F3A5F;
+    font-size: 15px;
+    letter-spacing: 0.04em;
+    color: rgba(247, 244, 237, 0.75);
     font-weight: 500;
-    letter-spacing: 0.02em;
   }
 
-  .tagline {
-    font-family: 'Source Serif 4', 'Liberation Serif', Georgia, serif;
-    font-size: 15px;
-    font-style: italic;
-    color: rgba(14, 27, 44, 0.65);
-    text-align: right;
-    line-height: 1.35;
+  .protocols {
+    font-family: 'JetBrains Mono', 'Liberation Mono', monospace;
+    font-size: 13px;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: rgba(247, 244, 237, 0.55);
+    font-weight: 500;
   }
 </style>
 </head>
 <body>
   <div class="card">
-    <div class="hero">
-      <div class="top-row">
-        <div class="brand">
-          <div class="brand-mark"></div>
-          <div class="brand-text">Datum Labs Research</div>
-        </div>
-        <div class="label-row">Lending · Ethereum</div>
+    <div class="chrome-top">
+      <div class="brand">
+        <div class="brand-mark"></div>
+        <div class="brand-text">Datum Labs Research</div>
       </div>
-      <div class="title-block">
-        <div class="title">Lending Intelligence<br/>Terminal<span class="accent">.</span></div>
-        <div class="subtitle">Multi-protocol analytics for DeFi lending on Ethereum. Live readings, monthly research.</div>
+      <div class="brand-icon">
+        <img src="../../public/branding/datumlabs-icon.png" alt="Datum Labs"/>
       </div>
     </div>
-    <div class="footer">
-      <div class="protocols-row">
-        Aave V3 <span class="sep">·</span> SparkLend <span class="sep">·</span> Morpho <span class="sep">·</span> Fluid <span class="sep">·</span> Compound V3 <span class="sep">·</span> Euler V2
+
+    <div class="hero">
+      <div class="wordmark">
+        Ethereum Lending Terminal<span class="cursor"></span>
       </div>
-      <div class="meta-row">
-        <div class="url">datumlab.xyz/lending-terminal</div>
-        <div class="tagline">Six protocols, one terminal.<br/>Updated daily.</div>
-      </div>
+    </div>
+
+    <div class="chrome-bottom">
+      <div class="url">datumlab.xyz/lending-terminal</div>
+      <div class="protocols">Six Protocols · One Terminal</div>
     </div>
   </div>
 </body>
