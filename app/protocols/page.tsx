@@ -92,7 +92,13 @@ export default async function ProtocolsPage({ searchParams }: { searchParams: Se
     morphoVaultIndex,
     morphoMarkets,
   ] = await Promise.all([
-    loadProtocolDetail(slug),
+    // Wrapped in catch so a transient DefiLlama / on-chain blip can't 500
+    // the whole page — the `if (!detail)` fallback below takes over and
+    // renders the "Couldn't load data for X" notice instead.
+    loadProtocolDetail(slug).catch((err) => {
+      console.error(`[protocols] protocol detail failed for ${slug}:`, err?.message ?? err)
+      return null
+    }),
     slug === "morpho-blue"
       ? loadMorphoCuratorLeaderboard().catch((err) => {
           console.error("[protocols] curator leaderboard failed:", err?.message ?? err)

@@ -27,7 +27,33 @@ export const maxDuration = 60
 const CHART_ASSETS = ["USDC", "USDT", "DAI", "USDS", "WETH", "WSTETH", "WBTC"]
 
 export default async function RatesPage() {
-  const [data, overview] = await Promise.all([loadRates(), loadOverview()])
+  // Both fetches wrapped in catch so a transient DefiLlama / FRED / on-chain
+  // blip can't 500 the whole page — the fallback UI below renders a
+  // "Couldn't load rate data" notice instead.
+  const [data, overview] = await Promise.all([
+    loadRates().catch((err) => {
+      console.error("[rates] loadRates failed:", err?.message ?? err)
+      return null
+    }),
+    loadOverview().catch((err) => {
+      console.error("[rates] loadOverview failed:", err?.message ?? err)
+      return null
+    }),
+  ])
+
+  if (!data || !overview) {
+    return (
+      <div className="max-w-[1400px] mx-auto px-4 lg:px-6 py-5 space-y-4">
+        <h1 className="text-[13px] uppercase tracking-[0.15em] text-text-muted">
+          Rate Monitor
+        </h1>
+        <div className="tui-card bg-card-bg border border-card-border rounded p-6 text-sm text-text-muted">
+          Couldn&apos;t load rate data. DefiLlama Yields or the on-chain RPC may be slow, reload in a moment.
+        </div>
+      </div>
+    )
+  }
+
   const kpis = computeRateKpis(data.matrix)
   const onChainCells = data.matrix.filter((c) => c.liveSource === "on-chain").length
 

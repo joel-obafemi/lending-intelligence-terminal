@@ -39,10 +39,30 @@ export default async function RiskPage() {
   // decommissioned /events page (Liquidation Concentration by
   // Collateral + Largest 20 Liquidation Events). Load 90d
   // liquidations alongside the existing risk aggregate.
+  // Wrapped so a transient blip on either upstream can't 500 the page.
   const [risk, liq] = await Promise.all([
-    loadRisk(),
-    loadLiquidations(90),
+    loadRisk().catch((err) => {
+      console.error("[risk] loadRisk failed:", err?.message ?? err)
+      return null
+    }),
+    loadLiquidations(90).catch((err) => {
+      console.error("[risk] loadLiquidations failed:", err?.message ?? err)
+      return null
+    }),
   ])
+
+  if (!risk || !liq) {
+    return (
+      <div className="max-w-[1400px] mx-auto px-4 lg:px-6 py-5 space-y-4">
+        <h1 className="text-[13px] uppercase tracking-[0.15em] text-text-muted">
+          Collateral &amp; Stress Risk
+        </h1>
+        <div className="tui-card bg-card-bg border border-card-border rounded p-6 text-sm text-text-muted">
+          Couldn&apos;t load risk data. The liquidator DB or DefiLlama may be slow, reload in a moment.
+        </div>
+      </div>
+    )
+  }
 
   const peakName = risk.peakIntensity?.name ?? "No protocol"
   const peakPct = risk.peakIntensity?.intensityPct ?? 0

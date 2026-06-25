@@ -31,9 +31,26 @@ export const maxDuration = 60
 
 export default async function OverviewPage() {
   const [overview, featured] = await Promise.all([
-    loadSectorOverview(),
+    loadSectorOverview().catch((err) => {
+      console.error("[overview] loadSectorOverview failed:", err?.message ?? err)
+      return null
+    }),
     getFeaturedIssue().catch(() => null),
   ])
+
+  if (!overview) {
+    return (
+      <div className="max-w-[1400px] mx-auto px-4 lg:px-6 py-5 space-y-4">
+        <h1 className="text-[13px] uppercase tracking-[0.15em] text-text-muted">
+          Sector Overview
+        </h1>
+        <div className="tui-card bg-card-bg border border-card-border rounded p-6 text-sm text-text-muted">
+          Couldn&apos;t load the sector snapshot. Snapshot store or upstream may be slow, reload in a moment.
+        </div>
+      </div>
+    )
+  }
+
   const data = overview.payload
   // Read from the snapshot payload. Falls back to empty/null for snapshots
   // written before these fields were folded in (until the next cron run).

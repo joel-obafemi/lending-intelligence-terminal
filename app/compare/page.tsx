@@ -47,14 +47,36 @@ export default async function ComparePage({
   const asset = normalizeAsset(searchParams.asset)
   const view = normalizeView(searchParams.view)
 
-  const response = await loadCompareForAsset(asset)
+  // Wrapped so a transient DefiLlama / on-chain blip can't 500 the page.
+  const response = await loadCompareForAsset(asset).catch((err) => {
+    console.error(`[compare] loadCompareForAsset failed for ${asset}:`, err?.message ?? err)
+    return null
+  })
+
+  if (!response) {
+    return (
+      <div className="max-w-[1400px] mx-auto px-4 lg:px-6 py-5 space-y-4">
+        <h1 className="text-[13px] uppercase tracking-[0.15em] text-text-muted">
+          Cross-Protocol Comparison
+        </h1>
+        <div className="tui-card bg-card-bg border border-card-border rounded p-6 text-sm text-text-muted">
+          Couldn&apos;t load comparison data for {asset}. DefiLlama or the on-chain RPC may be slow, reload in a moment.
+        </div>
+      </div>
+    )
+  }
+
   // History only needed for the Yields view; load it conditionally so the
   // Parameters / Efficiency views skip the FRED + chart fetches.
   // 365d window powers both the per-protocol APY history chart and the
-  // cross-protocol dispersion chart at 12-month resolution.
+  // cross-protocol dispersion chart at 12-month resolution. History
+  // failure falls back to no chart rather than 500ing the page.
   const history =
     view === "yields"
-      ? await loadCompareHistory(asset, response.cells, 365)
+      ? await loadCompareHistory(asset, response.cells, 365).catch((err) => {
+          console.error(`[compare] loadCompareHistory failed for ${asset}:`, err?.message ?? err)
+          return null
+        })
       : null
 
   return (

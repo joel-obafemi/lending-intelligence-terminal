@@ -25,11 +25,34 @@ export const dynamic = "force-dynamic"
 export const maxDuration = 60
 
 export default async function RevenuePage() {
+  // Wrapped so a transient blip on any upstream can't 500 the page.
   const [data, liq, decomp] = await Promise.all([
-    loadOverview(),
-    loadLiquidations(90),
-    loadRevenueDecomp(90, 365),
+    loadOverview().catch((err) => {
+      console.error("[revenue] loadOverview failed:", err?.message ?? err)
+      return null
+    }),
+    loadLiquidations(90).catch((err) => {
+      console.error("[revenue] loadLiquidations failed:", err?.message ?? err)
+      return null
+    }),
+    loadRevenueDecomp(90, 365).catch((err) => {
+      console.error("[revenue] loadRevenueDecomp failed:", err?.message ?? err)
+      return null
+    }),
   ])
+
+  if (!data || !liq || !decomp) {
+    return (
+      <div className="max-w-[1400px] mx-auto px-4 lg:px-6 py-5 space-y-4">
+        <h1 className="text-[13px] uppercase tracking-[0.15em] text-text-muted">
+          Revenue
+        </h1>
+        <div className="tui-card bg-card-bg border border-card-border rounded p-6 text-sm text-text-muted">
+          Couldn&apos;t load revenue data. DefiLlama Fees or the liquidator DB may be slow, reload in a moment.
+        </div>
+      </div>
+    )
+  }
 
   const verdict = computeRevenueVerdict(data, decomp)
   const takeRateSeries = buildTakeRateSeries(data, 365)

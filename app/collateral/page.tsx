@@ -13,7 +13,24 @@ export const dynamic = "force-dynamic"
 export const maxDuration = 60
 
 export default async function CollateralPage() {
-  const data = await loadOverview()
+  // Wrapped so a transient DefiLlama / on-chain blip can't 500 the page.
+  const data = await loadOverview().catch((err) => {
+    console.error("[collateral] loadOverview failed:", err?.message ?? err)
+    return null
+  })
+
+  if (!data) {
+    return (
+      <div className="max-w-[1400px] mx-auto px-4 lg:px-6 py-5 space-y-4">
+        <h1 className="text-[13px] uppercase tracking-[0.15em] text-text-muted">
+          Collateral Landscape
+        </h1>
+        <div className="tui-card bg-card-bg border border-card-border rounded p-6 text-sm text-text-muted">
+          Couldn&apos;t load collateral data. DefiLlama or the on-chain RPC may be slow, reload in a moment.
+        </div>
+      </div>
+    )
+  }
 
   return (
     <div className="max-w-[1400px] mx-auto px-4 lg:px-6 py-5 space-y-5">
