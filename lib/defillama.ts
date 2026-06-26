@@ -410,8 +410,45 @@ export async function fetchAllYieldPools(): Promise<YieldPool[]> {
     return cached.pools
   }
 
-  // No warm cache. Try upstream with a bounded timeout. On timeout or empty,
-  // fall back to the static seed so /rates can still render data.
+  // No warm cache. Cold-start path. Two options:
+  //
+  //   A) Wait for upstream (up to 25s), fall back to seed on timeout.
+  //   B) Serve seed instantly, refresh upstream in the background.
+  //
+  // Vercel rotates serverless instances aggressively, so most page
+  // loads hit a cold instance with an empty in-memory cache. Path A
+  // eats 25s every cold load and blows past the page's render budget
+  // even when seed is available. Path B returns in ~50ms and gets
+  // fresh data into the cache before the user (or another concurrent
+  // request) needs it.
+  //
+  // Seed currency: refreshed weekly via scripts/capture-yield-pools-
+  // seed.ts. APYs and TVLs drift over a week but the matrix is still
+  // representative; the alternative (blank page) is worse.
+  const seed = loadPoolsSeed()
+  if (seed.length > 0) {
+    if (!poolsRefreshInFlight) {
+      poolsRefreshInFlight = fetchPoolsWithTimeout(POOLS_UPSTREAM_TIMEOUT_MS)
+        .then((p) => {
+          if (p && p.length > 0) {
+            poolsCache = { pools: p, fetchedAt: Date.now() }
+          }
+          return p ?? seed
+        })
+        .catch((err) => {
+          console.error("[defillama] background /pools refresh failed:", err?.message ?? err)
+          return seed
+        })
+        .finally(() => {
+          poolsRefreshInFlight = null
+        })
+    }
+    return seed
+  }
+
+  // No seed available either — fall back to the original synchronous
+  // wait. Realistically this only happens in local dev before the seed
+  // file has been captured.
   if (!poolsRefreshInFlight) {
     poolsRefreshInFlight = fetchPoolsWithTimeout(POOLS_UPSTREAM_TIMEOUT_MS)
       .then((p) => {
@@ -419,15 +456,11 @@ export async function fetchAllYieldPools(): Promise<YieldPool[]> {
           poolsCache = { pools: p, fetchedAt: Date.now() }
           return p
         }
-        // Upstream too slow or empty — seed-fallback path.
-        const seed = loadPoolsSeed()
-        if (seed.length > 0) return seed
         return p ?? []
       })
       .catch((err) => {
         console.error("[defillama] /pools fetch failed:", err?.message ?? err)
-        const seed = loadPoolsSeed()
-        return seed
+        return []
       })
       .finally(() => {
         poolsRefreshInFlight = null
