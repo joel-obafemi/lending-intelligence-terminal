@@ -21,18 +21,25 @@ import { CiteThisPage } from "@/components/overview/cite-this-page"
 // revalidate (always a cache MISS). force-dynamic stops the build-time
 // prerender that times out when the public RPC rate-limits.
 export const dynamic = "force-dynamic"
-export const maxDuration = 60
+// Bumped from 60 → 90s during the DefiLlama slow-day incident.
+// /pools recovered to 8s but something else in the chain (likely the
+// 42 parallel /chart fetches under load, or the on-chain RPC overlay)
+// is consistently consuming ~56s. 90s gives substantial headroom; the
+// SWR cache from d67d5b9 means warm instances skip the upstream
+// re-fetch entirely. Vercel Pro supports up to 300s here.
+export const maxDuration = 90
 
 /** Assets that get historical charts. Limited to keep the page fast.
  *  Same set used for the dispersion chart's selector. */
 const CHART_ASSETS = ["USDC", "USDT", "DAI", "USDS", "WETH", "WSTETH", "WBTC"]
 
-// Custom budget for loadRates — it owns the slowest call (DefiLlama
-// /pools, currently 25-35s under load). Keeping it just under the 60s
-// maxDuration ceiling so the upstream call actually completes and
-// fills the SWR cache (see lib/defillama.ts) instead of being killed
-// at the default 45s budget right before it would have finished.
-const LOAD_RATES_BUDGET_MS = 56_000
+// Custom budget for loadRates — it owns the slowest call chain in
+// the dashboard (DefiLlama /pools + 42 parallel /chart fetches +
+// on-chain RPC overlay + FRED). Bumped to 80s after observing
+// consistent 56s budget hits even with /pools recovered to 8s —
+// something downstream (likely RPC-rate-limited chart fan-out) is
+// the new bottleneck. Sits just under the 90s page maxDuration.
+const LOAD_RATES_BUDGET_MS = 80_000
 
 export default async function RatesPage() {
   // Both fetches wrapped in a timeout race so a hanging upstream
