@@ -50,7 +50,17 @@ import { SupportPanel } from "@/components/report/SupportPanel"
 // on-chain reads during build. Each slug renders on first request and
 // then sits in ISR cache for an hour. Unknown slugs still 404 via the
 // notFound() call inside the page (getIssueBySlug returns null).
-export const revalidate = 3600
+// force-dynamic: was previously `revalidate = 3600` (ISR), but Next.js
+// refuses to serve when ANY nested fetch inside an ISR page uses
+// `cache: "no-store"` — and lib/defillama.ts' fetchJson does that
+// (DefiLlama /protocol responses are 4-34 MB, well over the 2 MB
+// fetch-cache cap, so no-store is structurally required there). The
+// conflict throws "Page changed from static to dynamic at runtime"
+// at request time, surfacing as a 500. Going force-dynamic resolves
+// it cleanly — each request renders server-side, and the seed-backed
+// caches in lib/defillama.ts + lib/fred.ts + lib/rates.ts keep
+// per-request latency in the same ~10s window as /rates.
+export const dynamic = "force-dynamic"
 export const dynamicParams = true
 export const maxDuration = 120
 
