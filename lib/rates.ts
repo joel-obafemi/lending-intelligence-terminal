@@ -575,10 +575,16 @@ export async function loadRates(): Promise<RatesResponse> {
   }
 
   // Blended stablecoin supply APY history → Real Yield Spread series.
-  const blendedStable = await buildBlendedStableApyHistory(
-    matrix,
-    morphoChartIndex,
-  )
+  // Bounded at 15s — this function makes ~24 more parallel /chart
+  // fetches (one per stable cell in the matrix). Same DefiLlama rate-
+  // limit concerns as supplyHistoryJob above; we'd rather render with
+  // an empty Real Yield Spread chart than blank the page.
+  const blendedStable =
+    (await withTimeout(
+      "rates.buildBlendedStableApyHistory",
+      buildBlendedStableApyHistory(matrix, morphoChartIndex),
+      15_000,
+    )) ?? []
   const realYieldSpreadHistory = buildRealYieldHistory(
     blendedStable,
     tBillHistory,
