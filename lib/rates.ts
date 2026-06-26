@@ -553,17 +553,17 @@ export async function loadRates(): Promise<RatesResponse> {
   const boundedSupplyHistory = withTimeout("rates.supplyHistoryJob", supplyHistoryJob, 20_000)
 
   // Macro overlay (DFF for the per-asset chart, TB4WK for Real Yield Spread).
-  const [, fedFundsHistory, tBillHistory] = await Promise.all([
+  // Critical: .catch() ONLY fires on rejection — a hung FRED fetch would
+  // keep this Promise.all from ever resolving and blow the entire page
+  // budget. Wrap both with withTimeout so a stalled FRED upstream (no
+  // outbound TLS, rate-limit hang, etc.) can't take the page down.
+  const [, fedFundsHistoryRaw, tBillHistoryRaw] = await Promise.all([
     Promise.all([boundedOverlay, boundedSupplyHistory]),
-    fetchFedFundsRate(HERO_WINDOW_DAYS).catch((err) => {
-      console.error("[rates] FRED DFF fetch failed:", err.message)
-      return [] as FredPoint[]
-    }),
-    fetchFredSeries("TB4WK", HERO_WINDOW_DAYS).catch((err) => {
-      console.error("[rates] FRED TB4WK fetch failed:", err.message)
-      return [] as FredPoint[]
-    }),
+    withTimeout("rates.fredDFF", fetchFedFundsRate(HERO_WINDOW_DAYS), 8_000),
+    withTimeout("rates.fredTB4WK", fetchFredSeries("TB4WK", HERO_WINDOW_DAYS), 8_000),
   ])
+  const fedFundsHistory: FredPoint[] = fedFundsHistoryRaw ?? []
+  const tBillHistory: FredPoint[] = tBillHistoryRaw ?? []
 
   // Per-asset cross-protocol dispersion (max − min supply APY). Same input
   // we already have from the per-asset history fetches.
