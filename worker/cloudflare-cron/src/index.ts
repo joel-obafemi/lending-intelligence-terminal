@@ -55,7 +55,9 @@ const CRON_JOBS: Record<string, CronJob> = {
   // blended-stable APY). Triggers the GitHub workflow, which captures
   // fresh upstream data, commits the JSON files to the configured
   // branch, and (if set) pings the Vercel deploy hook.
-  "0 2 * * 0": {
+  // NB: Cloudflare's cron parser uses 1-7 (or MON-SUN) for day-of-week,
+  // not 0-6. This key must match wrangler.toml's [triggers] block.
+  "0 2 * * SUN": {
     kind: "gh-workflow",
     workflow: "SEED_WORKFLOW_FILE",
     description: "refresh-seeds",

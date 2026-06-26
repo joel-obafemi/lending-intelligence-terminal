@@ -9,8 +9,10 @@ compatibility_date = "2025-01-01"
 # `wrangler deploy`.
 [triggers]
 crons = [
-  "0 1 * * *",   # daily 01:00 UTC — fires sector-snapshot Next.js endpoint
-  "0 2 * * 0",   # Sundays 02:00 UTC — dispatches the refresh-seeds GitHub workflow
+  "0 1 * * *",     # daily 01:00 UTC — fires sector-snapshot Next.js endpoint
+  "0 2 * * SUN",   # Sundays 02:00 UTC — dispatches the refresh-seeds GitHub workflow
+  # NB: Cloudflare's cron parser uses 1-7 (or MON-SUN) for day-of-week,
+  # not the more common 0-6. `0 2 * * 0` is rejected with code 10100.
 ]
 
 [vars]
