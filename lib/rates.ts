@@ -34,6 +34,7 @@ import { fetchFedFundsRate, fetchFredSeries, type FredPoint } from "./fred"
 import { loadAllAaveReservesLive } from "./aave-onchain"
 import { loadAllSparkReservesLive } from "./spark-onchain"
 import type { RealYieldPoint } from "./real-yield"
+import { withTimeout } from "./with-timeout"
 
 /** Assets we track across protocols. Extend as we add more markets. */
 export const MAJOR_ASSETS = [
@@ -535,9 +536,25 @@ export async function loadRates(): Promise<RatesResponse> {
     }),
   )
 
+  // Bound the live legs so loadRates can't blow the page budget on a
+  // single slow upstream:
+  //   - overlayOnChainRates (public-RPC reads): 12s. On timeout the
+  //     matrix keeps its DefiLlama-derived rates instead of overlaying
+  //     live on-chain values for the Aave/Spark cells.
+  //   - supplyHistoryJob (42 parallel DefiLlama /chart fetches): 20s.
+  //     On timeout, supplyHistoryByAsset has whatever filled in time;
+  //     charts that didn't resolve render empty but the matrix still
+  //     prints.
+  // Under healthy upstream conditions both finish in <10s and neither
+  // timer fires. Under load, the matrix renders with whatever data we
+  // managed to collect — better than a fallback notice on the whole
+  // page.
+  const boundedOverlay = withTimeout("rates.overlayOnChain", overlayOnChainRates(matrix), 12_000)
+  const boundedSupplyHistory = withTimeout("rates.supplyHistoryJob", supplyHistoryJob, 20_000)
+
   // Macro overlay (DFF for the per-asset chart, TB4WK for Real Yield Spread).
   const [, fedFundsHistory, tBillHistory] = await Promise.all([
-    Promise.all([overlayOnChainRates(matrix), supplyHistoryJob]),
+    Promise.all([boundedOverlay, boundedSupplyHistory]),
     fetchFedFundsRate(HERO_WINDOW_DAYS).catch((err) => {
       console.error("[rates] FRED DFF fetch failed:", err.message)
       return [] as FredPoint[]
