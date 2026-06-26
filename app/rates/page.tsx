@@ -27,12 +27,19 @@ export const maxDuration = 60
  *  Same set used for the dispersion chart's selector. */
 const CHART_ASSETS = ["USDC", "USDT", "DAI", "USDS", "WETH", "WSTETH", "WBTC"]
 
+// Custom budget for loadRates — it owns the slowest call (DefiLlama
+// /pools, currently 25-35s under load). Keeping it just under the 60s
+// maxDuration ceiling so the upstream call actually completes and
+// fills the SWR cache (see lib/defillama.ts) instead of being killed
+// at the default 45s budget right before it would have finished.
+const LOAD_RATES_BUDGET_MS = 56_000
+
 export default async function RatesPage() {
   // Both fetches wrapped in a timeout race so a hanging upstream
   // (DefiLlama Yields, FRED, on-chain RPC) can't blow past the
   // page's maxDuration. The fallback notice below renders instead.
   const [data, overview] = await Promise.all([
-    withTimeout("rates.loadRates", loadRates(), DEFAULT_LOAD_BUDGET_MS),
+    withTimeout("rates.loadRates", loadRates(), LOAD_RATES_BUDGET_MS),
     withTimeout("rates.loadOverview", loadOverview(), DEFAULT_LOAD_BUDGET_MS),
   ])
 
