@@ -35,6 +35,9 @@ import { loadAllAaveReservesLive } from "./aave-onchain"
 import { loadAllSparkReservesLive } from "./spark-onchain"
 import type { RealYieldPoint } from "./real-yield"
 import { withTimeout } from "./with-timeout"
+// Static JSON import — webpack bundles into the Vercel function output.
+// See scripts/capture-blended-stable-seed.ts for refresh cadence.
+import blendedStableSeed from "../content/snapshots/blended-stable-apy-seed.json"
 
 /** Assets we track across protocols. Extend as we add more markets. */
 export const MAJOR_ASSETS = [
@@ -141,7 +144,7 @@ export interface RatesResponse {
  * asset, so we surface a TVL-weighted blend across all matching MetaMorpho
  * vaults in `pickMorphoBlendedCells` below.
  */
-function pickRepresentativePools(pools: YieldPool[]): RateMatrixCell[] {
+export function pickRepresentativePools(pools: YieldPool[]): RateMatrixCell[] {
   const best = new Map<string, YieldPool>() // key = `${slug}:${symbol}`
   for (const p of pools) {
     if (p.chain !== "Ethereum") continue
@@ -227,7 +230,7 @@ const ASSET_ADDRESSES: Record<string, string> = {
  *  vaults that DefiLlama occasionally returns at 50,000%+ APY (same
  *  filter the curator leaderboard uses).
  */
-function pickMorphoBlendedCells(pools: YieldPool[]): RateMatrixCell[] {
+export function pickMorphoBlendedCells(pools: YieldPool[]): RateMatrixCell[] {
   const cells: RateMatrixCell[] = []
   for (const symbol of MAJOR_ASSETS) {
     const addr = ASSET_ADDRESSES[symbol]?.toLowerCase()
@@ -389,7 +392,7 @@ const HERO_WINDOW_DAYS = 540
 /** Build a TVL-weighted blended stablecoin supply APY series from per-pool
  *  charts. Pulls all four stables × four protocols, finds matching pools,
  *  and weight-averages `apyBase` by `tvlUsd` per timestamp. */
-async function buildBlendedStableApyHistory(
+export async function buildBlendedStableApyHistory(
   matrix: RateMatrixCell[],
   morphoChartIndex: Map<string, YieldChartPoint[]>,
 ): Promise<Array<{ timestamp: number; apyPct: number }>> {
@@ -579,12 +582,21 @@ export async function loadRates(): Promise<RatesResponse> {
   // fetches (one per stable cell in the matrix). Same DefiLlama rate-
   // limit concerns as supplyHistoryJob above; we'd rather render with
   // an empty Real Yield Spread chart than blank the page.
+  //
+  // Seed fallback: when the computation times out OR returns empty
+  // (every /chart call failed silently), use the captured snapshot.
+  // The seed gives Real Yield Spread something to merge against
+  // tBillHistory, so the verdict-strip card always renders a value
+  // instead of showing blank on slow-upstream cold-start instances.
+  const computedBlendedStable = await withTimeout(
+    "rates.buildBlendedStableApyHistory",
+    buildBlendedStableApyHistory(matrix, morphoChartIndex),
+    15_000,
+  )
   const blendedStable =
-    (await withTimeout(
-      "rates.buildBlendedStableApyHistory",
-      buildBlendedStableApyHistory(matrix, morphoChartIndex),
-      15_000,
-    )) ?? []
+    computedBlendedStable && computedBlendedStable.length > 0
+      ? computedBlendedStable
+      : (blendedStableSeed.series as Array<{ timestamp: number; apyPct: number }>)
   const realYieldSpreadHistory = buildRealYieldHistory(
     blendedStable,
     tBillHistory,
