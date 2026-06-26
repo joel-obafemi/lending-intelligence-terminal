@@ -3,20 +3,34 @@ main = "src/index.ts"
 compatibility_date = "2025-01-01"
 
 # Schedules. Each cron string here must have a matching entry in
-# CRON_JOBS in src/index.ts so the worker knows which endpoint to hit.
+# CRON_JOBS in src/index.ts so the worker knows what to dispatch.
 #
-# Adding a new job? Add the cron + endpoint here AND in CRON_JOBS, then
+# Adding a new job? Add the cron + handler here AND in CRON_JOBS, then
 # `wrangler deploy`.
 [triggers]
-crons = ["0 1 * * *"]
+crons = [
+  "0 1 * * *",   # daily 01:00 UTC — fires sector-snapshot Next.js endpoint
+  "0 2 * * 0",   # Sundays 02:00 UTC — dispatches the refresh-seeds GitHub workflow
+]
 
+[vars]
 # Production origin — the canonical Vercel URL for the Next.js app.
 # Endpoint paths are appended by the worker. If the domain ever changes,
-# update here and re-run `wrangler deploy`, or override per-environment
-# via `wrangler secret put BASE_URL`.
-[vars]
+# update here and re-run `wrangler deploy`.
 BASE_URL = "https://lending-intelligence-terminal.vercel.app"
+
+# GitHub repo + branch the seed-refresh workflow runs on. The Worker
+# dispatches against this branch; the workflow's `git push` lands here.
+GITHUB_REPO = "joel-obafemi/lending-intelligence-terminal"
+GITHUB_BRANCH = "feat/alerts-mvp"
+SEED_WORKFLOW_FILE = "refresh-seeds.yml"
 
 # Observability — lightweight, free tier friendly.
 [observability]
 enabled = true
+
+# Secrets that must be set via `wrangler secret put`:
+#   - CRON_SECRET    Bearer token shared with the Next.js /api/cron/* endpoints
+#   - GITHUB_TOKEN   Fine-grained PAT with `actions:write` + `contents:read`
+#                    on the lending-intelligence-terminal repo, used to
+#                    dispatch the refresh-seeds workflow.
