@@ -319,7 +319,13 @@ interface LendBorrowRow {
 const POOLS_CACHE_TTL_MS = 5 * 60 * 1000 // 5 min freshness
 const POOLS_STALE_MAX_MS = 30 * 60 * 1000 // refuse to serve stale data older than 30 min
 const POOLS_UPSTREAM_TIMEOUT_MS = 25 * 1000 // bail to seed if upstream slower than this
-const POOLS_SEED_PATH = "content/snapshots/yield-pools-seed.json"
+
+// Static JSON import — webpack bundles this into the function output at
+// build time. Using fs.readFileSync(process.cwd() + path) instead would
+// leave the file out of the Vercel build trace and the read would 404
+// at runtime (which is exactly why an earlier deploy of the seed-instant
+// path did nothing on prod).
+import poolsSeedRaw from "../content/snapshots/yield-pools-seed.json"
 
 interface PoolsCacheEntry {
   pools: YieldPool[]
@@ -327,32 +333,10 @@ interface PoolsCacheEntry {
 }
 let poolsCache: PoolsCacheEntry | null = null
 let poolsRefreshInFlight: Promise<YieldPool[]> | null = null
-let seedCache: YieldPool[] | null = null
 
+const poolsSeed = (poolsSeedRaw as unknown as { pools?: YieldPool[]; captured_at?: string })
 function loadPoolsSeed(): YieldPool[] {
-  if (seedCache) return seedCache
-  try {
-    // Lazy require so this module stays edge-compatible if needed.
-    const fs = require("fs") as typeof import("fs")
-    const path = require("path") as typeof import("path")
-    const fullPath = path.join(process.cwd(), POOLS_SEED_PATH)
-    if (!fs.existsSync(fullPath)) {
-      console.warn(`[defillama] seed file missing: ${POOLS_SEED_PATH}`)
-      seedCache = []
-      return seedCache
-    }
-    const raw = fs.readFileSync(fullPath, "utf-8")
-    const parsed = JSON.parse(raw) as { pools?: YieldPool[]; captured_at?: string }
-    seedCache = parsed.pools ?? []
-    console.log(
-      `[defillama] seed loaded: ${seedCache.length} pools (captured ${parsed.captured_at ?? "unknown"})`
-    )
-    return seedCache
-  } catch (err) {
-    console.error("[defillama] seed read failed:", (err as Error).message)
-    seedCache = []
-    return seedCache
-  }
+  return poolsSeed?.pools ?? []
 }
 
 async function fetchPoolsFromUpstream(): Promise<YieldPool[]> {

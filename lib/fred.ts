@@ -17,8 +17,11 @@
  *   3. Cold-start path returns seed instantly and refreshes upstream
  *      in the background — same pattern as fetchAllYieldPools.
  */
-import * as fs from "fs"
-import * as path from "path"
+// Static JSON import — webpack bundles this into the function output at
+// build time. Using fs.readFileSync(process.cwd() + path) instead would
+// leave the file out of the Vercel build trace and the read would 404
+// at runtime.
+import fredSeedRaw from "../content/snapshots/fred-seed.json"
 
 export interface FredPoint {
   /** Unix seconds (UTC midnight on the observation date) */
@@ -36,7 +39,6 @@ const refreshInFlight = new Map<string, Promise<FredPoint[]>>()
 const FRED_CACHE_TTL_MS = 60 * 60 * 1000   // 1h fresh — FRED updates daily
 const FRED_STALE_MAX_MS = 6 * 60 * 60 * 1000 // 6h stale-but-acceptable
 const FRED_UPSTREAM_TIMEOUT_MS = 6 * 1000  // bail to seed if upstream slower
-const FRED_SEED_PATH = "content/snapshots/fred-seed.json"
 
 interface SeedFile {
   captured_at: string
@@ -44,30 +46,10 @@ interface SeedFile {
   series: Record<string, FredPoint[]>
 }
 
-let seedCache: SeedFile | null | undefined // undefined = not yet loaded
-function loadSeed(): SeedFile | null {
-  if (seedCache !== undefined) return seedCache
-  try {
-    const fullPath = path.join(process.cwd(), FRED_SEED_PATH)
-    if (!fs.existsSync(fullPath)) {
-      console.warn(`[fred] seed file missing: ${FRED_SEED_PATH}`)
-      seedCache = null
-      return null
-    }
-    const raw = fs.readFileSync(fullPath, "utf8")
-    seedCache = JSON.parse(raw) as SeedFile
-    return seedCache
-  } catch (err: any) {
-    console.error(`[fred] failed to load seed:`, err?.message ?? err)
-    seedCache = null
-    return null
-  }
-}
+const fredSeed = fredSeedRaw as unknown as SeedFile
 
 function getSeedSeries(seriesId: string, sinceDays: number): FredPoint[] {
-  const seed = loadSeed()
-  if (!seed) return []
-  const points = seed.series[seriesId]
+  const points = fredSeed?.series?.[seriesId]
   if (!Array.isArray(points)) return []
   const cutoff = sinceDays > 0 ? Math.floor(Date.now() / 1000) - sinceDays * 86400 : 0
   return points.filter((p) => p.timestamp >= cutoff)
