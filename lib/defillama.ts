@@ -303,11 +303,85 @@ interface LendBorrowRow {
   borrowable: boolean
 }
 
-export async function fetchAllYieldPools(): Promise<YieldPool[]> {
+// ─── /pools stale-while-revalidate cache ──────────────────────────────────
+//
+// The DefiLlama Yields /pools endpoint is 10.8 MB and currently takes
+// 25-35s under load. Per-render fetches eat the page's maxDuration
+// budget. Cache the resolved pool list at module scope so a warm
+// serverless instance only pays that cost once per CACHE_TTL_MS window;
+// subsequent calls serve stale data while a background refresh runs.
+//
+// This is intentionally simpler than unstable_cache (which was tried in
+// commit 009518e and reverted as b345dbb because of fetch-cache shape
+// issues with cache: 'no-store'). A module-level Map keyed on warm-
+// instance lifetime is enough — cold starts re-fetch, which is fine.
+const POOLS_CACHE_TTL_MS = 5 * 60 * 1000 // 5 min freshness
+const POOLS_STALE_MAX_MS = 30 * 60 * 1000 // refuse to serve stale data older than 30 min
+interface PoolsCacheEntry {
+  pools: YieldPool[]
+  fetchedAt: number
+}
+let poolsCache: PoolsCacheEntry | null = null
+let poolsRefreshInFlight: Promise<YieldPool[]> | null = null
+
+async function fetchPoolsFromUpstream(): Promise<YieldPool[]> {
   const [pools, lendBorrow] = await Promise.all([
     fetchJson<YieldPoolsResponse>(`${YIELDS_BASE}/pools`),
     fetchJson<LendBorrowRow[]>(`${YIELDS_BASE}/lendBorrow`).catch(() => [] as LendBorrowRow[]),
   ])
+  return shapePools(pools, lendBorrow)
+}
+
+export async function fetchAllYieldPools(): Promise<YieldPool[]> {
+  const now = Date.now()
+  const cached = poolsCache
+
+  // Fresh enough — serve directly, no upstream call.
+  if (cached && now - cached.fetchedAt < POOLS_CACHE_TTL_MS) {
+    return cached.pools
+  }
+
+  // Stale-but-acceptable — kick off a background refresh and return cached.
+  // This is the common path under DefiLlama slowdowns: the page renders
+  // instantly with 5-30 min old data while the slow upstream resolves
+  // for the next caller.
+  if (cached && now - cached.fetchedAt < POOLS_STALE_MAX_MS) {
+    if (!poolsRefreshInFlight) {
+      poolsRefreshInFlight = fetchPoolsFromUpstream()
+        .then((p) => {
+          poolsCache = { pools: p, fetchedAt: Date.now() }
+          return p
+        })
+        .catch((err) => {
+          console.error("[defillama] background /pools refresh failed:", err?.message ?? err)
+          return cached.pools
+        })
+        .finally(() => {
+          poolsRefreshInFlight = null
+        })
+    }
+    return cached.pools
+  }
+
+  // No cache or too stale — must wait for upstream. Coalesce concurrent
+  // callers so the 35s cost is only paid once.
+  if (!poolsRefreshInFlight) {
+    poolsRefreshInFlight = fetchPoolsFromUpstream()
+      .then((p) => {
+        poolsCache = { pools: p, fetchedAt: Date.now() }
+        return p
+      })
+      .finally(() => {
+        poolsRefreshInFlight = null
+      })
+  }
+  return poolsRefreshInFlight
+}
+
+function shapePools(
+  pools: YieldPoolsResponse,
+  lendBorrow: LendBorrowRow[],
+): YieldPool[] {
   const lbByPool = new Map(lendBorrow.map((r) => [r.pool, r]))
   return (pools.data ?? []).map((p) => {
     const lb = lbByPool.get(p.pool)
