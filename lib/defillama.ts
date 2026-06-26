@@ -303,26 +303,57 @@ interface LendBorrowRow {
   borrowable: boolean
 }
 
-// ─── /pools stale-while-revalidate cache ──────────────────────────────────
+// ─── /pools resilience: SWR cache + static seed fallback ──────────────────
 //
-// The DefiLlama Yields /pools endpoint is 10.8 MB and currently takes
-// 25-35s under load. Per-render fetches eat the page's maxDuration
-// budget. Cache the resolved pool list at module scope so a warm
-// serverless instance only pays that cost once per CACHE_TTL_MS window;
-// subsequent calls serve stale data while a background refresh runs.
+// The DefiLlama Yields /pools endpoint is 10.8 MB and intermittently takes
+// 25-35s under load. Two layered defenses:
 //
-// This is intentionally simpler than unstable_cache (which was tried in
-// commit 009518e and reverted as b345dbb because of fetch-cache shape
-// issues with cache: 'no-store'). A module-level Map keyed on warm-
-// instance lifetime is enough — cold starts re-fetch, which is fine.
+//   1. Module-level SWR cache  — warm instances skip the upstream call.
+//   2. Static seed snapshot     — survives cold-start fragmentation. When
+//      the upstream is too slow to fit in the page budget AND there's no
+//      warm cache, read content/snapshots/yield-pools-seed.json instead.
+//      Refresh that file via `npx tsx scripts/capture-yield-pools-seed.ts`.
+//
+// This is intentionally simpler than unstable_cache (009518e → reverted as
+// b345dbb because of fetch-cache shape issues with cache: 'no-store').
 const POOLS_CACHE_TTL_MS = 5 * 60 * 1000 // 5 min freshness
 const POOLS_STALE_MAX_MS = 30 * 60 * 1000 // refuse to serve stale data older than 30 min
+const POOLS_UPSTREAM_TIMEOUT_MS = 25 * 1000 // bail to seed if upstream slower than this
+const POOLS_SEED_PATH = "content/snapshots/yield-pools-seed.json"
+
 interface PoolsCacheEntry {
   pools: YieldPool[]
   fetchedAt: number
 }
 let poolsCache: PoolsCacheEntry | null = null
 let poolsRefreshInFlight: Promise<YieldPool[]> | null = null
+let seedCache: YieldPool[] | null = null
+
+function loadPoolsSeed(): YieldPool[] {
+  if (seedCache) return seedCache
+  try {
+    // Lazy require so this module stays edge-compatible if needed.
+    const fs = require("fs") as typeof import("fs")
+    const path = require("path") as typeof import("path")
+    const fullPath = path.join(process.cwd(), POOLS_SEED_PATH)
+    if (!fs.existsSync(fullPath)) {
+      console.warn(`[defillama] seed file missing: ${POOLS_SEED_PATH}`)
+      seedCache = []
+      return seedCache
+    }
+    const raw = fs.readFileSync(fullPath, "utf-8")
+    const parsed = JSON.parse(raw) as { pools?: YieldPool[]; captured_at?: string }
+    seedCache = parsed.pools ?? []
+    console.log(
+      `[defillama] seed loaded: ${seedCache.length} pools (captured ${parsed.captured_at ?? "unknown"})`
+    )
+    return seedCache
+  } catch (err) {
+    console.error("[defillama] seed read failed:", (err as Error).message)
+    seedCache = []
+    return seedCache
+  }
+}
 
 async function fetchPoolsFromUpstream(): Promise<YieldPool[]> {
   const [pools, lendBorrow] = await Promise.all([
@@ -330,6 +361,25 @@ async function fetchPoolsFromUpstream(): Promise<YieldPool[]> {
     fetchJson<LendBorrowRow[]>(`${YIELDS_BASE}/lendBorrow`).catch(() => [] as LendBorrowRow[]),
   ])
   return shapePools(pools, lendBorrow)
+}
+
+/** Upstream fetch races a timer. Resolves to null on timeout so caller
+ *  can fall back to the seed instead of blocking the page budget. */
+async function fetchPoolsWithTimeout(timeoutMs: number): Promise<YieldPool[] | null> {
+  let timer: ReturnType<typeof setTimeout> | undefined
+  try {
+    return await Promise.race([
+      fetchPoolsFromUpstream(),
+      new Promise<null>((resolve) => {
+        timer = setTimeout(() => {
+          console.warn(`[defillama] /pools upstream timed out at ${timeoutMs}ms — using seed`)
+          resolve(null)
+        }, timeoutMs)
+      }),
+    ])
+  } finally {
+    if (timer) clearTimeout(timer)
+  }
 }
 
 export async function fetchAllYieldPools(): Promise<YieldPool[]> {
@@ -342,9 +392,6 @@ export async function fetchAllYieldPools(): Promise<YieldPool[]> {
   }
 
   // Stale-but-acceptable — kick off a background refresh and return cached.
-  // This is the common path under DefiLlama slowdowns: the page renders
-  // instantly with 5-30 min old data while the slow upstream resolves
-  // for the next caller.
   if (cached && now - cached.fetchedAt < POOLS_STALE_MAX_MS) {
     if (!poolsRefreshInFlight) {
       poolsRefreshInFlight = fetchPoolsFromUpstream()
@@ -363,13 +410,24 @@ export async function fetchAllYieldPools(): Promise<YieldPool[]> {
     return cached.pools
   }
 
-  // No cache or too stale — must wait for upstream. Coalesce concurrent
-  // callers so the 35s cost is only paid once.
+  // No warm cache. Try upstream with a bounded timeout. On timeout or empty,
+  // fall back to the static seed so /rates can still render data.
   if (!poolsRefreshInFlight) {
-    poolsRefreshInFlight = fetchPoolsFromUpstream()
+    poolsRefreshInFlight = fetchPoolsWithTimeout(POOLS_UPSTREAM_TIMEOUT_MS)
       .then((p) => {
-        poolsCache = { pools: p, fetchedAt: Date.now() }
-        return p
+        if (p && p.length > 0) {
+          poolsCache = { pools: p, fetchedAt: Date.now() }
+          return p
+        }
+        // Upstream too slow or empty — seed-fallback path.
+        const seed = loadPoolsSeed()
+        if (seed.length > 0) return seed
+        return p ?? []
+      })
+      .catch((err) => {
+        console.error("[defillama] /pools fetch failed:", err?.message ?? err)
+        const seed = loadPoolsSeed()
+        return seed
       })
       .finally(() => {
         poolsRefreshInFlight = null

@@ -21,25 +21,23 @@ import { CiteThisPage } from "@/components/overview/cite-this-page"
 // revalidate (always a cache MISS). force-dynamic stops the build-time
 // prerender that times out when the public RPC rate-limits.
 export const dynamic = "force-dynamic"
-// Bumped from 60 → 90s during the DefiLlama slow-day incident.
-// /pools recovered to 8s but something else in the chain (likely the
-// 42 parallel /chart fetches under load, or the on-chain RPC overlay)
-// is consistently consuming ~56s. 90s gives substantial headroom; the
-// SWR cache from d67d5b9 means warm instances skip the upstream
-// re-fetch entirely. Vercel Pro supports up to 300s here.
-export const maxDuration = 90
+// Vercel Hobby tier caps maxDuration at 60s. /pools resilience comes
+// from the seed-fallback layered into lib/defillama.ts so the page
+// can render data even when the upstream /pools chain doesn't fit
+// in the 60s budget.
+export const maxDuration = 60
 
 /** Assets that get historical charts. Limited to keep the page fast.
  *  Same set used for the dispersion chart's selector. */
 const CHART_ASSETS = ["USDC", "USDT", "DAI", "USDS", "WETH", "WSTETH", "WBTC"]
 
-// Custom budget for loadRates — it owns the slowest call chain in
-// the dashboard (DefiLlama /pools + 42 parallel /chart fetches +
-// on-chain RPC overlay + FRED). Bumped to 80s after observing
-// consistent 56s budget hits even with /pools recovered to 8s —
-// something downstream (likely RPC-rate-limited chart fan-out) is
-// the new bottleneck. Sits just under the 90s page maxDuration.
-const LOAD_RATES_BUDGET_MS = 80_000
+// Custom budget for loadRates — owns the slowest call chain in the
+// dashboard. Capped at 50s to stay safely under the 60s page
+// maxDuration. The seed-fallback in lib/defillama.ts means /pools
+// returning slowly doesn't kill the load — it bails out at 25s
+// (its own internal budget) and the page receives seeded data
+// instead, so the page always renders within budget.
+const LOAD_RATES_BUDGET_MS = 50_000
 
 export default async function RatesPage() {
   // Both fetches wrapped in a timeout race so a hanging upstream
