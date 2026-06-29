@@ -249,3 +249,141 @@ export async function fetchDailyLiquidationRollup(
     largest_usd: Number(r.largest ?? 0),
   }));
 }
+
+/* ── Dashboard self-audit ────────────────────────────────────────────
+ * The moonwell-dashboard-audit worker (cron 0 2 UTC daily) writes one
+ * row per coverage check to `dashboard_audits`. We read the last run's
+ * rows and surface any fail/error so the digest catches scanner rot the
+ * way the Moonwell team's Jun-15-21 gap report would have, but earlier.
+ */
+export interface DashboardAuditFailure {
+  checkName: string;
+  surface: string;
+  chain: string;
+  status: "fail" | "error";
+  deltaPct: number | null;
+  onChainCount: number | null;
+  dbCount: number | null;
+  notes: string | null;
+  runAt: string;
+}
+
+/* ── Per-market daily snapshots (for supply/borrow Δ alerts) ──────────
+ * Reads from moonwell-dashboard's `daily_chain_snapshots` table, which the
+ * worker-scanner-fin cron populates every 30 min via lib/snapshots-cache.ts
+ * snapshotAllChains(). Each row: (chain, market_symbol, date, supply_usd,
+ * borrow_usd, ...). One row per market per UTC day, latest-write-wins.
+ *
+ * Used by the market-supply/borrow-Δ alert rules. Pre-2026-06-29 they
+ * wrote their own D1 snapshots sourced from DefiLlama's yields API —
+ * but that API stopped exposing per-pool totalBorrowUsd, so borrow
+ * alerts could never fire. The dashboard's Neon snapshot has both
+ * supply and borrow because it reads on-chain mToken state directly.
+ */
+export interface MarketDeltaRow {
+  chain: string;
+  market_symbol: string;
+  current_supply_usd: number;
+  current_borrow_usd: number;
+  prior_supply_usd: number;
+  prior_borrow_usd: number;
+  current_date: string;       // ISO date 'YYYY-MM-DD'
+  prior_date: string;
+}
+
+/**
+ * For each (chain, market), return the latest snapshot + the snapshot
+ * closest to `daysBack` days ago. Used to compute 7-day Δ. Markets with
+ * no usable prior get filtered out.
+ */
+export async function fetchMarketDeltaPairs(
+  env: Env,
+  daysBack = 7,
+  toleranceDays = 2,
+): Promise<MarketDeltaRow[]> {
+  const sql = getSql(env);
+  const rows = (await sql`
+    WITH latest AS (
+      SELECT DISTINCT ON (chain, market_symbol)
+        chain, market_symbol, date, total_supply_usd AS supply, total_borrow_usd AS borrow
+      FROM daily_chain_snapshots
+      ORDER BY chain, market_symbol, date DESC
+    ),
+    prior AS (
+      SELECT DISTINCT ON (chain, market_symbol)
+        chain, market_symbol, date, total_supply_usd AS supply, total_borrow_usd AS borrow
+      FROM daily_chain_snapshots
+      WHERE date BETWEEN
+            (CURRENT_DATE - (${daysBack} + ${toleranceDays}) * INTERVAL '1 day')::date
+        AND (CURRENT_DATE - (${daysBack} - ${toleranceDays}) * INTERVAL '1 day')::date
+      ORDER BY chain, market_symbol, ABS(date - (CURRENT_DATE - ${daysBack})::date)
+    )
+    SELECT
+      l.chain, l.market_symbol,
+      l.supply AS current_supply_usd,
+      l.borrow AS current_borrow_usd,
+      p.supply AS prior_supply_usd,
+      p.borrow AS prior_borrow_usd,
+      l.date::text AS current_date,
+      p.date::text AS prior_date
+    FROM latest l
+    JOIN prior p ON p.chain = l.chain AND p.market_symbol = l.market_symbol
+  `) as Array<{
+    chain: string; market_symbol: string;
+    current_supply_usd: number | string | null;
+    current_borrow_usd: number | string | null;
+    prior_supply_usd: number | string | null;
+    prior_borrow_usd: number | string | null;
+    current_date: string; prior_date: string;
+  }>;
+  return rows.map((r) => ({
+    chain: r.chain,
+    market_symbol: r.market_symbol,
+    current_supply_usd: Number(r.current_supply_usd ?? 0),
+    current_borrow_usd: Number(r.current_borrow_usd ?? 0),
+    prior_supply_usd: Number(r.prior_supply_usd ?? 0),
+    prior_borrow_usd: Number(r.prior_borrow_usd ?? 0),
+    current_date: r.current_date,
+    prior_date: r.prior_date,
+  }));
+}
+
+export async function fetchDashboardAuditFailures(
+  env: Env,
+  lookbackHours = 36,
+): Promise<DashboardAuditFailure[]> {
+  const sql = getSql(env);
+  // One row per (check_name) — the latest run in the lookback window.
+  // If a check has been failing for 3 daily runs in a row we still only
+  // alert once per cooldown period; the rule's `key` enforces that.
+  const rows = (await sql`
+    WITH ranked AS (
+      SELECT check_name, surface, chain, status,
+             delta_pct, on_chain_count, db_count, notes,
+             run_at,
+             ROW_NUMBER() OVER (PARTITION BY check_name ORDER BY run_at DESC) AS rn
+      FROM dashboard_audits
+      WHERE run_at > now() - (${lookbackHours} || ' hours')::interval
+    )
+    SELECT check_name, surface, chain, status, delta_pct,
+           on_chain_count, db_count, notes, run_at::text AS run_at
+    FROM ranked
+    WHERE rn = 1 AND status IN ('fail', 'error')
+    ORDER BY chain, surface
+  `) as Array<{
+    check_name: string; surface: string; chain: string; status: string;
+    delta_pct: number | null; on_chain_count: number | null; db_count: number | null;
+    notes: string | null; run_at: string;
+  }>;
+  return rows.map((r) => ({
+    checkName: r.check_name,
+    surface: r.surface,
+    chain: r.chain,
+    status: r.status as "fail" | "error",
+    deltaPct: r.delta_pct,
+    onChainCount: r.on_chain_count,
+    dbCount: r.db_count,
+    notes: r.notes,
+    runAt: r.run_at,
+  }));
+}

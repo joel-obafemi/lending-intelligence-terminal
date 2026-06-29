@@ -18,6 +18,10 @@ import {
 } from "../config";
 import { MoonwellDefiLlamaClient } from "../sources/moonwell";
 import {
+  fetchMarketDeltaPairs,
+  hasMoonwellDb,
+} from "../sources/moonwellNeon";
+import {
   findMarketSnapshotAtOrBefore,
   recordMarketSnapshot,
 } from "../state/moonwell-d1";
@@ -43,6 +47,65 @@ export async function evaluateMarketDelta(
   ctx: AlertContext,
   args: EvaluatorArgs,
 ): Promise<AlertEvent[]> {
+  // 2026-06-29 source rewrite. We now read per-market 7d-vs-now data from
+  // moonwell-dashboard's Neon `daily_chain_snapshots` (populated every 30
+  // min by the dashboard scanner; backfilled 14 days deep before this rule
+  // went live). Previous DefiLlama path is dead — it stopped exposing
+  // totalSupplyUsd/totalBorrowUsd per pool, leaving the D1 snapshot store
+  // with all zeros for 2 weeks of would-be alerts.
+  //
+  // Falls back to the legacy DefiLlama+D1 path only when the Moonwell DB
+  // URL isn't configured (e.g. local preview) so the rule never silently
+  // disappears.
+  if (!hasMoonwellDb(ctx.env)) {
+    return await evaluateMarketDeltaLegacy(ctx, args);
+  }
+
+  const events: AlertEvent[] = [];
+  let pairs;
+  try {
+    pairs = await fetchMarketDeltaPairs(ctx.env, 7, 2);
+  } catch (e: any) {
+    console.warn(`market-delta source read failed, falling back: ${(e?.message ?? "").slice(0, 100)}`);
+    return await evaluateMarketDeltaLegacy(ctx, args);
+  }
+
+  for (const p of pairs) {
+    const chain = normalizeChain(p.chain);
+    if (!chain) continue;
+    const currentValue = args.field === "supply" ? p.current_supply_usd : p.current_borrow_usd;
+    const priorValue   = args.field === "supply" ? p.prior_supply_usd   : p.prior_borrow_usd;
+    const delta = pctChange(priorValue, currentValue);
+    if (delta === null) continue;
+    if (Math.abs(delta) < MOONWELL_MARKET_DELTA_NORMAL_PCT) continue;
+
+    const severity: Severity =
+      Math.abs(delta) >= MOONWELL_MARKET_DELTA_CRITICAL_PCT ? "CRITICAL" : "NORMAL";
+    events.push(
+      buildEvent(ctx, {
+        ruleId: args.ruleId,
+        field: args.field,
+        chain,
+        symbol: p.market_symbol,
+        priorValue,
+        currentValue,
+        delta,
+        severity,
+      }),
+    );
+  }
+  return events;
+}
+
+// Legacy path: kept ONLY for environments that don't have MOONWELL_DATABASE_URL
+// configured (mainly local-dev / preview). Reads DefiLlama yields per-pool
+// `tvlUsd` (supply only — borrow stays 0 because DefiLlama dropped that
+// field). Maintains the D1 snapshot store for backwards compat. Production
+// no longer touches this branch.
+async function evaluateMarketDeltaLegacy(
+  ctx: AlertContext,
+  args: EvaluatorArgs,
+): Promise<AlertEvent[]> {
   const client = args.client ?? new MoonwellDefiLlamaClient();
   const pools = await client.getLendingPools();
   if (pools.length === 0) return [];
@@ -53,15 +116,6 @@ export async function evaluateMarketDelta(
   for (const pool of pools) {
     const chain = normalizeChain(pool.chain);
     if (!chain) continue;
-    // 2026-06-29 source fix: DefiLlama's yields API no longer exposes
-    // totalSupplyUsd / totalBorrowUsd per pool (only `tvlUsd` is left).
-    // Snapshots had been recording 0/0 for every market for ~2 weeks,
-    // so the 7d Δ alerts never fired. Use `tvlUsd` as the supply proxy
-    // (for lending protocols net deposits ≈ TVL — close enough for the
-    // 10% Δ headline). Borrow stays at 0 until we wire a per-market
-    // on-chain or dashboard-Neon source for it; the borrow rule's
-    // `delta === null` short-circuit then prevents bogus 0% / inf%
-    // alerts when both prior and current are 0.
     const supplyUsd = Number.isFinite(pool.tvlUsd) ? pool.tvlUsd : 0;
     const borrowUsd =
       pool.totalBorrowUsd != null && Number.isFinite(pool.totalBorrowUsd)
@@ -81,10 +135,8 @@ export async function evaluateMarketDelta(
     const cutoff = nowMs - SEVEN_DAYS_MS;
     const prior = await findMarketSnapshotAtOrBefore(ctx.env, chain, pool.symbol, cutoff);
     if (!prior) continue;
-    // Reject too-fresh comparison points so we don't fire 3 days in.
     const minSeededAt = nowMs - MOONWELL_MARKET_DELTA_MIN_SAMPLE_DAYS * 24 * 3600 * 1000;
     if (prior.snapshot_at > minSeededAt) continue;
-    // Reject very stale priors — we want ≈7d, not 30d.
     if (prior.snapshot_at < cutoff - SNAPSHOT_TOLERANCE_MS) continue;
 
     const currentValue = args.field === "supply" ? supplyUsd : borrowUsd;
