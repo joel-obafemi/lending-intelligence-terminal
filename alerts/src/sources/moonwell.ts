@@ -105,7 +105,13 @@ export class MoonwellDefiLlamaClient {
   async getTotalTvlUsd(): Promise<number | null> {
     const p = await this.getProtocol();
     if (!p) return null;
-    return p.tvl ?? sumChainTvls(p.currentChainTvls) ?? null;
+    // DefiLlama occasionally returns p.tvl = NaN (e.g. when a per-chain
+    // sub-tvl is missing). NaN is non-nullish, so `?? null` falls through
+    // and the weekly-recap renders "TVL: $NaN" via fmtUsdCompact(NaN).
+    // Number.isFinite catches both NaN and Infinity. Caught 2026-06-29.
+    if (Number.isFinite(p.tvl)) return p.tvl as number;
+    const summed = sumChainTvls(p.currentChainTvls);
+    return Number.isFinite(summed) ? (summed as number) : null;
   }
 
   /** Per-chain current TVL split, in USD. */
@@ -130,7 +136,10 @@ export class MoonwellDefiLlamaClient {
   async getVaultsTvlUsd(): Promise<number | null> {
     const v = await this.getVaultsProtocol();
     if (!v) return null;
-    return v.tvl ?? sumChainTvls(v.currentChainTvls) ?? null;
+    // Same NaN-vs-nullish guard as getTotalTvlUsd above.
+    if (Number.isFinite(v.tvl)) return v.tvl as number;
+    const summed = sumChainTvls(v.currentChainTvls);
+    return Number.isFinite(summed) ? (summed as number) : null;
   }
 
   /**

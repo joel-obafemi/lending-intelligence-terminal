@@ -53,14 +53,21 @@ export async function evaluateMarketDelta(
   for (const pool of pools) {
     const chain = normalizeChain(pool.chain);
     if (!chain) continue;
-    const supplyUsd = pool.totalSupplyUsd ?? 0;
-    const borrowUsd = pool.totalBorrowUsd ?? 0;
+    // 2026-06-29 source fix: DefiLlama's yields API no longer exposes
+    // totalSupplyUsd / totalBorrowUsd per pool (only `tvlUsd` is left).
+    // Snapshots had been recording 0/0 for every market for ~2 weeks,
+    // so the 7d Δ alerts never fired. Use `tvlUsd` as the supply proxy
+    // (for lending protocols net deposits ≈ TVL — close enough for the
+    // 10% Δ headline). Borrow stays at 0 until we wire a per-market
+    // on-chain or dashboard-Neon source for it; the borrow rule's
+    // `delta === null` short-circuit then prevents bogus 0% / inf%
+    // alerts when both prior and current are 0.
+    const supplyUsd = Number.isFinite(pool.tvlUsd) ? pool.tvlUsd : 0;
+    const borrowUsd =
+      pool.totalBorrowUsd != null && Number.isFinite(pool.totalBorrowUsd)
+        ? pool.totalBorrowUsd
+        : 0;
 
-    // We need a proxy for token-unit totals. DefiLlama only exposes USD
-    // values per pool — token totals require an on-chain read we're not
-    // making in this Worker. We persist USD as both `*_usd` and as the
-    // `total_supply`/`total_borrow` columns (which mean "USD" in this
-    // dataset; the Δ math is USD-based and the headline says "$").
     await recordMarketSnapshot(ctx.env, {
       chain,
       market_symbol: pool.symbol,
