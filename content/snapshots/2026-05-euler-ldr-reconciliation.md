@@ -36,3 +36,47 @@ File a separate task to extend the on-chain override in `lib/overview.ts` to app
 **Suggested approach:** for the override-eligible slugs (Compound V3, Euler V2), substitute the latest day's tvl/borrowed in `tvlByDay` and `borrowedByDay` after the merge loop (lines 455-464). Then propagate the substitution back through some number of historical days using a scaled adjustment, or accept that only the latest day matches on-chain and the earlier history remains DefiLlama-truth. The simpler fix is to label the chart "DefiLlama-truth historical, on-chain latest" in a methodology tooltip until a fully on-chain historical pipeline exists.
 
 This work doesn't block Issue 002's §06.4 prose fix — the canonical value (85.23%) is the same one already in the published prose; only the FRAMING around it needs to change.
+
+## Resolution — Path B chosen during Issue 003 pre-capture audit (2026-06-30)
+
+Three paths from the audit brief:
+
+  - **Path A** (apply override to historical points). Constant-ratio
+    correction is mathematically wrong because the over-count scales
+    with protocol size, not as a fixed percentage (Compound: $180M
+    today, $340M at May 31 — same protocol, very different ratios).
+    The "real" Path A — per-day archive RPC reads — requires
+    infrastructure we don't have wired and adds significant compute
+    cost per page render.
+  - **Path B** (latest-only override, methodology tooltip).
+  - **Path C** (document and defer).
+
+**Picked Path B.** Path A's shortcut is wrong, the long version is
+heavy, and Path C lets the framing drift compound across Issues 002 →
+003 → … . Path B is honest about the data-source gap.
+
+**What changed:**
+
+  - `lib/methodology.ts` — `sector-ldr` tooltip now states that the
+    historical line uses DefiLlama (over-counts Compound V3 + Euler V2
+    by ~10-15%) and only the current-row card carries the on-chain
+    substitution. Source line restated to match.
+  - No code change to `lib/overview.ts` — the asymmetry between
+    latest-row and historical-timeseries is now documented behavior
+    rather than an undocumented gap.
+
+**What didn't change:**
+
+  - The reconciliation gate manifest's `euler_v2_ldr` entry still
+    references the 85.23% canonical snapshot — that's the on-chain
+    truth, used in prose and the gate. Unaffected by this framing
+    change.
+  - The /lending-terminal Overview's LDR card (composition-strip)
+    continues to show the on-chain-substituted current value.
+  - The published §06.4 prose still anchors on 85.23%.
+
+**Issue 003 implication:** when §06.4 (or its successor section) is
+written, reference the on-chain anchor for the canonical reading and
+treat the dashboard chart's depressed historical line as the
+DefiLlama-consistent comparator. The methodology tooltip now spells
+this out for any reader who clicks through.

@@ -160,10 +160,61 @@ function ratePerSecondToApyPct(ratePerSecondScaled: bigint): number {
   return (Number(ratePerSecondScaled) / 1e18) * SECONDS_PER_YEAR * 100
 }
 
-// USD = qty × price / (1e8 × 10^decimals). getPrice returns 1e8-scaled USD.
-function quoteUsd(qty: bigint, price: bigint, decimals: number): number {
-  return Number(qty) * (Number(price) / 1e8) / 10 ** decimals
+// USD = qty × price / (1e8 × 10^decimals). getPrice returns 1e8-scaled
+// USD for USD-base Comets (USDC/USDT/USDS/WBTC), but ETH-scaled for
+// ETH-base Comets (WETH/wstETH) — those feeds always return 1e8 (i.e.
+// 1.0 ETH per base unit) and the caller is expected to multiply by
+// ETH/USD separately. Pass ethUsdMultiplier = 1 for USD-base markets
+// and the live ETH/USD rate for ETH-base ones.
+//
+// Precision: parseFloat(formatUnits(qty, decimals)) avoids the
+// bigint→Number precision loss that bites high-decimal tokens with
+// large quantities (Number(bigint > 2^53) ~9e15).
+function quoteUsd(
+  qty: bigint,
+  price: bigint,
+  decimals: number,
+  ethUsdMultiplier: number = 1,
+): number {
+  const qtyTokens = parseFloat(formatUnits(qty, decimals))
+  const priceUsd = (Number(price) / 1e8) * ethUsdMultiplier
+  return qtyTokens * priceUsd
 }
+
+// Chainlink ETH/USD aggregator on Ethereum mainnet — used to convert
+// ETH-denominated Comet readings (WETH-base, wstETH-base) into USD.
+// Returns 8-decimal scaled USD.
+const CHAINLINK_ETH_USD = "0x5f4eC3Df9cbd43714FE2740f5E3616155c5b8419" as Address
+const chainlinkAggregatorAbi = [
+  {
+    name: "latestRoundData",
+    type: "function",
+    stateMutability: "view",
+    inputs: [],
+    outputs: [
+      { name: "roundId",         type: "uint80"  },
+      { name: "answer",          type: "int256"  },
+      { name: "startedAt",       type: "uint256" },
+      { name: "updatedAt",       type: "uint256" },
+      { name: "answeredInRound", type: "uint80"  },
+    ],
+  },
+] as const
+
+async function fetchEthUsd(client: PublicClient): Promise<number> {
+  const round = (await client.readContract({
+    address: CHAINLINK_ETH_USD,
+    abi: chainlinkAggregatorAbi,
+    functionName: "latestRoundData",
+  })) as unknown as [bigint, bigint, bigint, bigint, bigint]
+  return Number(round[1]) / 1e8
+}
+
+/** Comets whose baseTokenPriceFeed is ETH-denominated rather than USD.
+ *  For these, every quoteUsd call (base AND collateral) needs an extra
+ *  ETH/USD multiplier or the read comes back ~$1/ETH ≈ 3 orders too
+ *  small. Issue 002 §06.5 cWETHv3 was $52K vs $83.6M because of this. */
+const ETH_DENOMINATED_BASES = new Set(["WETH", "wstETH"])
 
 interface CollateralRow {
   symbol: string
@@ -190,7 +241,10 @@ interface MarketRow {
   note?: string
 }
 
-async function readMarket(c: CometMarket): Promise<MarketRow | { failed: true; label: string; address: string; reason: string }> {
+async function readMarket(
+  c: CometMarket,
+  ethUsdPrice: number,
+): Promise<MarketRow | { failed: true; label: string; address: string; reason: string }> {
   const client = getClient()
   const r = (fnName: string, args?: any[]) =>
     client.readContract({
@@ -226,9 +280,14 @@ async function readMarket(c: CometMarket): Promise<MarketRow | { failed: true; l
         client.readContract({ address: baseToken, abi: erc20Abi, functionName: "decimals" }),
       ])) as [bigint, bigint, bigint, string, number]
 
-    const basePrice = Number(basePriceRaw) / 1e8
-    const totalSupplyUsd = quoteUsd(totalSupplyRaw, basePriceRaw, baseDecimals)
-    const totalBorrowUsd = quoteUsd(totalBorrowRaw, basePriceRaw, baseDecimals)
+    // ETH-denominated Comets (WETH/wstETH base): the price feed
+    // returns ETH/base (= 1.0 for WETH), so multiply by ETH/USD to
+    // get true USD. USD-base Comets pass multiplier=1 (no-op).
+    const isEthBase = ETH_DENOMINATED_BASES.has(baseSymbol)
+    const ethMul = isEthBase ? ethUsdPrice : 1
+    const basePrice = (Number(basePriceRaw) / 1e8) * ethMul
+    const totalSupplyUsd = quoteUsd(totalSupplyRaw, basePriceRaw, baseDecimals, ethMul)
+    const totalBorrowUsd = quoteUsd(totalBorrowRaw, basePriceRaw, baseDecimals, ethMul)
     const utilizationPct = (Number(utilizationRaw) / 1e18) * 100
 
     // Per-collateral reads.
@@ -254,7 +313,10 @@ async function readMarket(c: CometMarket): Promise<MarketRow | { failed: true; l
             r("totalsCollateral", [ai.asset]),
           ])) as [string, number, bigint, [bigint, bigint]]
           const qtyRaw = totalsCol[0]
-          const usd = quoteUsd(qtyRaw, priceRaw, dec)
+          // Collateral price feeds inherit the base denomination —
+          // WETH/wstETH-base Comets need the same ETH/USD multiplier
+          // on collateral as on base.
+          const usd = quoteUsd(qtyRaw, priceRaw, dec, ethMul)
           return {
             symbol: sym,
             address: ai.asset,
@@ -307,8 +369,12 @@ async function readMarket(c: CometMarket): Promise<MarketRow | { failed: true; l
 async function main(): Promise<void> {
   console.log(`Compound V3 by Comet market on Ethereum`)
   console.log("")
+  console.log(`[0/3] Fetching ETH/USD from Chainlink …`)
+  const ethUsd = await fetchEthUsd(getClient())
+  console.log(`  ETH/USD = $${ethUsd.toLocaleString()}`)
+  console.log("")
   console.log(`[1/3] Reading ${COMETS.length} Comet markets …`)
-  const rows = await Promise.all(COMETS.map((c) => readMarket(c)))
+  const rows = await Promise.all(COMETS.map((c) => readMarket(c, ethUsd)))
   const ok = rows.filter((r): r is MarketRow => !(r as any).failed)
   const failed = rows.filter((r): r is { failed: true; label: string; address: string; reason: string } => (r as any).failed)
   for (const f of failed) {

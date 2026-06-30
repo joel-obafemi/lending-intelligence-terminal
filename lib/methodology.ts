@@ -43,8 +43,8 @@ export const METHODOLOGY: Record<string, MethodologyEntry> = {
   },
   "sector-ldr": {
     text:
-      "Loan-to-Deposit Ratio = active borrows ÷ total supplied per protocol, plotted over time. Mechanically the same value as utilization but framed as a depositor-efficiency reading rather than a borrow-saturation one. Sector overlay (dashed) is the supplied-weighted average across the six covered protocols.",
-    source: "DefiLlama-derived; Compound V3 + Euler V2 substituted with on-chain Comet / EVK reads.",
+      "Loan-to-Deposit Ratio = active borrows ÷ total supplied per protocol, plotted over time. Mechanically the same value as utilization but framed as a depositor-efficiency reading rather than a borrow-saturation one. Sector overlay (dashed) is the supplied-weighted average across the six covered protocols. Data-source caveat: the historical line uses DefiLlama's chainTvls.Ethereum series; for Compound V3 and Euler V2 that over-counts versus raw contract reads by roughly 10-15% (Euler ~$70M over today, Compound ~$180M today / ~$340M at May 31), so those two lines run a few percentage points below their on-chain truth. The current-row card on the composition strip is on-chain-substituted and reflects the truer LDR; the historical line is the DefiLlama-consistent series.",
+    source: "DefiLlama-derived; latest-row card substitutes Compound V3 + Euler V2 with on-chain Comet / EVK reads (historical line is not substituted).",
   },
   "sector-market-share-tvl": {
     text:
