@@ -1,0 +1,167 @@
+{
+  "schema_version": 1,
+  "generated_at": "2026-06-30T20:00:37.162Z",
+  "issue": "002 §06.6 (curator-concentration analysis)",
+  "source": {
+    "input": "content/snapshots/2026-06-euler-vault-flows.json",
+    "subgraph": "https://api.goldsky.com/api/public/project_cm4iagnemt1wp01xn4gh1agft/subgraphs/euler-v2-mainnet/latest/gn",
+    "method": "Goldsky public Euler V2 mainnet subgraph → eulerVaults → governonAdmin; ENS reverse-resolved via mainnet RPC.",
+    "caveat": "governonAdmin is the vault's GOVERNOR multisig, NOT the depositor. A shared governor across two outflowing vaults means one operator controls those vaults' risk parameters — strong signal that the outflows are correlated, but not proof a single LP withdrew."
+  },
+  "outflow_vault_curators": [
+    {
+      "display_name": "EVK Vault eRLUSD-7",
+      "underlying_symbol": "RLUSD",
+      "expected_symbol": "eRLUSD-7",
+      "category": "outflow",
+      "vault_address": "0xaF5372792a29dC6b296d6FFD4AA3386aff8f9BB2",
+      "vault_name": "EVK Vault eRLUSD-7",
+      "governor_admin": "0x9453ee262d7C95955e690AE7aBBD82a08B135685",
+      "is_finalized": false,
+      "governor_ens": null,
+      "curator_hint": "Sentora",
+      "match_status": "ok"
+    },
+    {
+      "display_name": "EVK Vault eUSDC-70",
+      "underlying_symbol": "USDC",
+      "expected_symbol": "eUSDC-70",
+      "category": "outflow",
+      "vault_address": "0x9bD52F2805c6aF014132874124686e7b248c2Cbb",
+      "vault_name": "EVK Vault eUSDC-70",
+      "governor_admin": "0x9453ee262d7C95955e690AE7aBBD82a08B135685",
+      "is_finalized": false,
+      "governor_ens": null,
+      "curator_hint": "Sentora",
+      "match_status": "ok"
+    },
+    {
+      "display_name": "EVK Vault ewstETH-2",
+      "underlying_symbol": "WSTETH",
+      "expected_symbol": "ewstETH-2",
+      "category": "outflow",
+      "vault_address": "0xbC4B4AC47582c3E38Ce5940B80Da65401F4628f1",
+      "vault_name": "EVK Vault ewstETH-2",
+      "governor_admin": "0x060DB084bF41872861f175d83f3cb1B5566dfEA3",
+      "is_finalized": false,
+      "governor_ens": null,
+      "curator_hint": "K3 Capital",
+      "match_status": "ok"
+    },
+    {
+      "display_name": "EVK Vault eAUSD-7",
+      "underlying_symbol": "AUSD",
+      "expected_symbol": "eAUSD-7",
+      "category": "outflow",
+      "vault_address": "0xdFa6451EAC51c913003bfeb52418F55376996A64",
+      "vault_name": "EVK Vault eAUSD-7",
+      "governor_admin": "0xeeF44faf5fE0cc1FAB04Bb052Bff750Cf37A7fC4",
+      "is_finalized": false,
+      "governor_ens": null,
+      "curator_hint": null,
+      "match_status": "ok"
+    },
+    {
+      "display_name": "EVK Vault etETH-3",
+      "underlying_symbol": "TETH",
+      "expected_symbol": "etETH-3",
+      "category": "outflow",
+      "vault_address": "0xA28C23a459fF8773EB4dBe0e7250d93F79F1Fe2B",
+      "vault_name": "EVK Vault etETH-3",
+      "governor_admin": "0x060DB084bF41872861f175d83f3cb1B5566dfEA3",
+      "is_finalized": false,
+      "governor_ens": null,
+      "curator_hint": "K3 Capital",
+      "match_status": "ok"
+    }
+  ],
+  "inflow_vault_curators": [
+    {
+      "display_name": "EVK Vault eUSD0-4",
+      "underlying_symbol": "USD0",
+      "expected_symbol": "eUSD0-4",
+      "category": "inflow",
+      "vault_address": "0xd001f0a15D272542687b2677BA627f48A4333b5d",
+      "vault_name": "EVK Vault eUSD0-4",
+      "governor_admin": "0x81ad394C0Fa87e99Ca46E1aca093BEe020f203f4",
+      "is_finalized": false,
+      "governor_ens": null,
+      "curator_hint": null,
+      "match_status": "ok"
+    },
+    {
+      "display_name": "EVK Vault ePYUSD-6",
+      "underlying_symbol": "PYUSD",
+      "expected_symbol": "ePYUSD-6",
+      "category": "inflow",
+      "vault_address": "0xba98fC35C9dfd69178AD5dcE9FA29c64554783b5",
+      "vault_name": "EVK Vault ePYUSD-6",
+      "governor_admin": "0x9453ee262d7C95955e690AE7aBBD82a08B135685",
+      "is_finalized": false,
+      "governor_ens": null,
+      "curator_hint": "Sentora",
+      "match_status": "ok"
+    },
+    {
+      "display_name": "EVK Vault eUSDe-6",
+      "underlying_symbol": "USDE",
+      "expected_symbol": "eUSDe-6",
+      "category": "inflow",
+      "vault_address": "0x2daCa71Cb58285212Dc05D65Cfd4f59A82BC4cF6",
+      "vault_name": "EVK Vault eUSDe-6",
+      "governor_admin": "0x060DB084bF41872861f175d83f3cb1B5566dfEA3",
+      "is_finalized": false,
+      "governor_ens": null,
+      "curator_hint": "K3 Capital",
+      "match_status": "ok"
+    },
+    {
+      "display_name": "EVK Vault eUSDC-22",
+      "underlying_symbol": "USDC",
+      "expected_symbol": "eUSDC-22",
+      "category": "inflow",
+      "vault_address": "0xe0a80d35bB6618CBA260120b279d357978c42BCE",
+      "vault_name": "EVK Vault eUSDC-22",
+      "governor_admin": "0x060DB084bF41872861f175d83f3cb1B5566dfEA3",
+      "is_finalized": false,
+      "governor_ens": null,
+      "curator_hint": "K3 Capital",
+      "match_status": "ok"
+    },
+    {
+      "display_name": "EVK Vault eUSDtb-2",
+      "underlying_symbol": "USDTB",
+      "expected_symbol": "eUSDtb-2",
+      "category": "inflow",
+      "vault_address": "0x328646cdfBaD730432620d845B8F5A2f7D786C01",
+      "vault_name": "EVK Vault eUSDtb-2",
+      "governor_admin": "0x060DB084bF41872861f175d83f3cb1B5566dfEA3",
+      "is_finalized": false,
+      "governor_ens": null,
+      "curator_hint": "K3 Capital",
+      "match_status": "ok"
+    }
+  ],
+  "governor_concentrations": [
+    {
+      "governor": "0x9453ee262d7c95955e690ae7abbd82a08b135685",
+      "governor_ens": null,
+      "curator_hint": "Sentora",
+      "vault_count": 2,
+      "vaults": [
+        "EVK Vault eRLUSD-7",
+        "EVK Vault eUSDC-70"
+      ]
+    },
+    {
+      "governor": "0x060db084bf41872861f175d83f3cb1b5566dfea3",
+      "governor_ens": null,
+      "curator_hint": "K3 Capital",
+      "vault_count": 2,
+      "vaults": [
+        "EVK Vault ewstETH-2",
+        "EVK Vault etETH-3"
+      ]
+    }
+  ]
+}

@@ -1,0 +1,238 @@
+{
+  "source": {
+    "script": "scripts/query-aave-outflow-days-by-asset.ts",
+    "generated_at_utc": "2026-06-30T20:09:31Z",
+    "data_source": "DefiLlama fetchProtocolHistory (suppliedByAssetQty per asset, per day) for protocol slug 'aave-v3'",
+    "methodology": "Per-asset delta on day D = (qty_D − qty_{D-1}) × latest_observed_price. Constant-price flow methodology — isolates real deposit/withdraw activity from collateral price drift. Same data path as scripts/query-aave-may-daily-flows.ts and the dashboard's Sankey aggregator (lib/net-flows-sankey.ts).",
+    "caveat": "USD figures use the LATEST observed price per asset, not the price on the target day. Cross-citing against the dashboard's price-current TVL is not valid — only the net-change figures are.",
+    "note": "USDC is the #1 outflow asset on 2 of the 3 target days — it is the consistent driver of the post-May-14 outflow spikes on Aave V3 Ethereum."
+  },
+  "target_days": [
+    {
+      "date_utc": "2026-06-12",
+      "total_constant_price_net_flow_usd": -87972425.1882964,
+      "total_assets_observed": 32,
+      "top_5_outflows": [
+        {
+          "asset": "USDC",
+          "delta_usd": -149694198.8010451,
+          "qty_t": 49993091.18596,
+          "qty_t_minus_1": 199735128.39936,
+          "price_latest": 0.9996805278381065
+        },
+        {
+          "asset": "USDT",
+          "delta_usd": -25058889.505191084,
+          "qty_t": 375532931.99575,
+          "qty_t_minus_1": 400627574.01215,
+          "price_latest": 0.9985752930372336
+        },
+        {
+          "asset": "USDE",
+          "delta_usd": -18198484.231871057,
+          "qty_t": 128716104.92301,
+          "qty_t_minus_1": 146946762.0876,
+          "price_latest": 0.9982352291292373
+        },
+        {
+          "asset": "RSETH",
+          "delta_usd": -3972637.5650595585,
+          "qty_t": 428500.69226,
+          "qty_t_minus_1": 430827.01226,
+          "price_latest": 1707.691790063081
+        },
+        {
+          "asset": "OSETH",
+          "delta_usd": -1310085.4755690473,
+          "qty_t": 100704.22329,
+          "qty_t_minus_1": 101474.22329,
+          "price_latest": 1701.4097085312303
+        }
+      ],
+      "top_3_inflows": [
+        {
+          "asset": "WBTC",
+          "delta_usd": 37546424.39183325,
+          "qty_t": 30543.24218,
+          "qty_t_minus_1": 29913.66215,
+          "price_latest": 59637.254364362845
+        },
+        {
+          "asset": "WETH",
+          "delta_usd": 24719797.800757598,
+          "qty_t": 389067.41744,
+          "qty_t_minus_1": 373544.78924,
+          "price_latest": 1592.500798335016
+        },
+        {
+          "asset": "SUSDE",
+          "delta_usd": 24284243.530096695,
+          "qty_t": 241670929.45009,
+          "qty_t_minus_1": 222010018.11282,
+          "price_latest": 1.2351535040017465
+        }
+      ]
+    },
+    {
+      "date_utc": "2026-06-11",
+      "total_constant_price_net_flow_usd": -73563894.54492255,
+      "total_assets_observed": 34,
+      "top_5_outflows": [
+        {
+          "asset": "GHO",
+          "delta_usd": -39683693.15195175,
+          "qty_t": 73683215.55828,
+          "qty_t_minus_1": 113448918.8289,
+          "price_latest": 0.9979376670868833
+        },
+        {
+          "asset": "USDC",
+          "delta_usd": -39005002.613121696,
+          "qty_t": 199735128.39936,
+          "qty_t_minus_1": 238752596.00721,
+          "price_latest": 0.9996805278381065
+        },
+        {
+          "asset": "USDT",
+          "delta_usd": -15155140.974680101,
+          "qty_t": 400627574.01215,
+          "qty_t_minus_1": 415804337.42734,
+          "price_latest": 0.9985752930372336
+        },
+        {
+          "asset": "WSTETH",
+          "delta_usd": -8998213.043511085,
+          "qty_t": 728700.18862,
+          "qty_t_minus_1": 733252.83531,
+          "price_latest": 1976.4795417302971
+        },
+        {
+          "asset": "WEETH",
+          "delta_usd": -3707074.8856894793,
+          "qty_t": 959234.85543,
+          "qty_t_minus_1": 961353.8406,
+          "price_latest": 1749.4576829386112
+        }
+      ],
+      "top_3_inflows": [
+        {
+          "asset": "USDTB",
+          "delta_usd": 12070887.492921678,
+          "qty_t": -57825996.54376,
+          "qty_t_minus_1": -69903159.93981,
+          "price_latest": 0.9994803495719562
+        },
+        {
+          "asset": "SUSDE",
+          "delta_usd": 9312081.745926328,
+          "qty_t": 222010018.11282,
+          "qty_t_minus_1": 214470808.03427,
+          "price_latest": 1.2351535040017465
+        },
+        {
+          "asset": "WETH",
+          "delta_usd": 6599292.604884902,
+          "qty_t": 373544.78924,
+          "qty_t_minus_1": 369400.80852,
+          "price_latest": 1592.500798335016
+        }
+      ]
+    },
+    {
+      "date_utc": "2026-06-03",
+      "total_constant_price_net_flow_usd": -50863781.91972214,
+      "total_assets_observed": 38,
+      "top_5_outflows": [
+        {
+          "asset": "USDC",
+          "delta_usd": -156130145.2000867,
+          "qty_t": 42429484.2593,
+          "qty_t_minus_1": 198609524.63453,
+          "price_latest": 0.9996805278381065
+        },
+        {
+          "asset": "USDT",
+          "delta_usd": -17890640.34227342,
+          "qty_t": 430835130.00904,
+          "qty_t_minus_1": 448751295.63723,
+          "price_latest": 0.9985752930372336
+        },
+        {
+          "asset": "WETH",
+          "delta_usd": -15868713.17567909,
+          "qty_t": 339905.50052,
+          "qty_t_minus_1": 349870.15058,
+          "price_latest": 1592.500798335016
+        },
+        {
+          "asset": "WBTC",
+          "delta_usd": -7918909.562242647,
+          "qty_t": 29826.77608,
+          "qty_t_minus_1": 29959.56069,
+          "price_latest": 59637.254364362845
+        },
+        {
+          "asset": "WEETH",
+          "delta_usd": -6574392.728948241,
+          "qty_t": 957494.97873,
+          "qty_t_minus_1": 961252.93915,
+          "price_latest": 1749.4576829386112
+        }
+      ],
+      "top_3_inflows": [
+        {
+          "asset": "WSTETH",
+          "delta_usd": 97912224.62307993,
+          "qty_t": 699758.35468,
+          "qty_t_minus_1": 650219.65592,
+          "price_latest": 1976.4795417302971
+        },
+        {
+          "asset": "CBBTC",
+          "delta_usd": 19559906.955834087,
+          "qty_t": 16354.08712,
+          "qty_t_minus_1": 16026.81902,
+          "price_latest": 59767.227407236234
+        },
+        {
+          "asset": "USDTB",
+          "delta_usd": 19266036.606691323,
+          "qty_t": -107020917.58018,
+          "qty_t_minus_1": -126296970.99628,
+          "price_latest": 0.9994803495719562
+        }
+      ]
+    }
+  ],
+  "cumulative_across_3_days_by_asset": [
+    {
+      "asset": "USDC",
+      "cumulative_across_3_days_usd": -344829346.6142535
+    },
+    {
+      "asset": "USDT",
+      "cumulative_across_3_days_usd": -58104670.822144605
+    },
+    {
+      "asset": "DAI",
+      "cumulative_across_3_days_usd": 0
+    },
+    {
+      "asset": "WETH",
+      "cumulative_across_3_days_usd": 15450377.229963413
+    },
+    {
+      "asset": "WSTETH",
+      "cumulative_across_3_days_usd": 88914011.57956883
+    },
+    {
+      "asset": "WEETH",
+      "cumulative_across_3_days_usd": -10281467.614637721
+    },
+    {
+      "asset": "WBTC",
+      "cumulative_across_3_days_usd": 29627514.829590607
+    }
+  ],
+  "cumulative_total_across_3_days_usd": -212400101.65294108
+}

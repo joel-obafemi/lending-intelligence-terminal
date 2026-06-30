@@ -1,0 +1,165 @@
+{
+  "schema_version": 1,
+  "as_of_utc": "2026-06-04T08:06:12.757Z",
+  "as_of_date": "2026-06-04",
+  "source": {
+    "method": "blue-api.morpho.org GraphQL — eulerVaults equivalent for Morpho",
+    "endpoint": "https://blue-api.morpho.org/graphql",
+    "query": "vaults(first: 50, where: {chainId_in: [1]}, orderBy: TotalAssetsUsd, orderDirection: Desc)",
+    "grouping": "state.curators[0].name (case-sensitive); null/empty → 'Uncurated'",
+    "hhi_definition": "Σ (share_pct² across curators excluding Uncurated). Range 0 (perfect competition) → 10000 (monopoly)."
+  },
+  "scope": "Top 50 Ethereum MetaMorpho vaults by TotalAssetsUsd",
+  "chain_id": 1,
+  "summary": {
+    "hhi": 3290.6,
+    "top_3_share_pct": 95.2,
+    "curator_count": 10,
+    "total_curated_tvl_usd": 1205610047.2607732
+  },
+  "top_curators": [
+    {
+      "name": "Sentora",
+      "share_pct": 41.34,
+      "tvl_usd": 498452669.2029326,
+      "vault_count": 2
+    },
+    {
+      "name": "Steakhouse Financial",
+      "share_pct": 34.85,
+      "tvl_usd": 420096601.461559,
+      "vault_count": 11
+    },
+    {
+      "name": "Gauntlet",
+      "share_pct": 19.01,
+      "tvl_usd": 229200878.38552573,
+      "vault_count": 15
+    },
+    {
+      "name": "Hakutora",
+      "share_pct": 1.96,
+      "tvl_usd": 23669801.777771734,
+      "vault_count": 2
+    },
+    {
+      "name": "Yearn",
+      "share_pct": 0.83,
+      "tvl_usd": 10018466.995628422,
+      "vault_count": 2
+    },
+    {
+      "name": "Clearstar",
+      "share_pct": 0.7,
+      "tvl_usd": 8493343.622107906,
+      "vault_count": 1
+    },
+    {
+      "name": "MEV Capital",
+      "share_pct": 0.68,
+      "tvl_usd": 8163261.27251948,
+      "vault_count": 2
+    },
+    {
+      "name": "Hyperithm",
+      "share_pct": 0.24,
+      "tvl_usd": 2946988.483579288,
+      "vault_count": 1
+    },
+    {
+      "name": "SingularV",
+      "share_pct": 0.2,
+      "tvl_usd": 2470207.6851919764,
+      "vault_count": 1
+    },
+    {
+      "name": "AlphaPing",
+      "share_pct": 0.17,
+      "tvl_usd": 2097828.373957663,
+      "vault_count": 1
+    }
+  ],
+  "all_curators": [
+    {
+      "name": "Sentora",
+      "share_pct": 41.34,
+      "tvl_usd": 498452669.2029326,
+      "vault_count": 2,
+      "is_uncurated": false
+    },
+    {
+      "name": "Steakhouse Financial",
+      "share_pct": 34.85,
+      "tvl_usd": 420096601.461559,
+      "vault_count": 11,
+      "is_uncurated": false
+    },
+    {
+      "name": "Gauntlet",
+      "share_pct": 19.01,
+      "tvl_usd": 229200878.38552573,
+      "vault_count": 15,
+      "is_uncurated": false
+    },
+    {
+      "name": "Uncurated",
+      "share_pct": null,
+      "tvl_usd": 84301547.27726091,
+      "vault_count": 12,
+      "is_uncurated": true
+    },
+    {
+      "name": "Hakutora",
+      "share_pct": 1.96,
+      "tvl_usd": 23669801.777771734,
+      "vault_count": 2,
+      "is_uncurated": false
+    },
+    {
+      "name": "Yearn",
+      "share_pct": 0.83,
+      "tvl_usd": 10018466.995628422,
+      "vault_count": 2,
+      "is_uncurated": false
+    },
+    {
+      "name": "Clearstar",
+      "share_pct": 0.7,
+      "tvl_usd": 8493343.622107906,
+      "vault_count": 1,
+      "is_uncurated": false
+    },
+    {
+      "name": "MEV Capital",
+      "share_pct": 0.68,
+      "tvl_usd": 8163261.27251948,
+      "vault_count": 2,
+      "is_uncurated": false
+    },
+    {
+      "name": "Hyperithm",
+      "share_pct": 0.24,
+      "tvl_usd": 2946988.483579288,
+      "vault_count": 1,
+      "is_uncurated": false
+    },
+    {
+      "name": "SingularV",
+      "share_pct": 0.2,
+      "tvl_usd": 2470207.6851919764,
+      "vault_count": 1,
+      "is_uncurated": false
+    },
+    {
+      "name": "AlphaPing",
+      "share_pct": 0.17,
+      "tvl_usd": 2097828.373957663,
+      "vault_count": 1,
+      "is_uncurated": false
+    }
+  ],
+  "notes": [
+    "Uncurated TVL (excluded from HHI): $84.30M.",
+    "share_pct is share of CURATED TVL only. To convert to share of TOTAL TVL (curated + uncurated), multiply by curated_tvl_usd / (curated_tvl_usd + uncurated_tvl_usd)."
+  ]
+}

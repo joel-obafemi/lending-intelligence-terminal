@@ -1,0 +1,1349 @@
+{
+  "schema_version": 1,
+  "generated_at": "2026-06-30T19:59:19.348Z",
+  "issue": "002 §06.6",
+  "source": {
+    "pools_endpoint": "https://yields.llama.fi/pools",
+    "chart_endpoint": "https://yields.llama.fi/chart/<poolId>",
+    "filter": {
+      "project": "euler-v2",
+      "chain": "Ethereum"
+    },
+    "note": "DefiLlama tvlUsd per vault = available liquidity (supplied − borrowed). Vault-level supply/borrow breakdown isn't exposed historically per pool, so the ranking is by tvlUsd movement, not by gross supply movement. Direction (outflow/inflow) and ranking are reliable; absolute numbers may not sum exactly to the protocol-level $338M supply delta."
+  },
+  "targets": {
+    "start_utc": "2026-06-01T00:00:00Z",
+    "end_utc": "2026-06-30T23:59:00Z",
+    "datapoint_tolerance_hours": 48
+  },
+  "stats": {
+    "pools_total": 53,
+    "pools_with_history": 50,
+    "pools_excluded": 3,
+    "chart_failures": 0,
+    "fallback_engaged": false,
+    "total_net_tvl_change_usd": -2191731,
+    "total_outflow_tvl_usd": -6325256,
+    "total_inflow_tvl_usd": 4133525
+  },
+  "writeup_oneliner": "The bulk of Euler's May outflow concentrated in EVK Vault eRLUSD-7 ($-2.98M) and EVK Vault eUSDC-70 ($-1.11M).",
+  "top_outflows": [
+    {
+      "rank": 1,
+      "display_name": "EVK Vault eRLUSD-7",
+      "symbol": "RLUSD",
+      "pool_meta": "EVK Vault eRLUSD-7",
+      "may1_supply_usd": 11092757,
+      "may31_supply_usd": 8108251,
+      "change_usd": -2984506,
+      "change_pct": -26.90499755831666
+    },
+    {
+      "rank": 2,
+      "display_name": "EVK Vault eUSDC-70",
+      "symbol": "USDC",
+      "pool_meta": "EVK Vault eUSDC-70",
+      "may1_supply_usd": 9546481,
+      "may31_supply_usd": 8432955,
+      "change_usd": -1113526,
+      "change_pct": -11.664256179842605
+    },
+    {
+      "rank": 3,
+      "display_name": "EVK Vault ewstETH-2",
+      "symbol": "WSTETH",
+      "pool_meta": "EVK Vault ewstETH-2",
+      "may1_supply_usd": 2613079,
+      "may31_supply_usd": 1964129,
+      "change_usd": -648950,
+      "change_pct": -24.834687355414818
+    },
+    {
+      "rank": 4,
+      "display_name": "EVK Vault eAUSD-7",
+      "symbol": "AUSD",
+      "pool_meta": "EVK Vault eAUSD-7",
+      "may1_supply_usd": 373334,
+      "may31_supply_usd": 0,
+      "change_usd": -373334,
+      "change_pct": -100
+    },
+    {
+      "rank": 5,
+      "display_name": "EVK Vault etETH-3",
+      "symbol": "TETH",
+      "pool_meta": "EVK Vault etETH-3",
+      "may1_supply_usd": 857459,
+      "may31_supply_usd": 653613,
+      "change_usd": -203846,
+      "change_pct": -23.773264960773634
+    }
+  ],
+  "top_inflows": [
+    {
+      "rank": 1,
+      "display_name": "EVK Vault eUSD0-4",
+      "symbol": "USD0",
+      "pool_meta": "EVK Vault eUSD0-4",
+      "may1_supply_usd": 12026670,
+      "may31_supply_usd": 14147010,
+      "change_usd": 2120340,
+      "change_pct": 17.63031662130914
+    },
+    {
+      "rank": 2,
+      "display_name": "EVK Vault ePYUSD-6",
+      "symbol": "PYUSD",
+      "pool_meta": "EVK Vault ePYUSD-6",
+      "may1_supply_usd": 10313303,
+      "may31_supply_usd": 11703236,
+      "change_usd": 1389933,
+      "change_pct": 13.477088765839614
+    },
+    {
+      "rank": 3,
+      "display_name": "EVK Vault eUSDe-6",
+      "symbol": "USDE",
+      "pool_meta": "EVK Vault eUSDe-6",
+      "may1_supply_usd": 321506,
+      "may31_supply_usd": 440940,
+      "change_usd": 119434,
+      "change_pct": 37.14829583273718
+    },
+    {
+      "rank": 4,
+      "display_name": "EVK Vault eUSDC-22",
+      "symbol": "USDC",
+      "pool_meta": "EVK Vault eUSDC-22",
+      "may1_supply_usd": 355953,
+      "may31_supply_usd": 460672,
+      "change_usd": 104719,
+      "change_pct": 29.41933345132644
+    },
+    {
+      "rank": 5,
+      "display_name": "EVK Vault eUSDtb-2",
+      "symbol": "USDTB",
+      "pool_meta": "EVK Vault eUSDtb-2",
+      "may1_supply_usd": 94265,
+      "may31_supply_usd": 191174,
+      "change_usd": 96909,
+      "change_pct": 102.80485864318676
+    }
+  ],
+  "fallback_top10_by_current_tvl": [
+    {
+      "rank": 1,
+      "display_name": "EVK Vault eUSD0-4",
+      "symbol": "USD0",
+      "pool_meta": "EVK Vault eUSD0-4",
+      "current_tvl_usd": 14064418,
+      "may1_supply_usd": 12026670,
+      "may31_supply_usd": 14147010,
+      "change_usd": 2120340,
+      "change_pct": 17.63031662130914
+    },
+    {
+      "rank": 2,
+      "display_name": "EVK Vault eUSDC-80",
+      "symbol": "USDC",
+      "pool_meta": "EVK Vault eUSDC-80",
+      "current_tvl_usd": 13805089,
+      "may1_supply_usd": 13546467,
+      "may31_supply_usd": 13619272,
+      "change_usd": 72805,
+      "change_pct": 0.537446405767644
+    },
+    {
+      "rank": 3,
+      "display_name": "EVK Vault ePYUSD-6",
+      "symbol": "PYUSD",
+      "pool_meta": "EVK Vault ePYUSD-6",
+      "current_tvl_usd": 12994165,
+      "may1_supply_usd": 10313303,
+      "may31_supply_usd": 11703236,
+      "change_usd": 1389933,
+      "change_pct": 13.477088765839614
+    },
+    {
+      "rank": 4,
+      "display_name": "EVK Vault eUSDC-70",
+      "symbol": "USDC",
+      "pool_meta": "EVK Vault eUSDC-70",
+      "current_tvl_usd": 9249529,
+      "may1_supply_usd": 9546481,
+      "may31_supply_usd": 8432955,
+      "change_usd": -1113526,
+      "change_pct": -11.664256179842605
+    },
+    {
+      "rank": 5,
+      "display_name": "EVK Vault eRLUSD-7",
+      "symbol": "RLUSD",
+      "pool_meta": "EVK Vault eRLUSD-7",
+      "current_tvl_usd": 7391237,
+      "may1_supply_usd": 11092757,
+      "may31_supply_usd": 8108251,
+      "change_usd": -2984506,
+      "change_pct": -26.90499755831666
+    },
+    {
+      "rank": 6,
+      "display_name": "EVK Vault ePYUSD-8",
+      "symbol": "PYUSD",
+      "pool_meta": "EVK Vault ePYUSD-8",
+      "current_tvl_usd": 7006887,
+      "may1_supply_usd": 7054071,
+      "may31_supply_usd": 7003094,
+      "change_usd": -50977,
+      "change_pct": -0.7226607160602722
+    },
+    {
+      "rank": 7,
+      "display_name": "EVK Vault ewstETH-2",
+      "symbol": "WSTETH",
+      "pool_meta": "EVK Vault ewstETH-2",
+      "current_tvl_usd": 1931597,
+      "may1_supply_usd": 2613079,
+      "may31_supply_usd": 1964129,
+      "change_usd": -648950,
+      "change_pct": -24.834687355414818
+    },
+    {
+      "rank": 8,
+      "display_name": "EVK Vault eUSDC-98",
+      "symbol": "USDC",
+      "pool_meta": "EVK Vault eUSDC-98",
+      "current_tvl_usd": 968530,
+      "may1_supply_usd": 753539,
+      "may31_supply_usd": 816731,
+      "change_usd": 63192,
+      "change_pct": 8.386029123907322
+    },
+    {
+      "rank": 9,
+      "display_name": "EVK Vault eWBTC-3",
+      "symbol": "WBTC",
+      "pool_meta": "EVK Vault eWBTC-3",
+      "current_tvl_usd": 712314,
+      "may1_supply_usd": 888758,
+      "may31_supply_usd": 698066,
+      "change_usd": -190692,
+      "change_pct": -21.456009397383767
+    },
+    {
+      "rank": 10,
+      "display_name": "EVK Vault etETH-3",
+      "symbol": "TETH",
+      "pool_meta": "EVK Vault etETH-3",
+      "current_tvl_usd": 706275,
+      "may1_supply_usd": 857459,
+      "may31_supply_usd": 653613,
+      "change_usd": -203846,
+      "change_pct": -23.773264960773634
+    }
+  ],
+  "all_pools": [
+    {
+      "pool_id": "4d48ed69-2a14-4609-91c0-bc129a6dc586",
+      "display_name": "EVK Vault eUSD0-4",
+      "symbol": "USD0",
+      "pool_meta": "EVK Vault eUSD0-4",
+      "underlying_token": "0x73a15fed60bf67631dc6cd7bc5b6e8da8190acf5",
+      "current_tvl_usd": 14064418,
+      "may1": {
+        "timestamp_iso": "2026-05-31T23:02:00.000Z",
+        "tvl_usd": 12026670,
+        "delta_from_target_sec": -3480
+      },
+      "may31": {
+        "timestamp_iso": "2026-06-30T19:04:54.000Z",
+        "tvl_usd": 14147010,
+        "delta_from_target_sec": -17646
+      },
+      "abs_delta_usd": 2120340,
+      "pct_delta": 17.63031662130914,
+      "excluded_reason": null
+    },
+    {
+      "pool_id": "0fde8996-ecdf-441c-94a9-ec67403e9b8c",
+      "display_name": "EVK Vault eUSDC-80",
+      "symbol": "USDC",
+      "pool_meta": "EVK Vault eUSDC-80",
+      "underlying_token": "0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48",
+      "current_tvl_usd": 13805089,
+      "may1": {
+        "timestamp_iso": "2026-05-31T23:02:00.000Z",
+        "tvl_usd": 13546467,
+        "delta_from_target_sec": -3480
+      },
+      "may31": {
+        "timestamp_iso": "2026-06-30T19:04:54.000Z",
+        "tvl_usd": 13619272,
+        "delta_from_target_sec": -17646
+      },
+      "abs_delta_usd": 72805,
+      "pct_delta": 0.537446405767644,
+      "excluded_reason": null
+    },
+    {
+      "pool_id": "fa55aa2b-e244-4ce4-ab00-9e96b39df32b",
+      "display_name": "EVK Vault ePYUSD-6",
+      "symbol": "PYUSD",
+      "pool_meta": "EVK Vault ePYUSD-6",
+      "underlying_token": "0x6c3ea9036406852006290770bedfcaba0e23a0e8",
+      "current_tvl_usd": 12994165,
+      "may1": {
+        "timestamp_iso": "2026-05-31T23:02:00.000Z",
+        "tvl_usd": 10313303,
+        "delta_from_target_sec": -3480
+      },
+      "may31": {
+        "timestamp_iso": "2026-06-30T19:04:54.000Z",
+        "tvl_usd": 11703236,
+        "delta_from_target_sec": -17646
+      },
+      "abs_delta_usd": 1389933,
+      "pct_delta": 13.477088765839614,
+      "excluded_reason": null
+    },
+    {
+      "pool_id": "31a0cd94-b781-4e0d-a9f1-1702bc2c238f",
+      "display_name": "EVK Vault eUSDC-70",
+      "symbol": "USDC",
+      "pool_meta": "EVK Vault eUSDC-70",
+      "underlying_token": "0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48",
+      "current_tvl_usd": 9249529,
+      "may1": {
+        "timestamp_iso": "2026-05-31T23:02:00.000Z",
+        "tvl_usd": 9546481,
+        "delta_from_target_sec": -3480
+      },
+      "may31": {
+        "timestamp_iso": "2026-06-30T19:04:54.000Z",
+        "tvl_usd": 8432955,
+        "delta_from_target_sec": -17646
+      },
+      "abs_delta_usd": -1113526,
+      "pct_delta": -11.664256179842605,
+      "excluded_reason": null
+    },
+    {
+      "pool_id": "73e933a7-73b2-43ec-b1e9-d5d1d42ce2de",
+      "display_name": "EVK Vault eRLUSD-7",
+      "symbol": "RLUSD",
+      "pool_meta": "EVK Vault eRLUSD-7",
+      "underlying_token": "0x8292bb45bf1ee4d140127049757c2e0ff06317ed",
+      "current_tvl_usd": 7391237,
+      "may1": {
+        "timestamp_iso": "2026-05-31T23:02:00.000Z",
+        "tvl_usd": 11092757,
+        "delta_from_target_sec": -3480
+      },
+      "may31": {
+        "timestamp_iso": "2026-06-30T19:04:54.000Z",
+        "tvl_usd": 8108251,
+        "delta_from_target_sec": -17646
+      },
+      "abs_delta_usd": -2984506,
+      "pct_delta": -26.90499755831666,
+      "excluded_reason": null
+    },
+    {
+      "pool_id": "1e2030e0-0b74-4119-a03d-0f6a126ede33",
+      "display_name": "EVK Vault ePYUSD-8",
+      "symbol": "PYUSD",
+      "pool_meta": "EVK Vault ePYUSD-8",
+      "underlying_token": "0x6c3ea9036406852006290770bedfcaba0e23a0e8",
+      "current_tvl_usd": 7006887,
+      "may1": {
+        "timestamp_iso": "2026-05-31T23:02:00.000Z",
+        "tvl_usd": 7054071,
+        "delta_from_target_sec": -3480
+      },
+      "may31": {
+        "timestamp_iso": "2026-06-30T19:04:54.000Z",
+        "tvl_usd": 7003094,
+        "delta_from_target_sec": -17646
+      },
+      "abs_delta_usd": -50977,
+      "pct_delta": -0.7226607160602722,
+      "excluded_reason": null
+    },
+    {
+      "pool_id": "f51d845a-6979-4ccb-b73f-4738a753dd85",
+      "display_name": "EVK Vault ewstETH-2",
+      "symbol": "WSTETH",
+      "pool_meta": "EVK Vault ewstETH-2",
+      "underlying_token": "0x7f39c581f595b53c5cb19bd0b3f8da6c935e2ca0",
+      "current_tvl_usd": 1931597,
+      "may1": {
+        "timestamp_iso": "2026-05-31T23:02:00.000Z",
+        "tvl_usd": 2613079,
+        "delta_from_target_sec": -3480
+      },
+      "may31": {
+        "timestamp_iso": "2026-06-30T19:04:54.000Z",
+        "tvl_usd": 1964129,
+        "delta_from_target_sec": -17646
+      },
+      "abs_delta_usd": -648950,
+      "pct_delta": -24.834687355414818,
+      "excluded_reason": null
+    },
+    {
+      "pool_id": "5ee539c7-cfae-41c7-8bf4-b3d2522c33f0",
+      "display_name": "EVK Vault eUSDC-98",
+      "symbol": "USDC",
+      "pool_meta": "EVK Vault eUSDC-98",
+      "underlying_token": "0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48",
+      "current_tvl_usd": 968530,
+      "may1": {
+        "timestamp_iso": "2026-05-31T23:02:00.000Z",
+        "tvl_usd": 753539,
+        "delta_from_target_sec": -3480
+      },
+      "may31": {
+        "timestamp_iso": "2026-06-30T19:04:54.000Z",
+        "tvl_usd": 816731,
+        "delta_from_target_sec": -17646
+      },
+      "abs_delta_usd": 63192,
+      "pct_delta": 8.386029123907322,
+      "excluded_reason": null
+    },
+    {
+      "pool_id": "00152e22-d041-425c-b0df-e4dfabb99780",
+      "display_name": "EVK Vault eWBTC-3",
+      "symbol": "WBTC",
+      "pool_meta": "EVK Vault eWBTC-3",
+      "underlying_token": "0x2260fac5e5542a773aa44fbcfedf7c193bc2c599",
+      "current_tvl_usd": 712314,
+      "may1": {
+        "timestamp_iso": "2026-05-31T23:02:00.000Z",
+        "tvl_usd": 888758,
+        "delta_from_target_sec": -3480
+      },
+      "may31": {
+        "timestamp_iso": "2026-06-30T19:04:54.000Z",
+        "tvl_usd": 698066,
+        "delta_from_target_sec": -17646
+      },
+      "abs_delta_usd": -190692,
+      "pct_delta": -21.456009397383767,
+      "excluded_reason": null
+    },
+    {
+      "pool_id": "77871537-d13b-475f-ab01-453778ad1521",
+      "display_name": "EVK Vault etETH-3",
+      "symbol": "TETH",
+      "pool_meta": "EVK Vault etETH-3",
+      "underlying_token": "0xd11c452fc99cf405034ee446803b6f6c1f6d5ed8",
+      "current_tvl_usd": 706275,
+      "may1": {
+        "timestamp_iso": "2026-06-02T23:03:15.000Z",
+        "tvl_usd": 857459,
+        "delta_from_target_sec": 169395
+      },
+      "may31": {
+        "timestamp_iso": "2026-06-30T19:04:54.000Z",
+        "tvl_usd": 653613,
+        "delta_from_target_sec": -17646
+      },
+      "abs_delta_usd": -203846,
+      "pct_delta": -23.773264960773634,
+      "excluded_reason": null
+    },
+    {
+      "pool_id": "7e58db7e-04e2-4632-8b9d-0c3bca619c11",
+      "display_name": "EVK Vault ewSTRCx-1",
+      "symbol": "WSTRCX",
+      "pool_meta": "EVK Vault ewSTRCx-1",
+      "underlying_token": "0x0b2456017c5df2dfc0289740c4b352049892780c",
+      "current_tvl_usd": 629138,
+      "may1": null,
+      "may31": {
+        "timestamp_iso": "2026-06-21T12:04:19.000Z",
+        "tvl_usd": 629138,
+        "delta_from_target_sec": -820481
+      },
+      "abs_delta_usd": null,
+      "pct_delta": null,
+      "excluded_reason": "no May 1 baseline within tolerance — likely created mid-window"
+    },
+    {
+      "pool_id": "c92d7ebf-ecb8-4ca1-a09c-9f8516dfcb61",
+      "display_name": "EVK Vault eweETH-6",
+      "symbol": "WEETH",
+      "pool_meta": "EVK Vault eweETH-6",
+      "underlying_token": "0xcd5fe23c85820f7b72d0926fc9b05b43e359b7ee",
+      "current_tvl_usd": 563213,
+      "may1": {
+        "timestamp_iso": "2026-06-02T23:03:15.000Z",
+        "tvl_usd": 690982,
+        "delta_from_target_sec": 169395
+      },
+      "may31": {
+        "timestamp_iso": "2026-06-30T19:04:54.000Z",
+        "tvl_usd": 574301,
+        "delta_from_target_sec": -17646
+      },
+      "abs_delta_usd": -116681,
+      "pct_delta": -16.88625752913969,
+      "excluded_reason": null
+    },
+    {
+      "pool_id": "00bc9d53-85d6-422f-b287-1048088d5f45",
+      "display_name": "EVK Vault eRZR-1",
+      "symbol": "RZR",
+      "pool_meta": "EVK Vault eRZR-1",
+      "underlying_token": "0xb4444468e444f89e1c2cac2f1d3ee7e336cbd1f5",
+      "current_tvl_usd": 372629,
+      "may1": {
+        "timestamp_iso": "2026-05-31T23:02:00.000Z",
+        "tvl_usd": 452014,
+        "delta_from_target_sec": -3480
+      },
+      "may31": {
+        "timestamp_iso": "2026-06-30T19:04:54.000Z",
+        "tvl_usd": 370867,
+        "delta_from_target_sec": -17646
+      },
+      "abs_delta_usd": -81147,
+      "pct_delta": -17.95232006088307,
+      "excluded_reason": null
+    },
+    {
+      "pool_id": "fa68041a-2ce5-4ee5-88a0-ec5185f0bdb7",
+      "display_name": "EVK Vault eUSDC-22",
+      "symbol": "USDC",
+      "pool_meta": "EVK Vault eUSDC-22",
+      "underlying_token": "0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48",
+      "current_tvl_usd": 316712,
+      "may1": {
+        "timestamp_iso": "2026-05-31T23:02:00.000Z",
+        "tvl_usd": 355953,
+        "delta_from_target_sec": -3480
+      },
+      "may31": {
+        "timestamp_iso": "2026-06-30T19:04:54.000Z",
+        "tvl_usd": 460672,
+        "delta_from_target_sec": -17646
+      },
+      "abs_delta_usd": 104719,
+      "pct_delta": 29.41933345132644,
+      "excluded_reason": null
+    },
+    {
+      "pool_id": "3bb6a56f-d2cf-4e80-ad33-b0735139a7c5",
+      "display_name": "EVK Vault eUSDe-6",
+      "symbol": "USDE",
+      "pool_meta": "EVK Vault eUSDe-6",
+      "underlying_token": "0x4c9edd5852cd905f086c759e8383e09bff1e68b3",
+      "current_tvl_usd": 308383,
+      "may1": {
+        "timestamp_iso": "2026-05-31T23:02:00.000Z",
+        "tvl_usd": 321506,
+        "delta_from_target_sec": -3480
+      },
+      "may31": {
+        "timestamp_iso": "2026-06-30T19:04:54.000Z",
+        "tvl_usd": 440940,
+        "delta_from_target_sec": -17646
+      },
+      "abs_delta_usd": 119434,
+      "pct_delta": 37.14829583273718,
+      "excluded_reason": null
+    },
+    {
+      "pool_id": "a0f53224-c152-416e-8599-4563e70c6040",
+      "display_name": "EVK Vault eUSDC-2",
+      "symbol": "USDC",
+      "pool_meta": "EVK Vault eUSDC-2",
+      "underlying_token": "0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48",
+      "current_tvl_usd": 295729,
+      "may1": {
+        "timestamp_iso": "2026-05-31T23:02:00.000Z",
+        "tvl_usd": 243189,
+        "delta_from_target_sec": -3480
+      },
+      "may31": {
+        "timestamp_iso": "2026-06-30T19:04:54.000Z",
+        "tvl_usd": 133754,
+        "delta_from_target_sec": -17646
+      },
+      "abs_delta_usd": -109435,
+      "pct_delta": -44.99997943985953,
+      "excluded_reason": null
+    },
+    {
+      "pool_id": "e30876ae-e9d3-4ab1-bf5b-96920f4fc9ba",
+      "display_name": "EVK Vault eWETH-2",
+      "symbol": "WETH",
+      "pool_meta": "EVK Vault eWETH-2",
+      "underlying_token": "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2",
+      "current_tvl_usd": 269646,
+      "may1": {
+        "timestamp_iso": "2026-05-31T23:02:00.000Z",
+        "tvl_usd": 375632,
+        "delta_from_target_sec": -3480
+      },
+      "may31": {
+        "timestamp_iso": "2026-06-30T19:04:54.000Z",
+        "tvl_usd": 232923,
+        "delta_from_target_sec": -17646
+      },
+      "abs_delta_usd": -142709,
+      "pct_delta": -37.99170464710142,
+      "excluded_reason": null
+    },
+    {
+      "pool_id": "5b91998c-7db9-4b5e-8caf-343b55769151",
+      "display_name": "EVK Vault eUSDC-42",
+      "symbol": "USDC",
+      "pool_meta": "EVK Vault eUSDC-42",
+      "underlying_token": "0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48",
+      "current_tvl_usd": 147715,
+      "may1": {
+        "timestamp_iso": "2026-05-31T23:02:00.000Z",
+        "tvl_usd": 109667,
+        "delta_from_target_sec": -3480
+      },
+      "may31": {
+        "timestamp_iso": "2026-06-30T19:04:54.000Z",
+        "tvl_usd": 152819,
+        "delta_from_target_sec": -17646
+      },
+      "abs_delta_usd": 43152,
+      "pct_delta": 39.34820866805876,
+      "excluded_reason": null
+    },
+    {
+      "pool_id": "ac5c5923-519a-44bf-afea-c80215145fa8",
+      "display_name": "EVK Vault eAUSD-7",
+      "symbol": "AUSD",
+      "pool_meta": "EVK Vault eAUSD-7",
+      "underlying_token": "0x00000000efe302beaa2b3e6e1b18d08d69a9012a",
+      "current_tvl_usd": 128293,
+      "may1": {
+        "timestamp_iso": "2026-05-31T23:02:00.000Z",
+        "tvl_usd": 373334,
+        "delta_from_target_sec": -3480
+      },
+      "may31": {
+        "timestamp_iso": "2026-06-30T19:04:54.000Z",
+        "tvl_usd": 0,
+        "delta_from_target_sec": -17646
+      },
+      "abs_delta_usd": -373334,
+      "pct_delta": -100,
+      "excluded_reason": null
+    },
+    {
+      "pool_id": "bc244917-e28c-4f10-bfa4-79bf90529023",
+      "display_name": "EVK Vault eUSDT-2",
+      "symbol": "USDT",
+      "pool_meta": "EVK Vault eUSDT-2",
+      "underlying_token": "0xdac17f958d2ee523a2206206994597c13d831ec7",
+      "current_tvl_usd": 119609,
+      "may1": {
+        "timestamp_iso": "2026-05-31T23:02:00.000Z",
+        "tvl_usd": 167077,
+        "delta_from_target_sec": -3480
+      },
+      "may31": {
+        "timestamp_iso": "2026-06-30T19:04:54.000Z",
+        "tvl_usd": 132578,
+        "delta_from_target_sec": -17646
+      },
+      "abs_delta_usd": -34499,
+      "pct_delta": -20.648563237309745,
+      "excluded_reason": null
+    },
+    {
+      "pool_id": "2b181181-f200-44d0-81bf-31f3575fea4c",
+      "display_name": "EVK Vault eUSDC-69",
+      "symbol": "USDC",
+      "pool_meta": "EVK Vault eUSDC-69",
+      "underlying_token": "0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48",
+      "current_tvl_usd": 98603,
+      "may1": {
+        "timestamp_iso": "2026-05-31T23:02:00.000Z",
+        "tvl_usd": 45543,
+        "delta_from_target_sec": -3480
+      },
+      "may31": {
+        "timestamp_iso": "2026-06-30T19:04:54.000Z",
+        "tvl_usd": 95390,
+        "delta_from_target_sec": -17646
+      },
+      "abs_delta_usd": 49847,
+      "pct_delta": 109.45040950310695,
+      "excluded_reason": null
+    },
+    {
+      "pool_id": "e945826d-6546-4f29-b276-9583ce2f0f68",
+      "display_name": "K3 Capital Earn USDC",
+      "symbol": "USDC",
+      "pool_meta": "K3 Capital Earn USDC",
+      "underlying_token": "0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48",
+      "current_tvl_usd": 98191,
+      "may1": {
+        "timestamp_iso": "2026-05-31T23:02:00.000Z",
+        "tvl_usd": 101168,
+        "delta_from_target_sec": -3480
+      },
+      "may31": {
+        "timestamp_iso": "2026-06-30T19:04:54.000Z",
+        "tvl_usd": 101263,
+        "delta_from_target_sec": -17646
+      },
+      "abs_delta_usd": 95,
+      "pct_delta": 0.0939032105013443,
+      "excluded_reason": null
+    },
+    {
+      "pool_id": "ac164d4e-855d-4eed-bebf-0c04c0fac54b",
+      "display_name": "EVK Vault ecbBTC-3",
+      "symbol": "CBBTC",
+      "pool_meta": "EVK Vault ecbBTC-3",
+      "underlying_token": "0xcbb7c0000ab88b473b1f5afd9ef808440eed33bf",
+      "current_tvl_usd": 65157,
+      "may1": {
+        "timestamp_iso": "2026-05-31T23:02:00.000Z",
+        "tvl_usd": 83595,
+        "delta_from_target_sec": -3480
+      },
+      "may31": {
+        "timestamp_iso": "2026-06-30T19:04:54.000Z",
+        "tvl_usd": 63737,
+        "delta_from_target_sec": -17646
+      },
+      "abs_delta_usd": -19858,
+      "pct_delta": -23.755009270889406,
+      "excluded_reason": null
+    },
+    {
+      "pool_id": "5f13466a-8b06-4fc2-9afb-d81bca04c4af",
+      "display_name": "EVK Vault eEUL-2",
+      "symbol": "EUL",
+      "pool_meta": "EVK Vault eEUL-2",
+      "underlying_token": "0xd9fcd98c322942075a5c3860693e9f4f03aae07b",
+      "current_tvl_usd": 58870,
+      "may1": {
+        "timestamp_iso": "2026-05-31T23:02:00.000Z",
+        "tvl_usd": 85574,
+        "delta_from_target_sec": -3480
+      },
+      "may31": {
+        "timestamp_iso": "2026-06-30T19:04:54.000Z",
+        "tvl_usd": 64740,
+        "delta_from_target_sec": -17646
+      },
+      "abs_delta_usd": -20834,
+      "pct_delta": -24.346179914460002,
+      "excluded_reason": null
+    },
+    {
+      "pool_id": "939b0cda-7d65-41b8-9226-f28949a857e8",
+      "display_name": "EVK Vault eUSDC-45",
+      "symbol": "USDC",
+      "pool_meta": "EVK Vault eUSDC-45",
+      "underlying_token": "0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48",
+      "current_tvl_usd": 50654,
+      "may1": {
+        "timestamp_iso": "2026-05-31T23:02:00.000Z",
+        "tvl_usd": 53848,
+        "delta_from_target_sec": -3480
+      },
+      "may31": {
+        "timestamp_iso": "2026-06-30T19:04:54.000Z",
+        "tvl_usd": 50652,
+        "delta_from_target_sec": -17646
+      },
+      "abs_delta_usd": -3196,
+      "pct_delta": -5.935225077997326,
+      "excluded_reason": null
+    },
+    {
+      "pool_id": "3ba7480d-ea40-4d80-a7fe-2cc44160cfe0",
+      "display_name": "K3 Capital Earn USDT",
+      "symbol": "USDT",
+      "pool_meta": "K3 Capital Earn USDT",
+      "underlying_token": "0xdac17f958d2ee523a2206206994597c13d831ec7",
+      "current_tvl_usd": 48575,
+      "may1": {
+        "timestamp_iso": "2026-05-31T23:02:00.000Z",
+        "tvl_usd": 156140,
+        "delta_from_target_sec": -3480
+      },
+      "may31": {
+        "timestamp_iso": "2026-06-30T19:04:54.000Z",
+        "tvl_usd": 48589,
+        "delta_from_target_sec": -17646
+      },
+      "abs_delta_usd": -107551,
+      "pct_delta": -68.88113231715127,
+      "excluded_reason": null
+    },
+    {
+      "pool_id": "412fd68d-364e-4193-bcf2-52fc32bef889",
+      "display_name": "EVK Vault eBOLD-1",
+      "symbol": "BOLD",
+      "pool_meta": "EVK Vault eBOLD-1",
+      "underlying_token": "0x6440f144b7e50d6a8439336510312d2f54beb01d",
+      "current_tvl_usd": 47318,
+      "may1": {
+        "timestamp_iso": "2026-05-31T23:02:00.000Z",
+        "tvl_usd": 17962,
+        "delta_from_target_sec": -3480
+      },
+      "may31": {
+        "timestamp_iso": "2026-06-30T19:04:54.000Z",
+        "tvl_usd": 41314,
+        "delta_from_target_sec": -17646
+      },
+      "abs_delta_usd": 23352,
+      "pct_delta": 130.0077942322681,
+      "excluded_reason": null
+    },
+    {
+      "pool_id": "b986405d-14a3-4648-bd9d-8a83af3af728",
+      "display_name": "K3 Capital Earn WETH",
+      "symbol": "WETH",
+      "pool_meta": "K3 Capital Earn WETH",
+      "underlying_token": "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2",
+      "current_tvl_usd": 36810,
+      "may1": {
+        "timestamp_iso": "2026-05-31T23:02:00.000Z",
+        "tvl_usd": 47776,
+        "delta_from_target_sec": -3480
+      },
+      "may31": {
+        "timestamp_iso": "2026-06-30T19:04:54.000Z",
+        "tvl_usd": 37510,
+        "delta_from_target_sec": -17646
+      },
+      "abs_delta_usd": -10266,
+      "pct_delta": -21.4877762893503,
+      "excluded_reason": null
+    },
+    {
+      "pool_id": "a3a7fb56-b19a-4dc8-a3f1-285cb38c5885",
+      "display_name": "EVK Vault eUSDtb-2",
+      "symbol": "USDTB",
+      "pool_meta": "EVK Vault eUSDtb-2",
+      "underlying_token": "0xc139190f447e929f090edeb554d95abb8b18ac1c",
+      "current_tvl_usd": 33934,
+      "may1": {
+        "timestamp_iso": "2026-05-31T23:02:00.000Z",
+        "tvl_usd": 94265,
+        "delta_from_target_sec": -3480
+      },
+      "may31": {
+        "timestamp_iso": "2026-06-30T19:04:54.000Z",
+        "tvl_usd": 191174,
+        "delta_from_target_sec": -17646
+      },
+      "abs_delta_usd": 96909,
+      "pct_delta": 102.80485864318676,
+      "excluded_reason": null
+    },
+    {
+      "pool_id": "8e41ef65-c599-4750-82a6-b284ddd33635",
+      "display_name": "EVK Vault eUSDT-9",
+      "symbol": "USDT",
+      "pool_meta": "EVK Vault eUSDT-9",
+      "underlying_token": "0xdac17f958d2ee523a2206206994597c13d831ec7",
+      "current_tvl_usd": 32209,
+      "may1": {
+        "timestamp_iso": "2026-05-31T23:02:00.000Z",
+        "tvl_usd": 40249,
+        "delta_from_target_sec": -3480
+      },
+      "may31": {
+        "timestamp_iso": "2026-06-30T19:04:54.000Z",
+        "tvl_usd": 32254,
+        "delta_from_target_sec": -17646
+      },
+      "abs_delta_usd": -7995,
+      "pct_delta": -19.86384754900743,
+      "excluded_reason": null
+    },
+    {
+      "pool_id": "e0a73b02-748b-4ac8-8a5a-1c8d110f1a80",
+      "display_name": "EVK Vault eUSDC-75",
+      "symbol": "USDC",
+      "pool_meta": "EVK Vault eUSDC-75",
+      "underlying_token": "0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48",
+      "current_tvl_usd": 31992,
+      "may1": {
+        "timestamp_iso": "2026-05-31T23:02:00.000Z",
+        "tvl_usd": 5265,
+        "delta_from_target_sec": -3480
+      },
+      "may31": {
+        "timestamp_iso": "2026-06-30T19:04:54.000Z",
+        "tvl_usd": 31991,
+        "delta_from_target_sec": -17646
+      },
+      "abs_delta_usd": 26726,
+      "pct_delta": 507.616334283001,
+      "excluded_reason": null
+    },
+    {
+      "pool_id": "f1c042fb-2661-4d39-8641-3ee9097a2df6",
+      "display_name": "EVK Vault esUSDf-1",
+      "symbol": "SUSDF",
+      "pool_meta": "EVK Vault esUSDf-1",
+      "underlying_token": "0xc8cf6d7991f15525488b2a83df53468d682ba4b0",
+      "current_tvl_usd": 25956,
+      "may1": {
+        "timestamp_iso": "2026-05-31T23:02:00.000Z",
+        "tvl_usd": 40925,
+        "delta_from_target_sec": -3480
+      },
+      "may31": {
+        "timestamp_iso": "2026-06-29T10:04:04.000Z",
+        "tvl_usd": 25771,
+        "delta_from_target_sec": -136496
+      },
+      "abs_delta_usd": -15154,
+      "pct_delta": -37.02871105681124,
+      "excluded_reason": null
+    },
+    {
+      "pool_id": "b7734046-f094-4631-a528-80cd79ca9e82",
+      "display_name": "EVK Vault eWBTC-11",
+      "symbol": "WBTC",
+      "pool_meta": "EVK Vault eWBTC-11",
+      "underlying_token": "0x2260fac5e5542a773aa44fbcfedf7c193bc2c599",
+      "current_tvl_usd": 24463,
+      "may1": {
+        "timestamp_iso": "2026-05-31T23:02:00.000Z",
+        "tvl_usd": 30184,
+        "delta_from_target_sec": -3480
+      },
+      "may31": {
+        "timestamp_iso": "2026-06-30T19:04:54.000Z",
+        "tvl_usd": 23968,
+        "delta_from_target_sec": -17646
+      },
+      "abs_delta_usd": -6216,
+      "pct_delta": -20.59369202226345,
+      "excluded_reason": null
+    },
+    {
+      "pool_id": "d3dc0287-47a7-4b85-b422-c67b76bcb2ee",
+      "display_name": "EVK Vault eUSDC-105",
+      "symbol": "USDC",
+      "pool_meta": "EVK Vault eUSDC-105",
+      "underlying_token": "0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48",
+      "current_tvl_usd": 18719,
+      "may1": {
+        "timestamp_iso": "2026-05-31T23:02:00.000Z",
+        "tvl_usd": 18710,
+        "delta_from_target_sec": -3480
+      },
+      "may31": {
+        "timestamp_iso": "2026-06-30T19:04:54.000Z",
+        "tvl_usd": 29265,
+        "delta_from_target_sec": -17646
+      },
+      "abs_delta_usd": 10555,
+      "pct_delta": 56.41368252271513,
+      "excluded_reason": null
+    },
+    {
+      "pool_id": "29466c59-c6d4-4429-aa05-2234d67ab2a1",
+      "display_name": "EVK Vault eUSDC-122",
+      "symbol": "USDC",
+      "pool_meta": "EVK Vault eUSDC-122",
+      "underlying_token": "0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48",
+      "current_tvl_usd": 17928,
+      "may1": {
+        "timestamp_iso": "2026-05-31T23:02:00.000Z",
+        "tvl_usd": 1,
+        "delta_from_target_sec": -3480
+      },
+      "may31": {
+        "timestamp_iso": "2026-06-30T19:04:54.000Z",
+        "tvl_usd": 0,
+        "delta_from_target_sec": -17646
+      },
+      "abs_delta_usd": -1,
+      "pct_delta": -100,
+      "excluded_reason": null
+    },
+    {
+      "pool_id": "00609ee1-bd45-46e6-97fb-e7d5699b5e58",
+      "display_name": "EVK Vault eUSR-1",
+      "symbol": "USR",
+      "pool_meta": "EVK Vault eUSR-1",
+      "underlying_token": "0x66a1e37c9b0eaddca17d3662d6c05f4decf3e110",
+      "current_tvl_usd": 15570,
+      "may1": {
+        "timestamp_iso": "2026-06-02T23:03:15.000Z",
+        "tvl_usd": 43288,
+        "delta_from_target_sec": 169395
+      },
+      "may31": {
+        "timestamp_iso": "2026-06-30T19:04:54.000Z",
+        "tvl_usd": 14497,
+        "delta_from_target_sec": -17646
+      },
+      "abs_delta_usd": -28791,
+      "pct_delta": -66.51034928848641,
+      "excluded_reason": null
+    },
+    {
+      "pool_id": "44293f7f-2e0d-4904-a336-f53b5970abfe",
+      "display_name": "EVK Vault eUSDf-1",
+      "symbol": "USDF",
+      "pool_meta": "EVK Vault eUSDf-1",
+      "underlying_token": "0xfa2b947eec368f42195f24f36d2af29f7c24cec2",
+      "current_tvl_usd": 13528,
+      "may1": {
+        "timestamp_iso": "2026-05-31T23:02:00.000Z",
+        "tvl_usd": 13552,
+        "delta_from_target_sec": -3480
+      },
+      "may31": {
+        "timestamp_iso": "2026-06-30T19:04:54.000Z",
+        "tvl_usd": 13556,
+        "delta_from_target_sec": -17646
+      },
+      "abs_delta_usd": 4,
+      "pct_delta": 0.029515938606847696,
+      "excluded_reason": null
+    },
+    {
+      "pool_id": "4bb695e2-bd1c-473e-81ca-4e3d027cad78",
+      "display_name": "EVK Vault eUSDC-63",
+      "symbol": "USDC",
+      "pool_meta": "EVK Vault eUSDC-63",
+      "underlying_token": "0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48",
+      "current_tvl_usd": 13465,
+      "may1": {
+        "timestamp_iso": "2026-05-31T23:02:00.000Z",
+        "tvl_usd": 13149,
+        "delta_from_target_sec": -3480
+      },
+      "may31": {
+        "timestamp_iso": "2026-06-30T19:04:54.000Z",
+        "tvl_usd": 13463,
+        "delta_from_target_sec": -17646
+      },
+      "abs_delta_usd": 314,
+      "pct_delta": 2.388014297665222,
+      "excluded_reason": null
+    },
+    {
+      "pool_id": "c2505d0e-aced-431f-a3cd-b4b503301b09",
+      "display_name": "Hyperithm Euler USDC",
+      "symbol": "USDC",
+      "pool_meta": "Hyperithm Euler USDC",
+      "underlying_token": "0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48",
+      "current_tvl_usd": 10966,
+      "may1": {
+        "timestamp_iso": "2026-05-31T23:02:00.000Z",
+        "tvl_usd": 10964,
+        "delta_from_target_sec": -3480
+      },
+      "may31": {
+        "timestamp_iso": "2026-06-30T19:04:54.000Z",
+        "tvl_usd": 10964,
+        "delta_from_target_sec": -17646
+      },
+      "abs_delta_usd": 0,
+      "pct_delta": 0,
+      "excluded_reason": null
+    },
+    {
+      "pool_id": "2fc0f4ba-7d9d-4f8c-b78f-bed9fa89b61c",
+      "display_name": "EVK Vault eUSDC-119",
+      "symbol": "USDC",
+      "pool_meta": "EVK Vault eUSDC-119",
+      "underlying_token": "0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48",
+      "current_tvl_usd": 10575,
+      "may1": {
+        "timestamp_iso": "2026-05-31T23:02:00.000Z",
+        "tvl_usd": 19485,
+        "delta_from_target_sec": -3480
+      },
+      "may31": {
+        "timestamp_iso": "2026-06-30T19:04:54.000Z",
+        "tvl_usd": 0,
+        "delta_from_target_sec": -17646
+      },
+      "abs_delta_usd": -19485,
+      "pct_delta": -100,
+      "excluded_reason": null
+    },
+    {
+      "pool_id": "18e26e89-066b-48eb-b357-d3b4e9f343f6",
+      "display_name": "EVK Vault ersETH-4",
+      "symbol": "RSETH",
+      "pool_meta": "EVK Vault ersETH-4",
+      "underlying_token": "0xa1290d69c65a6fe4df752f95823fae25cb99e5a7",
+      "current_tvl_usd": 10179,
+      "may1": {
+        "timestamp_iso": "2026-06-02T23:03:15.000Z",
+        "tvl_usd": 22833,
+        "delta_from_target_sec": 169395
+      },
+      "may31": {
+        "timestamp_iso": "2026-06-30T19:04:54.000Z",
+        "tvl_usd": 10392,
+        "delta_from_target_sec": -17646
+      },
+      "abs_delta_usd": -12441,
+      "pct_delta": -54.48692681644987,
+      "excluded_reason": null
+    },
+    {
+      "pool_id": "088afbd1-f089-4813-8d41-cf8210c80c73",
+      "display_name": "EVK Vault eUSDT-33",
+      "symbol": "USDT",
+      "pool_meta": "EVK Vault eUSDT-33",
+      "underlying_token": "0xdac17f958d2ee523a2206206994597c13d831ec7",
+      "current_tvl_usd": 9054,
+      "may1": {
+        "timestamp_iso": "2026-05-31T23:02:00.000Z",
+        "tvl_usd": 7703,
+        "delta_from_target_sec": -3480
+      },
+      "may31": null,
+      "abs_delta_usd": null,
+      "pct_delta": null,
+      "excluded_reason": "no May 31 endpoint within tolerance — likely deprecated mid-window"
+    },
+    {
+      "pool_id": "b9c2067b-f491-4dfa-bedf-59194c4c7aa0",
+      "display_name": "EVK Vault eRLUSD-1",
+      "symbol": "RLUSD",
+      "pool_meta": "EVK Vault eRLUSD-1",
+      "underlying_token": "0x8292bb45bf1ee4d140127049757c2e0ff06317ed",
+      "current_tvl_usd": 7266,
+      "may1": {
+        "timestamp_iso": "2026-05-31T23:02:00.000Z",
+        "tvl_usd": 7446,
+        "delta_from_target_sec": -3480
+      },
+      "may31": {
+        "timestamp_iso": "2026-06-30T19:04:54.000Z",
+        "tvl_usd": 19594,
+        "delta_from_target_sec": -17646
+      },
+      "abs_delta_usd": 12148,
+      "pct_delta": 163.14799892559765,
+      "excluded_reason": null
+    },
+    {
+      "pool_id": "3318e376-03a7-40fc-a31a-a3abd3952121",
+      "display_name": "EVK Vault eUSDC-120",
+      "symbol": "USDC",
+      "pool_meta": "EVK Vault eUSDC-120",
+      "underlying_token": "0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48",
+      "current_tvl_usd": 5963,
+      "may1": {
+        "timestamp_iso": "2026-05-31T23:02:00.000Z",
+        "tvl_usd": 24293,
+        "delta_from_target_sec": -3480
+      },
+      "may31": {
+        "timestamp_iso": "2026-06-30T19:04:54.000Z",
+        "tvl_usd": 1127,
+        "delta_from_target_sec": -17646
+      },
+      "abs_delta_usd": -23166,
+      "pct_delta": -95.36080352364878,
+      "excluded_reason": null
+    },
+    {
+      "pool_id": "f17e867b-6f35-4cdb-8da2-e2edd277f169",
+      "display_name": "EVK Vault eWETH-48",
+      "symbol": "WETH",
+      "pool_meta": "EVK Vault eWETH-48",
+      "underlying_token": "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2",
+      "current_tvl_usd": 4538,
+      "may1": null,
+      "may31": {
+        "timestamp_iso": "2026-06-30T19:04:54.000Z",
+        "tvl_usd": 4624,
+        "delta_from_target_sec": -17646
+      },
+      "abs_delta_usd": null,
+      "pct_delta": null,
+      "excluded_reason": "no May 1 baseline within tolerance — likely created mid-window"
+    },
+    {
+      "pool_id": "fe640713-4aae-4130-a31b-a8a6e32289ec",
+      "display_name": "EVK Vault eUSD0-6",
+      "symbol": "USD0",
+      "pool_meta": "EVK Vault eUSD0-6",
+      "underlying_token": "0x73a15fed60bf67631dc6cd7bc5b6e8da8190acf5",
+      "current_tvl_usd": 71,
+      "may1": {
+        "timestamp_iso": "2026-05-31T23:02:00.000Z",
+        "tvl_usd": 71,
+        "delta_from_target_sec": -3480
+      },
+      "may31": {
+        "timestamp_iso": "2026-06-30T19:04:54.000Z",
+        "tvl_usd": 71,
+        "delta_from_target_sec": -17646
+      },
+      "abs_delta_usd": 0,
+      "pct_delta": 0,
+      "excluded_reason": null
+    },
+    {
+      "pool_id": "72edd719-a083-47cf-b8db-eea5cd24d62f",
+      "display_name": "EVK Vault eUSDC-64",
+      "symbol": "USDC",
+      "pool_meta": "EVK Vault eUSDC-64",
+      "underlying_token": "0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48",
+      "current_tvl_usd": 0,
+      "may1": {
+        "timestamp_iso": "2026-06-02T23:03:15.000Z",
+        "tvl_usd": 0,
+        "delta_from_target_sec": 169395
+      },
+      "may31": {
+        "timestamp_iso": "2026-06-30T19:04:54.000Z",
+        "tvl_usd": 0,
+        "delta_from_target_sec": -17646
+      },
+      "abs_delta_usd": 0,
+      "pct_delta": null,
+      "excluded_reason": null
+    },
+    {
+      "pool_id": "3a56fa68-6fcf-488e-bd3a-975e715d0882",
+      "display_name": "EVK Vault eWBTC-9",
+      "symbol": "WBTC",
+      "pool_meta": "EVK Vault eWBTC-9",
+      "underlying_token": "0x2260fac5e5542a773aa44fbcfedf7c193bc2c599",
+      "current_tvl_usd": 0,
+      "may1": {
+        "timestamp_iso": "2026-06-02T23:03:15.000Z",
+        "tvl_usd": 0,
+        "delta_from_target_sec": 169395
+      },
+      "may31": {
+        "timestamp_iso": "2026-06-30T19:04:54.000Z",
+        "tvl_usd": 0,
+        "delta_from_target_sec": -17646
+      },
+      "abs_delta_usd": 0,
+      "pct_delta": null,
+      "excluded_reason": null
+    },
+    {
+      "pool_id": "4388eeef-a353-469b-931d-ee687ccfc55f",
+      "display_name": "EVK Vault eWETH-33",
+      "symbol": "WETH",
+      "pool_meta": "EVK Vault eWETH-33",
+      "underlying_token": "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2",
+      "current_tvl_usd": 0,
+      "may1": {
+        "timestamp_iso": "2026-06-02T23:03:15.000Z",
+        "tvl_usd": 0,
+        "delta_from_target_sec": 169395
+      },
+      "may31": {
+        "timestamp_iso": "2026-06-30T19:04:54.000Z",
+        "tvl_usd": 0,
+        "delta_from_target_sec": -17646
+      },
+      "abs_delta_usd": 0,
+      "pct_delta": null,
+      "excluded_reason": null
+    },
+    {
+      "pool_id": "08d7dd43-2a32-4330-aaec-a1a0aa384026",
+      "display_name": "EVK Vault eUSDC-58",
+      "symbol": "USDC",
+      "pool_meta": "EVK Vault eUSDC-58",
+      "underlying_token": "0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48",
+      "current_tvl_usd": 0,
+      "may1": {
+        "timestamp_iso": "2026-05-31T23:02:00.000Z",
+        "tvl_usd": 0,
+        "delta_from_target_sec": -3480
+      },
+      "may31": {
+        "timestamp_iso": "2026-06-30T19:04:54.000Z",
+        "tvl_usd": 0,
+        "delta_from_target_sec": -17646
+      },
+      "abs_delta_usd": 0,
+      "pct_delta": null,
+      "excluded_reason": null
+    },
+    {
+      "pool_id": "c5b52a38-59e4-481e-9bba-0386b1e8620c",
+      "display_name": "EVK Vault eUSDC-47",
+      "symbol": "USDC",
+      "pool_meta": "EVK Vault eUSDC-47",
+      "underlying_token": "0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48",
+      "current_tvl_usd": 0,
+      "may1": {
+        "timestamp_iso": "2026-06-02T23:03:15.000Z",
+        "tvl_usd": 0,
+        "delta_from_target_sec": 169395
+      },
+      "may31": {
+        "timestamp_iso": "2026-06-30T19:04:54.000Z",
+        "tvl_usd": 0,
+        "delta_from_target_sec": -17646
+      },
+      "abs_delta_usd": 0,
+      "pct_delta": null,
+      "excluded_reason": null
+    },
+    {
+      "pool_id": "a0f1def1-eacd-4b3a-91a1-be9a9c0cbc2c",
+      "display_name": "EVK Vault eUSDC-95",
+      "symbol": "USDC",
+      "pool_meta": "EVK Vault eUSDC-95",
+      "underlying_token": "0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48",
+      "current_tvl_usd": 0,
+      "may1": {
+        "timestamp_iso": "2026-05-31T23:02:00.000Z",
+        "tvl_usd": 0,
+        "delta_from_target_sec": -3480
+      },
+      "may31": {
+        "timestamp_iso": "2026-06-30T19:04:54.000Z",
+        "tvl_usd": 0,
+        "delta_from_target_sec": -17646
+      },
+      "abs_delta_usd": 0,
+      "pct_delta": null,
+      "excluded_reason": null
+    },
+    {
+      "pool_id": "af2343d4-1265-47b1-babf-bfbca90dab56",
+      "display_name": "EVK Vault eUSDC-19",
+      "symbol": "USDC",
+      "pool_meta": "EVK Vault eUSDC-19",
+      "underlying_token": "0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48",
+      "current_tvl_usd": 0,
+      "may1": {
+        "timestamp_iso": "2026-06-02T23:03:15.000Z",
+        "tvl_usd": 0,
+        "delta_from_target_sec": 169395
+      },
+      "may31": {
+        "timestamp_iso": "2026-06-30T19:04:54.000Z",
+        "tvl_usd": 0,
+        "delta_from_target_sec": -17646
+      },
+      "abs_delta_usd": 0,
+      "pct_delta": null,
+      "excluded_reason": null
+    }
+  ]
+}

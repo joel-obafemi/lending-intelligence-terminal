@@ -1,0 +1,217 @@
+{
+  "source": {
+    "script": "scripts/query-lrt-collateral.ts",
+    "generated_at_utc": "2026-06-30T20:07:27Z",
+    "target_dates_utc": {
+      "may_31": "2026-05-31",
+      "june_30": "2026-06-30"
+    },
+    "data_source": "DefiLlama /protocol/<slug> chainTvls.Ethereum.tokensInUsd per day",
+    "symbol_normalisation": "Symbols upper-cased and matched against LRT set {WEETH, RSETH, EZETH, OSETH}. Variants like weETH or weEth from DefiLlama collapse onto the same canonical symbol.",
+    "methodology": "USD supplied per (protocol, LRT-asset) at the day closest to and not after each target. Uses ACTUAL prices on each day, NOT constant prices. Differs from the Sankey methodology which holds quantities at latest-observed prices to isolate flows from drift.",
+    "note": "DefiLlama actual-price deltas will differ from Sankey constant-price deltas by the LRT price effect across May→June. The reconciliation block surfaces the gap per asset."
+  },
+  "sector": {
+    "may_31": {
+      "by_lrt": {
+        "WEETH": 2476213338.43007,
+        "RSETH": 980049121.1883701,
+        "EZETH": 46762306.32655,
+        "OSETH": 225182578.63283
+      },
+      "total_usd": 3728207344.5778203
+    },
+    "june_30": {
+      "by_lrt": {
+        "WEETH": 2004442203.4800901,
+        "RSETH": 725858781.8116,
+        "EZETH": 4448279.39681,
+        "OSETH": 186471714.73139
+      },
+      "total_usd": 2921220979.41989
+    },
+    "delta_by_lrt_usd": {
+      "WEETH": -471771134.9499798,
+      "RSETH": -254190339.37677014,
+      "EZETH": -42314026.92974,
+      "OSETH": -38710863.901439995
+    },
+    "delta_total_usd": -806986365.1579304,
+    "pct_change_by_lrt": {
+      "WEETH": -0.19052119929581057,
+      "RSETH": -0.2593648970049059,
+      "EZETH": -0.9048746790685038,
+      "OSETH": -0.17190878680077532
+    },
+    "pct_change_total": -0.2164542608746223
+  },
+  "sankey_hypothesis_reconciliation": {
+    "hypothesis_total_usd": -1175000000,
+    "defillama_actual_total_usd": -806986365.1579299,
+    "total_gap_usd": 368013634.8420701,
+    "per_asset": [
+      {
+        "asset": "WEETH",
+        "sankey_hypothesis_constant_price_delta_usd": -844000000,
+        "defillama_actual_price_delta_usd": -471771134.9499798,
+        "gap_usd": 372228865.0500202,
+        "gap_interpretation": "Larger than $50M — meaningful divergence between flow methodology and actual-price methodology, indicating LRT price moved materially in June."
+      },
+      {
+        "asset": "RSETH",
+        "sankey_hypothesis_constant_price_delta_usd": -221000000,
+        "defillama_actual_price_delta_usd": -254190339.37677014,
+        "gap_usd": -33190339.37677014,
+        "gap_interpretation": "Within $50M — constant-price flow methodology and actual-price methodology align; the June LRT bleed was primarily depositor exit, not price decline."
+      },
+      {
+        "asset": "EZETH",
+        "sankey_hypothesis_constant_price_delta_usd": -64000000,
+        "defillama_actual_price_delta_usd": -42314026.92974,
+        "gap_usd": 21685973.070260003,
+        "gap_interpretation": "Within $50M — constant-price flow methodology and actual-price methodology align; the June LRT bleed was primarily depositor exit, not price decline."
+      },
+      {
+        "asset": "OSETH",
+        "sankey_hypothesis_constant_price_delta_usd": -46000000,
+        "defillama_actual_price_delta_usd": -38710863.901439995,
+        "gap_usd": 7289136.098560005,
+        "gap_interpretation": "Within $50M — constant-price flow methodology and actual-price methodology align; the June LRT bleed was primarily depositor exit, not price decline."
+      }
+    ]
+  },
+  "per_protocol": [
+    {
+      "protocol_slug": "aave-v3",
+      "protocol_name": "Aave V3",
+      "may_31": {
+        "day_utc": "2026-05-31",
+        "by_lrt": {
+          "WEETH": 2117601414.33914,
+          "RSETH": 951338596.39213,
+          "EZETH": 12744300.64962,
+          "OSETH": 212884850.79623
+        }
+      },
+      "june_30": {
+        "day_utc": "2026-06-30",
+        "by_lrt": {
+          "WEETH": 1707236170.99214,
+          "RSETH": 705655432.16464,
+          "EZETH": 3737863.99839,
+          "OSETH": 176577035.98676
+        }
+      }
+    },
+    {
+      "protocol_slug": "spark",
+      "protocol_name": "Spark",
+      "may_31": {
+        "day_utc": "2026-05-31",
+        "by_lrt": {
+          "WEETH": 51030979.16233,
+          "RSETH": 32998.40205,
+          "EZETH": 30423656.86338,
+          "OSETH": 0
+        }
+      },
+      "june_30": {
+        "day_utc": "2026-06-30",
+        "by_lrt": {
+          "WEETH": 66585990.17124,
+          "RSETH": 25666.58111,
+          "EZETH": 3392.80714,
+          "OSETH": 0
+        }
+      }
+    },
+    {
+      "protocol_slug": "morpho-blue",
+      "protocol_name": "Morpho",
+      "may_31": {
+        "day_utc": "2026-05-31",
+        "by_lrt": {
+          "WEETH": 245664715.19779,
+          "RSETH": 1878.95869,
+          "EZETH": 317860.7647,
+          "OSETH": 4112.41498
+        }
+      },
+      "june_30": {
+        "day_utc": "2026-06-30",
+        "by_lrt": {
+          "WEETH": 201251680.74765,
+          "RSETH": 1083.64072,
+          "EZETH": 53330.95954,
+          "OSETH": 3302.01667
+        }
+      }
+    },
+    {
+      "protocol_slug": "fluid",
+      "protocol_name": "Fluid",
+      "may_31": {
+        "day_utc": "2026-05-31",
+        "by_lrt": {
+          "WEETH": 19285957.95005,
+          "RSETH": 7013586.35586,
+          "EZETH": 2311327.68802,
+          "OSETH": 12291465.4392
+        }
+      },
+      "june_30": {
+        "day_utc": "2026-06-30",
+        "by_lrt": {
+          "WEETH": 16690815.65028,
+          "RSETH": 3260966.75504,
+          "EZETH": 189946.01296,
+          "OSETH": 9889653.62975
+        }
+      }
+    },
+    {
+      "protocol_slug": "compound-v3",
+      "protocol_name": "Compound",
+      "may_31": {
+        "day_utc": "2026-05-31",
+        "by_lrt": {
+          "WEETH": 41884140.23979,
+          "RSETH": 21635461.23459,
+          "EZETH": 964317.84043,
+          "OSETH": 2149.98242
+        }
+      },
+      "june_30": {
+        "day_utc": "2026-06-30",
+        "by_lrt": {
+          "WEETH": 12097101.42203,
+          "RSETH": 16905127.51558,
+          "EZETH": 463078.72625,
+          "OSETH": 1723.09821
+        }
+      }
+    },
+    {
+      "protocol_slug": "euler-v2",
+      "protocol_name": "Euler",
+      "may_31": {
+        "day_utc": "2026-05-31",
+        "by_lrt": {
+          "WEETH": 746131.54097,
+          "RSETH": 26599.84505,
+          "EZETH": 842.5204,
+          "OSETH": 0
+        }
+      },
+      "june_30": {
+        "day_utc": "2026-06-30",
+        "by_lrt": {
+          "WEETH": 580444.49675,
+          "RSETH": 10505.15451,
+          "EZETH": 666.89253,
+          "OSETH": 0
+        }
+      }
+    }
+  ]
+}

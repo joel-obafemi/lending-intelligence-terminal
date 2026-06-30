@@ -1,0 +1,247 @@
+{
+  "source": {
+    "script": "scripts/query-compound-comet-markets.ts",
+    "generated_at_utc": "2026-06-30T19:54:01Z",
+    "data_source": "On-chain reads against Compound V3 Comet contracts on Ethereum mainnet (latest block). DefiLlama cross-check via /protocol/compound-v3 chainTvls.Ethereum.",
+    "methodology": "Per Comet market: baseToken + baseTokenPriceFeed for the base USD; totalSupply / totalBorrow / getUtilization for the size + util; getSupplyRate(util) / getBorrowRate(util) annualised at SECONDS_PER_YEAR; numAssets + getAssetInfo + totalsCollateral + getPrice for per-collateral USD. Base USD plus per-collateral USD makes the full Ethereum-side TVL contribution per market.",
+    "snapshot_caveat": "On-chain reads are LATEST-BLOCK (June 4, 2026 as of run time), not May 31. The DefiLlama cross-check field provides the May 31 figure for reconciliation against the issue's anchor date.",
+    "reconciliation_target_usd": 1610000000,
+    "reconciliation_tolerance_usd": 50000000,
+    "note": "All Comet markets read successfully."
+  },
+  "markets": [
+    {
+      "label": "USDC base",
+      "comet_address": "0xc3d688B66703497DAA19211EEdff47f25384cdc3",
+      "base_symbol": "USDC",
+      "base_address": "0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48",
+      "base_token_price_usd": 0.99961311,
+      "total_supply_usd": 327521287.2661286,
+      "total_borrow_usd": 292123538.0307152,
+      "utilization_pct": 89.1922255454053,
+      "base_supply_apy_pct": 3.210920117424,
+      "base_borrow_apy_pct": 3.9775816367567995,
+      "total_collateral_usd": 483312661.4650016,
+      "top_3_collateral": [
+        {
+          "symbol": "WBTC",
+          "address": "0x2260FAC5E5542a773Aa44fBCfeDf7C193bc2C599",
+          "qty": "5053.71203531",
+          "usd": 295441540.7939916,
+          "share_of_market_collateral": 0.6112845045243773
+        },
+        {
+          "symbol": "WETH",
+          "address": "0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2",
+          "qty": "55486.986154159796908577",
+          "usd": 87369838.6509546,
+          "share_of_market_collateral": 0.18077291496175996
+        },
+        {
+          "symbol": "wstETH",
+          "address": "0x7f39C581F595B53c5cb19bD0b3f8dA6c935E2Ca0",
+          "qty": "37549.650888667594924312",
+          "usd": 73214900.99472742,
+          "share_of_market_collateral": 0.1514855844512759
+        }
+      ],
+      "num_collateral_assets": 13
+    },
+    {
+      "label": "USDT base",
+      "comet_address": "0x3Afdc9BCA9213A35503b077a6072F3D0d5AB0840",
+      "base_symbol": "USDT",
+      "base_address": "0xdAC17F958D2ee523a2206206994597C13D831ec7",
+      "base_token_price_usd": 0.99832115,
+      "total_supply_usd": 192409725.6457198,
+      "total_borrow_usd": 144883645.78787294,
+      "utilization_pct": 75.29945402425658,
+      "base_supply_apy_pct": 2.7107803433088,
+      "base_borrow_apy_pct": 3.5916682284864,
+      "total_collateral_usd": 261731614.28871694,
+      "top_3_collateral": [
+        {
+          "symbol": "WBTC",
+          "address": "0x2260FAC5E5542a773Aa44fBCfeDf7C193bc2C599",
+          "qty": "1930.08579345",
+          "usd": 112833401.80392443,
+          "share_of_market_collateral": 0.43110344965609526
+        },
+        {
+          "symbol": "WETH",
+          "address": "0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2",
+          "qty": "37038.382023503046213476",
+          "usd": 58320656.528274536,
+          "share_of_market_collateral": 0.22282618279326716
+        },
+        {
+          "symbol": "wstETH",
+          "address": "0x7f39C581F595B53c5cb19bD0b3f8dA6c935E2Ca0",
+          "qty": "20519.493074179971389778",
+          "usd": 40009230.93379498,
+          "share_of_market_collateral": 0.15286357760992786
+        }
+      ],
+      "num_collateral_assets": 16
+    },
+    {
+      "label": "WETH base",
+      "comet_address": "0xA17581A9E3356d9A858b789D68B4d866e593aE94",
+      "base_symbol": "WETH",
+      "base_address": "0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2",
+      "base_token_price_usd": 1574.83041549,
+      "total_supply_usd": 82134129.6104823,
+      "total_borrow_usd": 70033213.96541947,
+      "utilization_pct": 85.26686213916024,
+      "base_supply_apy_pct": 1.7053372386575998,
+      "base_borrow_apy_pct": 1.94740957404,
+      "total_collateral_usd": 79979634.12158468,
+      "top_3_collateral": [
+        {
+          "symbol": "wstETH",
+          "address": "0x7f39C581F595B53c5cb19bD0b3f8dA6c935E2Ca0",
+          "qty": "24732.144919898194698599",
+          "usd": 48230165.52939589,
+          "share_of_market_collateral": 0.6030305847120607
+        },
+        {
+          "symbol": "rsETH",
+          "address": "0xA1290d69c65A6Fe4DF752f95823fae25cB99e5A7",
+          "qty": "9882.597661816863504705",
+          "usd": 16729042.824100807,
+          "share_of_market_collateral": 0.20916628348998684
+        },
+        {
+          "symbol": "weETH",
+          "address": "0xCd5fE23C85820F7B72D0926FC9b05b43E359b7ee",
+          "qty": "6710.334456815485651688",
+          "usd": 11605406.18758942,
+          "share_of_market_collateral": 0.14510451710677913
+        }
+      ],
+      "num_collateral_assets": 17
+    },
+    {
+      "label": "USDS base",
+      "comet_address": "0x5D409e56D886231aDAf00c8775665AD0f9897b56",
+      "base_symbol": "USDS",
+      "base_address": "0xdC035D45d973E3EC169d2276DDab16f1e407384F",
+      "base_token_price_usd": 0.999495,
+      "total_supply_usd": 1882539.9068020917,
+      "total_borrow_usd": 1702625.544954917,
+      "utilization_pct": 90.44226354753974,
+      "base_supply_apy_pct": 4.653474291964799,
+      "base_borrow_apy_pct": 5.5921687625951995,
+      "total_collateral_usd": 2610419.5088295825,
+      "top_3_collateral": [
+        {
+          "symbol": "wstETH",
+          "address": "0x7f39C581F595B53c5cb19bD0b3f8dA6c935E2Ca0",
+          "qty": "673.476864158128425511",
+          "usd": 1313155.802107819,
+          "share_of_market_collateral": 0.5030439734556651
+        },
+        {
+          "symbol": "cbBTC",
+          "address": "0xcbB7C0000aB88B473b1f5aFd9ef808440eed33Bf",
+          "qty": "12.73708137",
+          "usd": 754735.6039023757,
+          "share_of_market_collateral": 0.2891242581315107
+        },
+        {
+          "symbol": "sUSDS",
+          "address": "0xa3931d71877C0E7a3148CB7Eb4463524FEc27fbD",
+          "qty": "324039.937874638624676346",
+          "usd": 356750.1494033941,
+          "share_of_market_collateral": 0.13666391482162493
+        }
+      ],
+      "num_collateral_assets": 10
+    },
+    {
+      "label": "wstETH base",
+      "comet_address": "0x3D0bb1ccaB520A66e607822fC55BC921738fAFE3",
+      "base_symbol": "wstETH",
+      "base_address": "0x7f39C581F595B53c5cb19bD0b3f8dA6c935E2Ca0",
+      "base_token_price_usd": 1574.83041549,
+      "total_supply_usd": 258586.55856762602,
+      "total_borrow_usd": 38062.83155388973,
+      "utilization_pct": 14.718845814765661,
+      "base_supply_apy_pct": 0.2943769137552,
+      "base_borrow_apy_pct": 1.1635427258208,
+      "total_collateral_usd": 43590.95391297467,
+      "top_3_collateral": [
+        {
+          "symbol": "tETH",
+          "address": "0xD11c452fc99cF405034ee446803b6F6c1F6d5ED8",
+          "qty": "24.257710366293659345",
+          "usd": 38454.12844770636,
+          "share_of_market_collateral": 0.8821584525192198
+        },
+        {
+          "symbol": "WETH",
+          "address": "0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2",
+          "qty": "3.389719265855362495",
+          "usd": 4310.963513108047,
+          "share_of_market_collateral": 0.09889582874727837
+        },
+        {
+          "symbol": "ezETH",
+          "address": "0xbf5495Efe5DB9ce00f80364C8B423567e58d2110",
+          "qty": "0.382157388133100633",
+          "usd": 525.2779969426672,
+          "share_of_market_collateral": 0.01205016063634066
+        }
+      ],
+      "num_collateral_assets": 7
+    },
+    {
+      "label": "WBTC base",
+      "comet_address": "0xe85Dc543813B8c2CFEaAc371517b925a166a9293",
+      "base_symbol": "WBTC",
+      "base_address": "0x2260FAC5E5542a773Aa44fBCfeDf7C193bc2C599",
+      "base_token_price_usd": 0.99865139,
+      "total_supply_usd": 26.39142109141314,
+      "total_borrow_usd": 7.5643156421122155,
+      "utilization_pct": 28.661758720522183,
+      "base_supply_apy_pct": 0.34394110202879996,
+      "base_borrow_apy_pct": 1.401264616392,
+      "total_collateral_usd": 11.047161231443965,
+      "top_3_collateral": [
+        {
+          "symbol": "USDC",
+          "address": "0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48",
+          "qty": "326952.583464",
+          "usd": 5.58108059973048,
+          "share_of_market_collateral": 0.5052049556265037
+        },
+        {
+          "symbol": "USDT",
+          "address": "0xdAC17F958D2ee523a2206206994597C13D831ec7",
+          "qty": "320591.223475",
+          "usd": 5.466080360248751,
+          "share_of_market_collateral": 0.4947950198002391
+        },
+        {
+          "symbol": "LBTC",
+          "address": "0x8236a87084f8B84306f72007F36F2618A5634494",
+          "qty": "0.00000025",
+          "usd": 2.509752575e-7,
+          "share_of_market_collateral": 2.271852942506527e-8
+        }
+      ],
+      "num_collateral_assets": 4
+    }
+  ],
+  "failed_markets": [],
+  "sector_sum": {
+    "base_supply_total_usd": 604206295.3791215,
+    "collateral_total_usd": 827677931.3852069,
+    "full_ethereum_total_usd": 1431884226.7643285,
+    "dashboard_card_value_usd": 1610000000,
+    "delta_vs_dashboard_usd": -178115773.23567152,
+    "reconciles_within_tolerance": false,
+    "defillama_ethereum_tvl_may_31_usd": 1074024684,
+    "defillama_ethereum_tvl_today_usd": 929360002.18275
+  }
+}

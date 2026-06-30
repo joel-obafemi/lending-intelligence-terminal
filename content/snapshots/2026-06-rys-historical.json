@@ -1,0 +1,120 @@
+{
+  "source": {
+    "script": "scripts/query-rys-historical.ts",
+    "generated_at_utc": "2026-06-30T20:06:42.000Z",
+    "data_source": "lib/rates.ts loadRates() → realYieldSpreadHistory",
+    "methodology": "blended_stable_apy (TVL-weighted USDC/USDT/DAI/USDS across Aave V3 / Spark / Morpho / Fluid, from DefiLlama Yields /chart per pool) minus FRED TB4WK 4-week T-bill",
+    "series_window_days": 1364,
+    "series_first_day": "2022-10-06",
+    "series_last_day": "2026-06-30"
+  },
+  "target_anchor": {
+    "day_utc": "2026-06-30",
+    "spread_bps": -37.1339382541497,
+    "spread_pp": -0.371339382541497,
+    "stable_apy_pct": 3.228660617458503,
+    "t_bill_pct": 3.6
+  },
+  "prior_positive_search": {
+    "most_recent_prior_positive_day_utc": "2026-06-04",
+    "most_recent_prior_positive_spread_pp": 0.4198292427880861,
+    "most_recent_prior_positive_spread_bps": 41.98292427880861,
+    "inverted_streak_days_between": 25,
+    "prior_positive_run_start_day_utc": "2026-06-04",
+    "prior_positive_run_length_days": 1
+  },
+  "trajectory_monthly_may2025_may2026": [
+    {
+      "month_label": "May 2025",
+      "day_utc": "2025-05-31",
+      "spread_bps": -55.32199450326969,
+      "stable_apy_pct": 3.6767800549673035,
+      "t_bill_pct": 4.23
+    },
+    {
+      "month_label": "Jun 2025",
+      "day_utc": "2025-06-30",
+      "spread_bps": -90.03874889341246,
+      "stable_apy_pct": 3.2296125110658753,
+      "t_bill_pct": 4.13
+    },
+    {
+      "month_label": "Jul 2025",
+      "day_utc": "2025-07-31",
+      "spread_bps": 26.050055302327824,
+      "stable_apy_pct": 4.5005005530232784,
+      "t_bill_pct": 4.24
+    },
+    {
+      "month_label": "Aug 2025",
+      "day_utc": "2025-08-31",
+      "spread_bps": -19.358875276690846,
+      "stable_apy_pct": 4.076411247233091,
+      "t_bill_pct": 4.27
+    },
+    {
+      "month_label": "Sep 2025",
+      "day_utc": "2025-09-30",
+      "spread_bps": 37.937829974277015,
+      "stable_apy_pct": 4.45937829974277,
+      "t_bill_pct": 4.08
+    },
+    {
+      "month_label": "Oct 2025",
+      "day_utc": "2025-10-31",
+      "spread_bps": -41.06012229068994,
+      "stable_apy_pct": 3.579398777093101,
+      "t_bill_pct": 3.99
+    },
+    {
+      "month_label": "Nov 2025",
+      "day_utc": "2025-11-30",
+      "spread_bps": -62.640776237705296,
+      "stable_apy_pct": 3.263592237622947,
+      "t_bill_pct": 3.89
+    },
+    {
+      "month_label": "Dec 2025",
+      "day_utc": "2025-12-31",
+      "spread_bps": -8.195967522670466,
+      "stable_apy_pct": 3.5380403247732954,
+      "t_bill_pct": 3.62
+    },
+    {
+      "month_label": "Jan 2026",
+      "day_utc": "2026-01-31",
+      "spread_bps": -63.54355856972291,
+      "stable_apy_pct": 2.964564414302771,
+      "t_bill_pct": 3.6
+    },
+    {
+      "month_label": "Feb 2026",
+      "day_utc": "2026-02-28",
+      "spread_bps": -150.99260841993402,
+      "stable_apy_pct": 2.12007391580066,
+      "t_bill_pct": 3.63
+    },
+    {
+      "month_label": "Mar 2026",
+      "day_utc": "2026-03-31",
+      "spread_bps": -117.96287528698346,
+      "stable_apy_pct": 2.4603712471301655,
+      "t_bill_pct": 3.64
+    },
+    {
+      "month_label": "Apr 2026",
+      "day_utc": "2026-04-30",
+      "spread_bps": -28.1867998960736,
+      "stable_apy_pct": 3.318132001039264,
+      "t_bill_pct": 3.6
+    },
+    {
+      "month_label": "May 2026",
+      "day_utc": "2026-05-31",
+      "spread_bps": 13.38145235199617,
+      "stable_apy_pct": 3.733814523519962,
+      "t_bill_pct": 3.6
+    }
+  ],
+  "editorial_framing": "June 30, 2026's -0.37 pp print follows a prior positive print earlier in 2026 (2026-06-04, +0.42 pp). The \"first positive of 2026\" framing does NOT hold — use \"first positive in 25 days\" or \"first positive since 2026-06-04\" instead."
+}

@@ -1,0 +1,4248 @@
+{
+  "source": {
+    "script": "scripts/query-oracle-concentration-may.ts",
+    "generated_at_utc": "2026-06-30T20:06:15Z",
+    "target_day_utc": "2026-06-30",
+    "data_source": "DefiLlama /protocol/<slug> chainTvls.Ethereum.tokensInUsd at day closest to target",
+    "oracle_map_source": "lib/oracles.ts ORACLE_MAP (curated, includes per-protocol overrides)",
+    "methodology": "Per (protocol, asset) USD supply at the June 30 snapshot, attributed to the oracle vendor via oracleFor(asset, protocolSlug). Composite feeds attributed to root price source (e.g. wstETH composite → Chainlink). Assets not in ORACLE_MAP bucketed as 'Other' and counted in unknown_to_map_usd so the curator can audit.",
+    "note": "10.05% of sector supply is in assets not present in ORACLE_MAP and is counted as 'Other'. See sector.unknown_to_map_assets for the list — extend lib/oracles.ts ORACLE_MAP to attribute these explicitly."
+  },
+  "sector": {
+    "total_supplied_usd": 17926611045.914078,
+    "by_oracle_usd": {
+      "Chainlink": 14769497219.907572,
+      "Redstone": 1178710995.1266897,
+      "Pyth": 482361.35696,
+      "Lido": 0,
+      "Maker": 175844603.70121,
+      "Curve EMA": 135318.22295999998,
+      "Other": 1801940547.59869
+    },
+    "by_oracle_share": {
+      "Chainlink": 0.8238867447996485,
+      "Redstone": 0.06575202597455515,
+      "Pyth": 0.000026907559701304626,
+      "Lido": 0,
+      "Maker": 0.009809138116001538,
+      "Curve EMA": 0.000007548455344594671,
+      "Other": 0.10051763509474912
+    },
+    "top_1_vendor": "Chainlink",
+    "top_1_share": 0.8238867447996485,
+    "top_2_share": 0.9244043798943976,
+    "unknown_to_map_usd": 1801940547.59869,
+    "unknown_to_map_assets": [
+      "1INCH",
+      "AAVE",
+      "AA_FALCONXUSDC",
+      "AA_IDLE_FASANARA",
+      "AFXARBUSDTRY",
+      "AGETH",
+      "ALETH",
+      "ALUSD",
+      "APU",
+      "APXETH",
+      "APXUSD",
+      "APYUSD",
+      "ARM-WETH-EETH",
+      "ARM-WETH-STETH",
+      "ARSS",
+      "ASDCRV",
+      "AUSD",
+      "AUTOETH",
+      "AVLT",
+      "BAL",
+      "BERASTONE",
+      "BGBTC",
+      "BITCOIN",
+      "BOLD",
+      "BTC.B",
+      "BTCY",
+      "BUSD0",
+      "CANA",
+      "CASH+",
+      "COMP",
+      "CRV",
+      "CSUSDL",
+      "CULT",
+      "CUSD",
+      "CUSDO",
+      "CUSDOUSDC",
+      "DCOMP",
+      "DEUSD",
+      "DUSD",
+      "EBTC",
+      "EIGEN",
+      "ENS",
+      "ETH+",
+      "ETHX",
+      "EUL",
+      "EURA",
+      "EURCV",
+      "EURE",
+      "EUROC",
+      "EUSD",
+      "EUSDE",
+      "EUTBL",
+      "FBTC",
+      "FLHYON",
+      "FLUID",
+      "FRXUSD",
+      "FTUSD",
+      "FXS",
+      "FXSAVE",
+      "FXUSD",
+      "GOLDX",
+      "GRT",
+      "GTUSDCP",
+      "HEMIBTC",
+      "HGETH",
+      "HYBOND",
+      "IMF",
+      "IUSD",
+      "JOE",
+      "JPYC",
+      "JRUSDE",
+      "KBTC",
+      "KNC",
+      "LDO",
+      "LINK",
+      "LSETH",
+      "LSTRZR",
+      "LVLUSD",
+      "MAPOLLO",
+      "MBASIS",
+      "MBTC",
+      "MEDGE",
+      "METH",
+      "MEVBTC",
+      "MF-ONE",
+      "MHYPER",
+      "MHYPERBTC",
+      "MKR",
+      "MM1-USD",
+      "MMEV",
+      "MOG",
+      "MORPHO",
+      "MORPHO-FRXUSD/SUSDS",
+      "MRE7YIELD",
+      "MSETH",
+      "MSUSD",
+      "MSY",
+      "MTBILL",
+      "MUBOND",
+      "MUSD",
+      "MVL",
+      "N-LP-OETH-WETH",
+      "N-PT-SUSDE-27NOV2025",
+      "N-ST-LIUSD4W",
+      "N-ST-MAPOLLO",
+      "N-ST-MHYPER",
+      "N-ST-SUSDE",
+      "N-ST-WEETH",
+      "NPC",
+      "OETH",
+      "ONDO",
+      "PAXG",
+      "PENDLE-LPT-WRAPPER",
+      "PEPE",
+      "PMUSD",
+      "PRIME",
+      "PST",
+      "PT-ALUSD-23OCT2025",
+      "PT-APXUSD-18JUN2026",
+      "PT-APXUSD-5NOV2026",
+      "PT-APYUSD-18JUN2026",
+      "PT-APYUSD-5NOV2026",
+      "PT-CUSD-23JUL2026",
+      "PT-CUSD-29JAN2026",
+      "PT-EBTC-26DEC2024",
+      "PT-EUSDE-29MAY2025",
+      "PT-FXSAVE-30APR2026",
+      "PT-IUSD-25JUN2026",
+      "PT-JRUSDE-15JAN2026",
+      "PT-JRUSDE-2APR2026",
+      "PT-MAPOLLO-20NOV2025",
+      "PT-PUSDE-16OCT2025",
+      "PT-REUSD-10DEC2026",
+      "PT-REUSD-18DEC2025",
+      "PT-REUSD-25JUN2026",
+      "PT-RSETH-26JUN2025",
+      "PT-SNUSD-4JUN2026",
+      "PT-SNUSD-5MAR2026",
+      "PT-SRNUSD-28MAY2026",
+      "PT-SRUSDAT-27AUG2026",
+      "PT-SRUSDE-15JAN2026",
+      "PT-SRUSDE-22OCT2026",
+      "PT-SRUSDE-25JUN2026",
+      "PT-SRUSDE-2APR2026",
+      "PT-STCUSD-23JUL2026",
+      "PT-STCUSD-29JAN2026",
+      "PT-STRCX-27AUG2026",
+      "PT-SUSDAT-27AUG2026",
+      "PT-SUSDD-27AUG2026",
+      "PT-SUSDE-13AUG2026",
+      "PT-SUSDE-24OCT2024",
+      "PT-SUSDE-25SEP2025",
+      "PT-SUSDE-26DEC2024",
+      "PT-SUSDE-27NOV2025",
+      "PT-SUSDE-29MAY2025",
+      "PT-SUSDE-31JUL2025",
+      "PT-SUSDE-5FEB2026",
+      "PT-SUSDE-7MAY2026",
+      "PT-SUSDF-29JAN2026",
+      "PT-SYRUPUSDC-28AUG2025",
+      "PT-SYRUPUSDC-30OCT2025",
+      "PT-TUSDE-25SEP2025",
+      "PT-USD3-17DEC2026",
+      "PT-USDAT-27AUG2026",
+      "PT-USDE-25JUL2024",
+      "PT-USDE-25SEP2025",
+      "PT-USDE-27NOV2025",
+      "PT-USDE-5FEB2026",
+      "PT-USDF-29JAN2026",
+      "PT-USDG-24SEP2026",
+      "PT-USDG-28MAY2026",
+      "PT-USDS-14AUG2025",
+      "PT-WEETH-27JUN2024",
+      "PUSDE",
+      "QQQON",
+      "REKT",
+      "REUSD",
+      "REUSDE",
+      "RLP",
+      "RLUSD",
+      "RPL",
+      "RSWETH",
+      "RUSD",
+      "RZR",
+      "SAVETH",
+      "SAVUSD",
+      "SCRVUSD",
+      "SDAI",
+      "SDEUSD",
+      "SDOLA",
+      "SFRAX",
+      "SFRXUSD",
+      "SHIB",
+      "SIUSD",
+      "SKY",
+      "SNUSD",
+      "SNX",
+      "SOLVBTC",
+      "SPX",
+      "SPYON",
+      "SPYX",
+      "SRMHYPER",
+      "SRNUSD",
+      "SRROYUSDC",
+      "SRUSD",
+      "SRUSDE",
+      "ST-YCRV",
+      "STAKEDAO-AV/FRXUSD",
+      "STAKEDAO-CRVFRXUSD",
+      "STAKEDAO-FRXMSUSD",
+      "STAKEDAO-FRXSUSDS",
+      "STAKEDAO-FRXUSDOLA",
+      "STAKEDAO-FRXUSDOUSD",
+      "STCUSD",
+      "STEAKEURCV",
+      "STEAKUSDC",
+      "STEUR",
+      "STG",
+      "STONE",
+      "STUSDS",
+      "SUSDAF",
+      "SUSDAI",
+      "SUSDAT",
+      "SUSDD",
+      "SUSDF",
+      "SUSDS",
+      "SUSDS+S",
+      "SUSDU",
+      "SUSG",
+      "SUSN",
+      "SUSP",
+      "SYRUP",
+      "SYRUPUSDC",
+      "SYRUPUSDT",
+      "SYUSD",
+      "SYZUSD",
+      "TETH",
+      "TGBP",
+      "TGLD",
+      "THBILL",
+      "TRYB",
+      "TSLAON",
+      "ULTRA_BTC",
+      "ULTRA_USD",
+      "UNI",
+      "UNIBTC",
+      "UPUSDC",
+      "USCC",
+      "USD0USD0++",
+      "USD3",
+      "USDAI",
+      "USDCUSDU",
+      "USDCV",
+      "USDF",
+      "USDG",
+      "USDQ",
+      "USDR",
+      "USDU",
+      "USN",
+      "USP",
+      "USR",
+      "USRUSDC",
+      "USTBL",
+      "USUAL",
+      "USUALX",
+      "V-WMTUSDC",
+      "VUSD",
+      "W",
+      "WAETHUSDC",
+      "WBIB01",
+      "WBRAVUSDC",
+      "WBRETH",
+      "WBRUSDC",
+      "WEETHS",
+      "WFALCONX",
+      "WJAAA",
+      "WM",
+      "WNXM",
+      "WOETH",
+      "WOUSD",
+      "WSPYX",
+      "WSRUSD",
+      "WSTLINK",
+      "WSTRCX",
+      "WSTUSR",
+      "WUSCC",
+      "WUSDL",
+      "WUSDM",
+      "XAUE",
+      "XAUM",
+      "XAUT",
+      "XCVX",
+      "XPRISM",
+      "XSOLVBTC",
+      "XUSD",
+      "YETH",
+      "YFI",
+      "YNETHX",
+      "YNRWAX",
+      "YNUSDX",
+      "YOUSD",
+      "YSYBOLD",
+      "YU",
+      "YUSD",
+      "YVCURVE-YYB-F",
+      "YVUSDC-1",
+      "ZCHF"
+    ]
+  },
+  "per_protocol": [
+    {
+      "protocol_slug": "aave-v3",
+      "protocol_name": "Aave V3",
+      "day_used_utc": "2026-06-30",
+      "total_supplied_usd": 9675722890.67542,
+      "by_oracle": {
+        "Chainlink": 8548508976.836311,
+        "Redstone": 829549137.0904,
+        "Pyth": 0,
+        "Lido": 0,
+        "Maker": 0,
+        "Curve EMA": 132211.51582,
+        "Other": 297532565.23289007
+      },
+      "by_oracle_share": {
+        "Chainlink": 0.8835008064435769,
+        "Redstone": 0.08573510697478157,
+        "Pyth": 0,
+        "Lido": 0,
+        "Maker": 0,
+        "Curve EMA": 0.000013664251995829004,
+        "Other": 0.030750422329645758
+      },
+      "unknown_to_map_usd": 297532565.23289007,
+      "unknown_to_map_assets": [
+        "1INCH",
+        "AAVE",
+        "BAL",
+        "BTC.B",
+        "CRV",
+        "EBTC",
+        "ENS",
+        "ETHX",
+        "EUROC",
+        "EUSDE",
+        "FBTC",
+        "FXS",
+        "KNC",
+        "LDO",
+        "LINK",
+        "MKR",
+        "MUSD",
+        "PT-EUSDE-29MAY2025",
+        "PT-SRUSDE-22OCT2026",
+        "PT-SRUSDE-25JUN2026",
+        "PT-SUSDE-25SEP2025",
+        "PT-SUSDE-31JUL2025",
+        "PT-USDE-5FEB2026",
+        "PT-USDG-28MAY2026",
+        "RLUSD",
+        "RPL",
+        "SDAI",
+        "SNX",
+        "STG",
+        "SYRUPUSDT",
+        "TETH",
+        "UNI",
+        "USDG",
+        "XAUT"
+      ],
+      "per_asset": [
+        {
+          "symbol": "WBTC",
+          "usd": 1819568326.53531,
+          "oracle": "Chainlink",
+          "unknown_to_map": false
+        },
+        {
+          "symbol": "WEETH",
+          "usd": 1707236170.99214,
+          "oracle": "Chainlink",
+          "unknown_to_map": false
+        },
+        {
+          "symbol": "WSTETH",
+          "usd": 1660652788.53605,
+          "oracle": "Chainlink",
+          "unknown_to_map": false
+        },
+        {
+          "symbol": "CBBTC",
+          "usd": 1136050263.58934,
+          "oracle": "Chainlink",
+          "unknown_to_map": false
+        },
+        {
+          "symbol": "RSETH",
+          "usd": 705655432.16464,
+          "oracle": "Redstone",
+          "unknown_to_map": false
+        },
+        {
+          "symbol": "WETH",
+          "usd": 545999929.22964,
+          "oracle": "Chainlink",
+          "unknown_to_map": false
+        },
+        {
+          "symbol": "USDT",
+          "usd": 532753167.69553,
+          "oracle": "Chainlink",
+          "unknown_to_map": false
+        },
+        {
+          "symbol": "SUSDE",
+          "usd": 287112543.07094,
+          "oracle": "Chainlink",
+          "unknown_to_map": false
+        },
+        {
+          "symbol": "USDC",
+          "usd": 207450010.48603,
+          "oracle": "Chainlink",
+          "unknown_to_map": false
+        },
+        {
+          "symbol": "USDE",
+          "usd": 191370370.90283,
+          "oracle": "Chainlink",
+          "unknown_to_map": false
+        },
+        {
+          "symbol": "OSETH",
+          "usd": 176577035.98676,
+          "oracle": "Chainlink",
+          "unknown_to_map": false
+        },
+        {
+          "symbol": "LBTC",
+          "usd": 123893704.92576,
+          "oracle": "Redstone",
+          "unknown_to_map": false
+        },
+        {
+          "symbol": "TBTC",
+          "usd": 115792816.14432,
+          "oracle": "Chainlink",
+          "unknown_to_map": false
+        },
+        {
+          "symbol": "GHO",
+          "usd": 73268528.26188,
+          "oracle": "Chainlink",
+          "unknown_to_map": false
+        },
+        {
+          "symbol": "AAVE",
+          "usd": 72719227.61325,
+          "oracle": "Other",
+          "unknown_to_map": true
+        },
+        {
+          "symbol": "RETH",
+          "usd": 65118690.8639,
+          "oracle": "Chainlink",
+          "unknown_to_map": false
+        },
+        {
+          "symbol": "LINK",
+          "usd": 64433805.62007,
+          "oracle": "Other",
+          "unknown_to_map": true
+        },
+        {
+          "symbol": "XAUT",
+          "usd": 40243899.50302,
+          "oracle": "Other",
+          "unknown_to_map": true
+        },
+        {
+          "symbol": "TETH",
+          "usd": 33639203.66756,
+          "oracle": "Other",
+          "unknown_to_map": true
+        },
+        {
+          "symbol": "PT-SRUSDE-25JUN2026",
+          "usd": 28088750.83877,
+          "oracle": "Other",
+          "unknown_to_map": true
+        },
+        {
+          "symbol": "EUROC",
+          "usd": 13510539.58749,
+          "oracle": "Other",
+          "unknown_to_map": true
+        },
+        {
+          "symbol": "FBTC",
+          "usd": 10312893.10801,
+          "oracle": "Other",
+          "unknown_to_map": true
+        },
+        {
+          "symbol": "USDS",
+          "usd": 10279426.75032,
+          "oracle": "Chainlink",
+          "unknown_to_map": false
+        },
+        {
+          "symbol": "SYRUPUSDT",
+          "usd": 10078527.27989,
+          "oracle": "Other",
+          "unknown_to_map": true
+        },
+        {
+          "symbol": "USDG",
+          "usd": 7592687.07099,
+          "oracle": "Other",
+          "unknown_to_map": true
+        },
+        {
+          "symbol": "CBETH",
+          "usd": 7175345.46592,
+          "oracle": "Chainlink",
+          "unknown_to_map": false
+        },
+        {
+          "symbol": "PT-SRUSDE-22OCT2026",
+          "usd": 5358865.48504,
+          "oracle": "Other",
+          "unknown_to_map": true
+        },
+        {
+          "symbol": "EBTC",
+          "usd": 4929566.59245,
+          "oracle": "Other",
+          "unknown_to_map": true
+        },
+        {
+          "symbol": "DAI",
+          "usd": 4733102.64449,
+          "oracle": "Chainlink",
+          "unknown_to_map": false
+        },
+        {
+          "symbol": "EZETH",
+          "usd": 3737863.99839,
+          "oracle": "Chainlink",
+          "unknown_to_map": false
+        },
+        {
+          "symbol": "PYUSD",
+          "usd": 2263582.26698,
+          "oracle": "Chainlink",
+          "unknown_to_map": false
+        },
+        {
+          "symbol": "RLUSD",
+          "usd": 2001306.0481,
+          "oracle": "Other",
+          "unknown_to_map": true
+        },
+        {
+          "symbol": "CRV",
+          "usd": 1544201.63358,
+          "oracle": "Other",
+          "unknown_to_map": true
+        },
+        {
+          "symbol": "LUSD",
+          "usd": 1343836.26811,
+          "oracle": "Chainlink",
+          "unknown_to_map": false
+        },
+        {
+          "symbol": "UNI",
+          "usd": 1277876.68942,
+          "oracle": "Other",
+          "unknown_to_map": true
+        },
+        {
+          "symbol": "BTC.B",
+          "usd": 404287.91227,
+          "oracle": "Other",
+          "unknown_to_map": true
+        },
+        {
+          "symbol": "RPL",
+          "usd": 315306.59913,
+          "oracle": "Other",
+          "unknown_to_map": true
+        },
+        {
+          "symbol": "EUSDE",
+          "usd": 248843.02902,
+          "oracle": "Other",
+          "unknown_to_map": true
+        },
+        {
+          "symbol": "1INCH",
+          "usd": 197670.6519,
+          "oracle": "Other",
+          "unknown_to_map": true
+        },
+        {
+          "symbol": "MKR",
+          "usd": 151600.86246,
+          "oracle": "Other",
+          "unknown_to_map": true
+        },
+        {
+          "symbol": "ETHX",
+          "usd": 133335.7852,
+          "oracle": "Other",
+          "unknown_to_map": true
+        },
+        {
+          "symbol": "LDO",
+          "usd": 132328.73808,
+          "oracle": "Other",
+          "unknown_to_map": true
+        },
+        {
+          "symbol": "CRVUSD",
+          "usd": 132211.51582,
+          "oracle": "Curve EMA",
+          "unknown_to_map": false
+        },
+        {
+          "symbol": "ENS",
+          "usd": 62150.75861,
+          "oracle": "Other",
+          "unknown_to_map": true
+        },
+        {
+          "symbol": "SDAI",
+          "usd": 50411.70679,
+          "oracle": "Other",
+          "unknown_to_map": true
+        },
+        {
+          "symbol": "SNX",
+          "usd": 43004.89035,
+          "oracle": "Other",
+          "unknown_to_map": true
+        },
+        {
+          "symbol": "BAL",
+          "usd": 39752.82301,
+          "oracle": "Other",
+          "unknown_to_map": true
+        },
+        {
+          "symbol": "FRAX",
+          "usd": 25177.14743,
+          "oracle": "Chainlink",
+          "unknown_to_map": false
+        },
+        {
+          "symbol": "MUSD",
+          "usd": 13591.88646,
+          "oracle": "Other",
+          "unknown_to_map": true
+        },
+        {
+          "symbol": "KNC",
+          "usd": 5158.46009,
+          "oracle": "Other",
+          "unknown_to_map": true
+        },
+        {
+          "symbol": "PT-USDE-5FEB2026",
+          "usd": 1800.66415,
+          "oracle": "Other",
+          "unknown_to_map": true
+        },
+        {
+          "symbol": "PT-SUSDE-25SEP2025",
+          "usd": 1143.96169,
+          "oracle": "Other",
+          "unknown_to_map": true
+        },
+        {
+          "symbol": "PT-SUSDE-31JUL2025",
+          "usd": 300.79807,
+          "oracle": "Other",
+          "unknown_to_map": true
+        },
+        {
+          "symbol": "PT-EUSDE-29MAY2025",
+          "usd": 212.70068,
+          "oracle": "Other",
+          "unknown_to_map": true
+        },
+        {
+          "symbol": "PT-USDG-28MAY2026",
+          "usd": 128.18865,
+          "oracle": "Other",
+          "unknown_to_map": true
+        },
+        {
+          "symbol": "FXS",
+          "usd": 108.35976,
+          "oracle": "Other",
+          "unknown_to_map": true
+        },
+        {
+          "symbol": "STG",
+          "usd": 75.71888,
+          "oracle": "Other",
+          "unknown_to_map": true
+        }
+      ]
+    },
+    {
+      "protocol_slug": "spark",
+      "protocol_name": "Spark",
+      "day_used_utc": "2026-06-30",
+      "total_supplied_usd": 3445415998.63159,
+      "by_oracle": {
+        "Chainlink": 2997444484.9176397,
+        "Redstone": 268803074.64545,
+        "Pyth": 0,
+        "Lido": 0,
+        "Maker": 175844603.70121,
+        "Curve EMA": 0,
+        "Other": 3323835.36729
+      },
+      "by_oracle_share": {
+        "Chainlink": 0.8699804279390732,
+        "Redstone": 0.07801759635185129,
+        "Pyth": 0,
+        "Lido": 0,
+        "Maker": 0.05103726335834335,
+        "Curve EMA": 0,
+        "Other": 0.0009647123507321386
+      },
+      "unknown_to_map_usd": 3323835.36729,
+      "unknown_to_map_assets": [
+        "SDAI",
+        "SUSDS"
+      ],
+      "per_asset": [
+        {
+          "symbol": "WSTETH",
+          "usd": 2246370847.69695,
+          "oracle": "Chainlink",
+          "unknown_to_map": false
+        },
+        {
+          "symbol": "LBTC",
+          "usd": 202188025.08596,
+          "oracle": "Redstone",
+          "unknown_to_map": false
+        },
+        {
+          "symbol": "WBTC",
+          "usd": 177514126.94299,
+          "oracle": "Chainlink",
+          "unknown_to_map": false
+        },
+        {
+          "symbol": "USDS",
+          "usd": 175844603.70121,
+          "oracle": "Maker",
+          "unknown_to_map": false
+        },
+        {
+          "symbol": "CBBTC",
+          "usd": 146125503.24419,
+          "oracle": "Chainlink",
+          "unknown_to_map": false
+        },
+        {
+          "symbol": "WETH",
+          "usd": 122832728.01522,
+          "oracle": "Chainlink",
+          "unknown_to_map": false
+        },
+        {
+          "symbol": "DAI",
+          "usd": 100107873.77213,
+          "oracle": "Chainlink",
+          "unknown_to_map": false
+        },
+        {
+          "symbol": "USDT",
+          "usd": 97892325.84535,
+          "oracle": "Chainlink",
+          "unknown_to_map": false
+        },
+        {
+          "symbol": "PYUSD",
+          "usd": 92134917.15594,
+          "oracle": "Chainlink",
+          "unknown_to_map": false
+        },
+        {
+          "symbol": "WEETH",
+          "usd": 66585990.17124,
+          "oracle": "Redstone",
+          "unknown_to_map": false
+        },
+        {
+          "symbol": "RETH",
+          "usd": 10126793.48201,
+          "oracle": "Chainlink",
+          "unknown_to_map": false
+        },
+        {
+          "symbol": "SUSDS",
+          "usd": 3279337.27928,
+          "oracle": "Other",
+          "unknown_to_map": true
+        },
+        {
+          "symbol": "USDC",
+          "usd": 2979661.13814,
+          "oracle": "Chainlink",
+          "unknown_to_map": false
+        },
+        {
+          "symbol": "TBTC",
+          "usd": 1359707.62472,
+          "oracle": "Chainlink",
+          "unknown_to_map": false
+        },
+        {
+          "symbol": "SDAI",
+          "usd": 44498.08801,
+          "oracle": "Other",
+          "unknown_to_map": true
+        },
+        {
+          "symbol": "RSETH",
+          "usd": 25666.58111,
+          "oracle": "Redstone",
+          "unknown_to_map": false
+        },
+        {
+          "symbol": "EZETH",
+          "usd": 3392.80714,
+          "oracle": "Redstone",
+          "unknown_to_map": false
+        }
+      ]
+    },
+    {
+      "protocol_slug": "morpho-blue",
+      "protocol_name": "Morpho",
+      "day_used_utc": "2026-06-30",
+      "total_supplied_usd": 3338061755.916848,
+      "by_oracle": {
+        "Chainlink": 2008499508.0430999,
+        "Redstone": 59280377.8363,
+        "Pyth": 0,
+        "Lido": 0,
+        "Maker": 0,
+        "Curve EMA": 3106.69767,
+        "Other": 1270278763.33978
+      },
+      "by_oracle_share": {
+        "Chainlink": 0.6016963300582903,
+        "Redstone": 0.017758921844757112,
+        "Pyth": 0,
+        "Lido": 0,
+        "Maker": 0,
+        "Curve EMA": 9.306890936014751e-7,
+        "Other": 0.38054381740785953
+      },
+      "unknown_to_map_usd": 1270278763.33978,
+      "unknown_to_map_assets": [
+        "AA_FALCONXUSDC",
+        "AA_IDLE_FASANARA",
+        "AFXARBUSDTRY",
+        "AGETH",
+        "APU",
+        "APXETH",
+        "APXUSD",
+        "APYUSD",
+        "ARM-WETH-EETH",
+        "ARM-WETH-STETH",
+        "ARSS",
+        "ASDCRV",
+        "AUSD",
+        "AUTOETH",
+        "AVLT",
+        "BAL",
+        "BERASTONE",
+        "BGBTC",
+        "BITCOIN",
+        "BOLD",
+        "BUSD0",
+        "CANA",
+        "CASH+",
+        "COMP",
+        "CULT",
+        "CUSDO",
+        "CUSDOUSDC",
+        "DCOMP",
+        "DEUSD",
+        "DUSD",
+        "EBTC",
+        "EIGEN",
+        "ETH+",
+        "EURA",
+        "EURCV",
+        "EURE",
+        "EUROC",
+        "EUSD",
+        "EUSDE",
+        "EUTBL",
+        "FLHYON",
+        "FLUID",
+        "FRXUSD",
+        "FTUSD",
+        "FXSAVE",
+        "GOLDX",
+        "GTUSDCP",
+        "HEMIBTC",
+        "HGETH",
+        "IMF",
+        "IUSD",
+        "JOE",
+        "JPYC",
+        "JRUSDE",
+        "KBTC",
+        "LINK",
+        "LSETH",
+        "LVLUSD",
+        "MAPOLLO",
+        "MBASIS",
+        "MBTC",
+        "MEDGE",
+        "MF-ONE",
+        "MHYPER",
+        "MHYPERBTC",
+        "MKR",
+        "MM1-USD",
+        "MMEV",
+        "MOG",
+        "MORPHO",
+        "MORPHO-FRXUSD/SUSDS",
+        "MRE7YIELD",
+        "MSETH",
+        "MSUSD",
+        "MSY",
+        "MTBILL",
+        "MUBOND",
+        "MUSD",
+        "MVL",
+        "N-LP-OETH-WETH",
+        "N-PT-SUSDE-27NOV2025",
+        "N-ST-LIUSD4W",
+        "N-ST-MAPOLLO",
+        "N-ST-MHYPER",
+        "N-ST-SUSDE",
+        "N-ST-WEETH",
+        "NPC",
+        "OETH",
+        "ONDO",
+        "PAXG",
+        "PENDLE-LPT-WRAPPER",
+        "PEPE",
+        "PMUSD",
+        "PRIME",
+        "PST",
+        "PT-ALUSD-23OCT2025",
+        "PT-APXUSD-18JUN2026",
+        "PT-APXUSD-5NOV2026",
+        "PT-APYUSD-18JUN2026",
+        "PT-APYUSD-5NOV2026",
+        "PT-CUSD-23JUL2026",
+        "PT-CUSD-29JAN2026",
+        "PT-EUSDE-29MAY2025",
+        "PT-FXSAVE-30APR2026",
+        "PT-IUSD-25JUN2026",
+        "PT-JRUSDE-2APR2026",
+        "PT-PUSDE-16OCT2025",
+        "PT-REUSD-10DEC2026",
+        "PT-REUSD-18DEC2025",
+        "PT-REUSD-25JUN2026",
+        "PT-RSETH-26JUN2025",
+        "PT-SNUSD-4JUN2026",
+        "PT-SNUSD-5MAR2026",
+        "PT-SRNUSD-28MAY2026",
+        "PT-SRUSDAT-27AUG2026",
+        "PT-SRUSDE-15JAN2026",
+        "PT-SRUSDE-25JUN2026",
+        "PT-SRUSDE-2APR2026",
+        "PT-STCUSD-23JUL2026",
+        "PT-STCUSD-29JAN2026",
+        "PT-STRCX-27AUG2026",
+        "PT-SUSDAT-27AUG2026",
+        "PT-SUSDD-27AUG2026",
+        "PT-SUSDE-13AUG2026",
+        "PT-SUSDE-24OCT2024",
+        "PT-SUSDE-25SEP2025",
+        "PT-SUSDE-26DEC2024",
+        "PT-SUSDE-27NOV2025",
+        "PT-SUSDE-29MAY2025",
+        "PT-SUSDE-31JUL2025",
+        "PT-SUSDE-5FEB2026",
+        "PT-SUSDE-7MAY2026",
+        "PT-SYRUPUSDC-28AUG2025",
+        "PT-SYRUPUSDC-30OCT2025",
+        "PT-TUSDE-25SEP2025",
+        "PT-USD3-17DEC2026",
+        "PT-USDAT-27AUG2026",
+        "PT-USDE-25JUL2024",
+        "PT-USDE-25SEP2025",
+        "PT-USDE-27NOV2025",
+        "PT-USDE-5FEB2026",
+        "PT-USDG-24SEP2026",
+        "PT-USDG-28MAY2026",
+        "PT-USDS-14AUG2025",
+        "PT-WEETH-27JUN2024",
+        "QQQON",
+        "REKT",
+        "REUSD",
+        "REUSDE",
+        "RLP",
+        "RLUSD",
+        "RSWETH",
+        "RUSD",
+        "SAVETH",
+        "SAVUSD",
+        "SCRVUSD",
+        "SDAI",
+        "SDEUSD",
+        "SDOLA",
+        "SFRAX",
+        "SFRXUSD",
+        "SHIB",
+        "SIUSD",
+        "SNUSD",
+        "SOLVBTC",
+        "SPX",
+        "SPYON",
+        "SPYX",
+        "SRMHYPER",
+        "SRNUSD",
+        "SRROYUSDC",
+        "SRUSD",
+        "ST-YCRV",
+        "STAKEDAO-AV/FRXUSD",
+        "STAKEDAO-CRVFRXUSD",
+        "STAKEDAO-FRXMSUSD",
+        "STAKEDAO-FRXSUSDS",
+        "STAKEDAO-FRXUSDOLA",
+        "STAKEDAO-FRXUSDOUSD",
+        "STCUSD",
+        "STEAKEURCV",
+        "STEAKUSDC",
+        "STEUR",
+        "STONE",
+        "STUSDS",
+        "SUSDAT",
+        "SUSDD",
+        "SUSDF",
+        "SUSDS",
+        "SUSDS+S",
+        "SUSDU",
+        "SUSG",
+        "SUSN",
+        "SUSP",
+        "SYRUP",
+        "SYRUPUSDC",
+        "SYRUPUSDT",
+        "SYUSD",
+        "SYZUSD",
+        "TETH",
+        "TGBP",
+        "THBILL",
+        "TSLAON",
+        "ULTRA_BTC",
+        "ULTRA_USD",
+        "UNI",
+        "UNIBTC",
+        "UPUSDC",
+        "USCC",
+        "USD0USD0++",
+        "USD3",
+        "USDCUSDU",
+        "USDCV",
+        "USDF",
+        "USDQ",
+        "USDR",
+        "USDU",
+        "USP",
+        "USR",
+        "USTBL",
+        "USUAL",
+        "USUALX",
+        "V-WMTUSDC",
+        "VUSD",
+        "WAETHUSDC",
+        "WBIB01",
+        "WBRAVUSDC",
+        "WBRETH",
+        "WBRUSDC",
+        "WFALCONX",
+        "WJAAA",
+        "WM",
+        "WNXM",
+        "WOETH",
+        "WOUSD",
+        "WSPYX",
+        "WSRUSD",
+        "WSTLINK",
+        "WUSCC",
+        "WUSDL",
+        "WUSDM",
+        "XAUE",
+        "XAUM",
+        "XAUT",
+        "XCVX",
+        "XPRISM",
+        "XSOLVBTC",
+        "XUSD",
+        "YETH",
+        "YFI",
+        "YNETHX",
+        "YNRWAX",
+        "YNUSDX",
+        "YOUSD",
+        "YSYBOLD",
+        "YUSD",
+        "YVCURVE-YYB-F",
+        "YVUSDC-1",
+        "ZCHF"
+      ],
+      "per_asset": [
+        {
+          "symbol": "WSTETH",
+          "usd": 542673182.10159,
+          "oracle": "Chainlink",
+          "unknown_to_map": false
+        },
+        {
+          "symbol": "CBBTC",
+          "usd": 530376099.26183,
+          "oracle": "Chainlink",
+          "unknown_to_map": false
+        },
+        {
+          "symbol": "WBTC",
+          "usd": 334266822.07901,
+          "oracle": "Chainlink",
+          "unknown_to_map": false
+        },
+        {
+          "symbol": "KBTC",
+          "usd": 243472337.22249,
+          "oracle": "Other",
+          "unknown_to_map": true
+        },
+        {
+          "symbol": "WEETH",
+          "usd": 201251680.74765,
+          "oracle": "Chainlink",
+          "unknown_to_map": false
+        },
+        {
+          "symbol": "SYRUPUSDC",
+          "usd": 135587216.38721,
+          "oracle": "Other",
+          "unknown_to_map": true
+        },
+        {
+          "symbol": "PRIME",
+          "usd": 127465080.36148,
+          "oracle": "Other",
+          "unknown_to_map": true
+        },
+        {
+          "symbol": "USDC",
+          "usd": 113853316.43335,
+          "oracle": "Chainlink",
+          "unknown_to_map": false
+        },
+        {
+          "symbol": "SUSDE",
+          "usd": 106415623.42905,
+          "oracle": "Chainlink",
+          "unknown_to_map": false
+        },
+        {
+          "symbol": "AA_FALCONXUSDC",
+          "usd": 76859800.0051,
+          "oracle": "Other",
+          "unknown_to_map": true
+        },
+        {
+          "symbol": "EURCV",
+          "usd": 75761234.3,
+          "oracle": "Other",
+          "unknown_to_map": true
+        },
+        {
+          "symbol": "SUSDS",
+          "usd": 66368318.85493,
+          "oracle": "Other",
+          "unknown_to_map": true
+        },
+        {
+          "symbol": "USDT",
+          "usd": 64506735.26805,
+          "oracle": "Chainlink",
+          "unknown_to_map": false
+        },
+        {
+          "symbol": "LBTC",
+          "usd": 59167059.26998,
+          "oracle": "Redstone",
+          "unknown_to_map": false
+        },
+        {
+          "symbol": "PYUSD",
+          "usd": 55454431.1763,
+          "oracle": "Chainlink",
+          "unknown_to_map": false
+        },
+        {
+          "symbol": "RLUSD",
+          "usd": 47532170.62195,
+          "oracle": "Other",
+          "unknown_to_map": true
+        },
+        {
+          "symbol": "STCUSD",
+          "usd": 31808707.43317,
+          "oracle": "Other",
+          "unknown_to_map": true
+        },
+        {
+          "symbol": "USDS",
+          "usd": 29421526.78793,
+          "oracle": "Chainlink",
+          "unknown_to_map": false
+        },
+        {
+          "symbol": "SIUSD",
+          "usd": 27173499.25653,
+          "oracle": "Other",
+          "unknown_to_map": true
+        },
+        {
+          "symbol": "WSRUSD",
+          "usd": 26843171.8533,
+          "oracle": "Other",
+          "unknown_to_map": true
+        },
+        {
+          "symbol": "REUSD",
+          "usd": 25568314.63664,
+          "oracle": "Other",
+          "unknown_to_map": true
+        },
+        {
+          "symbol": "STUSDS",
+          "usd": 22035338.03853,
+          "oracle": "Other",
+          "unknown_to_map": true
+        },
+        {
+          "symbol": "WETH",
+          "usd": 21509084.51449,
+          "oracle": "Chainlink",
+          "unknown_to_map": false
+        },
+        {
+          "symbol": "PT-REUSD-10DEC2026",
+          "usd": 21406178.06482,
+          "oracle": "Other",
+          "unknown_to_map": true
+        },
+        {
+          "symbol": "PST",
+          "usd": 20925496.17359,
+          "oracle": "Other",
+          "unknown_to_map": true
+        },
+        {
+          "symbol": "DCOMP",
+          "usd": 20297630.83431,
+          "oracle": "Other",
+          "unknown_to_map": true
+        },
+        {
+          "symbol": "USD3",
+          "usd": 19265789.8629,
+          "oracle": "Other",
+          "unknown_to_map": true
+        },
+        {
+          "symbol": "MF-ONE",
+          "usd": 19085224.84843,
+          "oracle": "Other",
+          "unknown_to_map": true
+        },
+        {
+          "symbol": "APYUSD",
+          "usd": 16564820.6574,
+          "oracle": "Other",
+          "unknown_to_map": true
+        },
+        {
+          "symbol": "MM1-USD",
+          "usd": 15260528.13073,
+          "oracle": "Other",
+          "unknown_to_map": true
+        },
+        {
+          "symbol": "SAVUSD",
+          "usd": 15157392.74371,
+          "oracle": "Other",
+          "unknown_to_map": true
+        },
+        {
+          "symbol": "OETH",
+          "usd": 14937595.6849,
+          "oracle": "Other",
+          "unknown_to_map": true
+        },
+        {
+          "symbol": "SUSDAT",
+          "usd": 14679168.46736,
+          "oracle": "Other",
+          "unknown_to_map": true
+        },
+        {
+          "symbol": "PT-USD3-17DEC2026",
+          "usd": 11659403.28487,
+          "oracle": "Other",
+          "unknown_to_map": true
+        },
+        {
+          "symbol": "PT-SUSDD-27AUG2026",
+          "usd": 10989266.7634,
+          "oracle": "Other",
+          "unknown_to_map": true
+        },
+        {
+          "symbol": "PT-USDAT-27AUG2026",
+          "usd": 10060320.35316,
+          "oracle": "Other",
+          "unknown_to_map": true
+        },
+        {
+          "symbol": "MSY",
+          "usd": 10053170.8732,
+          "oracle": "Other",
+          "unknown_to_map": true
+        },
+        {
+          "symbol": "MHYPER",
+          "usd": 9137934.52489,
+          "oracle": "Other",
+          "unknown_to_map": true
+        },
+        {
+          "symbol": "WFALCONX",
+          "usd": 8468549.83583,
+          "oracle": "Other",
+          "unknown_to_map": true
+        },
+        {
+          "symbol": "PT-APYUSD-5NOV2026",
+          "usd": 6653020.51311,
+          "oracle": "Other",
+          "unknown_to_map": true
+        },
+        {
+          "symbol": "SUSN",
+          "usd": 6613366.667,
+          "oracle": "Other",
+          "unknown_to_map": true
+        },
+        {
+          "symbol": "V-WMTUSDC",
+          "usd": 6283699.18697,
+          "oracle": "Other",
+          "unknown_to_map": true
+        },
+        {
+          "symbol": "RETH",
+          "usd": 6047208.63256,
+          "oracle": "Chainlink",
+          "unknown_to_map": false
+        },
+        {
+          "symbol": "XAUT",
+          "usd": 5919892.08325,
+          "oracle": "Other",
+          "unknown_to_map": true
+        },
+        {
+          "symbol": "PT-APYUSD-18JUN2026",
+          "usd": 5455934.76424,
+          "oracle": "Other",
+          "unknown_to_map": true
+        },
+        {
+          "symbol": "TGBP",
+          "usd": 4853121.33653,
+          "oracle": "Other",
+          "unknown_to_map": true
+        },
+        {
+          "symbol": "YNETHX",
+          "usd": 4842601.17038,
+          "oracle": "Other",
+          "unknown_to_map": true
+        },
+        {
+          "symbol": "WJAAA",
+          "usd": 4662300.00402,
+          "oracle": "Other",
+          "unknown_to_map": true
+        },
+        {
+          "symbol": "PT-SUSDAT-27AUG2026",
+          "usd": 4498579.66802,
+          "oracle": "Other",
+          "unknown_to_map": true
+        },
+        {
+          "symbol": "PT-APXUSD-5NOV2026",
+          "usd": 4451106.46504,
+          "oracle": "Other",
+          "unknown_to_map": true
+        },
+        {
+          "symbol": "USP",
+          "usd": 4357667.1632,
+          "oracle": "Other",
+          "unknown_to_map": true
+        },
+        {
+          "symbol": "MHYPERBTC",
+          "usd": 4337064.81335,
+          "oracle": "Other",
+          "unknown_to_map": true
+        },
+        {
+          "symbol": "AUSD",
+          "usd": 3819980.88498,
+          "oracle": "Other",
+          "unknown_to_map": true
+        },
+        {
+          "symbol": "PT-SUSDE-13AUG2026",
+          "usd": 3617941.60947,
+          "oracle": "Other",
+          "unknown_to_map": true
+        },
+        {
+          "symbol": "UPUSDC",
+          "usd": 3586239.08118,
+          "oracle": "Other",
+          "unknown_to_map": true
+        },
+        {
+          "symbol": "WSTLINK",
+          "usd": 3127603.32799,
+          "oracle": "Other",
+          "unknown_to_map": true
+        },
+        {
+          "symbol": "SAVETH",
+          "usd": 3010502.6654,
+          "oracle": "Other",
+          "unknown_to_map": true
+        },
+        {
+          "symbol": "EUTBL",
+          "usd": 2856068.33951,
+          "oracle": "Other",
+          "unknown_to_map": true
+        },
+        {
+          "symbol": "APXUSD",
+          "usd": 2748907.03817,
+          "oracle": "Other",
+          "unknown_to_map": true
+        },
+        {
+          "symbol": "MSUSD",
+          "usd": 2729603.506,
+          "oracle": "Other",
+          "unknown_to_map": true
+        },
+        {
+          "symbol": "SRROYUSDC",
+          "usd": 2458078.14246,
+          "oracle": "Other",
+          "unknown_to_map": true
+        },
+        {
+          "symbol": "PT-APXUSD-18JUN2026",
+          "usd": 2419429.4456,
+          "oracle": "Other",
+          "unknown_to_map": true
+        },
+        {
+          "symbol": "SNUSD",
+          "usd": 2366756.28784,
+          "oracle": "Other",
+          "unknown_to_map": true
+        },
+        {
+          "symbol": "AVLT",
+          "usd": 2280219.71957,
+          "oracle": "Other",
+          "unknown_to_map": true
+        },
+        {
+          "symbol": "STAKEDAO-FRXMSUSD",
+          "usd": 2272019.98621,
+          "oracle": "Other",
+          "unknown_to_map": true
+        },
+        {
+          "symbol": "WBRAVUSDC",
+          "usd": 2262976.44128,
+          "oracle": "Other",
+          "unknown_to_map": true
+        },
+        {
+          "symbol": "PT-REUSD-25JUN2026",
+          "usd": 2169164.60167,
+          "oracle": "Other",
+          "unknown_to_map": true
+        },
+        {
+          "symbol": "SOLVBTC",
+          "usd": 2161990.15413,
+          "oracle": "Other",
+          "unknown_to_map": true
+        },
+        {
+          "symbol": "TBTC",
+          "usd": 1890388.3123,
+          "oracle": "Chainlink",
+          "unknown_to_map": false
+        },
+        {
+          "symbol": "SYZUSD",
+          "usd": 1739829.71686,
+          "oracle": "Other",
+          "unknown_to_map": true
+        },
+        {
+          "symbol": "USD0USD0++",
+          "usd": 1082039.46286,
+          "oracle": "Other",
+          "unknown_to_map": true
+        },
+        {
+          "symbol": "MAPOLLO",
+          "usd": 1041892.8359,
+          "oracle": "Other",
+          "unknown_to_map": true
+        },
+        {
+          "symbol": "MORPHO",
+          "usd": 1015844.22177,
+          "oracle": "Other",
+          "unknown_to_map": true
+        },
+        {
+          "symbol": "DUSD",
+          "usd": 975510.72781,
+          "oracle": "Other",
+          "unknown_to_map": true
+        },
+        {
+          "symbol": "SDOLA",
+          "usd": 966458.0167,
+          "oracle": "Other",
+          "unknown_to_map": true
+        },
+        {
+          "symbol": "FXSAVE",
+          "usd": 953701.75834,
+          "oracle": "Other",
+          "unknown_to_map": true
+        },
+        {
+          "symbol": "RSWETH",
+          "usd": 947260.81838,
+          "oracle": "Other",
+          "unknown_to_map": true
+        },
+        {
+          "symbol": "PT-STCUSD-23JUL2026",
+          "usd": 809342.52657,
+          "oracle": "Other",
+          "unknown_to_map": true
+        },
+        {
+          "symbol": "STAKEDAO-CRVFRXUSD",
+          "usd": 808575.27187,
+          "oracle": "Other",
+          "unknown_to_map": true
+        },
+        {
+          "symbol": "WSPYX",
+          "usd": 737488.5608,
+          "oracle": "Other",
+          "unknown_to_map": true
+        },
+        {
+          "symbol": "PT-SRUSDAT-27AUG2026",
+          "usd": 735684.95248,
+          "oracle": "Other",
+          "unknown_to_map": true
+        },
+        {
+          "symbol": "PT-CUSD-23JUL2026",
+          "usd": 640226.6526,
+          "oracle": "Other",
+          "unknown_to_map": true
+        },
+        {
+          "symbol": "MSETH",
+          "usd": 599406.85857,
+          "oracle": "Other",
+          "unknown_to_map": true
+        },
+        {
+          "symbol": "USDE",
+          "usd": 575424.2829,
+          "oracle": "Chainlink",
+          "unknown_to_map": false
+        },
+        {
+          "symbol": "ETH+",
+          "usd": 567308.12579,
+          "oracle": "Other",
+          "unknown_to_map": true
+        },
+        {
+          "symbol": "FRXUSD",
+          "usd": 516107.24032,
+          "oracle": "Other",
+          "unknown_to_map": true
+        },
+        {
+          "symbol": "PEPE",
+          "usd": 470735.5815,
+          "oracle": "Other",
+          "unknown_to_map": true
+        },
+        {
+          "symbol": "EUROC",
+          "usd": 364005.92434,
+          "oracle": "Other",
+          "unknown_to_map": true
+        },
+        {
+          "symbol": "STAKEDAO-FRXSUSDS",
+          "usd": 335740.3731,
+          "oracle": "Other",
+          "unknown_to_map": true
+        },
+        {
+          "symbol": "LINK",
+          "usd": 309343.94776,
+          "oracle": "Other",
+          "unknown_to_map": true
+        },
+        {
+          "symbol": "MUBOND",
+          "usd": 273174.20749,
+          "oracle": "Other",
+          "unknown_to_map": true
+        },
+        {
+          "symbol": "PAXG",
+          "usd": 265898.80576,
+          "oracle": "Other",
+          "unknown_to_map": true
+        },
+        {
+          "symbol": "DAI",
+          "usd": 253724.67001,
+          "oracle": "Chainlink",
+          "unknown_to_map": false
+        },
+        {
+          "symbol": "STAKEDAO-FRXUSDOLA",
+          "usd": 250623.66746,
+          "oracle": "Other",
+          "unknown_to_map": true
+        },
+        {
+          "symbol": "LSETH",
+          "usd": 247739.13619,
+          "oracle": "Other",
+          "unknown_to_map": true
+        },
+        {
+          "symbol": "WOUSD",
+          "usd": 229843.92132,
+          "oracle": "Other",
+          "unknown_to_map": true
+        },
+        {
+          "symbol": "YFI",
+          "usd": 199053.69906,
+          "oracle": "Other",
+          "unknown_to_map": true
+        },
+        {
+          "symbol": "ONDO",
+          "usd": 192292.43522,
+          "oracle": "Other",
+          "unknown_to_map": true
+        },
+        {
+          "symbol": "REUSDE",
+          "usd": 175216.08549,
+          "oracle": "Other",
+          "unknown_to_map": true
+        },
+        {
+          "symbol": "USR",
+          "usd": 113569.52398,
+          "oracle": "Other",
+          "unknown_to_map": true
+        },
+        {
+          "symbol": "WNXM",
+          "usd": 108614.08248,
+          "oracle": "Other",
+          "unknown_to_map": true
+        },
+        {
+          "symbol": "EUSD",
+          "usd": 99843.53368,
+          "oracle": "Other",
+          "unknown_to_map": true
+        },
+        {
+          "symbol": "PT-STCUSD-29JAN2026",
+          "usd": 89605.45177,
+          "oracle": "Other",
+          "unknown_to_map": true
+        },
+        {
+          "symbol": "SRUSD",
+          "usd": 82512.04403,
+          "oracle": "Other",
+          "unknown_to_map": true
+        },
+        {
+          "symbol": "WUSDL",
+          "usd": 78886.52041,
+          "oracle": "Other",
+          "unknown_to_map": true
+        },
+        {
+          "symbol": "EUSDE",
+          "usd": 78709.15148,
+          "oracle": "Other",
+          "unknown_to_map": true
+        },
+        {
+          "symbol": "BAL",
+          "usd": 75256.27965,
+          "oracle": "Other",
+          "unknown_to_map": true
+        },
+        {
+          "symbol": "SYRUPUSDT",
+          "usd": 69250.56657,
+          "oracle": "Other",
+          "unknown_to_map": true
+        },
+        {
+          "symbol": "STEAKUSDC",
+          "usd": 61727.98025,
+          "oracle": "Other",
+          "unknown_to_map": true
+        },
+        {
+          "symbol": "ZCHF",
+          "usd": 60601.03814,
+          "oracle": "Other",
+          "unknown_to_map": true
+        },
+        {
+          "symbol": "PUFETH",
+          "usd": 58903.96606,
+          "oracle": "Redstone",
+          "unknown_to_map": false
+        },
+        {
+          "symbol": "EZETH",
+          "usd": 53330.95954,
+          "oracle": "Redstone",
+          "unknown_to_map": false
+        },
+        {
+          "symbol": "JRUSDE",
+          "usd": 52295.25018,
+          "oracle": "Other",
+          "unknown_to_map": true
+        },
+        {
+          "symbol": "STONE",
+          "usd": 48880.27783,
+          "oracle": "Other",
+          "unknown_to_map": true
+        },
+        {
+          "symbol": "MVL",
+          "usd": 43991.10595,
+          "oracle": "Other",
+          "unknown_to_map": true
+        },
+        {
+          "symbol": "SPYX",
+          "usd": 40290.3083,
+          "oracle": "Other",
+          "unknown_to_map": true
+        },
+        {
+          "symbol": "PMUSD",
+          "usd": 36415.60669,
+          "oracle": "Other",
+          "unknown_to_map": true
+        },
+        {
+          "symbol": "USDU",
+          "usd": 34925.54841,
+          "oracle": "Other",
+          "unknown_to_map": true
+        },
+        {
+          "symbol": "PT-SRUSDE-15JAN2026",
+          "usd": 34770.55872,
+          "oracle": "Other",
+          "unknown_to_map": true
+        },
+        {
+          "symbol": "XCVX",
+          "usd": 32217.08858,
+          "oracle": "Other",
+          "unknown_to_map": true
+        },
+        {
+          "symbol": "SUSG",
+          "usd": 31442.02752,
+          "oracle": "Other",
+          "unknown_to_map": true
+        },
+        {
+          "symbol": "ARM-WETH-EETH",
+          "usd": 30851.65957,
+          "oracle": "Other",
+          "unknown_to_map": true
+        },
+        {
+          "symbol": "BERASTONE",
+          "usd": 23636.00117,
+          "oracle": "Other",
+          "unknown_to_map": true
+        },
+        {
+          "symbol": "BUSD0",
+          "usd": 19004.4524,
+          "oracle": "Other",
+          "unknown_to_map": true
+        },
+        {
+          "symbol": "ARM-WETH-STETH",
+          "usd": 18357.34105,
+          "oracle": "Other",
+          "unknown_to_map": true
+        },
+        {
+          "symbol": "USDCV",
+          "usd": 18133.63718,
+          "oracle": "Other",
+          "unknown_to_map": true
+        },
+        {
+          "symbol": "YNRWAX",
+          "usd": 17302.28064,
+          "oracle": "Other",
+          "unknown_to_map": true
+        },
+        {
+          "symbol": "SPX",
+          "usd": 16477.7213,
+          "oracle": "Other",
+          "unknown_to_map": true
+        },
+        {
+          "symbol": "SUSDD",
+          "usd": 15641.80263,
+          "oracle": "Other",
+          "unknown_to_map": true
+        },
+        {
+          "symbol": "GOLDX",
+          "usd": 15168,
+          "oracle": "Other",
+          "unknown_to_map": true
+        },
+        {
+          "symbol": "USUALX",
+          "usd": 14833.72507,
+          "oracle": "Other",
+          "unknown_to_map": true
+        },
+        {
+          "symbol": "TETH",
+          "usd": 12412.48358,
+          "oracle": "Other",
+          "unknown_to_map": true
+        },
+        {
+          "symbol": "IMF",
+          "usd": 10408.38729,
+          "oracle": "Other",
+          "unknown_to_map": true
+        },
+        {
+          "symbol": "SUSDF",
+          "usd": 9728.198,
+          "oracle": "Other",
+          "unknown_to_map": true
+        },
+        {
+          "symbol": "PT-CUSD-29JAN2026",
+          "usd": 9471.19053,
+          "oracle": "Other",
+          "unknown_to_map": true
+        },
+        {
+          "symbol": "EIGEN",
+          "usd": 9090.27525,
+          "oracle": "Other",
+          "unknown_to_map": true
+        },
+        {
+          "symbol": "IUSD",
+          "usd": 7996.52265,
+          "oracle": "Other",
+          "unknown_to_map": true
+        },
+        {
+          "symbol": "MMEV",
+          "usd": 7614.28683,
+          "oracle": "Other",
+          "unknown_to_map": true
+        },
+        {
+          "symbol": "USDF",
+          "usd": 7388.15495,
+          "oracle": "Other",
+          "unknown_to_map": true
+        },
+        {
+          "symbol": "SYRUP",
+          "usd": 5573.65056,
+          "oracle": "Other",
+          "unknown_to_map": true
+        },
+        {
+          "symbol": "SRNUSD",
+          "usd": 5380.68188,
+          "oracle": "Other",
+          "unknown_to_map": true
+        },
+        {
+          "symbol": "JOE",
+          "usd": 5116.46296,
+          "oracle": "Other",
+          "unknown_to_map": true
+        },
+        {
+          "symbol": "OSETH",
+          "usd": 3302.01667,
+          "oracle": "Chainlink",
+          "unknown_to_map": false
+        },
+        {
+          "symbol": "CRVUSD",
+          "usd": 3106.69767,
+          "oracle": "Curve EMA",
+          "unknown_to_map": false
+        },
+        {
+          "symbol": "EURE",
+          "usd": 2672.77696,
+          "oracle": "Other",
+          "unknown_to_map": true
+        },
+        {
+          "symbol": "COMP",
+          "usd": 2246.21442,
+          "oracle": "Other",
+          "unknown_to_map": true
+        },
+        {
+          "symbol": "MOG",
+          "usd": 2187.98863,
+          "oracle": "Other",
+          "unknown_to_map": true
+        },
+        {
+          "symbol": "RUSD",
+          "usd": 2107.83247,
+          "oracle": "Other",
+          "unknown_to_map": true
+        },
+        {
+          "symbol": "BITCOIN",
+          "usd": 1971.77963,
+          "oracle": "Other",
+          "unknown_to_map": true
+        },
+        {
+          "symbol": "SRMHYPER",
+          "usd": 1888.48201,
+          "oracle": "Other",
+          "unknown_to_map": true
+        },
+        {
+          "symbol": "CASH+",
+          "usd": 1864.94097,
+          "oracle": "Other",
+          "unknown_to_map": true
+        },
+        {
+          "symbol": "PT-SUSDE-31JUL2025",
+          "usd": 1723.14694,
+          "oracle": "Other",
+          "unknown_to_map": true
+        },
+        {
+          "symbol": "N-ST-MAPOLLO",
+          "usd": 1497.94063,
+          "oracle": "Other",
+          "unknown_to_map": true
+        },
+        {
+          "symbol": "PT-USDG-28MAY2026",
+          "usd": 1420.13015,
+          "oracle": "Other",
+          "unknown_to_map": true
+        },
+        {
+          "symbol": "PT-SRNUSD-28MAY2026",
+          "usd": 1394.59522,
+          "oracle": "Other",
+          "unknown_to_map": true
+        },
+        {
+          "symbol": "SPYON",
+          "usd": 1320.37939,
+          "oracle": "Other",
+          "unknown_to_map": true
+        },
+        {
+          "symbol": "WBIB01",
+          "usd": 1183.20538,
+          "oracle": "Other",
+          "unknown_to_map": true
+        },
+        {
+          "symbol": "USUAL",
+          "usd": 1157.27925,
+          "oracle": "Other",
+          "unknown_to_map": true
+        },
+        {
+          "symbol": "RSETH",
+          "usd": 1083.64072,
+          "oracle": "Redstone",
+          "unknown_to_map": false
+        },
+        {
+          "symbol": "WAETHUSDC",
+          "usd": 1056.74544,
+          "oracle": "Other",
+          "unknown_to_map": true
+        },
+        {
+          "symbol": "BOLD",
+          "usd": 1042.46338,
+          "oracle": "Other",
+          "unknown_to_map": true
+        },
+        {
+          "symbol": "LVLUSD",
+          "usd": 969.54787,
+          "oracle": "Other",
+          "unknown_to_map": true
+        },
+        {
+          "symbol": "FRAX",
+          "usd": 947.20661,
+          "oracle": "Chainlink",
+          "unknown_to_map": false
+        },
+        {
+          "symbol": "PT-USDE-25SEP2025",
+          "usd": 902.91642,
+          "oracle": "Other",
+          "unknown_to_map": true
+        },
+        {
+          "symbol": "AGETH",
+          "usd": 881.6635,
+          "oracle": "Other",
+          "unknown_to_map": true
+        },
+        {
+          "symbol": "PT-EUSDE-29MAY2025",
+          "usd": 731.27837,
+          "oracle": "Other",
+          "unknown_to_map": true
+        },
+        {
+          "symbol": "PT-SUSDE-27NOV2025",
+          "usd": 560.09802,
+          "oracle": "Other",
+          "unknown_to_map": true
+        },
+        {
+          "symbol": "YETH",
+          "usd": 450.95639,
+          "oracle": "Other",
+          "unknown_to_map": true
+        },
+        {
+          "symbol": "PT-SRUSDE-2APR2026",
+          "usd": 369.01459,
+          "oracle": "Other",
+          "unknown_to_map": true
+        },
+        {
+          "symbol": "USDR",
+          "usd": 350.70063,
+          "oracle": "Other",
+          "unknown_to_map": true
+        },
+        {
+          "symbol": "MKR",
+          "usd": 330.32097,
+          "oracle": "Other",
+          "unknown_to_map": true
+        },
+        {
+          "symbol": "HGETH",
+          "usd": 273.62798,
+          "oracle": "Other",
+          "unknown_to_map": true
+        },
+        {
+          "symbol": "USDQ",
+          "usd": 216.30946,
+          "oracle": "Other",
+          "unknown_to_map": true
+        },
+        {
+          "symbol": "HEMIBTC",
+          "usd": 200.29289,
+          "oracle": "Other",
+          "unknown_to_map": true
+        },
+        {
+          "symbol": "YUSD",
+          "usd": 194.84881,
+          "oracle": "Other",
+          "unknown_to_map": true
+        },
+        {
+          "symbol": "PT-SNUSD-5MAR2026",
+          "usd": 184.21529,
+          "oracle": "Other",
+          "unknown_to_map": true
+        },
+        {
+          "symbol": "PT-SUSDE-29MAY2025",
+          "usd": 153.84812,
+          "oracle": "Other",
+          "unknown_to_map": true
+        },
+        {
+          "symbol": "VUSD",
+          "usd": 144.86207,
+          "oracle": "Other",
+          "unknown_to_map": true
+        },
+        {
+          "symbol": "CUSDOUSDC",
+          "usd": 134.37459,
+          "oracle": "Other",
+          "unknown_to_map": true
+        },
+        {
+          "symbol": "PT-USDS-14AUG2025",
+          "usd": 128.74146,
+          "oracle": "Other",
+          "unknown_to_map": true
+        },
+        {
+          "symbol": "QQQON",
+          "usd": 120.30796,
+          "oracle": "Other",
+          "unknown_to_map": true
+        },
+        {
+          "symbol": "EBTC",
+          "usd": 119.12855,
+          "oracle": "Other",
+          "unknown_to_map": true
+        },
+        {
+          "symbol": "PENDLE-LPT-WRAPPER",
+          "usd": 114.67366,
+          "oracle": "Other",
+          "unknown_to_map": true
+        },
+        {
+          "symbol": "PT-SUSDE-25SEP2025",
+          "usd": 101.94573,
+          "oracle": "Other",
+          "unknown_to_map": true
+        },
+        {
+          "symbol": "MUSD",
+          "usd": 100.68121,
+          "oracle": "Other",
+          "unknown_to_map": true
+        },
+        {
+          "symbol": "N-ST-LIUSD4W",
+          "usd": 93.05776,
+          "oracle": "Other",
+          "unknown_to_map": true
+        },
+        {
+          "symbol": "REKT",
+          "usd": 80.24722,
+          "oracle": "Other",
+          "unknown_to_map": true
+        },
+        {
+          "symbol": "PT-SUSDE-24OCT2024",
+          "usd": 79.35139,
+          "oracle": "Other",
+          "unknown_to_map": true
+        },
+        {
+          "symbol": "CULT",
+          "usd": 78.14723,
+          "oracle": "Other",
+          "unknown_to_map": true
+        },
+        {
+          "symbol": "SDAI",
+          "usd": 69.95482,
+          "oracle": "Other",
+          "unknown_to_map": true
+        },
+        {
+          "symbol": "XSOLVBTC",
+          "usd": 63.97647,
+          "oracle": "Other",
+          "unknown_to_map": true
+        },
+        {
+          "symbol": "WBRETH",
+          "usd": 56.73415,
+          "oracle": "Other",
+          "unknown_to_map": true
+        },
+        {
+          "symbol": "PT-USDE-25JUL2024",
+          "usd": 46.94397,
+          "oracle": "Other",
+          "unknown_to_map": true
+        },
+        {
+          "symbol": "UNI",
+          "usd": 35.66994,
+          "oracle": "Other",
+          "unknown_to_map": true
+        },
+        {
+          "symbol": "MBTC",
+          "usd": 26.26193,
+          "oracle": "Other",
+          "unknown_to_map": true
+        },
+        {
+          "symbol": "MRE7YIELD",
+          "usd": 17.89648,
+          "oracle": "Other",
+          "unknown_to_map": true
+        },
+        {
+          "symbol": "JPYC",
+          "usd": 16.20076,
+          "oracle": "Other",
+          "unknown_to_map": true
+        },
+        {
+          "symbol": "PT-WEETH-27JUN2024",
+          "usd": 16.08627,
+          "oracle": "Other",
+          "unknown_to_map": true
+        },
+        {
+          "symbol": "PT-SNUSD-4JUN2026",
+          "usd": 14.96238,
+          "oracle": "Other",
+          "unknown_to_map": true
+        },
+        {
+          "symbol": "MEDGE",
+          "usd": 14.80346,
+          "oracle": "Other",
+          "unknown_to_map": true
+        },
+        {
+          "symbol": "WUSDM",
+          "usd": 14.56459,
+          "oracle": "Other",
+          "unknown_to_map": true
+        },
+        {
+          "symbol": "PT-SYRUPUSDC-28AUG2025",
+          "usd": 14.11921,
+          "oracle": "Other",
+          "unknown_to_map": true
+        },
+        {
+          "symbol": "N-ST-SUSDE",
+          "usd": 13.6054,
+          "oracle": "Other",
+          "unknown_to_map": true
+        },
+        {
+          "symbol": "CANA",
+          "usd": 13.43742,
+          "oracle": "Other",
+          "unknown_to_map": true
+        },
+        {
+          "symbol": "N-LP-OETH-WETH",
+          "usd": 13.28699,
+          "oracle": "Other",
+          "unknown_to_map": true
+        },
+        {
+          "symbol": "APXETH",
+          "usd": 13.03246,
+          "oracle": "Other",
+          "unknown_to_map": true
+        },
+        {
+          "symbol": "MBASIS",
+          "usd": 12.62461,
+          "oracle": "Other",
+          "unknown_to_map": true
+        },
+        {
+          "symbol": "PT-SRUSDE-25JUN2026",
+          "usd": 12.09349,
+          "oracle": "Other",
+          "unknown_to_map": true
+        },
+        {
+          "symbol": "FLHYON",
+          "usd": 12.03524,
+          "oracle": "Other",
+          "unknown_to_map": true
+        },
+        {
+          "symbol": "PT-USDG-24SEP2026",
+          "usd": 12.00425,
+          "oracle": "Other",
+          "unknown_to_map": true
+        },
+        {
+          "symbol": "AUTOETH",
+          "usd": 11.64791,
+          "oracle": "Other",
+          "unknown_to_map": true
+        },
+        {
+          "symbol": "USCC",
+          "usd": 11.62837,
+          "oracle": "Other",
+          "unknown_to_map": true
+        },
+        {
+          "symbol": "PT-USDE-27NOV2025",
+          "usd": 11.47441,
+          "oracle": "Other",
+          "unknown_to_map": true
+        },
+        {
+          "symbol": "N-ST-MHYPER",
+          "usd": 11.25143,
+          "oracle": "Other",
+          "unknown_to_map": true
+        },
+        {
+          "symbol": "USDCUSDU",
+          "usd": 10.00874,
+          "oracle": "Other",
+          "unknown_to_map": true
+        },
+        {
+          "symbol": "GHO",
+          "usd": 9.97938,
+          "oracle": "Chainlink",
+          "unknown_to_map": false
+        },
+        {
+          "symbol": "PT-SUSDE-5FEB2026",
+          "usd": 9.8583,
+          "oracle": "Other",
+          "unknown_to_map": true
+        },
+        {
+          "symbol": "PT-USDE-5FEB2026",
+          "usd": 9.23735,
+          "oracle": "Other",
+          "unknown_to_map": true
+        },
+        {
+          "symbol": "N-ST-WEETH",
+          "usd": 8.66855,
+          "oracle": "Other",
+          "unknown_to_map": true
+        },
+        {
+          "symbol": "MTBILL",
+          "usd": 8.42614,
+          "oracle": "Other",
+          "unknown_to_map": true
+        },
+        {
+          "symbol": "PT-JRUSDE-2APR2026",
+          "usd": 7.37796,
+          "oracle": "Other",
+          "unknown_to_map": true
+        },
+        {
+          "symbol": "WM",
+          "usd": 7.13448,
+          "oracle": "Other",
+          "unknown_to_map": true
+        },
+        {
+          "symbol": "UNIBTC",
+          "usd": 6.98889,
+          "oracle": "Other",
+          "unknown_to_map": true
+        },
+        {
+          "symbol": "SCRVUSD",
+          "usd": 6.96333,
+          "oracle": "Other",
+          "unknown_to_map": true
+        },
+        {
+          "symbol": "PT-TUSDE-25SEP2025",
+          "usd": 6.22215,
+          "oracle": "Other",
+          "unknown_to_map": true
+        },
+        {
+          "symbol": "WUSCC",
+          "usd": 6.20436,
+          "oracle": "Other",
+          "unknown_to_map": true
+        },
+        {
+          "symbol": "USTBL",
+          "usd": 5.43979,
+          "oracle": "Other",
+          "unknown_to_map": true
+        },
+        {
+          "symbol": "PT-SYRUPUSDC-30OCT2025",
+          "usd": 5.27179,
+          "oracle": "Other",
+          "unknown_to_map": true
+        },
+        {
+          "symbol": "THBILL",
+          "usd": 4.08474,
+          "oracle": "Other",
+          "unknown_to_map": true
+        },
+        {
+          "symbol": "PT-IUSD-25JUN2026",
+          "usd": 4.07406,
+          "oracle": "Other",
+          "unknown_to_map": true
+        },
+        {
+          "symbol": "AFXARBUSDTRY",
+          "usd": 4.00828,
+          "oracle": "Other",
+          "unknown_to_map": true
+        },
+        {
+          "symbol": "STEAKEURCV",
+          "usd": 4.00722,
+          "oracle": "Other",
+          "unknown_to_map": true
+        },
+        {
+          "symbol": "XAUE",
+          "usd": 3.97226,
+          "oracle": "Other",
+          "unknown_to_map": true
+        },
+        {
+          "symbol": "XPRISM",
+          "usd": 3.90713,
+          "oracle": "Other",
+          "unknown_to_map": true
+        },
+        {
+          "symbol": "PT-SUSDE-7MAY2026",
+          "usd": 3.85082,
+          "oracle": "Other",
+          "unknown_to_map": true
+        },
+        {
+          "symbol": "FTUSD",
+          "usd": 3.8361,
+          "oracle": "Other",
+          "unknown_to_map": true
+        },
+        {
+          "symbol": "YNUSDX",
+          "usd": 3.18995,
+          "oracle": "Other",
+          "unknown_to_map": true
+        },
+        {
+          "symbol": "PT-RSETH-26JUN2025",
+          "usd": 3.17124,
+          "oracle": "Other",
+          "unknown_to_map": true
+        },
+        {
+          "symbol": "PT-SUSDE-26DEC2024",
+          "usd": 3.10171,
+          "oracle": "Other",
+          "unknown_to_map": true
+        },
+        {
+          "symbol": "STEUR",
+          "usd": 3.06618,
+          "oracle": "Other",
+          "unknown_to_map": true
+        },
+        {
+          "symbol": "NPC",
+          "usd": 3.01258,
+          "oracle": "Other",
+          "unknown_to_map": true
+        },
+        {
+          "symbol": "WBRUSDC",
+          "usd": 2.02111,
+          "oracle": "Other",
+          "unknown_to_map": true
+        },
+        {
+          "symbol": "PT-PUSDE-16OCT2025",
+          "usd": 1.78948,
+          "oracle": "Other",
+          "unknown_to_map": true
+        },
+        {
+          "symbol": "PT-STRCX-27AUG2026",
+          "usd": 1.59803,
+          "oracle": "Other",
+          "unknown_to_map": true
+        },
+        {
+          "symbol": "YOUSD",
+          "usd": 1.5807,
+          "oracle": "Other",
+          "unknown_to_map": true
+        },
+        {
+          "symbol": "SUSP",
+          "usd": 1.55836,
+          "oracle": "Other",
+          "unknown_to_map": true
+        },
+        {
+          "symbol": "XUSD",
+          "usd": 1.26565,
+          "oracle": "Other",
+          "unknown_to_map": true
+        },
+        {
+          "symbol": "SFRXUSD",
+          "usd": 1.20196,
+          "oracle": "Other",
+          "unknown_to_map": true
+        },
+        {
+          "symbol": "EURA",
+          "usd": 1.19778,
+          "oracle": "Other",
+          "unknown_to_map": true
+        },
+        {
+          "symbol": "ULTRA_BTC",
+          "usd": 1.19468,
+          "oracle": "Other",
+          "unknown_to_map": true
+        },
+        {
+          "symbol": "AA_IDLE_FASANARA",
+          "usd": 1.16288,
+          "oracle": "Other",
+          "unknown_to_map": true
+        },
+        {
+          "symbol": "USD0",
+          "usd": 1.14342,
+          "oracle": "Chainlink",
+          "unknown_to_map": false
+        },
+        {
+          "symbol": "YVCURVE-YYB-F",
+          "usd": 1.13315,
+          "oracle": "Other",
+          "unknown_to_map": true
+        },
+        {
+          "symbol": "YVUSDC-1",
+          "usd": 1.11099,
+          "oracle": "Other",
+          "unknown_to_map": true
+        },
+        {
+          "symbol": "YSYBOLD",
+          "usd": 1.07286,
+          "oracle": "Other",
+          "unknown_to_map": true
+        },
+        {
+          "symbol": "CUSDO",
+          "usd": 1.04439,
+          "oracle": "Other",
+          "unknown_to_map": true
+        },
+        {
+          "symbol": "PT-REUSD-18DEC2025",
+          "usd": 1.02462,
+          "oracle": "Other",
+          "unknown_to_map": true
+        },
+        {
+          "symbol": "ULTRA_USD",
+          "usd": 1.02401,
+          "oracle": "Other",
+          "unknown_to_map": true
+        },
+        {
+          "symbol": "MORPHO-FRXUSD/SUSDS",
+          "usd": 1.00567,
+          "oracle": "Other",
+          "unknown_to_map": true
+        },
+        {
+          "symbol": "STAKEDAO-FRXUSDOUSD",
+          "usd": 1.00329,
+          "oracle": "Other",
+          "unknown_to_map": true
+        },
+        {
+          "symbol": "STAKEDAO-AV/FRXUSD",
+          "usd": 1.00271,
+          "oracle": "Other",
+          "unknown_to_map": true
+        },
+        {
+          "symbol": "ST-YCRV",
+          "usd": 0.90162,
+          "oracle": "Other",
+          "unknown_to_map": true
+        },
+        {
+          "symbol": "TSLAON",
+          "usd": 0.66593,
+          "oracle": "Other",
+          "unknown_to_map": true
+        },
+        {
+          "symbol": "SUSDU",
+          "usd": 0.60225,
+          "oracle": "Other",
+          "unknown_to_map": true
+        },
+        {
+          "symbol": "GTUSDCP",
+          "usd": 0.60096,
+          "oracle": "Other",
+          "unknown_to_map": true
+        },
+        {
+          "symbol": "BGBTC",
+          "usd": 0.59811,
+          "oracle": "Other",
+          "unknown_to_map": true
+        },
+        {
+          "symbol": "PT-ALUSD-23OCT2025",
+          "usd": 0.49069,
+          "oracle": "Other",
+          "unknown_to_map": true
+        },
+        {
+          "symbol": "FLUID",
+          "usd": 0.38054,
+          "oracle": "Other",
+          "unknown_to_map": true
+        },
+        {
+          "symbol": "WOETH",
+          "usd": 0.28778,
+          "oracle": "Other",
+          "unknown_to_map": true
+        },
+        {
+          "symbol": "N-PT-SUSDE-27NOV2025",
+          "usd": 0.20523,
+          "oracle": "Other",
+          "unknown_to_map": true
+        },
+        {
+          "symbol": "APU",
+          "usd": 0.16461,
+          "oracle": "Other",
+          "unknown_to_map": true
+        },
+        {
+          "symbol": "SFRAX",
+          "usd": 0.11471,
+          "oracle": "Other",
+          "unknown_to_map": true
+        },
+        {
+          "symbol": "ASDCRV",
+          "usd": 0.10363,
+          "oracle": "Other",
+          "unknown_to_map": true
+        },
+        {
+          "symbol": "SYUSD",
+          "usd": 0.10201,
+          "oracle": "Other",
+          "unknown_to_map": true
+        },
+        {
+          "symbol": "SDEUSD",
+          "usd": 0.09576,
+          "oracle": "Other",
+          "unknown_to_map": true
+        },
+        {
+          "symbol": "PT-FXSAVE-30APR2026",
+          "usd": 0.05564,
+          "oracle": "Other",
+          "unknown_to_map": true
+        },
+        {
+          "symbol": "RLP",
+          "usd": 0.0017,
+          "oracle": "Other",
+          "unknown_to_map": true
+        },
+        {
+          "symbol": "SUSDS+S",
+          "usd": 0.00147,
+          "oracle": "Other",
+          "unknown_to_map": true
+        },
+        {
+          "symbol": "ARSS",
+          "usd": 0.00074,
+          "oracle": "Other",
+          "unknown_to_map": true
+        },
+        {
+          "symbol": "XAUM",
+          "usd": 0.0004,
+          "oracle": "Other",
+          "unknown_to_map": true
+        },
+        {
+          "symbol": "DEUSD",
+          "usd": 0.00019,
+          "oracle": "Other",
+          "unknown_to_map": true
+        },
+        {
+          "symbol": "SHIB",
+          "usd": 0.00015,
+          "oracle": "Other",
+          "unknown_to_map": true
+        }
+      ]
+    },
+    {
+      "protocol_slug": "fluid",
+      "protocol_name": "Fluid",
+      "day_used_utc": "2026-06-30",
+      "total_supplied_usd": 388336244.80134004,
+      "by_oracle": {
+        "Chainlink": 269515170.20418,
+        "Redstone": 3528930.98857,
+        "Pyth": 214103.90098,
+        "Lido": 0,
+        "Maker": 0,
+        "Curve EMA": 0,
+        "Other": 115078039.70761
+      },
+      "by_oracle_share": {
+        "Chainlink": 0.6940252778672643,
+        "Redstone": 0.009087307805572679,
+        "Pyth": 0.0005513363839873574,
+        "Lido": 0,
+        "Maker": 0,
+        "Curve EMA": 0,
+        "Other": 0.2963360779431755
+      },
+      "unknown_to_map_usd": 115078039.70761,
+      "unknown_to_map_assets": [
+        "CSUSDL",
+        "DEUSD",
+        "EBTC",
+        "FLUID",
+        "FXUSD",
+        "IUSD",
+        "JRUSDE",
+        "METH",
+        "PAXG",
+        "PST",
+        "REUSD",
+        "RLP",
+        "SRUSDE",
+        "SUSDAI",
+        "SUSDS",
+        "SYRUPUSDC",
+        "SYRUPUSDT",
+        "USDAI",
+        "USR",
+        "WEETHS",
+        "XAUT"
+      ],
+      "per_asset": [
+        {
+          "symbol": "WSTETH",
+          "usd": 102151031.5439,
+          "oracle": "Chainlink",
+          "unknown_to_map": false
+        },
+        {
+          "symbol": "REUSD",
+          "usd": 58572081.52088,
+          "oracle": "Other",
+          "unknown_to_map": true
+        },
+        {
+          "symbol": "WBTC",
+          "usd": 58479925.34218,
+          "oracle": "Chainlink",
+          "unknown_to_map": false
+        },
+        {
+          "symbol": "WETH",
+          "usd": 33513606.09047,
+          "oracle": "Chainlink",
+          "unknown_to_map": false
+        },
+        {
+          "symbol": "SUSDAI",
+          "usd": 32787921.27818,
+          "oracle": "Other",
+          "unknown_to_map": true
+        },
+        {
+          "symbol": "CBBTC",
+          "usd": 18898428.59189,
+          "oracle": "Chainlink",
+          "unknown_to_map": false
+        },
+        {
+          "symbol": "WEETH",
+          "usd": 16690815.65028,
+          "oracle": "Chainlink",
+          "unknown_to_map": false
+        },
+        {
+          "symbol": "PST",
+          "usd": 11971474.35276,
+          "oracle": "Other",
+          "unknown_to_map": true
+        },
+        {
+          "symbol": "USDC",
+          "usd": 11560700.67486,
+          "oracle": "Chainlink",
+          "unknown_to_map": false
+        },
+        {
+          "symbol": "OSETH",
+          "usd": 9889653.62975,
+          "oracle": "Chainlink",
+          "unknown_to_map": false
+        },
+        {
+          "symbol": "USDT",
+          "usd": 6245954.13333,
+          "oracle": "Chainlink",
+          "unknown_to_map": false
+        },
+        {
+          "symbol": "USDE",
+          "usd": 5373081.48562,
+          "oracle": "Chainlink",
+          "unknown_to_map": false
+        },
+        {
+          "symbol": "SUSDE",
+          "usd": 4071650.31367,
+          "oracle": "Chainlink",
+          "unknown_to_map": false
+        },
+        {
+          "symbol": "PAXG",
+          "usd": 3472011.31084,
+          "oracle": "Other",
+          "unknown_to_map": true
+        },
+        {
+          "symbol": "RSETH",
+          "usd": 3260966.75504,
+          "oracle": "Redstone",
+          "unknown_to_map": false
+        },
+        {
+          "symbol": "GHO",
+          "usd": 2497892.74553,
+          "oracle": "Chainlink",
+          "unknown_to_map": false
+        },
+        {
+          "symbol": "WEETHS",
+          "usd": 2462915.79826,
+          "oracle": "Other",
+          "unknown_to_map": true
+        },
+        {
+          "symbol": "FLUID",
+          "usd": 2277254.87267,
+          "oracle": "Other",
+          "unknown_to_map": true
+        },
+        {
+          "symbol": "XAUT",
+          "usd": 1656736.40061,
+          "oracle": "Other",
+          "unknown_to_map": true
+        },
+        {
+          "symbol": "EBTC",
+          "usd": 1452255.53594,
+          "oracle": "Other",
+          "unknown_to_map": true
+        },
+        {
+          "symbol": "SYRUPUSDC",
+          "usd": 343262.03172,
+          "oracle": "Other",
+          "unknown_to_map": true
+        },
+        {
+          "symbol": "USDTB",
+          "usd": 214103.90098,
+          "oracle": "Pyth",
+          "unknown_to_map": false
+        },
+        {
+          "symbol": "EZETH",
+          "usd": 189946.01296,
+          "oracle": "Redstone",
+          "unknown_to_map": false
+        },
+        {
+          "symbol": "TBTC",
+          "usd": 138176.49805,
+          "oracle": "Chainlink",
+          "unknown_to_map": false
+        },
+        {
+          "symbol": "LBTC",
+          "usd": 78018.22057,
+          "oracle": "Redstone",
+          "unknown_to_map": false
+        },
+        {
+          "symbol": "SYRUPUSDT",
+          "usd": 34998.58719,
+          "oracle": "Other",
+          "unknown_to_map": true
+        },
+        {
+          "symbol": "FXUSD",
+          "usd": 19863.71818,
+          "oracle": "Other",
+          "unknown_to_map": true
+        },
+        {
+          "symbol": "JRUSDE",
+          "usd": 10139.75859,
+          "oracle": "Other",
+          "unknown_to_map": true
+        },
+        {
+          "symbol": "SUSDS",
+          "usd": 6254.78291,
+          "oracle": "Other",
+          "unknown_to_map": true
+        },
+        {
+          "symbol": "USD0",
+          "usd": 4253.50465,
+          "oracle": "Chainlink",
+          "unknown_to_map": false
+        },
+        {
+          "symbol": "RLP",
+          "usd": 3367.21927,
+          "oracle": "Other",
+          "unknown_to_map": true
+        },
+        {
+          "symbol": "IUSD",
+          "usd": 2932.65508,
+          "oracle": "Other",
+          "unknown_to_map": true
+        },
+        {
+          "symbol": "SRUSDE",
+          "usd": 2773.16959,
+          "oracle": "Other",
+          "unknown_to_map": true
+        },
+        {
+          "symbol": "USR",
+          "usd": 1713.3496,
+          "oracle": "Other",
+          "unknown_to_map": true
+        },
+        {
+          "symbol": "METH",
+          "usd": 59.11249,
+          "oracle": "Other",
+          "unknown_to_map": true
+        },
+        {
+          "symbol": "USDAI",
+          "usd": 24.22271,
+          "oracle": "Other",
+          "unknown_to_map": true
+        },
+        {
+          "symbol": "CSUSDL",
+          "usd": 0.02875,
+          "oracle": "Other",
+          "unknown_to_map": true
+        },
+        {
+          "symbol": "DEUSD",
+          "usd": 0.00139,
+          "oracle": "Other",
+          "unknown_to_map": true
+        }
+      ]
+    },
+    {
+      "protocol_slug": "compound-v3",
+      "protocol_name": "Compound",
+      "day_used_utc": "2026-06-30",
+      "total_supplied_usd": 945795526.42495,
+      "by_oracle": {
+        "Chainlink": 878790181.93519,
+        "Redstone": 17527242.10354,
+        "Pyth": 0,
+        "Lido": 0,
+        "Maker": 0,
+        "Curve EMA": 0,
+        "Other": 49478102.38622
+      },
+      "by_oracle_share": {
+        "Chainlink": 0.929154513192681,
+        "Redstone": 0.018531745619258654,
+        "Pyth": 0,
+        "Lido": 0,
+        "Maker": 0,
+        "Curve EMA": 0,
+        "Other": 0.05231374118806022
+      },
+      "unknown_to_map_usd": 49478102.38622,
+      "unknown_to_map_assets": [
+        "COMP",
+        "ETHX",
+        "LINK",
+        "METH",
+        "RSWETH",
+        "SFRAX",
+        "SKY",
+        "SUSDS",
+        "TETH",
+        "UNI",
+        "WOETH",
+        "XAUT"
+      ],
+      "per_asset": [
+        {
+          "symbol": "WBTC",
+          "usd": 416356504.16693,
+          "oracle": "Chainlink",
+          "unknown_to_map": false
+        },
+        {
+          "symbol": "WSTETH",
+          "usd": 164502705.47958,
+          "oracle": "Chainlink",
+          "unknown_to_map": false
+        },
+        {
+          "symbol": "WETH",
+          "usd": 163620419.78956,
+          "oracle": "Chainlink",
+          "unknown_to_map": false
+        },
+        {
+          "symbol": "USDT",
+          "usd": 48312565.17368,
+          "oracle": "Chainlink",
+          "unknown_to_map": false
+        },
+        {
+          "symbol": "USDC",
+          "usd": 40880958.16009,
+          "oracle": "Chainlink",
+          "unknown_to_map": false
+        },
+        {
+          "symbol": "SFRAX",
+          "usd": 37339225.68899,
+          "oracle": "Other",
+          "unknown_to_map": true
+        },
+        {
+          "symbol": "CBBTC",
+          "usd": 26414905.09551,
+          "oracle": "Chainlink",
+          "unknown_to_map": false
+        },
+        {
+          "symbol": "RSETH",
+          "usd": 16905127.51558,
+          "oracle": "Redstone",
+          "unknown_to_map": false
+        },
+        {
+          "symbol": "WEETH",
+          "usd": 12097101.42203,
+          "oracle": "Chainlink",
+          "unknown_to_map": false
+        },
+        {
+          "symbol": "TBTC",
+          "usd": 5963689.05983,
+          "oracle": "Chainlink",
+          "unknown_to_map": false
+        },
+        {
+          "symbol": "LINK",
+          "usd": 4644655.12255,
+          "oracle": "Other",
+          "unknown_to_map": true
+        },
+        {
+          "symbol": "COMP",
+          "usd": 3129966.20684,
+          "oracle": "Other",
+          "unknown_to_map": true
+        },
+        {
+          "symbol": "TETH",
+          "usd": 2579481.36602,
+          "oracle": "Other",
+          "unknown_to_map": true
+        },
+        {
+          "symbol": "UNI",
+          "usd": 1038211.43134,
+          "oracle": "Other",
+          "unknown_to_map": true
+        },
+        {
+          "symbol": "USDS",
+          "usd": 605599.18666,
+          "oracle": "Chainlink",
+          "unknown_to_map": false
+        },
+        {
+          "symbol": "EZETH",
+          "usd": 463078.72625,
+          "oracle": "Redstone",
+          "unknown_to_map": false
+        },
+        {
+          "symbol": "XAUT",
+          "usd": 371091.4112,
+          "oracle": "Other",
+          "unknown_to_map": true
+        },
+        {
+          "symbol": "SUSDS",
+          "usd": 356746.08474,
+          "oracle": "Other",
+          "unknown_to_map": true
+        },
+        {
+          "symbol": "PUFETH",
+          "usd": 159035.86171,
+          "oracle": "Redstone",
+          "unknown_to_map": false
+        },
+        {
+          "symbol": "CBETH",
+          "usd": 28322.30481,
+          "oracle": "Chainlink",
+          "unknown_to_map": false
+        },
+        {
+          "symbol": "METH",
+          "usd": 9510.96598,
+          "oracle": "Other",
+          "unknown_to_map": true
+        },
+        {
+          "symbol": "WOETH",
+          "usd": 7551.90414,
+          "oracle": "Other",
+          "unknown_to_map": true
+        },
+        {
+          "symbol": "RETH",
+          "usd": 5133.05799,
+          "oracle": "Chainlink",
+          "unknown_to_map": false
+        },
+        {
+          "symbol": "OSETH",
+          "usd": 1723.09821,
+          "oracle": "Chainlink",
+          "unknown_to_map": false
+        },
+        {
+          "symbol": "RSWETH",
+          "usd": 848.93911,
+          "oracle": "Other",
+          "unknown_to_map": true
+        },
+        {
+          "symbol": "USDE",
+          "usd": 555.94031,
+          "oracle": "Chainlink",
+          "unknown_to_map": false
+        },
+        {
+          "symbol": "ETHX",
+          "usd": 434.64353,
+          "oracle": "Other",
+          "unknown_to_map": true
+        },
+        {
+          "symbol": "SKY",
+          "usd": 378.62178,
+          "oracle": "Other",
+          "unknown_to_map": true
+        }
+      ]
+    },
+    {
+      "protocol_slug": "euler-v2",
+      "protocol_name": "Euler",
+      "day_used_utc": "2026-06-30",
+      "total_supplied_usd": 133278629.46393004,
+      "by_oracle": {
+        "Chainlink": 66738897.97115,
+        "Redstone": 22232.462430000003,
+        "Pyth": 268257.45598,
+        "Lido": 0,
+        "Maker": 0,
+        "Curve EMA": 0.00947,
+        "Other": 66249241.56489999
+      },
+      "by_oracle_share": {
+        "Chainlink": 0.5007471808465133,
+        "Redstone": 0.00016681190765108295,
+        "Pyth": 0.002012756711702232,
+        "Lido": 0,
+        "Maker": 0,
+        "Curve EMA": 7.105415202789821e-11,
+        "Other": 0.49707325046307893
+      },
+      "unknown_to_map_usd": 66249241.56489999,
+      "unknown_to_map_assets": [
+        "AAVE",
+        "ALETH",
+        "ALUSD",
+        "AUSD",
+        "BOLD",
+        "BTCY",
+        "BUSD0",
+        "CUSD",
+        "CUSDO",
+        "CUSDOUSDC",
+        "EBTC",
+        "ETHX",
+        "EUL",
+        "EUROC",
+        "EUSD",
+        "EUSDE",
+        "FRXUSD",
+        "FXSAVE",
+        "FXUSD",
+        "GRT",
+        "HGETH",
+        "HYBOND",
+        "JRUSDE",
+        "LINK",
+        "LSTRZR",
+        "MAPOLLO",
+        "MBASIS",
+        "MBTC",
+        "MEDGE",
+        "METH",
+        "MEVBTC",
+        "MHYPER",
+        "MMEV",
+        "MRE7YIELD",
+        "MSUSD",
+        "MSY",
+        "MTBILL",
+        "MUSD",
+        "ONDO",
+        "PAXG",
+        "PMUSD",
+        "PT-CUSD-23JUL2026",
+        "PT-CUSD-29JAN2026",
+        "PT-EBTC-26DEC2024",
+        "PT-EUSDE-29MAY2025",
+        "PT-JRUSDE-15JAN2026",
+        "PT-JRUSDE-2APR2026",
+        "PT-MAPOLLO-20NOV2025",
+        "PT-PUSDE-16OCT2025",
+        "PT-REUSD-10DEC2026",
+        "PT-SRUSDE-15JAN2026",
+        "PT-SRUSDE-2APR2026",
+        "PT-STCUSD-23JUL2026",
+        "PT-STCUSD-29JAN2026",
+        "PT-SUSDE-25SEP2025",
+        "PT-SUSDE-29MAY2025",
+        "PT-SUSDE-31JUL2025",
+        "PT-SUSDE-5FEB2026",
+        "PT-SUSDF-29JAN2026",
+        "PT-TUSDE-25SEP2025",
+        "PT-USDE-25SEP2025",
+        "PT-USDE-27NOV2025",
+        "PT-USDF-29JAN2026",
+        "PUSDE",
+        "QQQON",
+        "RLP",
+        "RLUSD",
+        "RUSD",
+        "RZR",
+        "SCRVUSD",
+        "SDAI",
+        "SIUSD",
+        "SOLVBTC",
+        "SPYON",
+        "SRUSD",
+        "SRUSDE",
+        "SUSDAF",
+        "SUSDF",
+        "SUSDS",
+        "SUSN",
+        "SUSP",
+        "SYRUPUSDC",
+        "TETH",
+        "TGLD",
+        "TRYB",
+        "TSLAON",
+        "UNI",
+        "USD3",
+        "USDF",
+        "USN",
+        "USP",
+        "USR",
+        "USRUSDC",
+        "W",
+        "WM",
+        "WSPYX",
+        "WSTRCX",
+        "WSTUSR",
+        "WUSDM",
+        "XAUT",
+        "XUSD",
+        "YNETHX",
+        "YNRWAX",
+        "YU",
+        "YUSD"
+      ],
+      "per_asset": [
+        {
+          "symbol": "USDC",
+          "usd": 24106219.48721,
+          "oracle": "Chainlink",
+          "unknown_to_map": false
+        },
+        {
+          "symbol": "BUSD0",
+          "usd": 20801327.86131,
+          "oracle": "Other",
+          "unknown_to_map": true
+        },
+        {
+          "symbol": "PYUSD",
+          "usd": 19193322.89748,
+          "oracle": "Chainlink",
+          "unknown_to_map": false
+        },
+        {
+          "symbol": "XUSD",
+          "usd": 16097721.4113,
+          "oracle": "Other",
+          "unknown_to_map": true
+        },
+        {
+          "symbol": "USD0",
+          "usd": 14147844.7253,
+          "oracle": "Chainlink",
+          "unknown_to_map": false
+        },
+        {
+          "symbol": "SYRUPUSDC",
+          "usd": 9890019.54052,
+          "oracle": "Other",
+          "unknown_to_map": true
+        },
+        {
+          "symbol": "RLUSD",
+          "usd": 8326128.53748,
+          "oracle": "Other",
+          "unknown_to_map": true
+        },
+        {
+          "symbol": "WSTRCX",
+          "usd": 4001272.87204,
+          "oracle": "Other",
+          "unknown_to_map": true
+        },
+        {
+          "symbol": "SUSDE",
+          "usd": 3953712.6288,
+          "oracle": "Chainlink",
+          "unknown_to_map": false
+        },
+        {
+          "symbol": "WSTETH",
+          "usd": 2805661.87596,
+          "oracle": "Chainlink",
+          "unknown_to_map": false
+        },
+        {
+          "symbol": "YNRWAX",
+          "usd": 1977476.13888,
+          "oracle": "Other",
+          "unknown_to_map": true
+        },
+        {
+          "symbol": "EUL",
+          "usd": 1109162.7113,
+          "oracle": "Other",
+          "unknown_to_map": true
+        },
+        {
+          "symbol": "WBTC",
+          "usd": 773772.51249,
+          "oracle": "Chainlink",
+          "unknown_to_map": false
+        },
+        {
+          "symbol": "HYBOND",
+          "usd": 692240,
+          "oracle": "Other",
+          "unknown_to_map": true
+        },
+        {
+          "symbol": "TETH",
+          "usd": 661008.3857,
+          "oracle": "Other",
+          "unknown_to_map": true
+        },
+        {
+          "symbol": "WEETH",
+          "usd": 580444.49675,
+          "oracle": "Chainlink",
+          "unknown_to_map": false
+        },
+        {
+          "symbol": "PT-REUSD-10DEC2026",
+          "usd": 573787.14226,
+          "oracle": "Other",
+          "unknown_to_map": true
+        },
+        {
+          "symbol": "MAPOLLO",
+          "usd": 512935.57772,
+          "oracle": "Other",
+          "unknown_to_map": true
+        },
+        {
+          "symbol": "USDE",
+          "usd": 451760.80455,
+          "oracle": "Chainlink",
+          "unknown_to_map": false
+        },
+        {
+          "symbol": "RZR",
+          "usd": 383990.18825,
+          "oracle": "Other",
+          "unknown_to_map": true
+        },
+        {
+          "symbol": "PT-CUSD-23JUL2026",
+          "usd": 367285.54235,
+          "oracle": "Other",
+          "unknown_to_map": true
+        },
+        {
+          "symbol": "WETH",
+          "usd": 342864.85333,
+          "oracle": "Chainlink",
+          "unknown_to_map": false
+        },
+        {
+          "symbol": "XAUT",
+          "usd": 338162.83399,
+          "oracle": "Other",
+          "unknown_to_map": true
+        },
+        {
+          "symbol": "USDTB",
+          "usd": 268257.45598,
+          "oracle": "Pyth",
+          "unknown_to_map": false
+        },
+        {
+          "symbol": "CBBTC",
+          "usd": 210634.20357,
+          "oracle": "Chainlink",
+          "unknown_to_map": false
+        },
+        {
+          "symbol": "USDT",
+          "usd": 172194.9166,
+          "oracle": "Chainlink",
+          "unknown_to_map": false
+        },
+        {
+          "symbol": "AUSD",
+          "usd": 99027.08052,
+          "oracle": "Other",
+          "unknown_to_map": true
+        },
+        {
+          "symbol": "SPYON",
+          "usd": 97696.66924,
+          "oracle": "Other",
+          "unknown_to_map": true
+        },
+        {
+          "symbol": "EUSDE",
+          "usd": 45602.67306,
+          "oracle": "Other",
+          "unknown_to_map": true
+        },
+        {
+          "symbol": "BOLD",
+          "usd": 43136.93321,
+          "oracle": "Other",
+          "unknown_to_map": true
+        },
+        {
+          "symbol": "SDAI",
+          "usd": 34710.9905,
+          "oracle": "Other",
+          "unknown_to_map": true
+        },
+        {
+          "symbol": "FRXUSD",
+          "usd": 26360.62455,
+          "oracle": "Other",
+          "unknown_to_map": true
+        },
+        {
+          "symbol": "SUSDF",
+          "usd": 25753.37892,
+          "oracle": "Other",
+          "unknown_to_map": true
+        },
+        {
+          "symbol": "SRUSDE",
+          "usd": 21984.57852,
+          "oracle": "Other",
+          "unknown_to_map": true
+        },
+        {
+          "symbol": "YU",
+          "usd": 16471.26964,
+          "oracle": "Other",
+          "unknown_to_map": true
+        },
+        {
+          "symbol": "USR",
+          "usd": 14621.08955,
+          "oracle": "Other",
+          "unknown_to_map": true
+        },
+        {
+          "symbol": "USDF",
+          "usd": 13560.687,
+          "oracle": "Other",
+          "unknown_to_map": true
+        },
+        {
+          "symbol": "TGLD",
+          "usd": 12743.57226,
+          "oracle": "Other",
+          "unknown_to_map": true
+        },
+        {
+          "symbol": "PUSDE",
+          "usd": 10636.32671,
+          "oracle": "Other",
+          "unknown_to_map": true
+        },
+        {
+          "symbol": "RSETH",
+          "usd": 10505.15451,
+          "oracle": "Redstone",
+          "unknown_to_map": false
+        },
+        {
+          "symbol": "PT-SUSDE-25SEP2025",
+          "usd": 9817.31271,
+          "oracle": "Other",
+          "unknown_to_map": true
+        },
+        {
+          "symbol": "PUFETH",
+          "usd": 8492.94611,
+          "oracle": "Redstone",
+          "unknown_to_map": false
+        },
+        {
+          "symbol": "PT-SUSDF-29JAN2026",
+          "usd": 5447.57346,
+          "oracle": "Other",
+          "unknown_to_map": true
+        },
+        {
+          "symbol": "SUSN",
+          "usd": 4766.91422,
+          "oracle": "Other",
+          "unknown_to_map": true
+        },
+        {
+          "symbol": "SIUSD",
+          "usd": 4760.80498,
+          "oracle": "Other",
+          "unknown_to_map": true
+        },
+        {
+          "symbol": "USN",
+          "usd": 4732.55728,
+          "oracle": "Other",
+          "unknown_to_map": true
+        },
+        {
+          "symbol": "QQQON",
+          "usd": 4476.74939,
+          "oracle": "Other",
+          "unknown_to_map": true
+        },
+        {
+          "symbol": "WM",
+          "usd": 2652.0207,
+          "oracle": "Other",
+          "unknown_to_map": true
+        },
+        {
+          "symbol": "WSTUSR",
+          "usd": 2605.06377,
+          "oracle": "Other",
+          "unknown_to_map": true
+        },
+        {
+          "symbol": "LBTC",
+          "usd": 2567.46928,
+          "oracle": "Redstone",
+          "unknown_to_map": false
+        },
+        {
+          "symbol": "RLP",
+          "usd": 2367.81992,
+          "oracle": "Other",
+          "unknown_to_map": true
+        },
+        {
+          "symbol": "HGETH",
+          "usd": 2078.40278,
+          "oracle": "Other",
+          "unknown_to_map": true
+        },
+        {
+          "symbol": "ALETH",
+          "usd": 1542.84927,
+          "oracle": "Other",
+          "unknown_to_map": true
+        },
+        {
+          "symbol": "ALUSD",
+          "usd": 1031.66484,
+          "oracle": "Other",
+          "unknown_to_map": true
+        },
+        {
+          "symbol": "FXUSD",
+          "usd": 936.7898,
+          "oracle": "Other",
+          "unknown_to_map": true
+        },
+        {
+          "symbol": "EZETH",
+          "usd": 666.89253,
+          "oracle": "Redstone",
+          "unknown_to_map": false
+        },
+        {
+          "symbol": "MTBILL",
+          "usd": 618.71104,
+          "oracle": "Other",
+          "unknown_to_map": true
+        },
+        {
+          "symbol": "YNETHX",
+          "usd": 567.40389,
+          "oracle": "Other",
+          "unknown_to_map": true
+        },
+        {
+          "symbol": "ONDO",
+          "usd": 528.7163,
+          "oracle": "Other",
+          "unknown_to_map": true
+        },
+        {
+          "symbol": "MHYPER",
+          "usd": 453.78654,
+          "oracle": "Other",
+          "unknown_to_map": true
+        },
+        {
+          "symbol": "PMUSD",
+          "usd": 427.78926,
+          "oracle": "Other",
+          "unknown_to_map": true
+        },
+        {
+          "symbol": "GRT",
+          "usd": 418.80676,
+          "oracle": "Other",
+          "unknown_to_map": true
+        },
+        {
+          "symbol": "SUSDS",
+          "usd": 402.78027,
+          "oracle": "Other",
+          "unknown_to_map": true
+        },
+        {
+          "symbol": "CUSDO",
+          "usd": 357.62168,
+          "oracle": "Other",
+          "unknown_to_map": true
+        },
+        {
+          "symbol": "USDS",
+          "usd": 292.43693,
+          "oracle": "Chainlink",
+          "unknown_to_map": false
+        },
+        {
+          "symbol": "SUSP",
+          "usd": 270.18882,
+          "oracle": "Other",
+          "unknown_to_map": true
+        },
+        {
+          "symbol": "MEDGE",
+          "usd": 263.22757,
+          "oracle": "Other",
+          "unknown_to_map": true
+        },
+        {
+          "symbol": "USD3",
+          "usd": 261.96851,
+          "oracle": "Other",
+          "unknown_to_map": true
+        },
+        {
+          "symbol": "TSLAON",
+          "usd": 248.16065,
+          "oracle": "Other",
+          "unknown_to_map": true
+        },
+        {
+          "symbol": "PT-USDE-25SEP2025",
+          "usd": 217.27623,
+          "oracle": "Other",
+          "unknown_to_map": true
+        },
+        {
+          "symbol": "EUROC",
+          "usd": 193.90513,
+          "oracle": "Other",
+          "unknown_to_map": true
+        },
+        {
+          "symbol": "AAVE",
+          "usd": 185.44794,
+          "oracle": "Other",
+          "unknown_to_map": true
+        },
+        {
+          "symbol": "PT-USDF-29JAN2026",
+          "usd": 181.80983,
+          "oracle": "Other",
+          "unknown_to_map": true
+        },
+        {
+          "symbol": "EBTC",
+          "usd": 180.64505,
+          "oracle": "Other",
+          "unknown_to_map": true
+        },
+        {
+          "symbol": "EUSD",
+          "usd": 153.35908,
+          "oracle": "Other",
+          "unknown_to_map": true
+        },
+        {
+          "symbol": "MBTC",
+          "usd": 138.74025,
+          "oracle": "Other",
+          "unknown_to_map": true
+        },
+        {
+          "symbol": "MRE7YIELD",
+          "usd": 133.34957,
+          "oracle": "Other",
+          "unknown_to_map": true
+        },
+        {
+          "symbol": "CUSD",
+          "usd": 131.83173,
+          "oracle": "Other",
+          "unknown_to_map": true
+        },
+        {
+          "symbol": "LSTRZR",
+          "usd": 123.45935,
+          "oracle": "Other",
+          "unknown_to_map": true
+        },
+        {
+          "symbol": "DAI",
+          "usd": 122.17206,
+          "oracle": "Chainlink",
+          "unknown_to_map": false
+        },
+        {
+          "symbol": "PT-SUSDE-31JUL2025",
+          "usd": 92.70052,
+          "oracle": "Other",
+          "unknown_to_map": true
+        },
+        {
+          "symbol": "BTCY",
+          "usd": 90.49057,
+          "oracle": "Other",
+          "unknown_to_map": true
+        },
+        {
+          "symbol": "PT-EUSDE-29MAY2025",
+          "usd": 67.31143,
+          "oracle": "Other",
+          "unknown_to_map": true
+        },
+        {
+          "symbol": "MUSD",
+          "usd": 60.97953,
+          "oracle": "Other",
+          "unknown_to_map": true
+        },
+        {
+          "symbol": "RUSD",
+          "usd": 54.1652,
+          "oracle": "Other",
+          "unknown_to_map": true
+        },
+        {
+          "symbol": "MMEV",
+          "usd": 45.23323,
+          "oracle": "Other",
+          "unknown_to_map": true
+        },
+        {
+          "symbol": "TRYB",
+          "usd": 44.59708,
+          "oracle": "Other",
+          "unknown_to_map": true
+        },
+        {
+          "symbol": "LINK",
+          "usd": 35.36272,
+          "oracle": "Other",
+          "unknown_to_map": true
+        },
+        {
+          "symbol": "PT-TUSDE-25SEP2025",
+          "usd": 33.41723,
+          "oracle": "Other",
+          "unknown_to_map": true
+        },
+        {
+          "symbol": "PT-PUSDE-16OCT2025",
+          "usd": 33.09098,
+          "oracle": "Other",
+          "unknown_to_map": true
+        },
+        {
+          "symbol": "CUSDOUSDC",
+          "usd": 22.1658,
+          "oracle": "Other",
+          "unknown_to_map": true
+        },
+        {
+          "symbol": "CBETH",
+          "usd": 21.02757,
+          "oracle": "Chainlink",
+          "unknown_to_map": false
+        },
+        {
+          "symbol": "PT-JRUSDE-2APR2026",
+          "usd": 20.43221,
+          "oracle": "Other",
+          "unknown_to_map": true
+        },
+        {
+          "symbol": "MBASIS",
+          "usd": 20.06981,
+          "oracle": "Other",
+          "unknown_to_map": true
+        },
+        {
+          "symbol": "RETH",
+          "usd": 18.81598,
+          "oracle": "Chainlink",
+          "unknown_to_map": false
+        },
+        {
+          "symbol": "PAXG",
+          "usd": 18.4651,
+          "oracle": "Other",
+          "unknown_to_map": true
+        },
+        {
+          "symbol": "PT-EBTC-26DEC2024",
+          "usd": 12.8841,
+          "oracle": "Other",
+          "unknown_to_map": true
+        },
+        {
+          "symbol": "JRUSDE",
+          "usd": 12.84407,
+          "oracle": "Other",
+          "unknown_to_map": true
+        },
+        {
+          "symbol": "PT-SRUSDE-15JAN2026",
+          "usd": 11.91543,
+          "oracle": "Other",
+          "unknown_to_map": true
+        },
+        {
+          "symbol": "FXSAVE",
+          "usd": 10.42276,
+          "oracle": "Other",
+          "unknown_to_map": true
+        },
+        {
+          "symbol": "TBTC",
+          "usd": 10.11657,
+          "oracle": "Chainlink",
+          "unknown_to_map": false
+        },
+        {
+          "symbol": "PT-JRUSDE-15JAN2026",
+          "usd": 9.98235,
+          "oracle": "Other",
+          "unknown_to_map": true
+        },
+        {
+          "symbol": "PT-CUSD-29JAN2026",
+          "usd": 9.56545,
+          "oracle": "Other",
+          "unknown_to_map": true
+        },
+        {
+          "symbol": "SRUSD",
+          "usd": 8.58515,
+          "oracle": "Other",
+          "unknown_to_map": true
+        },
+        {
+          "symbol": "SOLVBTC",
+          "usd": 3.5911,
+          "oracle": "Other",
+          "unknown_to_map": true
+        },
+        {
+          "symbol": "YUSD",
+          "usd": 3.47204,
+          "oracle": "Other",
+          "unknown_to_map": true
+        },
+        {
+          "symbol": "PT-STCUSD-23JUL2026",
+          "usd": 3.02492,
+          "oracle": "Other",
+          "unknown_to_map": true
+        },
+        {
+          "symbol": "MEVBTC",
+          "usd": 2.9248,
+          "oracle": "Other",
+          "unknown_to_map": true
+        },
+        {
+          "symbol": "MSUSD",
+          "usd": 2.88911,
+          "oracle": "Other",
+          "unknown_to_map": true
+        },
+        {
+          "symbol": "PT-STCUSD-29JAN2026",
+          "usd": 1.99972,
+          "oracle": "Other",
+          "unknown_to_map": true
+        },
+        {
+          "symbol": "SUSDAF",
+          "usd": 1.95157,
+          "oracle": "Other",
+          "unknown_to_map": true
+        },
+        {
+          "symbol": "PT-SUSDE-29MAY2025",
+          "usd": 1.91628,
+          "oracle": "Other",
+          "unknown_to_map": true
+        },
+        {
+          "symbol": "PT-SRUSDE-2APR2026",
+          "usd": 1.37216,
+          "oracle": "Other",
+          "unknown_to_map": true
+        },
+        {
+          "symbol": "METH",
+          "usd": 1.17475,
+          "oracle": "Other",
+          "unknown_to_map": true
+        },
+        {
+          "symbol": "USRUSDC",
+          "usd": 0.75716,
+          "oracle": "Other",
+          "unknown_to_map": true
+        },
+        {
+          "symbol": "PT-MAPOLLO-20NOV2025",
+          "usd": 0.64617,
+          "oracle": "Other",
+          "unknown_to_map": true
+        },
+        {
+          "symbol": "SCRVUSD",
+          "usd": 0.39382,
+          "oracle": "Other",
+          "unknown_to_map": true
+        },
+        {
+          "symbol": "ETHX",
+          "usd": 0.22002,
+          "oracle": "Other",
+          "unknown_to_map": true
+        },
+        {
+          "symbol": "MSY",
+          "usd": 0.14642,
+          "oracle": "Other",
+          "unknown_to_map": true
+        },
+        {
+          "symbol": "W",
+          "usd": 0.11089,
+          "oracle": "Other",
+          "unknown_to_map": true
+        },
+        {
+          "symbol": "USP",
+          "usd": 0.0863,
+          "oracle": "Other",
+          "unknown_to_map": true
+        },
+        {
+          "symbol": "PT-USDE-27NOV2025",
+          "usd": 0.02689,
+          "oracle": "Other",
+          "unknown_to_map": true
+        },
+        {
+          "symbol": "WUSDM",
+          "usd": 0.02679,
+          "oracle": "Other",
+          "unknown_to_map": true
+        },
+        {
+          "symbol": "WSPYX",
+          "usd": 0.02579,
+          "oracle": "Other",
+          "unknown_to_map": true
+        },
+        {
+          "symbol": "CRVUSD",
+          "usd": 0.00947,
+          "oracle": "Curve EMA",
+          "unknown_to_map": false
+        },
+        {
+          "symbol": "PT-SUSDE-5FEB2026",
+          "usd": 0.00184,
+          "oracle": "Other",
+          "unknown_to_map": true
+        },
+        {
+          "symbol": "UNI",
+          "usd": 0.00029,
+          "oracle": "Other",
+          "unknown_to_map": true
+        }
+      ]
+    }
+  ]
+}

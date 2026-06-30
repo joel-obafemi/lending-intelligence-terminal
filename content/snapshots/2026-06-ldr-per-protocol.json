@@ -1,0 +1,66 @@
+{
+  "source": {
+    "script": "scripts/query-ldr-monthly.ts",
+    "generated_at_utc": "2026-06-30T19:52:07Z",
+    "data_source": "Neon sector_snapshots table row closest to target date; on-chain overrides applied for May 31, 2026 per lib/compound-onchain.ts and lib/euler-onchain.ts.",
+    "methodology": "LDR = borrowed / (tvl + borrowed) × 100, computed per protocol via lib/sector-derived.ts ldrByProtocol(). Mechanically equivalent to utilization but framed as a depositor-efficiency metric.",
+    "override_notes": []
+  },
+  "target_date": "2026-06-30",
+  "resolved_snapshot_date": "2026-06-29",
+  "sector": {
+    "ldr_pct": 41.19739433238614,
+    "supplied_usd": 29312500635.35292,
+    "borrowed_usd": 12075986475.429535
+  },
+  "ranking": [
+    {
+      "slug": "euler-v2",
+      "name": "Euler",
+      "tvl_usd": 74947915.05767345,
+      "borrowed_usd": 437562925.5429805,
+      "supplied_usd": 512510840.60065395,
+      "ldr_pct": 85.37632589979253
+    },
+    {
+      "slug": "fluid",
+      "name": "Fluid",
+      "tvl_usd": 376112799.78581,
+      "borrowed_usd": 448163268.02443,
+      "supplied_usd": 824276067.81024,
+      "ldr_pct": 54.37053015684589
+    },
+    {
+      "slug": "aave-v3",
+      "name": "Aave V3",
+      "tvl_usd": 9320996168.94816,
+      "borrowed_usd": 7264554635.97152,
+      "supplied_usd": 16585550804.919682,
+      "ldr_pct": 43.80050274734726
+    },
+    {
+      "slug": "morpho-blue",
+      "name": "Morpho",
+      "tvl_usd": 3253359030.12535,
+      "borrowed_usd": 1837768424.85953,
+      "supplied_usd": 5091127454.98488,
+      "ldr_pct": 36.09747430424501
+    },
+    {
+      "slug": "compound-v3",
+      "name": "Compound",
+      "tvl_usd": 832569309.5423406,
+      "borrowed_usd": 434173426.3281152,
+      "supplied_usd": 1266742735.8704557,
+      "ldr_pct": 34.274791086902766
+    },
+    {
+      "slug": "spark",
+      "name": "Spark",
+      "tvl_usd": 3378528936.46405,
+      "borrowed_usd": 1653763794.70296,
+      "supplied_usd": 5032292731.167009,
+      "ldr_pct": 32.863028505089474
+    }
+  ]
+}

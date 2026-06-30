@@ -1,0 +1,372 @@
+{
+  "schema_version": 1,
+  "generated_at": "2026-06-30T19:59:40.928Z",
+  "issue": "002 §06.6 (yield-vs-event analysis)",
+  "source": {
+    "input": "content/snapshots/2026-06-euler-vault-flows.json",
+    "chart_endpoint": "https://yields.llama.fi/chart/<poolId>",
+    "note": "apyBase is DefiLlama's headline supply APY (gross of reward tokens). Use it for stable comparisons — apy (= apyBase + apyReward) would conflate incentive-driven and rate-driven movements."
+  },
+  "probes": [
+    {
+      "label": "may1",
+      "iso": "2026-06-01T00:00:00Z"
+    },
+    {
+      "label": "may15",
+      "iso": "2026-06-15T00:00:00Z"
+    },
+    {
+      "label": "may31",
+      "iso": "2026-06-30T23:59:00Z"
+    }
+  ],
+  "window": {
+    "start_utc": "2026-06-01T00:00:00Z",
+    "end_utc": "2026-06-30T23:59:00Z"
+  },
+  "outflow_vault_trajectories": [
+    {
+      "pool_id": "73e933a7-73b2-43ec-b1e9-d5d1d42ce2de",
+      "display_name": "EVK Vault eRLUSD-7",
+      "symbol": "RLUSD",
+      "pool_meta": "EVK Vault eRLUSD-7",
+      "probes": [
+        {
+          "date_label": "may1",
+          "target_utc": "2026-06-01T00:00:00Z",
+          "apy_base_pct": null,
+          "source_timestamp_iso": null,
+          "delta_from_target_sec": null
+        },
+        {
+          "date_label": "may15",
+          "target_utc": "2026-06-15T00:00:00Z",
+          "apy_base_pct": null,
+          "source_timestamp_iso": null,
+          "delta_from_target_sec": null
+        },
+        {
+          "date_label": "may31",
+          "target_utc": "2026-06-30T23:59:00Z",
+          "apy_base_pct": null,
+          "source_timestamp_iso": null,
+          "delta_from_target_sec": null
+        }
+      ],
+      "may_avg_apy_pct": null,
+      "may_min_apy_pct": null,
+      "may_max_apy_pct": null,
+      "may_delta_pp": null,
+      "hypothesis": "no_data"
+    },
+    {
+      "pool_id": "31a0cd94-b781-4e0d-a9f1-1702bc2c238f",
+      "display_name": "EVK Vault eUSDC-70",
+      "symbol": "USDC",
+      "pool_meta": "EVK Vault eUSDC-70",
+      "probes": [
+        {
+          "date_label": "may1",
+          "target_utc": "2026-06-01T00:00:00Z",
+          "apy_base_pct": null,
+          "source_timestamp_iso": null,
+          "delta_from_target_sec": null
+        },
+        {
+          "date_label": "may15",
+          "target_utc": "2026-06-15T00:00:00Z",
+          "apy_base_pct": null,
+          "source_timestamp_iso": null,
+          "delta_from_target_sec": null
+        },
+        {
+          "date_label": "may31",
+          "target_utc": "2026-06-30T23:59:00Z",
+          "apy_base_pct": null,
+          "source_timestamp_iso": null,
+          "delta_from_target_sec": null
+        }
+      ],
+      "may_avg_apy_pct": null,
+      "may_min_apy_pct": null,
+      "may_max_apy_pct": null,
+      "may_delta_pp": null,
+      "hypothesis": "no_data"
+    },
+    {
+      "pool_id": "f51d845a-6979-4ccb-b73f-4738a753dd85",
+      "display_name": "EVK Vault ewstETH-2",
+      "symbol": "WSTETH",
+      "pool_meta": "EVK Vault ewstETH-2",
+      "probes": [
+        {
+          "date_label": "may1",
+          "target_utc": "2026-06-01T00:00:00Z",
+          "apy_base_pct": null,
+          "source_timestamp_iso": null,
+          "delta_from_target_sec": null
+        },
+        {
+          "date_label": "may15",
+          "target_utc": "2026-06-15T00:00:00Z",
+          "apy_base_pct": null,
+          "source_timestamp_iso": null,
+          "delta_from_target_sec": null
+        },
+        {
+          "date_label": "may31",
+          "target_utc": "2026-06-30T23:59:00Z",
+          "apy_base_pct": null,
+          "source_timestamp_iso": null,
+          "delta_from_target_sec": null
+        }
+      ],
+      "may_avg_apy_pct": null,
+      "may_min_apy_pct": null,
+      "may_max_apy_pct": null,
+      "may_delta_pp": null,
+      "hypothesis": "no_data"
+    },
+    {
+      "pool_id": "ac5c5923-519a-44bf-afea-c80215145fa8",
+      "display_name": "EVK Vault eAUSD-7",
+      "symbol": "AUSD",
+      "pool_meta": "EVK Vault eAUSD-7",
+      "probes": [
+        {
+          "date_label": "may1",
+          "target_utc": "2026-06-01T00:00:00Z",
+          "apy_base_pct": null,
+          "source_timestamp_iso": null,
+          "delta_from_target_sec": null
+        },
+        {
+          "date_label": "may15",
+          "target_utc": "2026-06-15T00:00:00Z",
+          "apy_base_pct": null,
+          "source_timestamp_iso": null,
+          "delta_from_target_sec": null
+        },
+        {
+          "date_label": "may31",
+          "target_utc": "2026-06-30T23:59:00Z",
+          "apy_base_pct": null,
+          "source_timestamp_iso": null,
+          "delta_from_target_sec": null
+        }
+      ],
+      "may_avg_apy_pct": null,
+      "may_min_apy_pct": null,
+      "may_max_apy_pct": null,
+      "may_delta_pp": null,
+      "hypothesis": "no_data"
+    },
+    {
+      "pool_id": "77871537-d13b-475f-ab01-453778ad1521",
+      "display_name": "EVK Vault etETH-3",
+      "symbol": "TETH",
+      "pool_meta": "EVK Vault etETH-3",
+      "probes": [
+        {
+          "date_label": "may1",
+          "target_utc": "2026-06-01T00:00:00Z",
+          "apy_base_pct": null,
+          "source_timestamp_iso": null,
+          "delta_from_target_sec": null
+        },
+        {
+          "date_label": "may15",
+          "target_utc": "2026-06-15T00:00:00Z",
+          "apy_base_pct": null,
+          "source_timestamp_iso": null,
+          "delta_from_target_sec": null
+        },
+        {
+          "date_label": "may31",
+          "target_utc": "2026-06-30T23:59:00Z",
+          "apy_base_pct": null,
+          "source_timestamp_iso": null,
+          "delta_from_target_sec": null
+        }
+      ],
+      "may_avg_apy_pct": null,
+      "may_min_apy_pct": null,
+      "may_max_apy_pct": null,
+      "may_delta_pp": null,
+      "hypothesis": "no_data"
+    }
+  ],
+  "inflow_vault_trajectories": [
+    {
+      "pool_id": "4d48ed69-2a14-4609-91c0-bc129a6dc586",
+      "display_name": "EVK Vault eUSD0-4",
+      "symbol": "USD0",
+      "pool_meta": "EVK Vault eUSD0-4",
+      "probes": [
+        {
+          "date_label": "may1",
+          "target_utc": "2026-06-01T00:00:00Z",
+          "apy_base_pct": null,
+          "source_timestamp_iso": null,
+          "delta_from_target_sec": null
+        },
+        {
+          "date_label": "may15",
+          "target_utc": "2026-06-15T00:00:00Z",
+          "apy_base_pct": null,
+          "source_timestamp_iso": null,
+          "delta_from_target_sec": null
+        },
+        {
+          "date_label": "may31",
+          "target_utc": "2026-06-30T23:59:00Z",
+          "apy_base_pct": null,
+          "source_timestamp_iso": null,
+          "delta_from_target_sec": null
+        }
+      ],
+      "may_avg_apy_pct": null,
+      "may_min_apy_pct": null,
+      "may_max_apy_pct": null,
+      "may_delta_pp": null,
+      "hypothesis": "no_data"
+    },
+    {
+      "pool_id": "fa55aa2b-e244-4ce4-ab00-9e96b39df32b",
+      "display_name": "EVK Vault ePYUSD-6",
+      "symbol": "PYUSD",
+      "pool_meta": "EVK Vault ePYUSD-6",
+      "probes": [
+        {
+          "date_label": "may1",
+          "target_utc": "2026-06-01T00:00:00Z",
+          "apy_base_pct": null,
+          "source_timestamp_iso": null,
+          "delta_from_target_sec": null
+        },
+        {
+          "date_label": "may15",
+          "target_utc": "2026-06-15T00:00:00Z",
+          "apy_base_pct": null,
+          "source_timestamp_iso": null,
+          "delta_from_target_sec": null
+        },
+        {
+          "date_label": "may31",
+          "target_utc": "2026-06-30T23:59:00Z",
+          "apy_base_pct": null,
+          "source_timestamp_iso": null,
+          "delta_from_target_sec": null
+        }
+      ],
+      "may_avg_apy_pct": null,
+      "may_min_apy_pct": null,
+      "may_max_apy_pct": null,
+      "may_delta_pp": null,
+      "hypothesis": "no_data"
+    },
+    {
+      "pool_id": "3bb6a56f-d2cf-4e80-ad33-b0735139a7c5",
+      "display_name": "EVK Vault eUSDe-6",
+      "symbol": "USDE",
+      "pool_meta": "EVK Vault eUSDe-6",
+      "probes": [
+        {
+          "date_label": "may1",
+          "target_utc": "2026-06-01T00:00:00Z",
+          "apy_base_pct": null,
+          "source_timestamp_iso": null,
+          "delta_from_target_sec": null
+        },
+        {
+          "date_label": "may15",
+          "target_utc": "2026-06-15T00:00:00Z",
+          "apy_base_pct": null,
+          "source_timestamp_iso": null,
+          "delta_from_target_sec": null
+        },
+        {
+          "date_label": "may31",
+          "target_utc": "2026-06-30T23:59:00Z",
+          "apy_base_pct": null,
+          "source_timestamp_iso": null,
+          "delta_from_target_sec": null
+        }
+      ],
+      "may_avg_apy_pct": null,
+      "may_min_apy_pct": null,
+      "may_max_apy_pct": null,
+      "may_delta_pp": null,
+      "hypothesis": "no_data"
+    },
+    {
+      "pool_id": "fa68041a-2ce5-4ee5-88a0-ec5185f0bdb7",
+      "display_name": "EVK Vault eUSDC-22",
+      "symbol": "USDC",
+      "pool_meta": "EVK Vault eUSDC-22",
+      "probes": [
+        {
+          "date_label": "may1",
+          "target_utc": "2026-06-01T00:00:00Z",
+          "apy_base_pct": null,
+          "source_timestamp_iso": null,
+          "delta_from_target_sec": null
+        },
+        {
+          "date_label": "may15",
+          "target_utc": "2026-06-15T00:00:00Z",
+          "apy_base_pct": null,
+          "source_timestamp_iso": null,
+          "delta_from_target_sec": null
+        },
+        {
+          "date_label": "may31",
+          "target_utc": "2026-06-30T23:59:00Z",
+          "apy_base_pct": null,
+          "source_timestamp_iso": null,
+          "delta_from_target_sec": null
+        }
+      ],
+      "may_avg_apy_pct": null,
+      "may_min_apy_pct": null,
+      "may_max_apy_pct": null,
+      "may_delta_pp": null,
+      "hypothesis": "no_data"
+    },
+    {
+      "pool_id": "a3a7fb56-b19a-4dc8-a3f1-285cb38c5885",
+      "display_name": "EVK Vault eUSDtb-2",
+      "symbol": "USDTB",
+      "pool_meta": "EVK Vault eUSDtb-2",
+      "probes": [
+        {
+          "date_label": "may1",
+          "target_utc": "2026-06-01T00:00:00Z",
+          "apy_base_pct": null,
+          "source_timestamp_iso": null,
+          "delta_from_target_sec": null
+        },
+        {
+          "date_label": "may15",
+          "target_utc": "2026-06-15T00:00:00Z",
+          "apy_base_pct": null,
+          "source_timestamp_iso": null,
+          "delta_from_target_sec": null
+        },
+        {
+          "date_label": "may31",
+          "target_utc": "2026-06-30T23:59:00Z",
+          "apy_base_pct": null,
+          "source_timestamp_iso": null,
+          "delta_from_target_sec": null
+        }
+      ],
+      "may_avg_apy_pct": null,
+      "may_min_apy_pct": null,
+      "may_max_apy_pct": null,
+      "may_delta_pp": null,
+      "hypothesis": "no_data"
+    }
+  ]
+}

@@ -1,0 +1,152 @@
+{
+  "schema_version": 1,
+  "as_of_utc": "2026-06-30T20:01:20.980Z",
+  "as_of_date": "2026-06-30",
+  "source": {
+    "method": "blue-api.morpho.org GraphQL — eulerVaults equivalent for Morpho",
+    "endpoint": "https://blue-api.morpho.org/graphql",
+    "query": "vaults(first: 50, where: {chainId_in: [1]}, orderBy: TotalAssetsUsd, orderDirection: Desc)",
+    "grouping": "state.curators[0].name (case-sensitive); null/empty → 'Uncurated'",
+    "hhi_definition": "Σ (share_pct² across curators excluding Uncurated). Range 0 (perfect competition) → 10000 (monopoly)."
+  },
+  "scope": "Top 50 Ethereum MetaMorpho vaults by TotalAssetsUsd",
+  "chain_id": 1,
+  "summary": {
+    "hhi": 4557.8,
+    "top_3_share_pct": 95.22,
+    "curator_count": 9,
+    "total_curated_tvl_usd": 555957786.0435385
+  },
+  "top_curators": [
+    {
+      "name": "Steakhouse Financial",
+      "share_pct": 59.49,
+      "tvl_usd": 330752787.2263108,
+      "vault_count": 10
+    },
+    {
+      "name": "Gauntlet",
+      "share_pct": 31.54,
+      "tvl_usd": 175336377.94776154,
+      "vault_count": 16
+    },
+    {
+      "name": "Hakutora",
+      "share_pct": 4.19,
+      "tvl_usd": 23307140.73495575,
+      "vault_count": 2
+    },
+    {
+      "name": "Yearn",
+      "share_pct": 1.97,
+      "tvl_usd": 10949198.387188202,
+      "vault_count": 3
+    },
+    {
+      "name": "MEV Capital",
+      "share_pct": 1.35,
+      "tvl_usd": 7502694.690229714,
+      "vault_count": 2
+    },
+    {
+      "name": "Hyperithm",
+      "share_pct": 0.45,
+      "tvl_usd": 2512150.9206530764,
+      "vault_count": 1
+    },
+    {
+      "name": "Waterline",
+      "share_pct": 0.39,
+      "tvl_usd": 2180941.3123765835,
+      "vault_count": 1
+    },
+    {
+      "name": "Clearstar",
+      "share_pct": 0.33,
+      "tvl_usd": 1852093.2264852237,
+      "vault_count": 1
+    },
+    {
+      "name": "AlphaPing",
+      "share_pct": 0.28,
+      "tvl_usd": 1564401.5975774354,
+      "vault_count": 1
+    }
+  ],
+  "all_curators": [
+    {
+      "name": "Steakhouse Financial",
+      "share_pct": 59.49,
+      "tvl_usd": 330752787.2263108,
+      "vault_count": 10,
+      "is_uncurated": false
+    },
+    {
+      "name": "Gauntlet",
+      "share_pct": 31.54,
+      "tvl_usd": 175336377.94776154,
+      "vault_count": 16,
+      "is_uncurated": false
+    },
+    {
+      "name": "Uncurated",
+      "share_pct": null,
+      "tvl_usd": 118951608.71022558,
+      "vault_count": 13,
+      "is_uncurated": true
+    },
+    {
+      "name": "Hakutora",
+      "share_pct": 4.19,
+      "tvl_usd": 23307140.73495575,
+      "vault_count": 2,
+      "is_uncurated": false
+    },
+    {
+      "name": "Yearn",
+      "share_pct": 1.97,
+      "tvl_usd": 10949198.387188202,
+      "vault_count": 3,
+      "is_uncurated": false
+    },
+    {
+      "name": "MEV Capital",
+      "share_pct": 1.35,
+      "tvl_usd": 7502694.690229714,
+      "vault_count": 2,
+      "is_uncurated": false
+    },
+    {
+      "name": "Hyperithm",
+      "share_pct": 0.45,
+      "tvl_usd": 2512150.9206530764,
+      "vault_count": 1,
+      "is_uncurated": false
+    },
+    {
+      "name": "Waterline",
+      "share_pct": 0.39,
+      "tvl_usd": 2180941.3123765835,
+      "vault_count": 1,
+      "is_uncurated": false
+    },
+    {
+      "name": "Clearstar",
+      "share_pct": 0.33,
+      "tvl_usd": 1852093.2264852237,
+      "vault_count": 1,
+      "is_uncurated": false
+    },
+    {
+      "name": "AlphaPing",
+      "share_pct": 0.28,
+      "tvl_usd": 1564401.5975774354,
+      "vault_count": 1,
+      "is_uncurated": false
+    }
+  ],
+  "notes": [
+    "Uncurated TVL (excluded from HHI): $118.95M.",
+    "share_pct is share of CURATED TVL only. To convert to share of TOTAL TVL (curated + uncurated), multiply by curated_tvl_usd / (curated_tvl_usd + uncurated_tvl_usd)."
+  ]
+}
