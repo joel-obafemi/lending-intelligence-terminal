@@ -1,0 +1,31 @@
+{/*
+  Issue 003 — "Yields Compress, Capital Consolidates" — §03 The Real Yield Spread, Deep Inversion
+  Status: first draft, ~810 words
+  Sits between: §02 By the Numbers and §04 Sector Overview
+  Source data: 2026-06-rys-historical.json + 2026-05-rys-historical.json
+              + 2026-06-rate-dispersion.json + 2026-06-aave-daily-flows.csv
+  Notes: Sets up §06.1 (Aave V3 inflow paradox) and §06.2 (Morpho consolidation)
+         as protocol-level consequences of the macro inversion.
+         Issue 002 §03 closed with a forward question about whether parity would
+         hold; June's reading answers the question (it did not).
+*/}
+
+<SectionHeading number="03">The Real Yield Spread, Deep Inversion</SectionHeading>
+
+<Lead>The Real Yield Spread closed June 2026 at −37.1 basis points, a 36.8-basis-point deepening from May 31 and the second-deepest month-end inversion of 2026. May's parity reading lasted one calendar month.</Lead>
+
+The mechanical decomposition is the inverse of May's. Stable APYs fell while T-bill yields held flat. The blended stablecoin supply rate, TVL-weighted across USDC, USDT, DAI, and USDS on Aave V3, Spark, Morpho, and Fluid, fell from 3.60 percent at the May close to 3.23 percent at the June close, a 37-basis-point compression. The 4-week U.S. Treasury bill yield held at 3.60 percent across the same window, unchanged to two decimal places. The spread re-inverted because on-chain rates fell, not because TradFi rates moved. That is the inverse of May's mechanism, where stable APYs lifted to meet T-bills.
+
+What June added to the picture is duration of inversion. The Real Yield Spread last printed positive on June 4, 2026, at +42.0 basis points. Through June 30, that prior positive print sits 25 days back, and the intervening series has been continuously negative. The June 4 reading was a one-day blip; the run before it was already negative. The functional sequence within the month is a brief positive print on day four, followed by a deepening inversion through the remaining 26 days.
+
+<PullQuote>May's parity reading lasted one calendar month.</PullQuote>
+
+Against the captured historical series, June's −37 basis points is not the deepest reading on record. The 13-month trajectory has the deepest inversion at February 2026's −151 basis points, with March 2026 at −118 basis points before April 2026 lifted to −28 basis points and May closed at parity. Against the prior cycle, the May to November 2025 month-end series ranged from August 2025's −19 basis points to June 2025's −90 basis points, with two positive prints in between (July 2025 +26 basis points, September 2025 +38 basis points). June 2026's reading places this month near the mid-point of the prior cycle's inverted regime: deeper than October 2025's −41 basis points, shallower than November 2025's −63 basis points. That is, June's print is consistent with the spread reverting to the pre-rally regime, rather than continuing the recovery that May suggested.
+
+The interesting tension is what depositor capital did in response. Aave V3 absorbed $845 million of net constant-price deposits across June, the largest captured single-month inflow at the protocol level. The Aave V3 USDC supply APY at June 30 closed at 3.19 percent, against the 3.60 percent T-bill yield, an effective 41-basis-point penalty for holding stables on the largest Ethereum lending protocol versus the U.S. government's short-dated debt. The same dollar earned more sitting in T-bills than it did supplying USDC on the most liquid Ethereum lending venue. Capital flowed in regardless. §06.1 picks this up at the asset level, isolating which Aave V3 markets carried the net positive flow and against what alternative venues those depositors might have chosen.
+
+A parallel reading sits in the Morpho curator concentration that §06.2 documents. The curator HHI jumped 1,455 points across June, the largest single-month shift in the captured series. Sentora, the largest curator at May close with 38.6 percent of curated TVL, walked away during June, withdrawing operational capital from their flagship vaults and leaving the curator role attached to three vaults totaling $170 in assets. Steakhouse Financial absorbed most of the displaced share, growing from 34.1 to 59.5 percent of curated TVL. Capital flowed toward two incumbents while the third departed entirely. That is the curator-layer analogue of the protocol-layer flow into Aave V3: when sector yields compress below the risk-free rate, capital concentrates at the top of the credibility stack rather than chasing yield elsewhere.
+
+Whether July sees the inversion persist or close depends primarily on whether T-bill yields fall to meet on-chain rates, or on-chain rates lift to meet T-bills. The next Federal Open Market Committee decision lands in late July; absent a cut, the prior cycle suggests the inversion holds near current levels.
+
+{/* End §03 — ~810 words, one Lead, one PullQuote, no data tables */}

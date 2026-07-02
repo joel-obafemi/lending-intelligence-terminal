@@ -1,26 +1,30 @@
 {
   "source": {
     "script": "scripts/query-ldr-monthly.ts",
-    "generated_at_utc": "2026-06-30T19:52:07Z",
+    "generated_at_utc": "2026-07-02T09:01:45Z",
     "data_source": "Neon sector_snapshots table row closest to target date; on-chain overrides applied for May 31, 2026 per lib/compound-onchain.ts and lib/euler-onchain.ts.",
     "methodology": "LDR = borrowed / (tvl + borrowed) × 100, computed per protocol via lib/sector-derived.ts ldrByProtocol(). Mechanically equivalent to utilization but framed as a depositor-efficiency metric.",
-    "override_notes": []
+    "override_notes": [
+      "compound-v3 tvl/borrowed substituted with on-chain Comet totals (USDC+USDT+WETH+USDS bases) per lib/compound-onchain.ts.",
+      "euler-v2 tvl/borrowed substituted with on-chain EVK totals (Σ totalAssets / Σ totalBorrows across active vaults) per lib/euler-onchain.ts.",
+      "On-chain readers run at latest block; snapshot row is dated 2026-06-29. Any drift between the two is smaller than DefiLlama's over-count on Compound V3 + Euler V2."
+    ]
   },
   "target_date": "2026-06-30",
   "resolved_snapshot_date": "2026-06-29",
   "sector": {
-    "ldr_pct": 41.19739433238614,
-    "supplied_usd": 29312500635.35292,
-    "borrowed_usd": 12075986475.429535
+    "ldr_pct": 40.990075976865356,
+    "supplied_usd": 29234362073.06668,
+    "borrowed_usd": 11983187225.101944
   },
   "ranking": [
     {
       "slug": "euler-v2",
       "name": "Euler",
-      "tvl_usd": 74947915.05767345,
-      "borrowed_usd": 437562925.5429805,
-      "supplied_usd": 512510840.60065395,
-      "ldr_pct": 85.37632589979253
+      "tvl_usd": 60215974.235984385,
+      "borrowed_usd": 341100887.0269654,
+      "supplied_usd": 401316861.26294976,
+      "ldr_pct": 84.99540386952997
     },
     {
       "slug": "fluid",
@@ -49,10 +53,10 @@
     {
       "slug": "compound-v3",
       "name": "Compound",
-      "tvl_usd": 832569309.5423406,
-      "borrowed_usd": 434173426.3281152,
-      "supplied_usd": 1266742735.8704557,
-      "ldr_pct": 34.274791086902766
+      "tvl_usd": 861961938.4053792,
+      "borrowed_usd": 437836214.5165384,
+      "supplied_usd": 1299798152.9219174,
+      "ldr_pct": 33.68493896781529
     },
     {
       "slug": "spark",

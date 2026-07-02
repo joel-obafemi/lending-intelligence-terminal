@@ -1,0 +1,81 @@
+{/*
+  Issue 003 — "Yields Compress, Capital Consolidates" — §02 By the Numbers
+  Status: first draft
+  Sits between: §01 Headline Finding and §03 The Real Yield Spread, Deep Inversion
+  Source data: 2026-06-ldr-per-protocol.json + 2026-05-ldr-per-protocol.json
+              + 2026-06-rys-historical.json + 2026-06-aave-daily-flows.csv
+              + 2026-06-30-curator-hhi.json
+  Structure: snapshot statement, three data tables (sector aggregate, per-protocol
+             supplied + borrowed, per-protocol LDR), brief mark-to-market caveat
+             paragraph, source attribution.
+*/}
+
+<SectionHeading number="02">By the Numbers</SectionHeading>
+
+Snapshot date: June 30, 2026, 23:59 UTC. All month-over-month comparisons against May 31, 2026. Sector covers the six Ethereum lending protocols carried from Issue 002: Aave V3, Spark, Morpho, Fluid, Compound V3, Euler V2.
+
+<DataTable
+  caption="Sector aggregate, May 31 → June 30"
+  columns={[
+    { key: "metric", label: "Metric", align: "left" },
+    { key: "may", label: "May 31", align: "right" },
+    { key: "jun", label: "June 30", align: "right" },
+    { key: "delta", label: "Δ", align: "right" }
+  ]}
+  rows={[
+    { metric: "Total Supplied", may: "$32.64B", jun: "$29.23B", delta: "−$3.41B (−10.4%)" },
+    { metric: "Active Borrows", may: "$13.13B", jun: "$11.98B", delta: "−$1.15B (−8.7%)" },
+    { metric: "Sector LDR", may: "40.22%", jun: "40.99%", delta: "+0.77 pp" },
+    { metric: "Real Yield Spread", may: "−0.3 bps", jun: "−37.1 bps", delta: "−36.8 bps" },
+    { metric: "Aave V3 net deposit flow (constant price)", may: "—", jun: "+$845M", delta: "—" },
+    { metric: "Morpho Curator HHI", may: "3,103", jun: "4,558", delta: "+1,455" },
+    { metric: "Morpho top-3 curator share", may: "93.9%", jun: "95.2%", delta: "+1.3 pp" }
+  ]}
+/>
+
+<DataTable
+  caption="Supplied and borrowed by protocol, May 31 → June 30"
+  columns={[
+    { key: "protocol", label: "Protocol", align: "left" },
+    { key: "supMay", label: "Supplied May 31", align: "right" },
+    { key: "supJun", label: "Supplied June 30", align: "right" },
+    { key: "supDelta", label: "Supplied Δ", align: "right" },
+    { key: "borMay", label: "Borrowed May 31", align: "right" },
+    { key: "borJun", label: "Borrowed June 30", align: "right" },
+    { key: "borDelta", label: "Borrowed Δ", align: "right" }
+  ]}
+  rows={[
+    { protocol: "Aave V3", supMay: "$18.61B", supJun: "$16.59B", supDelta: "−$2.02B (−10.9%)", borMay: "$7.84B", borJun: "$7.26B", borDelta: "−$0.58B (−7.3%)" },
+    { protocol: "Morpho", supMay: "$5.96B", supJun: "$5.09B", supDelta: "−$0.87B (−14.6%)", borMay: "$2.16B", borJun: "$1.84B", borDelta: "−$0.32B (−14.9%)" },
+    { protocol: "Spark", supMay: "$5.38B", supJun: "$5.03B", supDelta: "−$0.34B (−6.4%)", borMay: "$1.75B", borJun: "$1.65B", borDelta: "−$0.10B (−5.5%)" },
+    { protocol: "Fluid", supMay: "$0.96B", supJun: "$0.82B", supDelta: "−$0.14B (−14.4%)", borMay: "$0.53B", borJun: "$0.45B", borDelta: "−$0.09B (−16.2%)" },
+    { protocol: "Compound V3", supMay: "$1.23B", supJun: "$1.30B", supDelta: "+$0.07B (+5.4%)", borMay: "$0.42B", borJun: "$0.44B", borDelta: "+$0.02B (+4.7%)" },
+    { protocol: "Euler V2", supMay: "$0.50B", supJun: "$0.40B", supDelta: "−$0.10B (−20.2%)", borMay: "$0.43B", borJun: "$0.34B", borDelta: "−$0.09B (−20.4%)" },
+    { protocol: "Sector total", supMay: "$32.64B", supJun: "$29.23B", supDelta: "−$3.41B (−10.4%)", borMay: "$13.13B", borJun: "$11.98B", borDelta: "−$1.15B (−8.7%)" }
+  ]}
+/>
+
+<DataTable
+  caption="Loan-to-Deposit Ratio by protocol, May 31 → June 30"
+  columns={[
+    { key: "protocol", label: "Protocol", align: "left" },
+    { key: "may", label: "May 31", align: "right" },
+    { key: "jun", label: "June 30", align: "right" },
+    { key: "delta", label: "Δ", align: "right" }
+  ]}
+  rows={[
+    { protocol: "Euler V2", may: "85.23%", jun: "85.00%", delta: "−0.23 pp" },
+    { protocol: "Fluid", may: "55.49%", jun: "54.37%", delta: "−1.12 pp" },
+    { protocol: "Aave V3", may: "42.13%", jun: "43.80%", delta: "+1.67 pp" },
+    { protocol: "Morpho", may: "36.20%", jun: "36.10%", delta: "−0.10 pp" },
+    { protocol: "Compound V3", may: "33.96%", jun: "33.68%", delta: "−0.28 pp" },
+    { protocol: "Spark", may: "32.55%", jun: "32.86%", delta: "+0.31 pp" },
+    { protocol: "Sector LDR", may: "40.22%", jun: "40.99%", delta: "+0.77 pp" }
+  ]}
+/>
+
+The nominal supplied contraction (−$3.41B sector-wide) sits next to a positive constant-price net flow at Aave V3 (+$845M depositor inflow across the month). The wedge is mark-to-market on collateral. Spot ETH fell 21.3 percent in June, with weETH, rsETH, ezETH, and osETH falling 19.9 to 21.3 percent across the same window. The Aave V3 weETH book specifically fell $419M nominal in June, of which roughly $387M is per-unit price effect and the remainder is depositor flow. The five protocols other than Aave V3 do not have constant-price flow captures for the month, so the nominal supplied deltas above carry the mark-to-market effect on their LRT and ETH-family collateral as well. The contraction is real at nominal prices and partially or fully reversed at constant prices, depending on each protocol's collateral composition. Euler V2 is the exception: its collateral is not primarily LRT or ETH-family, so the 20.2 percent nominal supplied contraction is likely closer to true depositor flow than mark-to-market effect. §05 unpacks the LRT base specifically; §06 picks up the Euler V2 read.
+
+Source: on-chain reads against each protocol's core contracts, DeFi Llama, and the U.S. Treasury 4-week T-bill via FRED. Compound V3 and Euler V2 row-card readings substitute on-chain Comet and EVK aggregations for DeFi Llama's chain-TVL figures, which over-count both protocols.
+
+{/* End §02 — three data tables, snapshot statement, mark-to-market caveat paragraph, source attribution */}
