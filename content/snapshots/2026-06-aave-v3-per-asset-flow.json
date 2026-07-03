@@ -1,0 +1,426 @@
+{
+  "source": {
+    "script": "scripts/query-aave-v3-per-asset-flow-june.ts",
+    "generated_at_utc": "2026-07-03T16:41:37Z",
+    "methodology": "Per-day, per-asset delta = (qty_D − qty_{D-1}) × latest_price. Sum across all days in June 2026. Constant-price methodology matches the daily-flows CSV convention."
+  },
+  "window": {
+    "first_day_utc": "2026-06-01",
+    "last_day_utc": "2026-06-30"
+  },
+  "per_asset_ranked": [
+    {
+      "asset": "WSTETH",
+      "cumulative_delta_usd": 451753176.1812514,
+      "cumulative_delta_millions": 451.75,
+      "contributing_days": 31,
+      "price_latest_usd": 2005.265788546371
+    },
+    {
+      "asset": "USDC",
+      "cumulative_delta_usd": -162147565.70986065,
+      "cumulative_delta_millions": -162.15,
+      "contributing_days": 31,
+      "price_latest_usd": 0.999705412728469
+    },
+    {
+      "asset": "CBBTC",
+      "cumulative_delta_usd": 143377102.5608923,
+      "cumulative_delta_millions": 143.38,
+      "contributing_days": 31,
+      "price_latest_usd": 59938.08726169097
+    },
+    {
+      "asset": "USDTB",
+      "cumulative_delta_usd": 104195746.50167954,
+      "cumulative_delta_millions": 104.2,
+      "contributing_days": 31,
+      "price_latest_usd": 0.9994803495719562
+    },
+    {
+      "asset": "USDT",
+      "cumulative_delta_usd": 98807012.16311704,
+      "cumulative_delta_millions": 98.81,
+      "contributing_days": 31,
+      "price_latest_usd": 0.9989491532415448
+    },
+    {
+      "asset": "RSETH",
+      "cumulative_delta_usd": -54961623.933851376,
+      "cumulative_delta_millions": -54.96,
+      "contributing_days": 31,
+      "price_latest_usd": 1736.4889413675926
+    },
+    {
+      "asset": "USDE",
+      "cumulative_delta_usd": 48031100.873320736,
+      "cumulative_delta_millions": 48.03,
+      "contributing_days": 31,
+      "price_latest_usd": 0.9983749563907033
+    },
+    {
+      "asset": "SUSDE",
+      "cumulative_delta_usd": 46304474.212788746,
+      "cumulative_delta_millions": 46.3,
+      "contributing_days": 31,
+      "price_latest_usd": 1.2356689981093583
+    },
+    {
+      "asset": "WBTC",
+      "cumulative_delta_usd": 43943045.77218047,
+      "cumulative_delta_millions": 43.94,
+      "contributing_days": 31,
+      "price_latest_usd": 59914.603164344066
+    },
+    {
+      "asset": "WETH",
+      "cumulative_delta_usd": 43364415.12369462,
+      "cumulative_delta_millions": 43.36,
+      "contributing_days": 31,
+      "price_latest_usd": 1611.6246670608396
+    },
+    {
+      "asset": "DAI",
+      "cumulative_delta_usd": -30943242.104094736,
+      "cumulative_delta_millions": -30.94,
+      "contributing_days": 31,
+      "price_latest_usd": 0.9998350701608525
+    },
+    {
+      "asset": "WEETH",
+      "cumulative_delta_usd": 30464087.557726048,
+      "cumulative_delta_millions": 30.46,
+      "contributing_days": 31,
+      "price_latest_usd": 1777.6560032163538
+    },
+    {
+      "asset": "GHO",
+      "cumulative_delta_usd": -20937596.510269266,
+      "cumulative_delta_millions": -20.94,
+      "contributing_days": 31,
+      "price_latest_usd": 0.9980797118813175
+    },
+    {
+      "asset": "PT-SRUSDE-25JUN2026",
+      "cumulative_delta_usd": -16844875.16210081,
+      "cumulative_delta_millions": -16.84,
+      "contributing_days": 31,
+      "price_latest_usd": 0.998470220965464
+    },
+    {
+      "asset": "USDS",
+      "cumulative_delta_usd": -16440158.963689603,
+      "cumulative_delta_millions": -16.44,
+      "contributing_days": 31,
+      "price_latest_usd": 0.9997178596452522
+    },
+    {
+      "asset": "LBTC",
+      "cumulative_delta_usd": 9142022.27568964,
+      "cumulative_delta_millions": 9.14,
+      "contributing_days": 31,
+      "price_latest_usd": 60491.867930929446
+    },
+    {
+      "asset": "EUROC",
+      "cumulative_delta_usd": -7756122.921454918,
+      "cumulative_delta_millions": -7.76,
+      "contributing_days": 31,
+      "price_latest_usd": 1.137423028877805
+    },
+    {
+      "asset": "EZETH",
+      "cumulative_delta_usd": -6454436.131112483,
+      "cumulative_delta_millions": -6.45,
+      "contributing_days": 31,
+      "price_latest_usd": 1748.2829436959055
+    },
+    {
+      "asset": "USDG",
+      "cumulative_delta_usd": -5931956.127160577,
+      "cumulative_delta_millions": -5.93,
+      "contributing_days": 31,
+      "price_latest_usd": 0.9997551083958687
+    },
+    {
+      "asset": "OSETH",
+      "cumulative_delta_usd": 5799975.851836402,
+      "cumulative_delta_millions": 5.8,
+      "contributing_days": 31,
+      "price_latest_usd": 1728.0936762235515
+    },
+    {
+      "asset": "PT-SRUSDE-22OCT2026",
+      "cumulative_delta_usd": 5315074.514307624,
+      "cumulative_delta_millions": 5.32,
+      "contributing_days": 8,
+      "price_latest_usd": 0.9875773466208928
+    },
+    {
+      "asset": "SYRUPUSDT",
+      "cumulative_delta_usd": 5114977.366926236,
+      "cumulative_delta_millions": 5.11,
+      "contributing_days": 31,
+      "price_latest_usd": 1.1320095569775777
+    },
+    {
+      "asset": "RETH",
+      "cumulative_delta_usd": -3148632.2426034976,
+      "cumulative_delta_millions": -3.15,
+      "contributing_days": 31,
+      "price_latest_usd": 1888.9028857357391
+    },
+    {
+      "asset": "AAVE",
+      "cumulative_delta_usd": -3030686.868671292,
+      "cumulative_delta_millions": -3.03,
+      "contributing_days": 31,
+      "price_latest_usd": 83.2026880340364
+    },
+    {
+      "asset": "LINK",
+      "cumulative_delta_usd": -2620996.805417035,
+      "cumulative_delta_millions": -2.62,
+      "contributing_days": 31,
+      "price_latest_usd": 7.35382111642158
+    },
+    {
+      "asset": "RLUSD",
+      "cumulative_delta_usd": -2215537.1334577445,
+      "cumulative_delta_millions": -2.22,
+      "contributing_days": 31,
+      "price_latest_usd": 0.9997416156512812
+    },
+    {
+      "asset": "XAUT",
+      "cumulative_delta_usd": -1341324.5879997632,
+      "cumulative_delta_millions": -1.34,
+      "contributing_days": 31,
+      "price_latest_usd": 4026.213546595253
+    },
+    {
+      "asset": "EBTC",
+      "cumulative_delta_usd": -1257148.369050122,
+      "cumulative_delta_millions": -1.26,
+      "contributing_days": 31,
+      "price_latest_usd": 60894.33725524029
+    },
+    {
+      "asset": "TBTC",
+      "cumulative_delta_usd": 1071317.2266090713,
+      "cumulative_delta_millions": 1.07,
+      "contributing_days": 31,
+      "price_latest_usd": 60402.24818193273
+    },
+    {
+      "asset": "UNI",
+      "cumulative_delta_usd": -715005.009900107,
+      "cumulative_delta_millions": -0.72,
+      "contributing_days": 31,
+      "price_latest_usd": 2.7882155639396493
+    },
+    {
+      "asset": "CBETH",
+      "cumulative_delta_usd": 711586.6997066444,
+      "cumulative_delta_millions": 0.71,
+      "contributing_days": 31,
+      "price_latest_usd": 1836.1617178482077
+    },
+    {
+      "asset": "FBTC",
+      "cumulative_delta_usd": 442775.07134882815,
+      "cumulative_delta_millions": 0.44,
+      "contributing_days": 31,
+      "price_latest_usd": 60458.2511928925
+    },
+    {
+      "asset": "BTC.B",
+      "cumulative_delta_usd": 393838.05021783774,
+      "cumulative_delta_millions": 0.39,
+      "contributing_days": 31,
+      "price_latest_usd": 60251.20861270962
+    },
+    {
+      "asset": "TETH",
+      "cumulative_delta_usd": 381161.7019234035,
+      "cumulative_delta_millions": 0.38,
+      "contributing_days": 31,
+      "price_latest_usd": 2015.254247188602
+    },
+    {
+      "asset": "PT-USDG-28MAY2026",
+      "cumulative_delta_usd": -262839.71138909936,
+      "cumulative_delta_millions": -0.26,
+      "contributing_days": 31,
+      "price_latest_usd": 0.9997342693166441
+    },
+    {
+      "asset": "PYUSD",
+      "cumulative_delta_usd": -170910.02657814333,
+      "cumulative_delta_millions": -0.17,
+      "contributing_days": 31,
+      "price_latest_usd": 0.9999848896938064
+    },
+    {
+      "asset": "RPL",
+      "cumulative_delta_usd": -97322.24833260213,
+      "cumulative_delta_millions": -0.1,
+      "contributing_days": 31,
+      "price_latest_usd": 1.482695167435752
+    },
+    {
+      "asset": "ETHX",
+      "cumulative_delta_usd": -26344.867369981916,
+      "cumulative_delta_millions": -0.03,
+      "contributing_days": 31,
+      "price_latest_usd": 1766.1620137487082
+    },
+    {
+      "asset": "LDO",
+      "cumulative_delta_usd": -22638.02978334275,
+      "cumulative_delta_millions": -0.02,
+      "contributing_days": 31,
+      "price_latest_usd": 0.247075530272193
+    },
+    {
+      "asset": "LUSD",
+      "cumulative_delta_usd": 11087.506579925339,
+      "cumulative_delta_millions": 0.01,
+      "contributing_days": 31,
+      "price_latest_usd": 1.0090247998123287
+    },
+    {
+      "asset": "FRAX",
+      "cumulative_delta_usd": 10221.311459930808,
+      "cumulative_delta_millions": 0.01,
+      "contributing_days": 31,
+      "price_latest_usd": 0.9903307204081654
+    },
+    {
+      "asset": "CRV",
+      "cumulative_delta_usd": -10111.973549013026,
+      "cumulative_delta_millions": -0.01,
+      "contributing_days": 31,
+      "price_latest_usd": 0.20581393410786217
+    },
+    {
+      "asset": "MKR",
+      "cumulative_delta_usd": -7357.430767617882,
+      "cumulative_delta_millions": -0.01,
+      "contributing_days": 31,
+      "price_latest_usd": 1226.2384612696442
+    },
+    {
+      "asset": "MUSD",
+      "cumulative_delta_usd": 5648.30876296005,
+      "cumulative_delta_millions": 0.01,
+      "contributing_days": 31,
+      "price_latest_usd": 0.9996766543081923
+    },
+    {
+      "asset": "SNX",
+      "cumulative_delta_usd": -4801.14121672894,
+      "cumulative_delta_millions": 0,
+      "contributing_days": 31,
+      "price_latest_usd": 0.21606811617209398
+    },
+    {
+      "asset": "EUSDE",
+      "cumulative_delta_usd": -2023.6107124901673,
+      "cumulative_delta_millions": 0,
+      "contributing_days": 31,
+      "price_latest_usd": 0.998470301115596
+    },
+    {
+      "asset": "ENS",
+      "cumulative_delta_usd": -1415.638883798228,
+      "cumulative_delta_millions": 0,
+      "contributing_days": 31,
+      "price_latest_usd": 4.100977225364262
+    },
+    {
+      "asset": "PT-SUSDE-25SEP2025",
+      "cumulative_delta_usd": -962.1885247138677,
+      "cumulative_delta_millions": 0,
+      "contributing_days": 31,
+      "price_latest_usd": 0.9984702165440906
+    },
+    {
+      "asset": "CRVUSD",
+      "cumulative_delta_usd": 239.2709343978858,
+      "cumulative_delta_millions": 0,
+      "contributing_days": 31,
+      "price_latest_usd": 0.9990218350485283
+    },
+    {
+      "asset": "SDAI",
+      "cumulative_delta_usd": -145.6062837291466,
+      "cumulative_delta_millions": 0,
+      "contributing_days": 31,
+      "price_latest_usd": 1.1770400734869835
+    },
+    {
+      "asset": "1INCH",
+      "cumulative_delta_usd": -43.78451979877423,
+      "cumulative_delta_millions": 0,
+      "contributing_days": 31,
+      "price_latest_usd": 0.06841331218558473
+    },
+    {
+      "asset": "PT-SUSDE-31JUL2025",
+      "cumulative_delta_usd": -30.005108589518386,
+      "cumulative_delta_millions": 0,
+      "contributing_days": 31,
+      "price_latest_usd": 0.9984702243486215
+    },
+    {
+      "asset": "BAL",
+      "cumulative_delta_usd": -16.026280369762596,
+      "cumulative_delta_millions": 0,
+      "contributing_days": 31,
+      "price_latest_usd": 0.08898923452197349
+    },
+    {
+      "asset": "KNC",
+      "cumulative_delta_usd": 0,
+      "cumulative_delta_millions": 0,
+      "contributing_days": 31,
+      "price_latest_usd": 0.1096815866875772
+    },
+    {
+      "asset": "STG",
+      "cumulative_delta_usd": 0,
+      "cumulative_delta_millions": 0,
+      "contributing_days": 31,
+      "price_latest_usd": 0.16180720161997178
+    },
+    {
+      "asset": "FXS",
+      "cumulative_delta_usd": 0,
+      "cumulative_delta_millions": 0,
+      "contributing_days": 31,
+      "price_latest_usd": 0.23724325065487709
+    },
+    {
+      "asset": "PT-EUSDE-29MAY2025",
+      "cumulative_delta_usd": 0,
+      "cumulative_delta_millions": 0,
+      "contributing_days": 31,
+      "price_latest_usd": 0.998470319520064
+    },
+    {
+      "asset": "PT-USDE-5FEB2026",
+      "cumulative_delta_usd": 0,
+      "cumulative_delta_millions": 0,
+      "contributing_days": 31,
+      "price_latest_usd": 0.9984702975422762
+    }
+  ],
+  "reconciliation": {
+    "per_asset_sum_usd": 701286215.2329592,
+    "per_asset_sum_millions": 701.29,
+    "protocol_level_expected_usd": 845000000,
+    "delta_from_expected_usd": -143713784.76704085,
+    "delta_from_expected_millions": -143.71
+  }
+}

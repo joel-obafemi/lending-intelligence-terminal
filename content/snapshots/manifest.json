@@ -386,6 +386,81 @@
       ],
       "last_verified_at": "2026-06-30T19:52:07Z",
       "notes": "Sector LDR with Compound V3 and Euler V2 on-chain overrides applied. Pass 1's 41.20% reading (no overrides) is preserved as an alarm."
+    },
+    {
+      "id": "aave_v3_usdc_net_flow_june",
+      "issue": "003",
+      "section_anchors": ["§01", "§03"],
+      "cited_value": -162.15,
+      "unit": "USD_millions",
+      "rounded_cited_in_prose": -162,
+      "alt_forms_in_prose": ["$162 million", "shed $162 million", "USDC book actually shed $162 million"],
+      "cross_check": {
+        "method": "derived_from_snapshot",
+        "snapshot": "content/snapshots/2026-06-aave-v3-per-asset-flow.json",
+        "derive": "find_in_array_field",
+        "params": {
+          "array_path": "per_asset_ranked",
+          "match_key": "asset",
+          "match_value": "USDC",
+          "field": "cumulative_delta_millions"
+        }
+      },
+      "threshold_pct": 5.0,
+      "historical_wrong_alarms": [
+        "USDC on Aave V3 grew by",
+        "chose Aave V3 at 3.19 percent USDC over Fluid",
+        "USDC-vs-USDC 50 to 1"
+      ],
+      "last_verified_at": "2026-07-03T16:53:00Z",
+      "notes": "Aave V3 USDC net constant-price flow across June 2026, computed per-day (qty_D - qty_{D-1}) * latest_price and summed across all June days. Value is NEGATIVE — depositors withdrew USDC net across the month. This falsifies any framing that reads Aave V3's +$845M protocol-level inflow as USDC-driven; the inflow came from wstETH, cbBTC, USDTB, USDT, and other non-USDC assets. Threshold 5% allows for methodology drift between per-asset script's sum and daily-flows CSV's rolling total."
+    },
+    {
+      "id": "june_5_liquidations_sector_collateral",
+      "issue": "003",
+      "section_anchors": ["§03"],
+      "cited_value": 128.31,
+      "unit": "USD_millions",
+      "rounded_cited_in_prose": 128.31,
+      "alt_forms_in_prose": ["$128.31 million", "$128 million", "128.31"],
+      "cross_check": {
+        "method": "derived_from_snapshot",
+        "snapshot": "content/snapshots/2026-06-liquidations-daily.json",
+        "derive": "field",
+        "params": {
+          "field_path": "june_5_analysis.collateral_seized_millions"
+        }
+      },
+      "threshold_pct": 1.0,
+      "historical_wrong_alarms": [
+        "June 5 was a quiet day",
+        "no material liquidation spike in June"
+      ],
+      "last_verified_at": "2026-07-03T16:53:00Z",
+      "notes": "Sector-wide collateral seized on June 5, 2026 across all six covered protocols. Rank 1/30 in the month, 10.25x the trailing 7-day median of $12.51M. Sourced from LIQUIDATOR_DATABASE_URL Neon DB aggregation over liquidation_events."
+    },
+    {
+      "id": "june_5_liquidations_spike_multiple",
+      "issue": "003",
+      "section_anchors": ["§03"],
+      "cited_value": 10.25,
+      "unit": "multiplier",
+      "rounded_cited_in_prose": 10.25,
+      "alt_forms_in_prose": ["10.25 times", "10.25x", "ten times the prior seven-day median"],
+      "cross_check": {
+        "method": "derived_from_snapshot",
+        "snapshot": "content/snapshots/2026-06-liquidations-daily.json",
+        "derive": "field",
+        "params": {
+          "field_path": "june_5_analysis.spike_multiple_vs_prior_median"
+        }
+      },
+      "threshold_pct": 1.0,
+      "historical_wrong_alarms": [
+        "June 5 within normal range"
+      ],
+      "last_verified_at": "2026-07-03T16:53:00Z",
+      "notes": "Ratio of June 5, 2026 sector-wide collateral seized ($128.31M) to the trailing 7-day median (May 29 - June 4) of $12.51M. Exceeds both material-spike thresholds in the brief: >$50M day AND >3x prior 7-day median."
     }
   ]
 }
