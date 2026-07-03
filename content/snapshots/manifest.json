@@ -191,6 +191,201 @@
       ],
       "last_verified_at": "2026-06-09T00:00:00Z",
       "notes": "Authoritative on-chain reading via lib/euler-onchain.ts (Σ totalAssets / Σ totalBorrows across active EVK vaults). Reconciled with Apr 30 audit's may_31_corrected_reference (399/469 = 85.07%) and the runtime override in lib/overview.ts:425-427 — all three sources agree within 0.2pp. See content/snapshots/2026-05-euler-ldr-reconciliation.md. Threshold 1% guards the architecture-not-scale framing this entry encodes."
+    },
+    {
+      "id": "rys_june_30",
+      "issue": "003",
+      "section_anchors": ["§01", "§02", "§03", "§05", "§06.4"],
+      "cited_value": -37.1,
+      "unit": "bps",
+      "rounded_cited_in_prose": -37,
+      "alt_forms_in_prose": ["−37.1 basis points", "−37 basis points", "−37.1 bps", "36.8-basis-point deepening"],
+      "cross_check": {
+        "method": "derived_from_snapshot",
+        "snapshot": "content/snapshots/2026-06-rys-historical.json",
+        "derive": "field",
+        "params": { "field_path": "target_anchor.spread_bps" }
+      },
+      "threshold_pct": 3.0,
+      "historical_wrong_alarms": [
+        "second-deepest month-end inversion of 2026",
+        "deepest month-end inversion of 2026",
+        "−0.3 bps in June",
+        "+13.4 bps"
+      ],
+      "last_verified_at": "2026-06-30T20:06:42Z",
+      "notes": "June 30 close of the blended stablecoin supply APY minus 4-week T-bill (FRED TB4WK). Compared to May 31 anchor of −0.29 bps for the 36.8 bp deepening framing."
+    },
+    {
+      "id": "curator_hhi_v1_v2_june_30",
+      "issue": "003",
+      "section_anchors": ["§02", "§06.2"],
+      "cited_value": 2095.26,
+      "unit": "absolute",
+      "rounded_cited_in_prose": 2095,
+      "alt_forms_in_prose": ["2,095", "2,095.26", "HHI of 2,095", "combined HHI is 2,095"],
+      "cross_check": {
+        "method": "derived_from_snapshot",
+        "snapshot": "content/snapshots/2026-06-30-curator-hhi.json",
+        "derive": "field",
+        "params": { "field_path": "summary.hhi" }
+      },
+      "threshold_pct": 1.0,
+      "historical_wrong_alarms": [
+        "sector HHI jumped to 4,558",
+        "curator concentration reached 4,558",
+        "HHI of 4,558 at the June close",
+        "the June HHI reading of 4,558 is",
+        "curator HHI stands at 4,558"
+      ],
+      "last_verified_at": "2026-07-02T00:00:00Z",
+      "notes": "V1+V2 combined view. Supersedes the Pass 1 V1-only reading of 4,558 that was factually wrong for the protocol-layer framing the prose intended. Alarms scoped to full-phrase framings that would only appear in a drift, not to bare '4,558' which appears in §06.2 as an intentional correction reference. See content/snapshots/2026-06-sentora-curator-triangulation.md and content/snapshots/2026-05-morpho-hhi-erratum.md."
+    },
+    {
+      "id": "curator_top3_share_v1_v2_june_30",
+      "issue": "003",
+      "section_anchors": ["§02", "§06.2"],
+      "cited_value": 74.59,
+      "unit": "%",
+      "rounded_cited_in_prose": 74.6,
+      "alt_forms_in_prose": ["74.6 percent", "74.6%", "top-three curator share of 74.6 percent", "top-3 share at 74.6"],
+      "cross_check": {
+        "method": "derived_from_snapshot",
+        "snapshot": "content/snapshots/2026-06-30-curator-hhi.json",
+        "derive": "field",
+        "params": { "field_path": "summary.top_3_share_pct" }
+      },
+      "threshold_pct": 1.0,
+      "historical_wrong_alarms": [
+        "top-3 curator share of 95.2 percent",
+        "top three at 95.2 percent",
+        "concentration reached 95.2 percent"
+      ],
+      "last_verified_at": "2026-07-02T00:00:00Z",
+      "notes": "V1+V2 combined view. Alarms scoped to full-phrase framings that would only appear in a copy-paste drift. Issue 002's 93.9 percent V1-only reading is legitimately referenced in the §06.2 methodological correction and would false-positive on a bare-phrase match."
+    },
+    {
+      "id": "sentora_curator_share_v1_v2_june_30",
+      "issue": "003",
+      "section_anchors": ["§06.2"],
+      "cited_value": 31.2,
+      "unit": "%",
+      "rounded_cited_in_prose": 31.2,
+      "alt_forms_in_prose": ["31.2 percent", "31.2%", "Sentora at 31.2 percent"],
+      "cross_check": {
+        "method": "derived_from_snapshot",
+        "snapshot": "content/snapshots/2026-06-30-curator-hhi.json",
+        "derive": "find_in_array_field",
+        "params": {
+          "array_path": "top_curators",
+          "match_key": "name",
+          "match_value": "Sentora",
+          "field": "share_pct"
+        }
+      },
+      "threshold_pct": 2.0,
+      "historical_wrong_alarms": [
+        "Sentora exited Morpho",
+        "Sentora walked away during June",
+        "Sentora holds three dust vaults totaling $170"
+      ],
+      "last_verified_at": "2026-07-02T00:00:00Z",
+      "notes": "Sentora ranks first on the V1+V2 combined view at 31.2 percent of curated TVL, $661.76M across three flagship V2 vaults. Alarms scoped to full-phrase framings that would appear in a copy-paste drift. Bare 'Sentora exit' and '$170' phrases appear legitimately in §06.2 and the erratum note as intentional correction references."
+    },
+    {
+      "id": "steakhouse_curator_share_v1_v2_june_30",
+      "issue": "003",
+      "section_anchors": ["§06.2"],
+      "cited_value": 29.2,
+      "unit": "%",
+      "rounded_cited_in_prose": 29.2,
+      "alt_forms_in_prose": ["29.2 percent", "29.2%", "Steakhouse Financial ranks second at 29.2 percent"],
+      "cross_check": {
+        "method": "derived_from_snapshot",
+        "snapshot": "content/snapshots/2026-06-30-curator-hhi.json",
+        "derive": "find_in_array_field",
+        "params": {
+          "array_path": "top_curators",
+          "match_key": "name",
+          "match_value": "Steakhouse Financial",
+          "field": "share_pct"
+        }
+      },
+      "threshold_pct": 2.0,
+      "historical_wrong_alarms": [
+        "59.5 percent of curated TVL",
+        "59.5%",
+        "growing from 34.1 to 59.5 percent",
+        "absorbed most of that ground"
+      ],
+      "last_verified_at": "2026-07-02T00:00:00Z",
+      "notes": "Steakhouse Financial holds 29.2 percent on the V1+V2 combined view, roughly evenly split V1 ($316M) and V2 ($302M). The Pass 1 V1-only 59.5 percent reading is preserved as an alarm."
+    },
+    {
+      "id": "aave_v3_usdc_supply_apy_june_30",
+      "issue": "003",
+      "section_anchors": ["§01", "§03", "§06.1"],
+      "cited_value": 3.19,
+      "unit": "%",
+      "rounded_cited_in_prose": 3.19,
+      "alt_forms_in_prose": ["3.19 percent", "3.19%", "Aave V3 at 3.19 percent USDC"],
+      "cross_check": {
+        "method": "manual",
+        "params": {
+          "evidence_url": "content/snapshots/2026-06-rate-dispersion.json#/per_asset/0/june30/per_protocol/0/supply_apy_pct"
+        }
+      },
+      "threshold_pct": 3.0,
+      "historical_wrong_alarms": [
+        "Aave V3 USDC at 3.27 percent",
+        "Aave V3 USDC 3.27%"
+      ],
+      "last_verified_at": "2026-06-30T20:00:00Z",
+      "notes": "Aave V3 USDC supply APY at June 30 close. Value verified manually against 2026-06-rate-dispersion.json per_asset[USDC].june30.per_protocol[aave-v3].supply_apy_pct = 3.19352. Automated deriver requires per_asset_per_protocol_apy to accept 'june30' as a valid top-level prefix (currently hardcoded to 'may31')."
+    },
+    {
+      "id": "fluid_usdc_supply_apy_june_30",
+      "issue": "003",
+      "section_anchors": ["§01", "§03", "§06.4"],
+      "cited_value": 6.41,
+      "unit": "%",
+      "rounded_cited_in_prose": 6.41,
+      "alt_forms_in_prose": ["6.41 percent", "6.41%", "Fluid at 6.41 percent"],
+      "cross_check": {
+        "method": "manual",
+        "params": {
+          "evidence_url": "content/snapshots/2026-06-rate-dispersion.json#/per_asset/0/june30/per_protocol/1/supply_apy_pct"
+        }
+      },
+      "threshold_pct": 3.0,
+      "historical_wrong_alarms": [
+        "Fluid USDC 5.93 percent at June",
+        "Fluid at 5.93 percent USDC at June 30"
+      ],
+      "last_verified_at": "2026-06-30T20:00:00Z",
+      "notes": "Fluid USDC supply APY at June 30 close. Value verified manually against 2026-06-rate-dispersion.json per_asset[USDC].june30.per_protocol[fluid].supply_apy_pct = 6.41. Automated deriver requires per_asset_per_protocol_apy to accept 'june30' as a valid top-level prefix. The +48 bps MoM lift (from May 31's 5.93 percent, which IS legitimately cited in §06.4 as the comparison anchor) and +281 bps positive spread over T-bill are the derived quantities that anchor §06.4."
+    },
+    {
+      "id": "sector_ldr_june_30",
+      "issue": "003",
+      "section_anchors": ["§02"],
+      "cited_value": 40.99,
+      "unit": "%",
+      "rounded_cited_in_prose": 40.99,
+      "alt_forms_in_prose": ["40.99%", "40.99 percent", "Sector LDR"],
+      "cross_check": {
+        "method": "derived_from_snapshot",
+        "snapshot": "content/snapshots/2026-06-ldr-per-protocol.json",
+        "derive": "field",
+        "params": { "field_path": "sector.ldr_pct" }
+      },
+      "threshold_pct": 1.0,
+      "historical_wrong_alarms": [
+        "41.20%",
+        "sector LDR at 41.20"
+      ],
+      "last_verified_at": "2026-06-30T19:52:07Z",
+      "notes": "Sector LDR with Compound V3 and Euler V2 on-chain overrides applied. Pass 1's 41.20% reading (no overrides) is preserved as an alarm."
     }
   ]
 }
