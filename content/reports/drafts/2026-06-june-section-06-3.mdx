@@ -1,0 +1,32 @@
+{/*
+  Issue 003 — "Yields Compress, Capital Consolidates" — §06.3 Protocol Deep Dive: Euler V2
+  Status: first draft, ~550 words across Lead + 4 paragraphs
+  Sits within §06 Protocol Deep Dives
+  Frame chosen: quiet residual flow across many vaults, structural LDR persistence.
+                Not a repeat of Issue 002's Sentora-driven $128M single-operator exit.
+  Source data:
+    - content/snapshots/2026-06-ldr-per-protocol.json (LDR 85.00% with Path A overrides;
+        supplied $401.3M, borrowed $341.1M)
+    - content/snapshots/2026-06-euler-vault-flows.json (top outflows eRLUSD-7 -$3.0M,
+        eUSDC-70 -$1.1M, ewstETH-2 -$0.6M, eAUSD-7 -$0.4M)
+    - content/snapshots/2026-06-euler-v2-daily-flows.csv (-$20.9M cumulative constant-price)
+    - Issue 002 §06.6 for the May Sentora single-operator exit contrast
+*/}
+
+<SectionHeading number="06.3">Protocol Deep Dive: Euler V2</SectionHeading>
+
+Modular vault-based lending. Each EVK vault is an isolated market with its own risk parameters, oracle, and IRM.
+
+<Lead>Euler V2 was the only protocol in coverage with net constant-price outflow in June, at $21 million. The magnitude is small in absolute terms and small relative to Euler V2's own May reading of $339 million net outflow. Where May was one operator exiting one platform in one month, June was distributed residual movement across many vaults at once, and the structural signal is that the protocol's 85 percent loan-to-deposit ratio held through both the yield compression that drove the sector and the aftershocks of May's Sentora unwind.</Lead>
+
+At June 30, Euler V2 carried $401 million of supplied capital on Ethereum across its active EVK vaults, against $341 million of active borrows and $60 million of unborrowed liquidity, for an 85.0 percent loan-to-deposit ratio. On the on-chain override basis this issue uses across Compound V3 and Euler V2, the May 31 comparison points were $503 million supplied, $428 million borrowed, and 85.23 percent LDR. Supplied fell $101 million across June at nominal prices, roughly 20 percent, while borrows fell $87 million at 20 percent as well. Utilization held to two decimal places. Structurally, the protocol contracted proportionally on both sides of the book.
+
+The June outflow does not concentrate on any single operator. The four largest single-vault outflows were EVK Vault eRLUSD-7 at $3.0 million, EVK Vault eUSDC-70 at $1.1 million, EVK Vault ewstETH-2 at $0.6 million, and EVK Vault eAUSD-7 at $0.4 million, together $5.1 million. The remaining $16 million of June's protocol-level net outflow distributed across dozens of smaller vaults with no operator or asset dominating. That is a materially different shape from May, when four vaults under a single Sentora governor accounted for $128 million of the protocol's contraction and the concentration on one operator's decision was the section's central finding.
+
+<PullQuote>May was one operator exiting one platform. June was small distributed movement across many vaults at once.</PullQuote>
+
+The residual Sentora presence on Euler V2 continued to draw down in June, but at low absolute magnitudes. The two Sentora-governed vaults from Issue 002's table (eRLUSD-7 and eUSDC-70) together shed roughly $4 million of TVL across the month, compared to $85 million between them in May. Sentora's operational scale on Euler V2 has now compressed to a fraction of the $172.9 million May-1 starting position across their four Euler vaults, without shifting the protocol's aggregate LDR downward or triggering any comparable outflow elsewhere. What Issue 002 §06.6 documented as a single-operator repositioning event has finished at the Euler V2 leg. The Morpho leg §06.2 documents separately.
+
+Euler V2's structural LDR persistence is the June-specific finding. Across a month where sector yields compressed below the risk-free rate, three of the six covered protocols saw LDR fall (Fluid −1.12 pp, Morpho −0.10 pp, and the compound-level readings dominated by mark-to-market accounting), and Euler V2 held. The vault-architecture LDR advantage documented in Issue 002 §06.4 (isolated markets running per-vault utilization that pool-based lenders can't sustain because they need idle-capital buffers for liquidation slippage) remained intact through June's macro compression. On the depositor-behavior question, Euler V2's June is not a story of the sector's biggest venue absorbing flow (that is §06.1) or a curator-layer methodology correction (§06.2). It is the smallest of the six protocols continuing to run the highest utilization by architecture, without operator-driven volatility for the first time in this report's coverage.
+
+{/* End §06.3 — total ~550 words, one Lead, one PullQuote, no data table */}

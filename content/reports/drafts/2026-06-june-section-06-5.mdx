@@ -1,0 +1,35 @@
+{/*
+  Issue 003 — "Yields Compress, Capital Consolidates" — §06.5 Protocol Deep Dive: SparkLend
+  Status: first draft, ~640 words across Lead + 5 paragraphs
+  Sits within §06 Protocol Deep Dives, immediately after §06.4 (Fluid)
+  Source data:
+    - content/snapshots/2026-06-ldr-per-protocol.json (LDR 32.86%, supplied $5.03B, borrowed $1.65B)
+    - content/snapshots/2026-06-spark-daily-flows.csv (+$414.6M cumulative constant-price;
+        weETH-specific +$25.1M so ~$389M is non-weETH)
+    - Issue 002 §06.2 for the April-May Aave-to-Spark rotation reference
+  Broad-based vs rate-specific note:
+    - Only weETH is broken out per-asset in the June daily flows CSV
+    - Spark's collateral base is dominated by wstETH ($2B+ per Issue 002) + SPK Farming Pool USDS
+    - The ~$389M of non-weETH constant-price flow cannot be attributed to specific
+      assets from this snapshot. Prose acknowledges honestly.
+*/}
+
+<SectionHeading number="06.5">Protocol Deep Dive: SparkLend</SectionHeading>
+
+Aave V3 fork by the Sky (MakerDAO) team, tightly integrated with DAI/USDS and sDAI/sUSDS savings rates.
+
+<Lead>SparkLend was the second-largest constant-price inflow in the sector in June at $415 million, one third of the sector's total net depositor flow. That reading is materially different from Issue 002's May finding, which framed SparkLend as the migration beneficiary receiving capital that Aave V3 was losing. In June, both protocols were positive. SparkLend was no longer the destination for departures; it was the second-tier destination in a month when the largest venue absorbed the majority.</Lead>
+
+At June 30, SparkLend carried $5.03 billion of supplied capital on Ethereum against $1.65 billion of active borrows and $3.38 billion of available liquidity, for a 32.86 percent loan-to-deposit ratio. The May 31 comparison points were $5.38 billion supplied, $1.75 billion borrowed, and 32.55 percent LDR. Both sides of the book contracted at nominal prices (supplied down 6.4 percent, borrows down 5.5 percent) while utilization ticked up 0.3 percentage points. The nominal contraction is mark-to-market: SparkLend's collateral base weighted heavily toward wstETH, which fell along with the rest of the ETH-family collateral base at roughly 21 percent. At constant prices, SparkLend added $415 million of net depositor quantity across June.
+
+The distinguishing feature of SparkLend's June inflow is what it does NOT map to. Issue 002's April-May reading was a rotation story: Aave V3 shed $503 million while SparkLend absorbed $752 million and Morpho absorbed a nearly identical $759 million. SparkLend's growth ran opposite to Aave V3's contraction in Issue 002, with the migration mechanism visible in the asset composition: wstETH exiting Aave V3's LRT-adjacent risk and landing on SparkLend's wstETH-heavy structure. In June, that mechanism did not repeat. Aave V3 absorbed $845 million of net inflow, not a net outflow, and SparkLend absorbed $415 million alongside it. Both protocols received depositor flow. Neither was the destination of an exit from the other. SparkLend's June growth arrived alongside Aave V3's growth, not from Aave V3's contraction.
+
+<PullQuote>SparkLend's growth in June arrived alongside Aave V3's growth, not from Aave V3's contraction. The April-May rotation thesis has terminated.</PullQuote>
+
+The asset composition of SparkLend's June inflow is broad-based to the extent the captured data resolves it. The weETH-specific component of SparkLend's June net inflow was $25 million on the constant-price series, or approximately six percent of the $415 million total. The remaining 94 percent, roughly $390 million, sits across the rest of SparkLend's collateral and lending markets. The captured daily flow data does not decompose the non-weETH balance at the asset level for SparkLend, so the specific mix (wstETH continuation, USDS via the SPK Farming Pool incentive structure, sUSDS deposits, or a mix of all three) is not resolvable from this snapshot. What can be said with confidence is that the June inflow was not weETH-driven, and it was not a single-asset rotation of the kind Issue 002 §06.2 documented for April's Aave-to-Spark migration.
+
+The rate context supports a partial mechanism read. Issue 002 §06.2 documented Spark's USDS market as running at 5.89 percent supply APY at May 31, the top of the rate matrix by a wide margin. If SparkLend's rate leadership on USDS continued to draw incentive-seeking capital across June, that would explain part of the non-weETH inflow, but the June rate-dispersion capture in this issue does not resolve SparkLend USDS at the same granularity Issue 002 did. The observation is directional rather than measured: SparkLend's structural rate advantage on USDS remained intact from Issue 002, and SparkLend received the second-largest net inflow of any protocol in June. Whether the two are causally linked in the specific proportions the flow data can support is a follow-up for July's data.
+
+SparkLend's position in the June consolidation hierarchy is unambiguously second-tier. Aave V3 absorbed 63 percent of the sector's net inflow, SparkLend absorbed 31 percent, and the remaining four protocols split five percent. The pattern is consistent with a sector where depositors under yield compression concentrated at established venues in roughly proportion to how established each venue is. SparkLend is Aave V3's fork, has run stably on Ethereum since 2023, and holds the second-largest supplied position among the six covered protocols. It received the second-largest inflow. What Issue 002 read as SparkLend's uniqueness on positive depositor flow AND positive fees held only for May. In June, positive depositor flow is a sector-wide pattern except at Euler V2, and SparkLend's fee expansion (documented in Issue 002 §04) is one open question that this pass does not resolve.
+
+{/* End §06.5 — total ~640 words, one Lead, one PullQuote, no data table */}

@@ -1,0 +1,41 @@
+{/*
+  Issue 003 — "Yields Compress, Capital Consolidates" — §06.4 Protocol Deep Dive: Fluid
+  Status: revised, ~700 words across Lead + 5 paragraphs
+  Sits within §06 Protocol Deep Dives
+  Source data:
+    - content/snapshots/2026-06-ldr-per-protocol.json (LDR 54.37%, supplied $824M, borrowed $448M)
+    - content/snapshots/2026-06-fluid-daily-flows.csv (+$16M cumulative constant-price)
+    - content/snapshots/2026-06-rate-dispersion.json (Fluid USDC 6.41% at June 30, Aave V3
+        3.19%, Compound V3 3.21%, Euler V2 2.83% — Fluid leads by roughly 2x)
+    - content/snapshots/2026-06-gho-cross-venue-flow.json (Aave GHO borrow -$22.9M / 30d,
+        Fluid GHO supply +$1.7M / 30d — small figures)
+  Arithmetic:
+    - Nominal: $963M → $824M = -$139M (-14.4%)
+    - Constant-price: +$16M
+    - Mark-to-market implied: -$155M consistent with Fluid's LRT+wstETH weighting × 21% price drop
+    - Fluid USDC APY: 5.93% (May 31) → 6.41% (June 30) = +48 bps
+    - Sector blended stable APY: 3.60% → 3.23% = -37 bps
+    - Fluid USDC spread vs T-bill: 6.41% - 3.60% = +281 bps positive real yield
+  Revision note: Pass 3 initial draft framed Fluid's June as "the absence of any distinctive
+    move." That was wrong. Fluid ran the sector's highest USDC supply APY at both May and
+    June anchor dates, and the rate LIFTED across the month against sector-wide compression.
+    That's a distinctive rate-side signal even though the flow-side reading was small.
+*/}
+
+<SectionHeading number="06.4">Protocol Deep Dive: Fluid</SectionHeading>
+
+Instadapp's vault-based lending with smart collateral and smart debt, enabling DEX-like capital efficiency on paired assets.
+
+<Lead>Fluid's supplied capital fell 14.4 percent at nominal prices across June, from $963 million to $824 million. At constant prices, the protocol added $16 million of net depositor flow. The nominal contraction is entirely mark-to-market on Fluid's ETH-family collateral, which repriced along with the sector's LRT and wstETH base. Depositors on Fluid were slightly positive across the month, in the same shape §05 documents for the LRT sector generally.</Lead>
+
+At June 30, Fluid carried $824 million of supplied capital on Ethereum against $448 million of active borrows and $376 million of unborrowed liquidity, for a 54.37 percent loan-to-deposit ratio. The May 31 comparison points were $963 million supplied, $534 million borrowed, and 55.49 percent LDR. Both sides of the book contracted at nominal prices while utilization fell 1.12 percentage points. The protocol continued to run the second-highest LDR of the six covered protocols after Euler V2, well above the pool-based cluster of Aave V3, Morpho, Compound V3, and SparkLend that clusters between 32.9 and 43.8 percent. The vault architecture LDR story Issue 002 §06.4 documented held through June's compression at the same margin it held through May.
+
+The distinctive June signal on Fluid is the rate side, not the flow side. Fluid's USDC supply APY at June 30 was 6.41 percent, up from 5.93 percent at May 31. It ran roughly double the next-highest protocol (Compound V3 at 3.21 percent, Aave V3 at 3.19 percent, Euler V2 at 2.83 percent) and roughly 281 basis points above the 4-week U.S. Treasury bill at 3.60 percent. Fluid's USDC rate lifted 48 basis points across June while the sector's blended stablecoin supply APY fell 37 basis points, from 3.60 percent at May close to 3.23 percent at June close. Where §03 documents a sector-wide inversion of Real Yield Spread on the blended stablecoin basket, Fluid's USDC market was one of the specific venues that ran opposite to the sector trend. The rate leadership Fluid held at May 31 widened across June rather than compressing toward the T-bill along with the rest of the sector.
+
+<PullQuote>Fluid's USDC supply APY at June 30 was 6.41 percent, roughly double the next-highest protocol and 281 basis points above the 4-week Treasury bill.</PullQuote>
+
+The GHO cross-venue reading that surfaced in the June 25 investigation shifted mildly across the rest of the month. Aave V3 GHO borrowed contracted $22.9 million across the trailing thirty days, a 15.8 percent decline. Fluid GHO supplied ticked up $1.7 million across the same window, a 22.8 percent lift on the smaller Fluid book. The absolute magnitudes are modest, and the ratio between the Aave decline and the Fluid rise is roughly 13-to-1. The interpretation held from the audit note stands: this is a slow-motion re-allocation rather than a fresh mint story, with the Aave V3 side of the GHO facilitator relationship shrinking materially and Fluid's GHO supply-side receiving a fraction of the same magnitude. Whether the pattern continues into July is a question next month's data can begin to answer.
+
+Fluid was the smallest positive net constant-price inflow among the five protocols with positive flow in June, at $16 million against Aave V3's $845 million, SparkLend's $415 million, Compound V3's $59 million, and Morpho's $20 million. On the flow side, the absolute figure sits below the sector consolidation story §04 documents. On the rate side, Fluid's June is the sharpest counter-signal to the yield-compression story §03 tracks: the sector's highest USDC supply APY at 6.41 percent, extending the rate leadership Issue 002 §03 documented at May close rather than compressing toward the T-bill along with the sector median. That combination of small positive flow and widening rate leadership sits at odds with the depth-driven consolidation §06.1 describes for Aave V3. When yields compress below the risk-free rate at the sector median, capital consolidates at the largest venue by size (the §06.1 finding) and also finds the specific markets that maintain positive spreads (the §06.4 finding). Both mechanisms ran in June.
+
+{/* End §06.4 — total ~700 words, one Lead, one PullQuote, no data table */}
