@@ -165,7 +165,7 @@ export function TOC() {
                       marginBottom: 2,
                     }}
                   >
-                    § {item.number}
+                    {item.number}
                   </span>
                 )}
                 {item.text}
