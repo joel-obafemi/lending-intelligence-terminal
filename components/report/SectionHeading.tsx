@@ -99,7 +99,7 @@ export function SectionHeading({ number, children }: Props) {
             marginBottom: "12px",
           }}
         >
-          § {number}
+          {number}
         </span>
       )}
       <span>{children}</span>
