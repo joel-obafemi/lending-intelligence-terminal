@@ -461,6 +461,87 @@
       ],
       "last_verified_at": "2026-07-03T16:53:00Z",
       "notes": "Ratio of June 5, 2026 sector-wide collateral seized ($128.31M) to the trailing 7-day median (May 29 - June 4) of $12.51M. Exceeds both material-spike thresholds in the brief: >$50M day AND >3x prior 7-day median."
+    },
+    {
+      "id": "aave_v3_may_net_flow_constant_price",
+      "issue": "003",
+      "section_anchors": ["§02", "§04"],
+      "cited_value": 352.18,
+      "unit": "USD_millions",
+      "rounded_cited_in_prose": 352,
+      "alt_forms_in_prose": ["+$352M", "$352 million", "gained $352M", "gained $352 million"],
+      "cross_check": {
+        "method": "manual",
+        "params": {
+          "evidence_url": "content/snapshots/2026-05-aave-daily-flows.csv"
+        }
+      },
+      "threshold_pct": 2.0,
+      "historical_wrong_alarms": [
+        "Aave V3 shed $503 million in May",
+        "Aave V3 shed $503M in May",
+        "Aave V3 net flow of -$503M for May",
+        "May Aave V3 net outflow $503M"
+      ],
+      "last_verified_at": "2026-07-07T12:00:00Z",
+      "notes": "Aave V3 May cumulative constant-price net supply change. Verified by summing daily deltas in 2026-05-aave-daily-flows.csv (May 1 through May 31): $352.18M. Cross-check via CP total: May 1 opening $9,637.97M vs May 31 closing $10,063.60M, adjusted for the May 1 delta boundary. The -$503M figure some earlier readings cite is the nominal / dashboard net-deposits-30d card methodology, not constant-price. Constant-price is the canonical Issue 003 methodology."
+    },
+    {
+      "id": "aave_v3_may_to_june_flow_delta",
+      "issue": "003",
+      "section_anchors": ["§02"],
+      "cited_value": 493,
+      "unit": "USD_millions",
+      "rounded_cited_in_prose": 493,
+      "alt_forms_in_prose": ["+$493M (+140%)", "$493M month-over-month", "+140%"],
+      "cross_check": {
+        "method": "manual",
+        "params": {
+          "evidence_url": "content/reports/2026-06-june.mdx (Δ column of Aave V3 net deposit flow row)"
+        }
+      },
+      "threshold_pct": 2.0,
+      "historical_wrong_alarms": [],
+      "last_verified_at": "2026-07-07T12:00:00Z",
+      "notes": "June $845M minus May $352M = $493M. Relative: 493/352 = 140% increase. Displayed as +$493M (+140%) in the §02 sector-aggregate table Δ column."
+    },
+    {
+      "id": "concentration_top2_share_june",
+      "issue": "003",
+      "section_anchors": ["§04"],
+      "cited_value": 94.5,
+      "unit": "%",
+      "rounded_cited_in_prose": 94.5,
+      "alt_forms_in_prose": ["94.5% of net inflow", "94.5%"],
+      "cross_check": {
+        "method": "manual",
+        "params": {
+          "evidence_url": "content/reports/2026-06-june.mdx (§04 flow table: Aave V3 63.4% + SparkLend 31.1%)"
+        }
+      },
+      "threshold_pct": 1.0,
+      "historical_wrong_alarms": [],
+      "last_verified_at": "2026-07-07T12:00:00Z",
+      "notes": "Aave V3 63.4% + SparkLend 31.1% = 94.5% of June sector net inflow. Absorbed by the two largest protocols by supply."
+    },
+    {
+      "id": "concentration_top2_stock_share_june",
+      "issue": "003",
+      "section_anchors": ["§04"],
+      "cited_value": 73.9,
+      "unit": "%",
+      "rounded_cited_in_prose": 73.9,
+      "alt_forms_in_prose": ["73.9% of stock", "73.9%"],
+      "cross_check": {
+        "method": "manual",
+        "params": {
+          "evidence_url": "content/reports/2026-06-june.mdx (§04 supply shares: Aave V3 56.7% + SparkLend 17.2%)"
+        }
+      },
+      "threshold_pct": 1.0,
+      "historical_wrong_alarms": [],
+      "last_verified_at": "2026-07-07T12:00:00Z",
+      "notes": "Aave V3 56.7% + SparkLend 17.2% = 73.9% of June sector nominal supply. Sits below the 94.5% top-2 share of net inflow, which is the definition of the concentration mechanism."
     }
   ]
 }

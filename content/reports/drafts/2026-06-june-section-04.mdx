@@ -1,24 +1,11 @@
 {/*
   Issue 003 — "Yields Compress, Capital Consolidates" — §04 Sector Overview
-  Status: first draft, ~640 words across Lead + 5 paragraphs
-  Sits between: §03 The Real Yield Spread, Deep Inversion and §05 LRT Correction
-  Source data:
-    - content/snapshots/2026-06-ldr-per-protocol.json (Path A override-applied figures)
-    - content/snapshots/2026-06-aave-daily-flows.csv (+$845M)
-    - content/snapshots/2026-06-spark-daily-flows.csv (+$415M)
-    - content/snapshots/2026-06-compound-v3-daily-flows.csv (+$59M)
-    - content/snapshots/2026-06-morpho-daily-flows.csv (+$20M)
-    - content/snapshots/2026-06-fluid-daily-flows.csv (+$16M)
-    - content/snapshots/2026-06-euler-v2-daily-flows.csv (−$21M)
-  Threads: §01 (consolidation thesis), §03 (RYS macro), §05 (LRT correction),
-           §06.1 (Aave V3), §06.2 (Morpho V1+V2 correction), §06.3-06.6 (per-protocol)
+  Status: Pass 4d — cleaned, corrected May comparison, abbreviated
 */}
 
 <SectionHeading number="04">Sector Overview</SectionHeading>
 
-<Lead>Six protocols, $29.23 billion of total supply at the June close, and $1.33 billion of net constant-price depositor inflow across the month. Both halves of that sentence describe consolidation: the first is continuation of a ten-month sector contraction at nominal prices, and the second is the counter-signal that emerged in June despite the Real Yield Spread reopening to −37 basis points against the 4-week T-bill.</Lead>
-
-The sector aggregate fell 10.4 percent in nominal supply across June, from $32.64 billion at May 31 to $29.23 billion at June 30. Active borrows fell 8.7 percent to $11.98 billion. The sector loan-to-deposit ratio ticked up from 40.22 percent to 40.99 percent. At constant prices, depositor quantity rose $1.33 billion across the same window. The wedge between the two readings is mark-to-market on collateral, dominated by the ETH-family repricing §05 unpacks in detail: weETH fell 21.04 percent per token, rsETH 21.00 percent, ezETH 21.28 percent, osETH 19.99 percent, and spot ETH 21.25 percent. Nominal supply on the sector's LRT and ETH-collateral positions repriced downward by roughly the same magnitude. The dollar value fell; the depositor quantity grew.
+The sector aggregate fell 10.4% in nominal supply across June, from $32.64B at May 31 to $29.23B at June 30. Active borrows fell 8.7% to $11.98B. The sector loan-to-deposit ratio ticked up from 40.22% to 40.99%. At constant prices, depositor quantity rose $1.33B across the same window. The wedge between the two readings is mark-to-market on collateral, dominated by the ETH-family repricing The LRT reprice section unpacks in detail. The dollar value fell; the depositor quantity grew.
 
 <DataTable
   caption="Constant-price net depositor flow by protocol, June 2026"
@@ -35,14 +22,14 @@ The sector aggregate fell 10.4 percent in nominal supply across June, from $32.6
     { protocol: "Morpho", flow: "+$20M", share: "1.5%", supplied: "$5.09B" },
     { protocol: "Fluid", flow: "+$16M", share: "1.2%", supplied: "$0.82B" },
     { protocol: "Euler V2", flow: "−$21M", share: "−1.6%", supplied: "$0.40B" },
-    { protocol: "Sector total", flow: "+$1,334M", share: "100%", supplied: "$29.23B" }
+    { protocol: "Sector total", flow: "+$1.33B", share: "100%", supplied: "$29.23B" }
   ]}
 />
 
-The distribution shape distinguishes June's inflow from Issue 002's May reading. May's flow pattern was rotation: Aave V3 shed $503 million while SparkLend and Morpho absorbed nearly identical shares of the exit, roughly $752 million each. Neither absorbing protocol pulled clear ahead of the other. Depositors leaving Aave V3 in May chose between two migration destinations that ran nearly equal in the outcome data. June inverted that pattern in every direction. Aave V3 was the largest inflow at $845 million, not the largest outflow. SparkLend continued as a beneficiary but at half of May's rate. Every protocol except Euler V2 saw net positive flow, and the largest recipient was also the largest existing protocol by supply. The rotation thesis Issue 002 built out has been replaced by a consolidation pattern in which the sector's biggest venue absorbed the majority of new capital.
+The distribution shape distinguishes June's inflow from the May reading. Every protocol except Euler V2 saw net positive constant-price flow. Aave V3 was the largest inflow, and it was also the largest existing protocol by supply. May's shape was more mixed: Aave V3 gained $352M of net constant-price deposits in that month, while SparkLend and Morpho each absorbed roughly $752M and the sector-wide flow ran less concentrated. Our May report's rotation thesis, the framing that Aave V3 was losing supply share to migrations, held up on nominal supply readings but does not survive on constant-price readings. In constant-price terms, June's flow accelerated a concentration pattern that was already forming in May.
 
-Aave V3 captured 63.4 percent of the sector's net constant-price inflow while holding 56.7 percent of the sector's nominal supply at June 30. Its share of inflow ran roughly seven percentage points ahead of its share of stock. SparkLend captured 31.1 percent of inflow against a 17.2 percent share of supply, running an even more pronounced over-index at 14 points above its stock share. The remaining four protocols together captured 5.5 percent of inflow while holding 26.1 percent of supply, materially under-indexing on flow relative to stock. The month's flow accelerated the concentration that already existed at the protocol layer, and it did so during a month where the on-chain yield on the flow's largest destination sat 41 basis points below the risk-free rate.
+Aave V3 captured 63.4% of the sector's net constant-price inflow while holding 56.7% of the sector's nominal supply at June 30, an over-index of roughly 7 pp. SparkLend captured 31.1% against a 17.2% share of supply, over-indexing by 14 pp. Together the two largest protocols absorbed 94.5% of net inflow while holding 73.9% of stock. The remaining four captured 5.5%. That's the concentration mechanism in one ratio: existing incumbents absorbed new capital at rates that widened rather than narrowed the gap between top and tail, in a month where the on-chain yield on the flow's largest destination sat 41 bps below the risk-free rate.
 
-Three of June's four material single-day net outflows on Aave V3 were intra-sector or intra-protocol asset rotations rather than depositor exits. The June 12 outflow of $89.5 million was dominated by USDC leaving Aave V3 alongside wstETH inflows on the same day. June 11's $85.6 million outflow ran the same shape. Only June 3's $70.1 million outflow carried genuine cross-asset departure at any material scale. Sector-wide, the flow signal is that depositors added quantity on twenty-seven of thirty June trading days across Aave V3 alone, and on aggregate positive-flow days across every other protocol except Euler V2. §06.1 picks up the paradox of Aave V3's inflow against yield compression. §06.5 picks up the SparkLend read as the second-tier destination. §06.3 unpacks Euler V2's small outflow as broad residual movement rather than a single operator event. §06.4 and §06.6 note the smaller positives at Fluid and Compound V3. §06.2 handles the Morpho story separately: the protocol saw only +$20 million of constant-price flow in June, but the more important Morpho finding is a methodological correction to Issue 002's curator-concentration reading, which the section documents in full.
+Three of June's four material single-day net outflows on Aave V3 were intra-sector or intra-protocol asset rotations rather than depositor exits. The June 12 outflow of $89.5M was dominated by USDC leaving Aave V3 alongside wstETH inflows on the same day. June 11's $85.6M outflow ran the same shape. Only June 3's $70.1M outflow carried genuine cross-asset departure at any material scale. Sector-wide, the flow signal is that depositors added quantity on twenty-seven of thirty June trading days across Aave V3 alone, and on aggregate positive-flow days across every other protocol except Euler V2.
 
-{/* End §04 — total ~640 words, one Lead, one data table, no pull quote (Issue 003 §04 leans on the table rather than a quote) */}
+{/* End §04 — Pass 4d */}

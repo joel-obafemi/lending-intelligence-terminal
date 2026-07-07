@@ -27,11 +27,13 @@ Snapshot date: June 30, 2026, 23:59 UTC. All month-over-month comparisons agains
     { metric: "Active Borrows", may: "$13.13B", jun: "$11.98B", delta: "−$1.15B (−8.7%)" },
     { metric: "Sector LDR", may: "40.22%", jun: "40.99%", delta: "+0.77 pp" },
     { metric: "Real Yield Spread", may: "−0.3 bps", jun: "−37.1 bps", delta: "−36.8 bps" },
-    { metric: "Aave V3 net deposit flow (constant price)", may: "—", jun: "+$845M", delta: "—" },
-    { metric: "Morpho Curator HHI", may: "3,103", jun: "4,558", delta: "+1,455" },
-    { metric: "Morpho top-3 curator share", may: "93.9%", jun: "95.2%", delta: "+1.3 pp" }
+    { metric: "Aave V3 net deposit flow (constant price)", may: "+$352M", jun: "+$845M", delta: "+$493M (+140%)" },
+    { metric: "Morpho Curator HHI (V1 + V2 combined)", may: "not captured", jun: "2,095", delta: "n/a" },
+    { metric: "Morpho top-3 curator share (V1 + V2 combined)", may: "not captured", jun: "74.6%", delta: "n/a" }
   ]}
 />
+
+May 31 V1+V2 combined figures not backfilled; see Issue 002 erratum for V1-only May 31 reading of 3,103.
 
 <DataTable
   caption="Supplied and borrowed by protocol, May 31 → June 30"
@@ -74,7 +76,7 @@ Snapshot date: June 30, 2026, 23:59 UTC. All month-over-month comparisons agains
   ]}
 />
 
-The nominal supplied contraction (−$3.41B sector-wide) sits next to a positive constant-price net flow at Aave V3 (+$845M depositor inflow across the month). The wedge is mark-to-market on collateral. Spot ETH fell 21.3 percent in June, with weETH, rsETH, ezETH, and osETH falling 19.9 to 21.3 percent across the same window. The Aave V3 weETH book specifically fell $419M nominal in June, of which roughly $387M is per-unit price effect and the remainder is depositor flow. The five protocols other than Aave V3 do not have constant-price flow captures for the month, so the nominal supplied deltas above carry the mark-to-market effect on their LRT and ETH-family collateral as well. The contraction is real at nominal prices and partially or fully reversed at constant prices, depending on each protocol's collateral composition. Euler V2 is the exception: its collateral is not primarily LRT or ETH-family, so the 20.2 percent nominal supplied contraction is likely closer to true depositor flow than mark-to-market effect. §05 unpacks the LRT base specifically; §06 picks up the Euler V2 read.
+The nominal supplied contraction (−$3.41B sector-wide) sits next to a positive constant-price net flow at Aave V3 (+$845M depositor inflow across the month). The wedge is mark-to-market on collateral. Spot ETH fell 21.3% in June, with weETH, rsETH, ezETH, and osETH falling 19.9 to 21.3% across the same window. The Aave V3 weETH book specifically fell $419M nominal in June, of which roughly $387M is per-unit price effect and the remainder is depositor flow. The five protocols other than Aave V3 do not have constant-price flow captures for the month, so the nominal supplied deltas above carry the mark-to-market effect on their LRT and ETH-family collateral as well. The contraction is real at nominal prices and partially or fully reversed at constant prices, depending on each protocol's collateral composition. Euler V2 is the exception: its collateral is not primarily LRT or ETH-family, so the 20.2% nominal supplied contraction is likely closer to true depositor flow than mark-to-market effect. §05 unpacks the LRT base specifically; §06 picks up the Euler V2 read.
 
 Source: on-chain reads against each protocol's core contracts, DeFi Llama, and the U.S. Treasury 4-week T-bill via FRED. Compound V3 and Euler V2 row-card readings substitute on-chain Comet and EVK aggregations for DeFi Llama's chain-TVL figures, which over-count both protocols.
 
