@@ -1142,11 +1142,13 @@ async function fetchAllMorphoVaultsCombined(): Promise<NormalizedVault[]> {
 /** symbol-keyed (uppercase) lookup for vault display name + curator. Used
  *  by the protocols page to enrich the Vaults table with human-readable
  *  names like "Steakhouse USDC" instead of bare DefiLlama symbols like
- *  STEAKUSDC. */
+ *  STEAKUSDC. Covers V1 (MetaMorpho) and V2 (Vault V2) so V2-only vaults
+ *  like Sentora's flagship RLUSD/PRIME books surface with real names. */
 export interface MorphoVaultIndexEntry {
   address: string
   name: string
   symbol: string
+  version: "V1" | "V2"
   curatorName: string | null
   totalAssetsUsd: number
 }
@@ -1154,18 +1156,23 @@ export interface MorphoVaultIndexEntry {
 export async function loadMorphoVaultIndex(): Promise<
   Map<string, MorphoVaultIndexEntry>
 > {
-  const all = await fetchAllMetaMorphoVaultsRaw()
+  // Combined V1 + V2 index. On a symbol collision (rare — Morpho vault
+  // symbols are curator-namespaced), the larger-TVL vault wins so the
+  // enriched name in the Vaults table reads as the dominant book.
+  const all = await fetchAllMorphoVaultsCombined()
   const out = new Map<string, MorphoVaultIndexEntry>()
   for (const v of all) {
     if (!v.symbol) continue
-    const tvl = v.state?.totalAssetsUsd ?? 0
-    const primary = v.state?.curators?.[0] ?? null
-    out.set(v.symbol.toUpperCase(), {
+    const key = v.symbol.toUpperCase()
+    const existing = out.get(key)
+    if (existing && existing.totalAssetsUsd >= v.totalAssetsUsd) continue
+    out.set(key, {
       address: v.address,
       name: v.name,
       symbol: v.symbol,
-      curatorName: primary?.name?.trim() || null,
-      totalAssetsUsd: tvl,
+      version: v.version,
+      curatorName: v.primaryCurator?.name?.trim() || null,
+      totalAssetsUsd: v.totalAssetsUsd,
     })
   }
   return out
