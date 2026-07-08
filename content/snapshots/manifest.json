@@ -2,7 +2,7 @@
   "schema_version": 1,
   "description": "Reconciliation manifest. Every figure cited in the published report has an entry here with an independent cross-check. The reconciliation gate runs each cross-check and fails the publish workflow if any reading drifts beyond its threshold. See docs/reconciliation-gate.md for the operator guide.",
   "global_config": {
-    "default_threshold_pct": 2.0,
+    "default_threshold_pct": 2,
     "derivation_trail_warnings_block_merge": false,
     "derivation_trail_warning_severity": "warning"
   },
@@ -10,11 +10,19 @@
     {
       "id": "aave_v3_lrt_share",
       "issue": "002",
-      "section_anchors": ["§01", "§05", "§06.1", "§08"],
+      "section_anchors": [
+        "§01",
+        "§05",
+        "§06.1",
+        "§08"
+      ],
       "cited_value": 88.37,
       "unit": "%",
       "rounded_cited_in_prose": 88,
-      "alt_forms_in_prose": ["88%", "88 percent"],
+      "alt_forms_in_prose": [
+        "88%",
+        "88 percent"
+      ],
       "cross_check": {
         "method": "derived_from_snapshot",
         "snapshot": "content/snapshots/2026-05-lrt-collateral.json",
@@ -23,7 +31,7 @@
           "target_date": "2026-05-31"
         }
       },
-      "threshold_pct": 1.0,
+      "threshold_pct": 1,
       "historical_wrong_alarms": [
         "84 percent of the LRT collateral",
         "84% of remaining LRT",
@@ -36,11 +44,17 @@
     {
       "id": "morpho_idle_ratio",
       "issue": "002",
-      "section_anchors": ["§06.3 (historical reference)"],
+      "section_anchors": [
+        "§06.3 (historical reference)"
+      ],
       "cited_value": 10.01,
       "unit": "%",
       "rounded_cited_in_prose": 10,
-      "alt_forms_in_prose": ["10 percent", "ten percent", "~10%"],
+      "alt_forms_in_prose": [
+        "10 percent",
+        "ten percent",
+        "~10%"
+      ],
       "cross_check": {
         "method": "derived_from_snapshot",
         "snapshot": "content/snapshots/2026-05-morpho-idle-ratio.json",
@@ -49,7 +63,7 @@
           "field_path": "idle_ratio_pct"
         }
       },
-      "threshold_pct": 2.0,
+      "threshold_pct": 2,
       "historical_wrong_alarms": [
         "63.7%",
         "63.7 percent",
@@ -62,11 +76,17 @@
     {
       "id": "compound_v3_comet_count",
       "issue": "002",
-      "section_anchors": ["§06.5"],
+      "section_anchors": [
+        "§06.5"
+      ],
       "cited_value": 6,
       "unit": "absolute",
       "rounded_cited_in_prose": 6,
-      "alt_forms_in_prose": ["six Comets", "six Comet markets", "6 Comets"],
+      "alt_forms_in_prose": [
+        "six Comets",
+        "six Comet markets",
+        "6 Comets"
+      ],
       "cross_check": {
         "method": "derived_from_snapshot",
         "snapshot": "content/snapshots/compound-comet-deployments.json",
@@ -75,7 +95,7 @@
           "field_path": "count_total"
         }
       },
-      "threshold_pct": 0.0,
+      "threshold_pct": 0,
       "historical_wrong_alarms": [
         "shipped four Comets",
         "four Comets",
@@ -90,11 +110,18 @@
     {
       "id": "aave_v3_usdc_supply_apy",
       "issue": "002",
-      "section_anchors": ["§01", "§03", "§06.1"],
+      "section_anchors": [
+        "§01",
+        "§03",
+        "§06.1"
+      ],
       "cited_value": 3.27,
       "unit": "%",
       "rounded_cited_in_prose": 3.27,
-      "alt_forms_in_prose": ["3.27%", "3.27 percent"],
+      "alt_forms_in_prose": [
+        "3.27%",
+        "3.27 percent"
+      ],
       "cross_check": {
         "method": "derived_from_snapshot",
         "snapshot": "content/snapshots/2026-05-rate-dispersion.json",
@@ -105,7 +132,7 @@
           "field_path": "may31.per_protocol[].supply_apy_pct"
         }
       },
-      "threshold_pct": 3.0,
+      "threshold_pct": 3,
       "historical_wrong_alarms": [
         "9.62%",
         "9.62 percent",
@@ -121,11 +148,21 @@
     {
       "id": "rys_may_31",
       "issue": "002",
-      "section_anchors": ["§01", "§02", "§03"],
+      "section_anchors": [
+        "§01",
+        "§02",
+        "§03"
+      ],
       "cited_value": -0.3,
       "unit": "bps",
       "rounded_cited_in_prose": -0.3,
-      "alt_forms_in_prose": ["−0.3 bps", "-0.3 basis points", "approximately zero", "effectively zero", "parity"],
+      "alt_forms_in_prose": [
+        "−0.3 bps",
+        "-0.3 basis points",
+        "approximately zero",
+        "effectively zero",
+        "parity"
+      ],
       "cross_check": {
         "method": "derived_from_snapshot",
         "snapshot": "content/snapshots/2026-05-rys-historical.json",
@@ -134,20 +171,27 @@
           "field_path": "target_anchor.spread_bps"
         }
       },
-      "threshold_pct": 50.0,
+      "threshold_pct": 50,
       "threshold_pct_notes": "Threshold is generous (50%) because the spread is near zero — absolute divergence is what matters, not relative. The gate also applies an absolute_threshold for near-zero readings.",
-      "absolute_threshold": 2.0,
+      "absolute_threshold": 2,
       "last_verified_at": "2026-06-04T08:39:43Z",
       "notes": "Real Yield Spread at the May 31 close. Blended stables APY 3.597% minus 4-week T-bill 3.60% = −0.294 bps. Reported in prose as 'parity'. Threshold logic uses absolute_threshold of 2.0 bps when the cited value sits within ±5 bps of zero."
     },
     {
       "id": "sector_take_rate",
       "issue": "002",
-      "section_anchors": ["§01", "§02", "§04"],
+      "section_anchors": [
+        "§01",
+        "§02",
+        "§04"
+      ],
       "cited_value": 3.38,
       "unit": "%",
       "rounded_cited_in_prose": 3.38,
-      "alt_forms_in_prose": ["3.38%", "3.38 percent"],
+      "alt_forms_in_prose": [
+        "3.38%",
+        "3.38 percent"
+      ],
       "cross_check": {
         "method": "derived_from_snapshot",
         "snapshot": "content/snapshots/2026-05-sector-take-rate-inputs.json",
@@ -157,18 +201,23 @@
           "liquidity_field": "available_liquidity_usd"
         }
       },
-      "threshold_pct": 2.0,
+      "threshold_pct": 2,
       "last_verified_at": "2026-06-04T17:01:53Z",
       "notes": "take_rate = trailing_30d_fees × (365/30) ÷ available_liquidity × 100. May 31 inputs: $55.08M fees ÷ $19.85B liquidity, annualised by 365/30. Computed: 3.376% → rounds to 3.38%."
     },
     {
       "id": "euler_v2_ldr",
       "issue": "002",
-      "section_anchors": ["§06.4"],
+      "section_anchors": [
+        "§06.4"
+      ],
       "cited_value": 85.23,
       "unit": "%",
       "rounded_cited_in_prose": 85.23,
-      "alt_forms_in_prose": ["85.23%", "85.23 percent"],
+      "alt_forms_in_prose": [
+        "85.23%",
+        "85.23 percent"
+      ],
       "cross_check": {
         "method": "derived_from_snapshot",
         "snapshot": "content/snapshots/2026-05-ldr-per-protocol.json",
@@ -180,7 +229,7 @@
           "field": "ldr_pct"
         }
       },
-      "threshold_pct": 1.0,
+      "threshold_pct": 1,
       "historical_wrong_alarms": [
         "operating at scale",
         "13 percentage points over Aave V3",
@@ -195,18 +244,31 @@
     {
       "id": "rys_june_30",
       "issue": "003",
-      "section_anchors": ["§01", "§02", "§03", "§05", "§06.4"],
+      "section_anchors": [
+        "§01",
+        "§02",
+        "§03",
+        "§05",
+        "§06.4"
+      ],
       "cited_value": -37.1,
       "unit": "bps",
       "rounded_cited_in_prose": -37,
-      "alt_forms_in_prose": ["−37.1 basis points", "−37 basis points", "−37.1 bps", "36.8-basis-point deepening"],
+      "alt_forms_in_prose": [
+        "−37.1 basis points",
+        "−37 basis points",
+        "−37.1 bps",
+        "36.8-basis-point deepening"
+      ],
       "cross_check": {
         "method": "derived_from_snapshot",
         "snapshot": "content/snapshots/2026-06-rys-historical.json",
         "derive": "field",
-        "params": { "field_path": "target_anchor.spread_bps" }
+        "params": {
+          "field_path": "target_anchor.spread_bps"
+        }
       },
-      "threshold_pct": 3.0,
+      "threshold_pct": 3,
       "historical_wrong_alarms": [
         "second-deepest month-end inversion of 2026",
         "deepest month-end inversion of 2026",
@@ -219,18 +281,28 @@
     {
       "id": "curator_hhi_v1_v2_june_30",
       "issue": "003",
-      "section_anchors": ["§02", "§06.2"],
+      "section_anchors": [
+        "§02",
+        "§06.2"
+      ],
       "cited_value": 2095.26,
       "unit": "absolute",
       "rounded_cited_in_prose": 2095,
-      "alt_forms_in_prose": ["2,095", "2,095.26", "HHI of 2,095", "combined HHI is 2,095"],
+      "alt_forms_in_prose": [
+        "2,095",
+        "2,095.26",
+        "HHI of 2,095",
+        "combined HHI is 2,095"
+      ],
       "cross_check": {
         "method": "derived_from_snapshot",
         "snapshot": "content/snapshots/2026-06-30-curator-hhi.json",
         "derive": "field",
-        "params": { "field_path": "summary.hhi" }
+        "params": {
+          "field_path": "summary.hhi"
+        }
       },
-      "threshold_pct": 1.0,
+      "threshold_pct": 1,
       "historical_wrong_alarms": [
         "sector HHI jumped to 4,558",
         "curator concentration reached 4,558",
@@ -244,18 +316,28 @@
     {
       "id": "curator_top3_share_v1_v2_june_30",
       "issue": "003",
-      "section_anchors": ["§02", "§06.2"],
+      "section_anchors": [
+        "§02",
+        "§06.2"
+      ],
       "cited_value": 74.59,
       "unit": "%",
       "rounded_cited_in_prose": 74.6,
-      "alt_forms_in_prose": ["74.6 percent", "74.6%", "top-three curator share of 74.6 percent", "top-3 share at 74.6"],
+      "alt_forms_in_prose": [
+        "74.6 percent",
+        "74.6%",
+        "top-three curator share of 74.6 percent",
+        "top-3 share at 74.6"
+      ],
       "cross_check": {
         "method": "derived_from_snapshot",
         "snapshot": "content/snapshots/2026-06-30-curator-hhi.json",
         "derive": "field",
-        "params": { "field_path": "summary.top_3_share_pct" }
+        "params": {
+          "field_path": "summary.top_3_share_pct"
+        }
       },
-      "threshold_pct": 1.0,
+      "threshold_pct": 1,
       "historical_wrong_alarms": [
         "top-3 curator share of 95.2 percent",
         "top three at 95.2 percent",
@@ -267,11 +349,17 @@
     {
       "id": "sentora_curator_share_v1_v2_june_30",
       "issue": "003",
-      "section_anchors": ["§06.2"],
+      "section_anchors": [
+        "§06.2"
+      ],
       "cited_value": 31.2,
       "unit": "%",
       "rounded_cited_in_prose": 31.2,
-      "alt_forms_in_prose": ["31.2 percent", "31.2%", "Sentora at 31.2 percent"],
+      "alt_forms_in_prose": [
+        "31.2 percent",
+        "31.2%",
+        "Sentora at 31.2 percent"
+      ],
       "cross_check": {
         "method": "derived_from_snapshot",
         "snapshot": "content/snapshots/2026-06-30-curator-hhi.json",
@@ -283,7 +371,7 @@
           "field": "share_pct"
         }
       },
-      "threshold_pct": 2.0,
+      "threshold_pct": 2,
       "historical_wrong_alarms": [
         "Sentora exited Morpho",
         "Sentora walked away during June",
@@ -295,11 +383,17 @@
     {
       "id": "steakhouse_curator_share_v1_v2_june_30",
       "issue": "003",
-      "section_anchors": ["§06.2"],
+      "section_anchors": [
+        "§06.2"
+      ],
       "cited_value": 29.2,
       "unit": "%",
       "rounded_cited_in_prose": 29.2,
-      "alt_forms_in_prose": ["29.2 percent", "29.2%", "Steakhouse Financial ranks second at 29.2 percent"],
+      "alt_forms_in_prose": [
+        "29.2 percent",
+        "29.2%",
+        "Steakhouse Financial ranks second at 29.2 percent"
+      ],
       "cross_check": {
         "method": "derived_from_snapshot",
         "snapshot": "content/snapshots/2026-06-30-curator-hhi.json",
@@ -311,7 +405,7 @@
           "field": "share_pct"
         }
       },
-      "threshold_pct": 2.0,
+      "threshold_pct": 2,
       "historical_wrong_alarms": [
         "59.5 percent of curated TVL",
         "59.5%",
@@ -324,18 +418,26 @@
     {
       "id": "aave_v3_usdc_supply_apy_june_30",
       "issue": "003",
-      "section_anchors": ["§01", "§03", "§06.1"],
+      "section_anchors": [
+        "§01",
+        "§03",
+        "§06.1"
+      ],
       "cited_value": 3.19,
       "unit": "%",
       "rounded_cited_in_prose": 3.19,
-      "alt_forms_in_prose": ["3.19 percent", "3.19%", "Aave V3 at 3.19 percent USDC"],
+      "alt_forms_in_prose": [
+        "3.19 percent",
+        "3.19%",
+        "Aave V3 at 3.19 percent USDC"
+      ],
       "cross_check": {
         "method": "manual",
         "params": {
           "evidence_url": "content/snapshots/2026-06-rate-dispersion.json#/per_asset/0/june30/per_protocol/0/supply_apy_pct"
         }
       },
-      "threshold_pct": 3.0,
+      "threshold_pct": 3,
       "historical_wrong_alarms": [
         "Aave V3 USDC at 3.27 percent",
         "Aave V3 USDC 3.27%"
@@ -346,18 +448,26 @@
     {
       "id": "fluid_usdc_supply_apy_june_30",
       "issue": "003",
-      "section_anchors": ["§01", "§03", "§06.4"],
+      "section_anchors": [
+        "§01",
+        "§03",
+        "§06.4"
+      ],
       "cited_value": 6.41,
       "unit": "%",
       "rounded_cited_in_prose": 6.41,
-      "alt_forms_in_prose": ["6.41 percent", "6.41%", "Fluid at 6.41 percent"],
+      "alt_forms_in_prose": [
+        "6.41 percent",
+        "6.41%",
+        "Fluid at 6.41 percent"
+      ],
       "cross_check": {
         "method": "manual",
         "params": {
           "evidence_url": "content/snapshots/2026-06-rate-dispersion.json#/per_asset/0/june30/per_protocol/1/supply_apy_pct"
         }
       },
-      "threshold_pct": 3.0,
+      "threshold_pct": 3,
       "historical_wrong_alarms": [
         "Fluid USDC 5.93 percent at June",
         "Fluid at 5.93 percent USDC at June 30"
@@ -368,18 +478,26 @@
     {
       "id": "sector_ldr_june_30",
       "issue": "003",
-      "section_anchors": ["§02"],
+      "section_anchors": [
+        "§02"
+      ],
       "cited_value": 40.99,
       "unit": "%",
       "rounded_cited_in_prose": 40.99,
-      "alt_forms_in_prose": ["40.99%", "40.99 percent", "Sector LDR"],
+      "alt_forms_in_prose": [
+        "40.99%",
+        "40.99 percent",
+        "Sector LDR"
+      ],
       "cross_check": {
         "method": "derived_from_snapshot",
         "snapshot": "content/snapshots/2026-06-ldr-per-protocol.json",
         "derive": "field",
-        "params": { "field_path": "sector.ldr_pct" }
+        "params": {
+          "field_path": "sector.ldr_pct"
+        }
       },
-      "threshold_pct": 1.0,
+      "threshold_pct": 1,
       "historical_wrong_alarms": [
         "41.20%",
         "sector LDR at 41.20"
@@ -390,11 +508,18 @@
     {
       "id": "aave_v3_usdc_net_flow_june",
       "issue": "003",
-      "section_anchors": ["§01", "§03"],
+      "section_anchors": [
+        "§01",
+        "§03"
+      ],
       "cited_value": -162.15,
       "unit": "USD_millions",
       "rounded_cited_in_prose": -162,
-      "alt_forms_in_prose": ["$162 million", "shed $162 million", "USDC book actually shed $162 million"],
+      "alt_forms_in_prose": [
+        "$162 million",
+        "shed $162 million",
+        "USDC book actually shed $162 million"
+      ],
       "cross_check": {
         "method": "derived_from_snapshot",
         "snapshot": "content/snapshots/2026-06-aave-v3-per-asset-flow.json",
@@ -406,7 +531,7 @@
           "field": "cumulative_delta_millions"
         }
       },
-      "threshold_pct": 5.0,
+      "threshold_pct": 5,
       "historical_wrong_alarms": [
         "USDC on Aave V3 grew by",
         "chose Aave V3 at 3.19 percent USDC over Fluid",
@@ -418,11 +543,17 @@
     {
       "id": "june_5_liquidations_sector_collateral",
       "issue": "003",
-      "section_anchors": ["§03"],
+      "section_anchors": [
+        "§03"
+      ],
       "cited_value": 128.31,
       "unit": "USD_millions",
       "rounded_cited_in_prose": 128.31,
-      "alt_forms_in_prose": ["$128.31 million", "$128 million", "128.31"],
+      "alt_forms_in_prose": [
+        "$128.31 million",
+        "$128 million",
+        "128.31"
+      ],
       "cross_check": {
         "method": "derived_from_snapshot",
         "snapshot": "content/snapshots/2026-06-liquidations-daily.json",
@@ -431,7 +562,7 @@
           "field_path": "june_5_analysis.collateral_seized_millions"
         }
       },
-      "threshold_pct": 1.0,
+      "threshold_pct": 1,
       "historical_wrong_alarms": [
         "June 5 was a quiet day",
         "no material liquidation spike in June"
@@ -442,11 +573,17 @@
     {
       "id": "june_5_liquidations_spike_multiple",
       "issue": "003",
-      "section_anchors": ["§03"],
+      "section_anchors": [
+        "§03"
+      ],
       "cited_value": 10.25,
       "unit": "multiplier",
       "rounded_cited_in_prose": 10.25,
-      "alt_forms_in_prose": ["10.25 times", "10.25x", "ten times the prior seven-day median"],
+      "alt_forms_in_prose": [
+        "10.25 times",
+        "10.25x",
+        "ten times the prior seven-day median"
+      ],
       "cross_check": {
         "method": "derived_from_snapshot",
         "snapshot": "content/snapshots/2026-06-liquidations-daily.json",
@@ -455,7 +592,7 @@
           "field_path": "june_5_analysis.spike_multiple_vs_prior_median"
         }
       },
-      "threshold_pct": 1.0,
+      "threshold_pct": 1,
       "historical_wrong_alarms": [
         "June 5 within normal range"
       ],
@@ -465,18 +602,26 @@
     {
       "id": "aave_v3_may_net_flow_constant_price",
       "issue": "003",
-      "section_anchors": ["§02", "§04"],
+      "section_anchors": [
+        "§02",
+        "§04"
+      ],
       "cited_value": 352.18,
       "unit": "USD_millions",
       "rounded_cited_in_prose": 352,
-      "alt_forms_in_prose": ["+$352M", "$352 million", "gained $352M", "gained $352 million"],
+      "alt_forms_in_prose": [
+        "+$352M",
+        "$352 million",
+        "gained $352M",
+        "gained $352 million"
+      ],
       "cross_check": {
         "method": "manual",
         "params": {
           "evidence_url": "content/snapshots/2026-05-aave-daily-flows.csv"
         }
       },
-      "threshold_pct": 2.0,
+      "threshold_pct": 2,
       "historical_wrong_alarms": [
         "Aave V3 shed $503 million in May",
         "Aave V3 shed $503M in May",
@@ -489,18 +634,24 @@
     {
       "id": "aave_v3_may_to_june_flow_delta",
       "issue": "003",
-      "section_anchors": ["§02"],
+      "section_anchors": [
+        "§02"
+      ],
       "cited_value": 493,
       "unit": "USD_millions",
       "rounded_cited_in_prose": 493,
-      "alt_forms_in_prose": ["+$493M (+140%)", "$493M month-over-month", "+140%"],
+      "alt_forms_in_prose": [
+        "+$493M (+140%)",
+        "$493M month-over-month",
+        "+140%"
+      ],
       "cross_check": {
         "method": "manual",
         "params": {
           "evidence_url": "content/reports/2026-06-june.mdx (Δ column of Aave V3 net deposit flow row)"
         }
       },
-      "threshold_pct": 2.0,
+      "threshold_pct": 2,
       "historical_wrong_alarms": [],
       "last_verified_at": "2026-07-07T12:00:00Z",
       "notes": "June $845M minus May $352M = $493M. Relative: 493/352 = 140% increase. Displayed as +$493M (+140%) in the §02 sector-aggregate table Δ column."
@@ -508,18 +659,23 @@
     {
       "id": "concentration_top2_share_june",
       "issue": "003",
-      "section_anchors": ["§04"],
+      "section_anchors": [
+        "§04"
+      ],
       "cited_value": 94.5,
       "unit": "%",
       "rounded_cited_in_prose": 94.5,
-      "alt_forms_in_prose": ["94.5% of net inflow", "94.5%"],
+      "alt_forms_in_prose": [
+        "94.5% of net inflow",
+        "94.5%"
+      ],
       "cross_check": {
         "method": "manual",
         "params": {
           "evidence_url": "content/reports/2026-06-june.mdx (§04 flow table: Aave V3 63.4% + SparkLend 31.1%)"
         }
       },
-      "threshold_pct": 1.0,
+      "threshold_pct": 1,
       "historical_wrong_alarms": [],
       "last_verified_at": "2026-07-07T12:00:00Z",
       "notes": "Aave V3 63.4% + SparkLend 31.1% = 94.5% of June sector net inflow. Absorbed by the two largest protocols by supply."
@@ -527,18 +683,23 @@
     {
       "id": "concentration_top2_stock_share_june",
       "issue": "003",
-      "section_anchors": ["§04"],
+      "section_anchors": [
+        "§04"
+      ],
       "cited_value": 73.9,
       "unit": "%",
       "rounded_cited_in_prose": 73.9,
-      "alt_forms_in_prose": ["73.9% of stock", "73.9%"],
+      "alt_forms_in_prose": [
+        "73.9% of stock",
+        "73.9%"
+      ],
       "cross_check": {
         "method": "manual",
         "params": {
           "evidence_url": "content/reports/2026-06-june.mdx (§04 supply shares: Aave V3 56.7% + SparkLend 17.2%)"
         }
       },
-      "threshold_pct": 1.0,
+      "threshold_pct": 1,
       "historical_wrong_alarms": [],
       "last_verified_at": "2026-07-07T12:00:00Z",
       "notes": "Aave V3 56.7% + SparkLend 17.2% = 73.9% of June sector nominal supply. Sits below the 94.5% top-2 share of net inflow, which is the definition of the concentration mechanism."
@@ -546,18 +707,25 @@
     {
       "id": "curator_hhi_may_31_combined",
       "issue": "003",
-      "section_anchors": ["§02"],
+      "section_anchors": [
+        "§02"
+      ],
       "cited_value": 2143.77,
       "unit": "index",
       "rounded_cited_in_prose": 2144,
-      "alt_forms_in_prose": ["2,144", "2144"],
+      "alt_forms_in_prose": [
+        "2,144",
+        "2144"
+      ],
       "cross_check": {
         "method": "derived_from_snapshot",
         "snapshot": "content/snapshots/2026-05-31-curator-hhi-combined.json",
         "derive": "field",
-        "params": { "field_path": "summary.hhi" }
+        "params": {
+          "field_path": "summary.hhi"
+        }
       },
-      "threshold_pct": 1.0,
+      "threshold_pct": 1,
       "historical_wrong_alarms": [
         "not captured",
         "3,103 V1-only May 31"
@@ -568,24 +736,59 @@
     {
       "id": "morpho_top3_share_may_31_combined",
       "issue": "003",
-      "section_anchors": ["§02"],
+      "section_anchors": [
+        "§02"
+      ],
       "cited_value": 77.32,
       "unit": "%",
       "rounded_cited_in_prose": 77.3,
-      "alt_forms_in_prose": ["77.3%", "77.3 percent"],
+      "alt_forms_in_prose": [
+        "77.3%",
+        "77.3 percent"
+      ],
       "cross_check": {
         "method": "derived_from_snapshot",
         "snapshot": "content/snapshots/2026-05-31-curator-hhi-combined.json",
         "derive": "field",
-        "params": { "field_path": "summary.top_3_share_pct" }
+        "params": {
+          "field_path": "summary.top_3_share_pct"
+        }
       },
-      "threshold_pct": 1.0,
+      "threshold_pct": 1,
       "historical_wrong_alarms": [
         "not captured",
         "93.9% V1-only May 31"
       ],
       "last_verified_at": "2026-07-08T12:00:00Z",
       "notes": "Top-3 curator share (Steakhouse 31.1% + Sentora 27.7% + Gauntlet 18.6%) of combined V1+V2 curated TVL at May 31 archive-node backfill."
+    },
+    {
+      "id": "sector_constant_price_flow_jun",
+      "issue": "003",
+      "section_anchors": [
+        "§01",
+        "§04"
+      ],
+      "cited_value": 1334,
+      "unit": "USD_millions",
+      "rounded_cited_in_prose": 1330,
+      "alt_forms_in_prose": [
+        "+$1.33B",
+        "$1.33 billion",
+        "$1.33B of net deposits"
+      ],
+      "cross_check": {
+        "method": "manual",
+        "params": {
+          "evidence_url": "Sum of the six per-protocol constant-price flow captures: Aave V3 +845 + Spark +415 + Compound V3 +59 + Morpho +20 + Fluid +16 + Euler V2 -21 = +1,334 (millions USD)"
+        }
+      },
+      "threshold_pct": 2,
+      "historical_wrong_alarms": [
+        "five protocols other than Aave V3 do not have constant-price flow captures"
+      ],
+      "last_verified_at": "2026-07-08T14:00:00Z",
+      "notes": "Sector-wide June net constant-price depositor flow. Rendered as +$1.33B in prose and the §04 table; the intro (Pass 4f) lists all six per-protocol components explicitly."
     }
   ]
 }

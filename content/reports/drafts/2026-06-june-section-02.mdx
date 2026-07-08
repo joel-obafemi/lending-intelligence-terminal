@@ -12,7 +12,7 @@
 
 <SectionHeading number="02">By the Numbers</SectionHeading>
 
-Snapshot date: June 30, 2026, 23:59 UTC. All month-over-month comparisons against May 31, 2026. Sector covers the six Ethereum lending protocols carried from Issue 002: Aave V3, Spark, Morpho, Fluid, Compound V3, Euler V2.
+Snapshot date: June 30, 2026, 23:59 UTC. All month-over-month comparisons against May 31, 2026.
 
 <DataTable
   caption="Sector aggregate, May 31 → June 30"
@@ -74,8 +74,8 @@ Snapshot date: June 30, 2026, 23:59 UTC. All month-over-month comparisons agains
   ]}
 />
 
-The nominal supplied contraction (−$3.41B sector-wide) sits next to a positive constant-price net flow at Aave V3 (+$845M depositor inflow across the month). The wedge is mark-to-market on collateral. Spot ETH fell 21.3% in June, with weETH, rsETH, ezETH, and osETH falling 19.9 to 21.3% across the same window. The Aave V3 weETH book specifically fell $419M nominal in June, of which roughly $387M is per-unit price effect and the remainder is depositor flow. The five protocols other than Aave V3 do not have constant-price flow captures for the month, so the nominal supplied deltas above carry the mark-to-market effect on their LRT and ETH-family collateral as well. The contraction is real at nominal prices and partially or fully reversed at constant prices, depending on each protocol's collateral composition. Euler V2 is the exception: its collateral is not primarily LRT or ETH-family, so the 20.2% nominal supplied contraction is likely closer to true depositor flow than mark-to-market effect. §05 unpacks the LRT base specifically; §06 picks up the Euler V2 read.
+The nominal supplied contraction (−$3.41B sector-wide) sits next to a positive constant-price net flow at Aave V3 (+$845M depositor inflow across the month). The wedge is mark-to-market on collateral. Spot ETH fell 21.3% in June, with weETH, rsETH, ezETH, and osETH falling 19.9 to 21.3% across the same window. The Aave V3 weETH book specifically fell $419M nominal in June, of which roughly $387M is per-unit price effect and the remainder is depositor flow. All six protocols saw constant-price net flow captures in June: Aave V3 +$845M, Spark +$415M, Compound V3 +$59M, Morpho +$20M, Fluid +$16M, Euler V2 −$21M. The nominal supplied deltas by contrast reflect mark-to-market effects on collateral: each protocol's nominal contraction scales with how much LRT and ETH-family exposure sits in its collateral base. The contraction is real at nominal prices and partially or fully reversed at constant prices, depending on each protocol's collateral composition. Euler V2 is the exception: its collateral is not primarily LRT or ETH-family, so the 20.2% nominal supplied contraction is likely closer to true depositor flow than mark-to-market effect. §05 unpacks the LRT base specifically; §06 picks up the Euler V2 read.
 
-Source: on-chain reads against each protocol's core contracts, DeFi Llama, and the U.S. Treasury 4-week T-bill via FRED. Compound V3 and Euler V2 row-card readings substitute on-chain Comet and EVK aggregations for DeFi Llama's chain-TVL figures, which over-count both protocols.
+*Source: on-chain reads against each protocol's core contracts, DefiLlama, and the U.S. Treasury 4-week T-bill via FRED. Compound V3 and Euler V2 row-card readings substitute on-chain Comet and EVK aggregations for DefiLlama's chain-TVL figures, which over-count both protocols.*
 
 {/* End §02 — three data tables, snapshot statement, mark-to-market caveat paragraph, source attribution */}
