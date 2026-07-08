@@ -15,15 +15,50 @@ from pathlib import Path
 REPO = Path(__file__).resolve().parents[1]
 OUT_DIR = REPO / "public" / "reports" / "charts-social"
 
-COBALT = "#1F3A5F"
-CREAM = "#F7F4ED"
-TERRACOTTA = "#C5511A"
-INK = "#0E1B2C"
-SLATE = "#404040"
-MUTED = "#595959"
-LINE = "#D4CFC2"
-FOG = "#B8C9DD"
-TINT = "#F5E0CF"
+# Two themes share the same semantic slots so the per-card scripts don't
+# change: "report" is the cream/cobalt/terracotta report system; "brand"
+# is the white/royal-blue/navy system from the datumlab.xyz site and the
+# Issue book mockups (halftone-D covers). Select with PROMO_THEME=brand;
+# brand renders write a "-brand" suffix so both sets coexist on disk.
+import os as _os
+
+_THEMES = {
+    "report": {
+        "COBALT": "#1F3A5F",
+        "CREAM": "#F7F4ED",
+        "TERRACOTTA": "#C5511A",
+        "INK": "#0E1B2C",
+        "SLATE": "#404040",
+        "MUTED": "#595959",
+        "LINE": "#D4CFC2",
+        "FOG": "#B8C9DD",
+        "TINT": "#F5E0CF",
+    },
+    "brand": {
+        "COBALT": "#101A3C",   # navy: bars, structure, top bar
+        "CREAM": "#F6F6F3",    # paper white
+        "TERRACOTTA": "#4A6CF7",  # royal blue: accents, highlights
+        "INK": "#101A3C",
+        "SLATE": "#3D4358",
+        "MUTED": "#5A607A",
+        "LINE": "#D9DCE8",
+        "FOG": "#B9C4F9",
+        "TINT": "#E4EAFE",
+    },
+}
+
+THEME = _os.environ.get("PROMO_THEME", "report")
+_T = _THEMES[THEME]
+
+COBALT = _T["COBALT"]
+CREAM = _T["CREAM"]
+TERRACOTTA = _T["TERRACOTTA"]
+INK = _T["INK"]
+SLATE = _T["SLATE"]
+MUTED = _T["MUTED"]
+LINE = _T["LINE"]
+FOG = _T["FOG"]
+TINT = _T["TINT"]
 
 SERIF = "'Liberation Serif', 'DejaVu Serif', Georgia, serif"
 MONO = "'DejaVu Sans Mono', 'Liberation Mono', monospace"
@@ -99,6 +134,8 @@ def wrap_svg(body: str) -> str:
 
 
 def write_and_render(name: str, svg: str) -> None:
+    if THEME != "report":
+        name = f"{name}-{THEME}"
     svg_path = OUT_DIR / f"{name}.svg"
     png_path = OUT_DIR / f"{name}.png"
     svg_path.write_text(svg, encoding="utf-8")
