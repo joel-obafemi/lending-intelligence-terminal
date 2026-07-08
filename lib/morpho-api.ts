@@ -932,6 +932,66 @@ const CURATOR_LEADERBOARD_QUERY = /* GraphQL */ `
   }
 `
 
+// V2 (Vault V2) leaderboard query. Schema differs from V1:
+//   - totalAssetsUsd + netApy live directly on the vault, not under `state`
+//   - curators is a PaginatedCurators wrapper that unwraps via `.items`
+// See scripts/snapshot-curator-hhi.ts for the same pattern documented in
+// depth. We merge V2 vaults into the same by-curator aggregation the V1
+// leaderboard uses so Morpho's protocol page shows the true protocol-layer
+// concentration (Issue 002 §06.3 shipped with a V1-only reading that
+// materially misstated concentration; the erratum documents the gap).
+const CURATOR_LEADERBOARD_V2_QUERY = /* GraphQL */ `
+  query CuratorLeaderboardV2($chainId: Int!, $first: Int!, $skip: Int!) {
+    vaultV2s(
+      first: $first
+      skip: $skip
+      where: { chainId_in: [$chainId] }
+      orderBy: TotalAssetsUsd
+      orderDirection: Desc
+    ) {
+      items {
+        address
+        name
+        symbol
+        totalAssetsUsd
+        netApy
+        curators { items { name image } }
+        asset { symbol }
+      }
+      pageInfo { count countTotal }
+    }
+  }
+`
+
+interface CuratorLeaderboardV2Raw {
+  vaultV2s: {
+    items: Array<{
+      address: string
+      name: string
+      symbol: string
+      totalAssetsUsd: number | null
+      netApy: number | null
+      curators: { items: Array<{ name: string | null; image: string | null }> | null } | null
+      asset: { symbol: string }
+    }>
+    pageInfo: { count: number; countTotal: number }
+  }
+}
+
+// Normalized shape that both V1 and V2 vaults collapse into for the
+// aggregation-by-curator step. Mirrors the V1 raw shape closely so the
+// downstream reducer doesn't need to branch on version.
+interface NormalizedVault {
+  version: "V1" | "V2"
+  address: string
+  name: string
+  symbol: string
+  assetSymbol: string
+  totalAssetsUsd: number
+  netApy: number | null
+  primaryCurator: { name: string | null; image: string | null } | null
+}
+
 interface CuratorLeaderboardRaw {
   vaults: {
     items: Array<{
@@ -1011,6 +1071,74 @@ async function fetchAllMetaMorphoVaultsRaw(): Promise<
   return all
 }
 
+// Same TTL/caching pattern as V1 — Morpho V2 vault count is well under 1k today.
+let rawV2VaultsCache: {
+  value: CuratorLeaderboardV2Raw["vaultV2s"]["items"]
+  fetchedAt: number
+} | null = null
+
+async function fetchAllMorphoV2VaultsRaw(): Promise<
+  CuratorLeaderboardV2Raw["vaultV2s"]["items"]
+> {
+  if (rawV2VaultsCache && Date.now() - rawV2VaultsCache.fetchedAt < RAW_VAULTS_TTL_MS) {
+    return rawV2VaultsCache.value
+  }
+  const PAGE_SIZE = 100
+  const MAX_PAGES = 10
+  const all: CuratorLeaderboardV2Raw["vaultV2s"]["items"] = []
+  for (let page = 0; page < MAX_PAGES; page++) {
+    const data = await gql<CuratorLeaderboardV2Raw>(CURATOR_LEADERBOARD_V2_QUERY, {
+      chainId: ETH_CHAIN_ID,
+      first: PAGE_SIZE,
+      skip: page * PAGE_SIZE,
+    })
+    const items = data.vaultV2s.items
+    all.push(...items)
+    if (items.length < PAGE_SIZE) break
+  }
+  rawV2VaultsCache = { value: all, fetchedAt: Date.now() }
+  return all
+}
+
+/** Fetch V1 + V2 vaults in parallel and collapse into a single normalized
+ *  shape. Downstream aggregators can iterate this list without branching
+ *  on version. */
+async function fetchAllMorphoVaultsCombined(): Promise<NormalizedVault[]> {
+  const [v1Raw, v2Raw] = await Promise.all([
+    fetchAllMetaMorphoVaultsRaw(),
+    fetchAllMorphoV2VaultsRaw(),
+  ])
+  const out: NormalizedVault[] = []
+  for (const v of v1Raw) {
+    out.push({
+      version: "V1",
+      address: v.address,
+      name: v.name,
+      symbol: v.symbol,
+      assetSymbol: v.asset.symbol,
+      totalAssetsUsd: v.state?.totalAssetsUsd ?? 0,
+      netApy: v.state?.netApy ?? null,
+      primaryCurator:
+        v.state?.curators && v.state.curators.length > 0 ? v.state.curators[0] : null,
+    })
+  }
+  for (const v of v2Raw) {
+    const primary =
+      v.curators?.items && v.curators.items.length > 0 ? v.curators.items[0] : null
+    out.push({
+      version: "V2",
+      address: v.address,
+      name: v.name,
+      symbol: v.symbol,
+      assetSymbol: v.asset.symbol,
+      totalAssetsUsd: v.totalAssetsUsd ?? 0,
+      netApy: v.netApy ?? null,
+      primaryCurator: primary,
+    })
+  }
+  return out
+}
+
 /** symbol-keyed (uppercase) lookup for vault display name + curator. Used
  *  by the protocols page to enrich the Vaults table with human-readable
  *  names like "Steakhouse USDC" instead of bare DefiLlama symbols like
@@ -1044,7 +1172,12 @@ export async function loadMorphoVaultIndex(): Promise<
 }
 
 export async function loadMorphoCuratorLeaderboard(): Promise<CuratorLeaderboardRow[]> {
-  const all = await fetchAllMetaMorphoVaultsRaw()
+  // Combined V1 + V2 view. Issue 002 §06.3 shipped with a V1-only reading
+  // that materially misstated protocol-layer concentration (V1 HHI 3,103 at
+  // May 31 vs V1+V2 combined 2,144). All curator surface displays should
+  // use the combined view from now on. See the Issue 002 erratum in
+  // content/snapshots/2026-05-morpho-hhi-erratum.md for full context.
+  const all = await fetchAllMorphoVaultsCombined()
 
   // Group by curator name (case-insensitive). Vaults without a curator land
   // under "Uncurated".
@@ -1062,10 +1195,8 @@ export async function loadMorphoCuratorLeaderboard(): Promise<CuratorLeaderboard
   const byCurator = new Map<string, Acc>()
 
   for (const v of all) {
-    const tvl = v.state?.totalAssetsUsd ?? 0
-    if (tvl <= 0) continue  // Skip empty vaults — they don't count for ranking.
-    const curators = v.state?.curators ?? null
-    const primary = curators && curators.length > 0 ? curators[0] : null
+    if (v.totalAssetsUsd <= 0) continue  // Skip empty vaults — they don't count for ranking.
+    const primary = v.primaryCurator
     const displayName = primary?.name?.trim() || "Uncurated"
     const key = displayName.toLowerCase()
     const acc =
@@ -1075,9 +1206,9 @@ export async function loadMorphoCuratorLeaderboard(): Promise<CuratorLeaderboard
     acc.vaults.push({
       name: v.name,
       symbol: v.symbol,
-      assetSymbol: v.asset.symbol,
-      totalAssetsUsd: tvl,
-      netApy: v.state?.netApy ?? null,
+      assetSymbol: v.assetSymbol,
+      totalAssetsUsd: v.totalAssetsUsd,
+      netApy: v.netApy,
     })
     byCurator.set(key, acc)
   }
