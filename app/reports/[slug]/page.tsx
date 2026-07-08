@@ -20,6 +20,7 @@ import { getAllIssues } from "@/lib/reports/getAllIssues"
 import { SectionHeading } from "@/components/report/SectionHeading"
 import { Lead } from "@/components/report/Lead"
 import { PullQuote } from "@/components/report/PullQuote"
+import { Callout } from "@/components/report/Callout"
 import { DataTable } from "@/components/report/DataTable"
 import { Annotation } from "@/components/report/Annotation"
 import { MethodologyNote } from "@/components/report/MethodologyNote"
@@ -227,6 +228,7 @@ export default async function IssuePage({ params }: RouteParams) {
     SectionHeading,
     Lead,
     PullQuote,
+    Callout,
     DataTable,
     Annotation,
     MethodologyNote,
