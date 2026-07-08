@@ -1,13 +1,13 @@
-// Issue 003 long-form article, LinkedIn variant (~1800 words).
+// Issue 003 long-form article, LinkedIn variant (~950 words, Pass 5 rebuild).
 //
 //   node outputs/build_issue_003_article_linkedin.js
 //   -> content/reports/distribution/Issue_003_Article_LinkedIn.docx
 //
-// Adapted from content/reports/2026-06-june.mdx. LinkedIn rewards longer,
-// methodological pieces: this variant adds an explicit measurement note
-// after the lead and runs a heavier professional register throughout.
-// H2 headers between sections; the three Track A promo cards embedded
-// at their natural section boundaries.
+// Same skeleton as the X variant plus a measurement note after the lead,
+// a historical calibration paragraph in the RYS section, and longer
+// analytical closes. Voice: analyst register, numbers front-loaded,
+// snapshot-dated, no first-person plural, no all-caps emphasis, no
+// reveal setups. Adapted from content/reports/2026-06-june.mdx.
 
 const fs = require("fs")
 const path = require("path")
@@ -67,69 +67,51 @@ const SECTIONS = [
   {
     header: null,
     paras: [
-      "The June reading across Ethereum's six largest lending protocols is consolidation under yield compression. The Real Yield Spread, the blended stablecoin lending rate minus the 4-week U.S. Treasury bill yield, closed June 30 at −37.1 basis points (bps), the deepest month-end inversion since March 2026. Capital did not leave in response. The six protocols absorbed $1.33 billion of net deposits at constant prices, and the largest single destination was the venue paying 41 bps less than the T-bill on its USDC book. This piece walks through where that capital went, why the composition of the flow matters more than its size, and what would falsify the reading.",
-      "A note on measurement before the numbers. All month-over-month comparisons run snapshot to snapshot, May 31 to June 30, 2026. Constant-price flow holds each token's price fixed at the snapshot date and counts only the change in deposited quantity, so it isolates depositor behavior. Nominal figures use actual spot prices, so they mix depositor behavior with price moves. Where the two disagree, the gap is mark-to-market on collateral. Readings come from on-chain reads against each protocol's core contracts, cross-checked against DefiLlama, with the 4-week T-bill yield from FRED.",
+      "Aave V3 added $845 million of net deposits in June 2026, the largest single-protocol inflow in the captured series, while its USDC book contracted by $162 million. The blended stablecoin rate across Ethereum's four largest lending venues closed the month 37.1 basis points (bps) below the 4-week Treasury bill. Capital consolidated anyway.",
+      "The six largest lending protocols on Ethereum absorbed $1.33 billion of net deposits at constant prices in June, five of six positive. The largest destination paid 41 bps less than the T-bill on USDC through the month. The composition of the inflow, more than its size, carries the finding: what arrived was collateral.",
+      "A note on measurement. All comparisons run snapshot to snapshot, May 31 to June 30, 2026. Constant-price flow holds each token's price fixed at the snapshot date and counts only the change in deposited quantity, isolating depositor behavior. Nominal figures use spot prices and mix behavior with price moves; where the two disagree, the gap is mark-to-market on collateral. Readings come from on-chain reads of each protocol's core contracts, cross-checked against DefiLlama, with the T-bill series from FRED.",
     ],
-    image: "twitter-promo-sector-paradox.png",
+    imageAfterIndex: 1,
+    images: ["twitter-promo-sector-paradox.png"],
   },
   {
-    header: "The Real Yield Spread deepened, and June 5 was the trigger",
+    header: "The trigger: June 5",
     paras: [
-      "The blended stablecoin supply rate, TVL-weighted across USDC, USDT, DAI, and USDS on Aave V3, Spark, Morpho, and Fluid, fell from 3.60% at the May close to 3.23% at the June close, a 37-bps compression. The 4-week Treasury bill held at 3.60% across the same window, unchanged to two decimal places. The spread re-inverted because on-chain rates fell, not because TradFi rates moved. That is the inverse of May's mechanism, where stablecoin APYs lifted to meet T-bills and the spread closed at parity. A depositor holding stablecoins on the sector's largest venues spent June earning less than the risk-free rate, and the gap widened as the month progressed.",
-      "The spread last printed positive on June 4, at +42.0 bps. It turned negative on June 5 and stayed negative through the remaining 25 days of the month. June 5 was also the month's largest liquidation event: $128.31 million of collateral seized across 1,766 individual events, 10.25 times the trailing seven-day median of $12.51 million. Aave V3 carried $93.98 million of the day's seized collateral, Fluid $15.04 million, Morpho $11.08 million, Compound V3 $7.22 million, and SparkLend and Euler V2 the residual.",
-      "The distribution across five of six protocols indicates a spot-price shock that traveled across the sector rather than a single-protocol operational failure. The mechanical chain runs from liquidation to rate: forced repayments retire borrow positions, utilization drops across the affected markets, borrow rates fall on the utilization curve, and supply APYs compress with them. That chain, together with the mark-to-market repricing on ETH-family collateral, is the proximate driver of the month's yield compression. The rate a depositor sees is downstream of a liquidation event most depositors never noticed.",
-      "Context matters for calibration. June's −37 bps is not the deepest reading on record: February 2026 printed −151 bps and March −118 bps before April and May recovered toward parity. Against the prior cycle, the May to November 2025 month-end series ranged from −19 to −90 bps with two positive prints in between. June's print is consistent with the spread reverting to the pre-rally regime rather than continuing the recovery that May suggested.",
+      "The Real Yield Spread, the blended stablecoin lending rate minus the 4-week T-bill yield, printed +42.0 bps on June 4 and went negative on June 5. It stayed negative through June 30, closing at −37.1 bps, the deepest month-end inversion since March 2026. The blended rate fell from 3.60% to 3.23% across the month while the T-bill held at 3.60%; the inversion came entirely from the on-chain side.",
+      "June 5 was also the month's largest liquidation event: $128.31 million of collateral seized across 1,766 events, 10.25 times the trailing seven-day median, spread across five of the six covered protocols. The chain from there runs mechanically. Forced repayments retire borrow positions, utilization falls, borrow rates slide down the curve, and supply APYs compress behind them. A single day of liquidations set the rate regime for the remaining 25.",
+      "For calibration: June's −37 bps is not the deepest print in the captured series. February 2026 reached −151 bps and March −118 bps before April and May recovered toward parity. The prior cycle's month-end readings, May through November 2025, ranged from −19 to −90 bps with two positive prints. June sits near the middle of the prior inverted regime, a reversion to the pre-rally range rather than a continuation of May's recovery.",
     ],
-    image: null,
   },
   {
-    header: "Where the money went (and where it didn't)",
+    header: "Where the money went",
     paras: [
-      "At nominal prices the sector contracted. Total supply fell 10.4%, from $32.64 billion at May 31 to $29.23 billion at June 30, and active borrows fell 8.7% to $11.98 billion. At constant prices, depositors added $1.33 billion across the same window. The wedge between the two readings is mark-to-market on collateral: spot ETH fell 21.3% in June and the four largest liquid restaking tokens fell in near-lockstep. The dollar value of the sector's deposits shrank while the deposited quantity grew. Both readings are correct at their own definitions, and the second is the one that describes behavior.",
-      "Five of the six protocols saw positive constant-price flow. Aave V3 added $845 million, the largest single-protocol inflow in the captured series, up from $352 million in May. SparkLend added $415 million, Compound V3 $59 million, Morpho $20 million, and Fluid $16 million. Only Euler V2 was negative, at $21 million of outflow distributed across many small vaults rather than one operator's exit.",
-      "Aave V3's $845 million did not arrive in USDC. The protocol's own USDC book shed $162 million of net constant-price capital across the month. What arrived was $452 million of wstETH, $143 million of cbBTC, $104 million of USDTB, and $99 million of USDT, with smaller positives spread across other assets. That composition is not yield-seeking supply. It is collateral flowing to the sector's largest borrow book, and it recasts the protocol's growth: the depositors Aave V3 gained in June were not chasing its stablecoin rate, because on the asset where the rate comparison bites, the book was shrinking.",
-      "The daily shape distinguishes accumulation from a single trade at scale. Aave V3 added quantity on twenty-seven of thirty June trading days. The three material outflow days, June 3, 11, and 12, were dominated by USDC leaving alongside wstETH arriving on the same day: asset rotation inside the protocol rather than depositor exit. The month's inflow was steady accumulation punctuated by three days of stable-token rotation.",
-      "The cleanest counter-test is Fluid. Its USDC supply APY closed June at 6.41%, 281 bps above the T-bill and the sector's only positive real yield spread on USDC. It received $16 million of net inflow for the month, against Aave V3's $845 million protocol total: a 50-to-1 ratio in favor of the venue paying 41 bps below the risk-free rate on the same asset. Whatever is steering the marginal dollar in this sector, it is not the headline rate.",
+      "At spot prices the sector contracted 10.4% in June, from $32.64 billion of total supply to $29.23 billion. At constant prices, holding token prices fixed and counting only quantity, depositors added $1.33 billion. The wedge is mark-to-market: spot ETH fell 21.25% and the four largest liquid restaking tokens fell 20 to 21.3% alongside it. The dollar value of the sector's deposits shrank while the deposited quantity grew, and the second reading is the one that describes behavior.",
+      "Aave V3's $845 million breaks down as $452 million of wstETH, $143 million of cbBTC, $104 million of USDTB, and $99 million of USDT, against the $162 million USDC outflow. The assets that arrived are collateral for the sector's largest borrow book; the asset that left is the one priced directly against the T-bill. The daily shape supports accumulation over a single allocation: Aave V3 added quantity on twenty-seven of thirty June days, and the three material outflow days were dominated by USDC leaving alongside wstETH arriving, rotation within the protocol rather than exit from it.",
+      "Fluid ran the counter-case. Its USDC supply APY closed June at 6.41%, 281 bps above the T-bill and the sector's only positive real yield on the asset. Its net June inflow was $16 million, against Aave V3's $845 million: 50-to-1 toward the venue paying 41 bps under the risk-free rate on the same asset. At June's prices, the 50-to-1 split is the cleanest available measure of what redemption depth is worth to the marginal depositor.",
     ],
-    image: "twitter-promo-aave-wrong-asset.png",
+    imageAfterIndex: 1,
+    images: ["twitter-promo-aave-wrong-asset.png"],
   },
   {
-    header: "Concentration accelerated at the top",
+    header: "Concentration accelerated",
+    imageBefore: "twitter-promo-concentration-94-5.png",
     paras: [
-      "The over-index arithmetic makes the concentration visible. Aave V3 captured 63.4% of the sector's net constant-price inflow while holding 56.7% of the sector's nominal supply at June 30, over-indexing by roughly 7 percentage points (pp). SparkLend captured 31.1% against a 17.2% share of supply, over-indexing by 14 pp. A protocol whose inflow share matches its stock share is holding its position; a protocol that over-indexes is widening it.",
-      "Together the two largest protocols absorbed 94.5% of net inflow while holding 73.9% of stock. The remaining four protocols captured 5.5%. That is the concentration mechanism in one ratio: existing incumbents absorbed new capital at rates that widened rather than narrowed the gap between top and tail, in a month where the largest destination paid less than the T-bill on USDC. Scale attracted capital that yield did not.",
+      "Aave V3 captured 63.4% of June's net constant-price inflow on 56.7% of sector supply. SparkLend captured 31.1% on 17.2%. Together: 94.5% of the month's inflow into protocols holding 73.9% of the stock, with the remaining four protocols sharing 5.5%.",
+      "A protocol whose inflow share matches its stock share is holding position; both of the largest venues ran ahead of theirs, by roughly 7 percentage points at Aave V3 and 14 at SparkLend, in a month when the largest destination paid under the T-bill on USDC. Scale drew the capital that yield did not.",
     ],
-    image: "twitter-promo-concentration-94-5.png",
   },
   {
-    header: "Morpho was less concentrated than we reported for May",
+    header: "What July will discriminate",
     paras: [
-      "Issue 003 also carries a correction, and it runs in the protocol's favor. Issue 002 reported Morpho's curator concentration at May 31 as a Herfindahl-Hirschman index (HHI) of 3,103, with three curators holding 93.9% of curated deposits. That reading captured only MetaMorpho, the V1 vault system. Morpho operates a second vault system, Vault V2, in parallel, and V2 was already the larger side of the curator market at May 31. By June 30, V2 holds 2.4 times V1's curated deposits.",
-      "Measured across both systems, Morpho's curator market at June 30 holds $2.12 billion of curated deposits across twenty curators, with an HHI of 2,095 and a top-three share of 74.6%. Sentora ranks first at 31.2%, Steakhouse Financial second at 29.2%, and Gauntlet third at 14.2%, with seventeen further curators sharing the remaining quarter. Re-measured on the combined basis, May 31 comes to 2,144. The curator market did not concentrate further in June. It was less concentrated than the V1-only reading suggested all along, because half the market was invisible to it. Forward readings in this series run on the combined methodology.",
+      "Three readings settle whether June's pattern is structural. The Real Yield Spread at July 31, against the late-July FOMC decision: absent a cut, a print between −20 and −60 bps extends the regime; a cut closes the spread from the rate side rather than the on-chain side. Aave V3's share of July inflow: above 50% sustains the consolidation read. Fluid's flow response: USDC APY above 5% with inflow under $50 million keeps the depth-over-rate pattern intact.",
+      "The thresholds are falsifiable and stated in advance. Aave V3 below 50% of sector inflow combined with Fluid above $75 million of constant-price flow would break the thesis, and Issue 004 would publish the correction. If the spread closes from the rate side while the flow pattern holds, June's consolidation reads cyclical rather than structural; the July close provides the discriminating datapoint either way.",
     ],
-    image: null,
-  },
-  {
-    header: "The LRT contraction was mostly price",
-    paras: [
-      "The sector's liquid restaking token collateral fell $807 million at actual prices in June, from $3.73 billion to $2.92 billion. Roughly $781 million of that is per-unit price effect: weETH fell 21.04% per token, rsETH 21.00%, ezETH 21.28%, and osETH 19.99%, all tracking spot ETH's 21.25% decline. The residual constant-price flow across the four LRTs is approximately $26 million of net outflow. June's LRT contraction is roughly 97% price and 3% depositor flow.",
-      "The Aave V3 Core weETH book makes the point concrete. Its dollar value fell $419 million across June, from $2.11 billion to $1.69 billion. Its token quantity grew by roughly 14,000 weETH. Depositors did not exit LRTs in June; prices did the contracting. May's reading was the opposite, $1.17 billion of genuine constant-price LRT outflow concentrated on weETH, and that exit thesis held for May. The mechanism did not extend to June. A depositor base that held through a 21% drawdown, and added modestly to its positions while doing so, is a different behavioral signal than the one May printed.",
-    ],
-    image: null,
-  },
-  {
-    header: "What to watch in July",
-    paras: [
-      "Three readings will discriminate. First, the Real Yield Spread against the late-July Federal Open Market Committee decision: absent a cut, we expect the July 31 spread to land between −20 and −60 bps; a cut would close the spread from the rate side rather than the on-chain side. Second, Aave V3's share of sector inflow: the consolidation thesis expects it to stay above 50%, most likely in the 55 to 70% range. Third, Fluid's flow response to its rate leadership: we expect its USDC supply APY to hold above 5% and its net inflow to grow modestly but stay under $50 million for the month.",
-      "The thesis is falsifiable, and we have stated the thresholds in advance. If Aave V3's share of sector inflow falls below 50% and Fluid's constant-price flow rises above $75 million, the thesis needs revision, and Issue 004 will publish the correction. If the spread closes from the rate side while flow patterns hold, June's consolidation was cyclical rather than structural. The July close provides the discriminating datapoint either way.",
-    ],
-    image: null,
   },
 ]
 
 const CLOSING_LEAD =
-  "The full report, with the daily flow series, six protocol deep dives, and the complete data tables, is live on the Datum Labs lending terminal: "
-const CLOSING_TAIL = ". The June issue is the third in the monthly State of DeFi Lending on Ethereum series."
+  "The full report, with the daily flow series, six protocol deep dives, and the complete data tables: "
+const CLOSING_TAIL = ". Issue 003 of the monthly State of DeFi Lending on Ethereum series."
 
 function build() {
   const children = [
@@ -145,8 +127,13 @@ function build() {
 
   for (const section of SECTIONS) {
     if (section.header) children.push(h2(section.header))
-    for (const text of section.paras) children.push(p(text))
-    if (section.image) children.push(img(section.image))
+    if (section.imageBefore) children.push(img(section.imageBefore))
+    section.paras.forEach((text, i) => {
+      children.push(p(text))
+      if (section.imageAfterIndex === i && section.images) {
+        for (const file of section.images) children.push(img(file))
+      }
+    })
   }
 
   children.push(

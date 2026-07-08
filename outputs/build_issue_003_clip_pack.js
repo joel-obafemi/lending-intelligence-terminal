@@ -1,12 +1,13 @@
-// Issue 003 clip pack: fourteen clips across two voices.
+// Issue 003 clip pack: twelve clips across two voices (Pass 5 rebuild).
 //
 //   node outputs/build_issue_003_clip_pack.js
 //   -> content/reports/distribution/Issue_003_Clip_Pack_Consolidation.docx
 //
-// Section A: Joel's personal X profile (first person, show-your-work,
-// plain-language teach on technical terms, warm and direct).
-// Section B: Datum Labs X profile (declarative, third person,
-// snapshot-dated figures, analytical register).
+// Voice: analyst register on both sections. Numbers front-loaded,
+// snapshot-dated, interpretation embedded in the composition of the
+// figures rather than stated as a separate wrap. No first-person plural,
+// no all-caps emphasis, no reveal setups. The Morpho methodology clips
+// were dropped in Pass 5; that correction stays in the report body only.
 // All findings adapted from content/reports/2026-06-june.mdx; no new claims.
 
 const fs = require("fs")
@@ -21,106 +22,94 @@ const REPORT_URL = "https://lending-intelligence-terminal.vercel.app/reports/202
 const BODY = { font: "Georgia", size: 22 } // 11pt
 
 const SECTION_A = {
-  title: "Section A: Personal X profile (Joel's voice)",
+  title: "Section A: Personal X profile",
   notes:
-    "First person, show-your-work cadence, plain-language teach on technical terms at first use. Warm and direct, not stiff. Post as standalone tweets or as a thread in this order.",
+    "Personal profile, analyst register. Post as standalone tweets or as a thread in this order.",
   clips: [
     {
       id: "A.1",
-      title: "Opening tweet: the paradox in one sentence",
+      title: "Opening: the paradox stated directly",
       text:
-        "Aave V3 grew $845 million in June. Almost none of it was USDC. USDC on Aave V3 actually fell $162 million.\n\nWhat arrived was collateral: wstETH, cbBTC, and stablecoins that aren't USDC.\n\nThat tells us something important about who's still active on the biggest lending protocol on Ethereum. New report out now.",
+        "Aave V3 added $845 million of net deposits in June. Its USDC book fell $162 million over the same month.\n\nThe inflow was wstETH, cbBTC, and non-USDC stablecoins: collateral for the deepest borrow book on Ethereum, arriving while the headline USDC rate paid 41 bps under the T-bill.\n\nNew report out now.",
     },
     {
       id: "A.2",
-      title: "Sector story: shrank in dollars, grew in tokens",
+      title: "Sector: both readings true at once",
       text:
-        "On paper, DeFi lending on Ethereum shrank $3.4 billion in June. But when I broke down the numbers, depositors actually ADDED $1.33 billion worth of tokens across the six major protocols.\n\nThe gap is just prices: ETH fell 21% and dragged the dollar value of collateral down with it. Hold prices fixed and count tokens, and five of six protocols grew. Only Euler V2 saw outflow, and a small one at $21 million.",
+        "June's sector numbers, both true at once: total supply down $3.41 billion at spot prices, depositor quantity up $1.33 billion at constant prices.\n\nETH fell 21% and repriced every ETH-family collateral position. Five of six protocols grew in token terms. Euler V2 was the exception at −$21 million, spread across dozens of small vaults.",
       attach: "twitter-promo-sector-paradox.png",
     },
     {
       id: "A.3",
-      title: "Aave V3 wrong-asset finding",
+      title: "Aave V3 composition",
       text:
-        "The $845 million that flowed into Aave V3 in June wasn't chasing yield. It couldn't have been: Aave paid 41 bps LESS than a US T-bill on USDC all month.\n\nThe inflow list: $452M wstETH, $143M cbBTC, $104M USDTB, $99M USDT. That's collateral, not savings. People post collateral where they can borrow deepest, and no venue has a deeper borrow book than Aave. The growth is the borrow side pulling assets in.",
+        "Composition of Aave V3's +$845M June inflow: wstETH +$452M, cbBTC +$143M, USDTB +$104M, USDT +$99M. USDC: −$162M.\n\nThe protocol paid 3.19% on USDC against a 3.60% T-bill all month. The deposits that arrived are borrow-side collateral; the deposits that left were the ones the rate comparison actually touches.",
       attach: "twitter-promo-aave-wrong-asset.png",
     },
     {
       id: "A.4",
-      title: "Fluid rate leadership and the 50-to-1 ratio",
+      title: "Fluid and the 50-to-1 split",
       text:
-        "Here's the strongest single signal in the June data.\n\nFluid paid 6.41% on USDC, a full 281 bps ABOVE the T-bill and the only positive real yield on USDC in the sector. Aave V3 paid 3.19%, 41 bps below.\n\nFlow: Fluid took in $16 million. Aave took in $845 million. That's 50-to-1 in favor of the venue paying less. Depth beats rate right now, and it isn't close.",
-    },
-    {
-      id: "A.5",
-      title: "Morpho methodology correction (personal and honest)",
-      text:
-        "Worth flagging: we got Morpho's concentration wrong in Issue 002, and the June report corrects it.\n\nOur May reading (HHI 3,103, top three curators at 93.9%; HHI is a standard concentration score, lower means less concentrated) only counted V1 vaults. Morpho runs two vault systems in parallel, and V2 was already the bigger one. Count both and Morpho is LESS concentrated than we reported, not more: HHI 2,095, top three at 74.6%. Sentora is still the largest curator.\n\nCorrections are part of the job. The thresholds are in the report so you can check our work.",
+        "Fluid paid 6.41% on USDC in June, 281 bps over the 4-week T-bill and the sector's only positive real yield on the asset. Net June inflow: $16 million.\n\nAave V3 paid 41 bps under the same T-bill and drew $845 million.\n\nA 50-to-1 split toward the lower rate puts a number on what redemption depth is worth.",
     },
     {
       id: "A.6",
       title: "June 5 liquidation mechanism",
       text:
-        "The Real Yield Spread printed positive on June 4. One day later it flipped, and it stayed negative for the rest of the month.\n\nJune 5 is why: $128 million of collateral got liquidated across the sector in a single day, about 10x the trailing week's median. Forced repayments retire loans, utilization drops, borrow rates fall, and deposit yields compress right behind them. One bad day for borrowers set the yield regime for the month.",
+        "The Real Yield Spread printed +42 bps on June 4 and went negative on June 5, where it stayed through month-end.\n\nSame day: $128 million of collateral liquidated sector-wide, 10x the trailing-week median. Forced repayments cut utilization, borrow rates slid down the curve, and deposit yields followed. One day set the month's rate regime.",
     },
     {
       id: "A.7",
       title: "Closing and report link",
       text:
-        `Full breakdown of June's DeFi lending picture is live: the yield inversion, where the $1.33 billion went, the Morpho correction, and what we're watching for July. Charts, tables, everything.\n\n${REPORT_URL}`,
+        `June's full picture is live: the re-inverted yield spread, $1.33 billion of constant-price inflow and where it landed, the LRT repricing, and the July thresholds that would falsify the read. Charts and tables throughout.\n\n${REPORT_URL}`,
     },
   ],
 }
 
 const SECTION_B = {
-  title: "Section B: Datum Labs X profile (agency voice)",
+  title: "Section B: Datum Labs X profile",
   notes:
-    "Declarative, third person, snapshot-dated figures. Emphasis on the finding, not the analyst. Post as standalone tweets or as a launch thread in this order.",
+    "Agency profile: declarative, third person, snapshot-dated figures. Post as standalone tweets or as a launch thread in this order.",
   clips: [
     {
       id: "B.1",
       title: "Opening",
       text:
-        "Datum Labs Issue 003 is live. The June 2026 reading across Ethereum's six largest lending protocols: consolidation under yield compression.\n\nAave V3 grew $845 million while its USDC book contracted. The Real Yield Spread closed at −37.1 bps. Two protocols absorbed 94.5% of sector inflow.",
+        "Datum Labs Issue 003 is live. June 2026 across Ethereum's six largest lending protocols: consolidation under yield compression.\n\nAave V3 grew $845 million while its USDC book contracted; the Real Yield Spread closed at −37.1 bps; two protocols absorbed 94.5% of sector inflow.",
       attach: "twitter-promo-concentration-94-5.png",
     },
     {
       id: "B.2",
       title: "Sector +$1.33B",
       text:
-        "Sector constant-price flow, June 2026: +$1.33 billion across six protocols, five positive.\n\nAave V3 +$845M. SparkLend +$415M. Compound V3 +$59M. Morpho +$20M. Fluid +$16M. Euler V2 −$21M.\n\nNominal supply fell $3.41 billion across the same window. The wedge is mark-to-market on ETH-family collateral, not depositor exit.",
+        "Sector constant-price flow, June 2026: +$1.33 billion, five of six protocols positive.\n\nAave V3 +$845M. SparkLend +$415M. Compound V3 +$59M. Morpho +$20M. Fluid +$16M. Euler V2 −$21M.\n\nNominal supply fell $3.41 billion over the same window; the gap is mark-to-market on ETH-family collateral.",
       attach: "twitter-promo-sector-paradox.png",
     },
     {
       id: "B.3",
       title: "Aave V3 composition",
       text:
-        "Aave V3's June inflow arrived as collateral, not stablecoin yield-seeking.\n\nComposition of the +$845M at constant prices: wstETH +$452M, cbBTC +$143M, USDTB +$104M, USDT +$99M. USDC: −$162M.\n\nThe protocol's USDC supply APY ran 41 bps below the 4-week T-bill through June.",
+        "Aave V3's June inflow by asset, constant prices: wstETH +$452M, cbBTC +$143M, USDTB +$104M, USDT +$99M, USDC −$162M.\n\nUSDC supply APY ran 41 bps below the 4-week T-bill through the month. The book that grew is collateral against the sector's largest borrow market.",
       attach: "twitter-promo-aave-wrong-asset.png",
     },
     {
       id: "B.4",
       title: "Fluid rate leadership",
       text:
-        "Fluid closed June 2026 as the sector's only positive real yield spread on USDC: 6.41% supply APY, 281 bps above the 4-week T-bill.\n\nNet constant-price inflow for the month: $16 million, against Aave V3's $845 million protocol total. Rate leadership did not convert to scale flow in June.",
-    },
-    {
-      id: "B.5",
-      title: "Morpho methodology correction (agency voice)",
-      text:
-        "Datum Labs Issue 003 files an erratum on Issue 002's Morpho curator reading.\n\nThe May 31 figure (HHI 3,103, top-three share 93.9%) measured the V1 vault system only. Measured across V1 and V2 combined, June 30 reads HHI 2,095 with a top-three share of 74.6%; May 31 re-measured reads 2,144. Morpho's curator layer is less concentrated than previously reported. Forward readings run on the combined methodology.",
+        "Fluid closed June 2026 with the sector's only positive real yield spread on USDC: 6.41% supply APY, 281 bps above the 4-week T-bill.\n\nNet constant-price inflow for the month: $16 million, against $845 million at Aave V3. Rate leadership did not convert to scale flow.",
     },
     {
       id: "B.6",
       title: "June 5 as trigger",
       text:
-        "June 5, 2026: $128.31 million of collateral seized across 1,766 liquidation events, 10.25 times the trailing seven-day median, distributed across five of six covered protocols.\n\nThe mechanical trigger for the June Real Yield Spread inversion. The spread printed +42.0 bps on June 4 and stayed negative from June 5 through month-end.",
+        "June 5, 2026: $128.31 million of collateral seized across 1,766 liquidation events, 10.25x the trailing seven-day median, distributed across five of six covered protocols.\n\nThe Real Yield Spread printed +42.0 bps on June 4 and held negative from June 5 through month-end.",
     },
     {
       id: "B.7",
       title: "Closing and report link",
       text:
-        "Issue 003, State of DeFi Lending on Ethereum, June 2026: six protocol deep dives, the LRT reprice decomposition, and six falsifiable calls for July.\n\nFull analysis at datumlab.xyz.",
+        "Issue 003, State of DeFi Lending on Ethereum, June 2026: six protocol deep dives, the LRT reprice decomposition, and falsifiable calls for July.\n\nFull analysis at datumlab.xyz.",
     },
   ],
 }
@@ -186,7 +175,7 @@ function build() {
           italics: true,
           color: "404040",
           text:
-            "Fourteen clips across two voices for the June 2026 report. Section A runs on the personal profile, Section B on the Datum Labs profile. Both cover the same findings in different registers; character counts and card attachments noted under each clip. Promo cards live in public/reports/charts-social/.",
+            "Twelve clips across two profiles for the June 2026 report. Section A runs on the personal profile, Section B on the Datum Labs profile. Character counts and card attachments noted under each clip. Promo cards live in public/reports/charts-social/.",
         }),
       ],
       spacing: { after: 240 },
@@ -209,8 +198,12 @@ function build() {
   const doc = new Document({ sections: [{ properties: {}, children }] })
   return Packer.toBuffer(doc).then((buf) => {
     fs.writeFileSync(OUT, buf)
-    const total = SECTION_A.clips.length + SECTION_B.clips.length
-    console.log(`wrote ${OUT} (${(buf.length / 1024).toFixed(1)} KB, ${total} clips)`)
+    const clips = [...SECTION_A.clips, ...SECTION_B.clips]
+    const lens = clips.map((c) => c.text.length)
+    console.log(
+      `wrote ${OUT} (${(buf.length / 1024).toFixed(1)} KB, ${clips.length} clips, ` +
+        `chars ${Math.min(...lens)}-${Math.max(...lens)})`
+    )
   })
 }
 
