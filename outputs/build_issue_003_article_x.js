@@ -74,7 +74,7 @@ const SECTIONS = [
       "The six largest lending protocols on Ethereum absorbed $1.33 billion of net deposits at constant prices in June, five of six positive. The largest destination paid 41 bps less than the T-bill on USDC through the month. The composition of the inflow, more than its size, carries the finding: what arrived was collateral.",
     ],
     imageAfterIndex: 1,
-    images: ["twitter-promo-sector-paradox-brand.png"],
+    images: ["twitter-promo-sector-paradox.png"],
   },
   {
     header: "The trigger: June 5",
@@ -91,11 +91,11 @@ const SECTIONS = [
       "Fluid ran the counter-case. Its USDC supply APY closed June at 6.41%, 281 bps above the T-bill and the sector's only positive real yield on the asset. Its net June inflow was $16 million, against Aave V3's $845 million: 50-to-1 toward the venue paying 41 bps under the risk-free rate on the same asset.",
     ],
     imageAfterIndex: 1,
-    images: ["twitter-promo-aave-wrong-asset-brand.png"],
+    images: ["twitter-promo-aave-wrong-asset.png"],
   },
   {
     header: "Concentration accelerated",
-    imageBefore: "twitter-promo-concentration-94-5-brand.png",
+    imageBefore: "twitter-promo-concentration-94-5.png",
     paras: [
       "Aave V3 captured 63.4% of June's net constant-price inflow on 56.7% of sector supply. SparkLend captured 31.1% on 17.2%. Together: 94.5% of the month's inflow into protocols holding 73.9% of the stock, with the remaining four protocols sharing 5.5%. Inflow share ran ahead of stock share at both of the largest venues, by roughly 7 percentage points at Aave V3 and 14 at SparkLend, in a month when the largest paid under the T-bill on USDC.",
     ],

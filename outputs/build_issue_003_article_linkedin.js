@@ -72,7 +72,7 @@ const SECTIONS = [
       "A note on measurement. All comparisons run snapshot to snapshot, May 31 to June 30, 2026. Constant-price flow holds each token's price fixed at the snapshot date and counts only the change in deposited quantity, isolating depositor behavior. Nominal figures use spot prices and mix behavior with price moves; where the two disagree, the gap is mark-to-market on collateral. Readings come from on-chain reads of each protocol's core contracts, cross-checked against DefiLlama, with the T-bill series from FRED.",
     ],
     imageAfterIndex: 1,
-    images: ["twitter-promo-sector-paradox-brand.png"],
+    images: ["twitter-promo-sector-paradox.png"],
   },
   {
     header: "The trigger: June 5",
@@ -90,11 +90,11 @@ const SECTIONS = [
       "Fluid ran the counter-case. Its USDC supply APY closed June at 6.41%, 281 bps above the T-bill and the sector's only positive real yield on the asset. Its net June inflow was $16 million, against Aave V3's $845 million: 50-to-1 toward the venue paying 41 bps under the risk-free rate on the same asset. At June's prices, the 50-to-1 split is the cleanest available measure of what redemption depth is worth to the marginal depositor.",
     ],
     imageAfterIndex: 1,
-    images: ["twitter-promo-aave-wrong-asset-brand.png"],
+    images: ["twitter-promo-aave-wrong-asset.png"],
   },
   {
     header: "Concentration accelerated",
-    imageBefore: "twitter-promo-concentration-94-5-brand.png",
+    imageBefore: "twitter-promo-concentration-94-5.png",
     paras: [
       "Aave V3 captured 63.4% of June's net constant-price inflow on 56.7% of sector supply. SparkLend captured 31.1% on 17.2%. Together: 94.5% of the month's inflow into protocols holding 73.9% of the stock, with the remaining four protocols sharing 5.5%.",
       "A protocol whose inflow share matches its stock share is holding position; both of the largest venues ran ahead of theirs, by roughly 7 percentage points at Aave V3 and 14 at SparkLend, in a month when the largest destination paid under the T-bill on USDC. Scale drew the capital that yield did not.",

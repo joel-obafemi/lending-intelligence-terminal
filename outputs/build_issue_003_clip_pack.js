@@ -37,14 +37,14 @@ const SECTION_A = {
       title: "Sector: both readings true at once",
       text:
         "June's sector numbers, both true at once: total supply down $3.41 billion at spot prices, depositor quantity up $1.33 billion at constant prices.\n\nETH fell 21% and repriced every ETH-family collateral position. Five of six protocols grew in token terms. Euler V2 was the exception at −$21 million, spread across dozens of small vaults.",
-      attach: "twitter-promo-sector-paradox-brand.png",
+      attach: "twitter-promo-sector-paradox.png",
     },
     {
       id: "A.3",
       title: "Aave V3 composition",
       text:
         "Composition of Aave V3's +$845M June inflow: wstETH +$452M, cbBTC +$143M, USDTB +$104M, USDT +$99M. USDC: −$162M.\n\nThe protocol paid 3.19% on USDC against a 3.60% T-bill all month. The deposits that arrived are borrow-side collateral; the deposits that left were the ones the rate comparison actually touches.",
-      attach: "twitter-promo-aave-wrong-asset-brand.png",
+      attach: "twitter-promo-aave-wrong-asset.png",
     },
     {
       id: "A.4",
@@ -77,21 +77,21 @@ const SECTION_B = {
       title: "Opening",
       text:
         "Datum Labs Issue 003 is live. June 2026 across Ethereum's six largest lending protocols: consolidation under yield compression.\n\nAave V3 grew $845 million while its USDC book contracted; the Real Yield Spread closed at −37.1 bps; two protocols absorbed 94.5% of sector inflow.",
-      attach: "twitter-promo-concentration-94-5-brand.png",
+      attach: "twitter-promo-concentration-94-5.png",
     },
     {
       id: "B.2",
       title: "Sector +$1.33B",
       text:
         "Sector constant-price flow, June 2026: +$1.33 billion, five of six protocols positive.\n\nAave V3 +$845M. SparkLend +$415M. Compound V3 +$59M. Morpho +$20M. Fluid +$16M. Euler V2 −$21M.\n\nNominal supply fell $3.41 billion over the same window; the gap is mark-to-market on ETH-family collateral.",
-      attach: "twitter-promo-sector-paradox-brand.png",
+      attach: "twitter-promo-sector-paradox.png",
     },
     {
       id: "B.3",
       title: "Aave V3 composition",
       text:
         "Aave V3's June inflow by asset, constant prices: wstETH +$452M, cbBTC +$143M, USDTB +$104M, USDT +$99M, USDC −$162M.\n\nUSDC supply APY ran 41 bps below the 4-week T-bill through the month. The book that grew is collateral against the sector's largest borrow market.",
-      attach: "twitter-promo-aave-wrong-asset-brand.png",
+      attach: "twitter-promo-aave-wrong-asset.png",
     },
     {
       id: "B.4",

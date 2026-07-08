@@ -60,8 +60,13 @@ LINE = _T["LINE"]
 FOG = _T["FOG"]
 TINT = _T["TINT"]
 
-SERIF = "'Liberation Serif', 'DejaVu Serif', Georgia, serif"
-MONO = "'DejaVu Sans Mono', 'Liberation Mono', monospace"
+# Pass 6 feedback: simpler UI-sans typography across the cards (titles,
+# numbers, labels), like the dashboard's Methodology page. The SERIF /
+# MONO names are kept so the per-card scripts don't change; MONO keeps
+# its letterspaced-uppercase role (kickers, footer) in the same sans.
+SANS = "'Segoe UI', 'Inter', 'Helvetica Neue', Arial, sans-serif"
+SERIF = SANS
+MONO = SANS
 
 ISSUE_LABEL = "ISSUE 003"
 MONTH_LABEL = "JUNE 2026"
