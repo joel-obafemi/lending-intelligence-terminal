@@ -22,7 +22,9 @@ The June reading across Ethereum's six largest lending protocols is consolidatio
 
 Capital did not leave the sector in response. The six protocols absorbed $1.33B of net deposits at constant prices (holding each token's price fixed at the snapshot date and counting only the change in token quantity), with Aave V3's $845M the largest single-protocol inflow in the captured series and Spark's $415M a distant second.
 
-Aave V3's $845M did not arrive in USDC. Its own USDC book shed $162M of net constant-price capital across the month. What arrived was $452M of wstETH, $143M of cbBTC, $104M of USDTB, $99M of USDT, and smaller positives in USDE, SUSDE, WBTC, WETH, and WEETH. Aave V3's headline USDC supply APY at 3.19% ran 41 bps below the 4-week Treasury bill through the month, but the depositor flow that landed on the protocol arrived in ETH-family and BTC-family collateral and in stablecoin alternatives to USDC.
+Aave V3's $845M did not arrive in USDC. Its own USDC book shed $162M of net constant-price capital across the month. What arrived was $452M of wstETH, $143M of cbBTC, $104M of USDTB, $99M of USDT, and smaller positives in USDE, SUSDE, WBTC, WETH, and WEETH.
+
+Aave V3's headline USDC supply APY at 3.19% ran 41 bps below the 4-week Treasury bill through the month, but the depositor flow that landed on the protocol arrived in ETH-family and BTC-family collateral and in stablecoin alternatives to USDC.
 
 Fluid, whose USDC supply APY at 6.41% ran 281 bps above the T-bill and was the sector's only positive real yield spread on USDC, received $16M of net inflow. Five of the six protocols saw positive flow. The exception was Euler V2, and its $21M outflow was operational rather than depositor-driven.
 
@@ -32,7 +34,11 @@ USDC depositors on Aave V3 were not rewarded for staying, and net USDC flow was 
 
 Our May report's rotation thesis terminates. The June reading is that when sector yields compress below the risk-free rate, yield-focused capital moves to where the rate is competitive, and collateral continues to accumulate where the borrow depth is deepest. The two effects run in opposite directions at Aave V3 simultaneously.
 
-The nominal supplied contraction (−$3.41B sector-wide) sits next to a positive constant-price net flow across the sector. Nominal figures use each token's actual spot price at the snapshot date, so quantity moves and price moves both show up in the dollar figure. The wedge is mark-to-market on collateral (the same positions revalued at current spot prices): spot ETH fell 21.3% in June, and the four largest LRTs (liquid restaking tokens, wrapped stake positions that also secure additional Ethereum-based services) fell in near-lockstep. The five protocols other than Aave V3 do not have constant-price flow captures for the month, so the nominal supplied deltas above carry the mark-to-market effect on their LRT and ETH-family collateral as well. The contraction is real at nominal prices and partially or fully reversed at constant prices, depending on each protocol's collateral composition. Euler V2 is the exception: its collateral is not primarily LRT or ETH-family, so the 20.2% nominal supplied contraction is likely closer to true depositor flow than mark-to-market effect. The LRT reprice section unpacks the LRT arithmetic in detail.
+The nominal supplied contraction (−$3.41B sector-wide) sits next to a positive constant-price net flow across the sector. Nominal figures use each token's actual spot price at the snapshot date, so quantity moves and price moves both show up in the dollar figure. The wedge is mark-to-market on collateral (the same positions revalued at current spot prices): spot ETH fell 21.3% in June, and the four largest LRTs (liquid restaking tokens, wrapped stake positions that also secure additional Ethereum-based services) fell in near-lockstep.
+
+The five protocols other than Aave V3 do not have constant-price flow captures for the month, so the nominal supplied deltas above carry the mark-to-market effect on their LRT and ETH-family collateral as well. The contraction is real at nominal prices and partially or fully reversed at constant prices, depending on each protocol's collateral composition.
+
+Euler V2 is the exception: its collateral is not primarily LRT or ETH-family, so the 20.2% nominal supplied contraction is likely closer to true depositor flow than mark-to-market effect. The LRT reprice section unpacks the LRT arithmetic in detail.
 
 Source: on-chain reads against each protocol's core contracts, DefiLlama, and the U.S. Treasury 4-week T-bill via FRED. Compound V3 and Euler V2 row-card readings substitute on-chain Comet and EVK aggregations for DefiLlama's chain-TVL figures, which over-count both protocols.
 
@@ -100,13 +106,11 @@ Snapshot date: June 30, 2026, 23:59 UTC. All month-over-month comparisons agains
   ]}
 />
 
-The nominal supplied contraction (−$3.41B sector-wide) sits next to a positive constant-price net flow at Aave V3 (+$845M depositor inflow across the month). The wedge is mark-to-market on collateral. Spot ETH fell 21.3% in June, with weETH, rsETH, ezETH, and osETH falling 19.9 to 21.3% across the same window. The Aave V3 weETH book specifically fell $419M nominal in June, of which roughly $387M is per-unit price effect and the remainder is depositor flow. The five protocols other than Aave V3 do not have constant-price flow captures for the month, so the nominal supplied deltas above carry the mark-to-market effect on their LRT and ETH-family collateral as well. The contraction is real at nominal prices and partially or fully reversed at constant prices, depending on each protocol's collateral composition. Euler V2 is the exception: its collateral is not primarily LRT or ETH-family, so the 20.2% nominal supplied contraction is likely closer to true depositor flow than mark-to-market effect. The LRT reprice section unpacks the LRT base specifically; the protocol deep dives pick up the Euler V2 read.
-
-Source: on-chain reads against each protocol's core contracts, DefiLlama, and the U.S. Treasury 4-week T-bill via FRED. Compound V3 and Euler V2 row-card readings substitute on-chain Comet and EVK aggregations for DefiLlama's chain-TVL figures, which over-count both protocols.
-
 <SectionHeading number="03">The Real Yield Spread, Deep Inversion</SectionHeading>
 
-The mechanical decomposition is the inverse of May's. Stable APYs fell while T-bill yields held flat. The blended stablecoin supply rate, TVL-weighted across USDC, USDT, DAI, and USDS on Aave V3, Spark, Morpho, and Fluid, fell from 3.60% at the May close to 3.23% at the June close, a 37-bps compression. The 4-week U.S. Treasury bill yield held at 3.60% across the same window, unchanged to two decimal places. The spread re-inverted because on-chain rates fell, not because TradFi rates moved. That is the inverse of May's mechanism, where stable APYs lifted to meet T-bills.
+The mechanical decomposition is the inverse of May's. Stable APYs fell while T-bill yields held flat. The blended stablecoin supply rate, TVL-weighted across USDC, USDT, DAI, and USDS on Aave V3, Spark, Morpho, and Fluid, fell from 3.60% at the May close to 3.23% at the June close, a 37-bps compression. The 4-week U.S. Treasury bill yield held at 3.60% across the same window, unchanged to two decimal places.
+
+The spread re-inverted because on-chain rates fell, not because TradFi rates moved. That is the inverse of May's mechanism, where stable APYs lifted to meet T-bills.
 
 What June added to the picture is duration of inversion. The Real Yield Spread last printed positive on June 4, 2026, at +42.0 bps. Through June 30, that prior positive print sits 25 days back, and the intervening series has been continuously negative. The June 4 reading was a one-day blip; the run before it was already negative. The functional sequence within the month is a brief positive print on day four, followed by a deepening inversion through the remaining 26 days.
 
@@ -145,11 +149,17 @@ The sector aggregate fell 10.4% in nominal supply across June, from $32.64B at M
   ]}
 />
 
-The distribution shape distinguishes June's inflow from the May reading. Every protocol except Euler V2 saw net positive constant-price flow. Aave V3 was the largest inflow, and it was also the largest existing protocol by supply. May's shape was more mixed: Aave V3 gained $352M of net constant-price deposits in that month, while SparkLend and Morpho each absorbed roughly $752M and the sector-wide flow ran less concentrated. Our May report's rotation thesis, the framing that Aave V3 was losing supply share to migrations, held up on nominal supply readings but does not survive on constant-price readings. In constant-price terms, June's flow accelerated a concentration pattern that was already forming in May.
+The distribution shape distinguishes June's inflow from the May reading. Every protocol except Euler V2 saw net positive constant-price flow. Aave V3 was the largest inflow, and it was also the largest existing protocol by supply.
 
-Aave V3 captured 63.4% of the sector's net constant-price inflow while holding 56.7% of the sector's nominal supply at June 30, an over-index of roughly 7 pp. SparkLend captured 31.1% against a 17.2% share of supply, over-indexing by 14 pp. Together the two largest protocols absorbed 94.5% of net inflow while holding 73.9% of stock. The remaining four captured 5.5%. That's the concentration mechanism in one ratio: existing incumbents absorbed new capital at rates that widened rather than narrowed the gap between top and tail, in a month where the on-chain yield on the flow's largest destination sat 41 bps below the risk-free rate.
+May's shape was more mixed: Aave V3 gained $352M of net constant-price deposits in that month, while SparkLend and Morpho each absorbed roughly $752M and the sector-wide flow ran less concentrated. Our May report's rotation thesis, the framing that Aave V3 was losing supply share to migrations, held up on nominal supply readings but does not survive on constant-price readings. In constant-price terms, June's flow accelerated a concentration pattern that was already forming in May.
 
-Three of June's four material single-day net outflows on Aave V3 were intra-sector or intra-protocol asset rotations rather than depositor exits. The June 12 outflow of $89.5M was dominated by USDC leaving Aave V3 alongside wstETH inflows on the same day. June 11's $85.6M outflow ran the same shape. Only June 3's $70.1M outflow carried genuine cross-asset departure at any material scale. Sector-wide, the flow signal is that depositors added quantity on twenty-seven of thirty June trading days across Aave V3 alone, and on aggregate positive-flow days across every other protocol except Euler V2.
+Aave V3 captured 63.4% of the sector's net constant-price inflow while holding 56.7% of the sector's nominal supply at June 30, an over-index of roughly 7 pp. SparkLend captured 31.1% against a 17.2% share of supply, over-indexing by 14 pp. Together the two largest protocols absorbed 94.5% of net inflow while holding 73.9% of stock. The remaining four captured 5.5%.
+
+That's the concentration mechanism in one ratio: existing incumbents absorbed new capital at rates that widened rather than narrowed the gap between top and tail, in a month where the on-chain yield on the flow's largest destination sat 41 bps below the risk-free rate.
+
+Three of June's four material single-day net outflows on Aave V3 were intra-sector or intra-protocol asset rotations rather than depositor exits. The June 12 outflow of $89.5M was dominated by USDC leaving Aave V3 alongside wstETH inflows on the same day. June 11's $85.6M outflow ran the same shape. Only June 3's $70.1M outflow carried genuine cross-asset departure at any material scale.
+
+Sector-wide, the flow signal is that depositors added quantity on twenty-seven of thirty June trading days across Aave V3 alone, and on aggregate positive-flow days across every other protocol except Euler V2.
 
 <SectionHeading number="05">The LRT reprice</SectionHeading>
 
