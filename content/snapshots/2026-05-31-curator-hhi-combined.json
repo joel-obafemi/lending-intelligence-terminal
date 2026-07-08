@@ -1,0 +1,185 @@
+{
+  "schema_version": 1,
+  "generated_at_utc": "2026-07-08T07:11:58Z",
+  "issue": "003",
+  "target": {
+    "utc": "2026-05-31T23:59:59Z",
+    "block": 25218796
+  },
+  "methodology": {
+    "description": "Top-50 V1 vaults + top-50 V2 vaults (V2 filtered by creationTimestamp <= May 31 UTC). Archive-node totalAssets() at the target block. USD prices via a hardcoded per-asset table for stables (USDC/USDT/DAI/USDS/PYUSD/RLUSD/etc. at $1), EUR-stables and non-USD units at approximate May 31 spot, ETH-family at ETH spot $2,004.62, BTC-family at BTC spot ~$68,000. Curator = first name in the vault's curators list (V1: state.curators[0].name, V2: curators.items[0].name).",
+    "top_n_per_version": 50,
+    "chain_id": 1
+  },
+  "summary": {
+    "hhi": 2143.7726631248315,
+    "top_3_share_pct": 77.32271149303627,
+    "curated_tvl_usd": 2121332115.9262943,
+    "uncurated_tvl_usd": 136382179.47327518,
+    "curator_count": 20,
+    "vault_count_curated": 77,
+    "vault_count_uncurated": 22
+  },
+  "top_curators": [
+    {
+      "curator": "Steakhouse Financial",
+      "share_pct": 31.083462690117287,
+      "tvl_usd": 659383476.7874253,
+      "v1_tvl_usd": 420054339.1748428,
+      "v2_tvl_usd": 239329137.6125824,
+      "vault_count": 17
+    },
+    {
+      "curator": "Sentora",
+      "share_pct": 27.645725422881394,
+      "tvl_usd": 586457652.0763834,
+      "v1_tvl_usd": 0,
+      "v2_tvl_usd": 586457652.0763834,
+      "vault_count": 3
+    },
+    {
+      "curator": "Gauntlet",
+      "share_pct": 18.59352338003758,
+      "tvl_usd": 394430382.9430015,
+      "v1_tvl_usd": 257039479.1962591,
+      "v2_tvl_usd": 137390903.74674243,
+      "vault_count": 22
+    },
+    {
+      "curator": "Sky Money",
+      "share_pct": 6.110728075394507,
+      "tvl_usd": 129628837.1802684,
+      "v1_tvl_usd": 0,
+      "v2_tvl_usd": 129628837.1802684,
+      "vault_count": 3
+    },
+    {
+      "curator": "Galaxy Curation",
+      "share_pct": 3.1339697063804817,
+      "tvl_usd": 66481905.88485014,
+      "v1_tvl_usd": 0,
+      "v2_tvl_usd": 66481905.88485014,
+      "vault_count": 3
+    },
+    {
+      "curator": "Waterline",
+      "share_pct": 2.585059876672198,
+      "tvl_usd": 54837705.379772,
+      "v1_tvl_usd": 3658125.149599,
+      "v2_tvl_usd": 51179580.230173,
+      "vault_count": 3
+    },
+    {
+      "curator": "Armitage by Wintermute",
+      "share_pct": 2.4452062387249627,
+      "tvl_usd": 51870945.242706,
+      "v1_tvl_usd": 0,
+      "v2_tvl_usd": 51870945.242706,
+      "vault_count": 2
+    },
+    {
+      "curator": "KPK",
+      "share_pct": 1.48321479591855,
+      "tvl_usd": 31463911.813990846,
+      "v1_tvl_usd": 0,
+      "v2_tvl_usd": 31463911.813990846,
+      "vault_count": 3
+    },
+    {
+      "curator": "Hakutora",
+      "share_pct": 1.1272853822380386,
+      "tvl_usd": 23913466.851558,
+      "v1_tvl_usd": 23913466.851558,
+      "v2_tvl_usd": 0,
+      "vault_count": 2
+    },
+    {
+      "curator": "Flowdesk",
+      "share_pct": 1.0700482361094223,
+      "tvl_usd": 22699276.888492,
+      "v1_tvl_usd": 0,
+      "v2_tvl_usd": 22699276.888492,
+      "vault_count": 1
+    },
+    {
+      "curator": "AlphaPing",
+      "share_pct": 1.0549963463095748,
+      "tvl_usd": 22379976.316114,
+      "v1_tvl_usd": 2124289.503968,
+      "v2_tvl_usd": 20255686.812146,
+      "vault_count": 3
+    },
+    {
+      "curator": "Clearstar",
+      "share_pct": 0.8181687260897075,
+      "tvl_usd": 17356075.949006,
+      "v1_tvl_usd": 9978195.301147,
+      "v2_tvl_usd": 7377880.647859,
+      "vault_count": 2
+    },
+    {
+      "curator": "Hyperithm",
+      "share_pct": 0.6699905128374448,
+      "tvl_usd": 14212723.922479998,
+      "v1_tvl_usd": 3429745.01239,
+      "v2_tvl_usd": 10782978.91009,
+      "vault_count": 3
+    },
+    {
+      "curator": "Api3",
+      "share_pct": 0.6566934152677968,
+      "tvl_usd": 13930648.321249,
+      "v1_tvl_usd": 0,
+      "v2_tvl_usd": 13930648.321249,
+      "vault_count": 2
+    },
+    {
+      "curator": "MEV Capital",
+      "share_pct": 0.4083618604031529,
+      "tvl_usd": 8662711.293926185,
+      "v1_tvl_usd": 8662711.293926185,
+      "v2_tvl_usd": 0,
+      "vault_count": 2
+    },
+    {
+      "curator": "RockawayX",
+      "share_pct": 0.3476179553267186,
+      "tvl_usd": 7374131.327072,
+      "v1_tvl_usd": 0,
+      "v2_tvl_usd": 7374131.327072,
+      "vault_count": 1
+    },
+    {
+      "curator": "Yearn",
+      "share_pct": 0.2591012013569577,
+      "tvl_usd": 5496396.997136,
+      "v1_tvl_usd": 5496396.997136,
+      "v2_tvl_usd": 0,
+      "vault_count": 2
+    },
+    {
+      "curator": "Stake DAO",
+      "share_pct": 0.25453388223687773,
+      "tvl_usd": 5399508.9898049,
+      "v1_tvl_usd": 0,
+      "v2_tvl_usd": 5399508.9898049,
+      "vault_count": 1
+    },
+    {
+      "curator": "August Digital",
+      "share_pct": 0.2523122483050159,
+      "tvl_usd": 5352380.75571,
+      "v1_tvl_usd": 0,
+      "v2_tvl_usd": 5352380.75571,
+      "vault_count": 1
+    },
+    {
+      "curator": "SparkDAO",
+      "share_pct": 4.739234335124406e-8,
+      "tvl_usd": 1.005349,
+      "v1_tvl_usd": 0,
+      "v2_tvl_usd": 1.005349,
+      "vault_count": 1
+    }
+  ]
+}

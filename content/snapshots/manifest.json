@@ -542,6 +542,50 @@
       "historical_wrong_alarms": [],
       "last_verified_at": "2026-07-07T12:00:00Z",
       "notes": "Aave V3 56.7% + SparkLend 17.2% = 73.9% of June sector nominal supply. Sits below the 94.5% top-2 share of net inflow, which is the definition of the concentration mechanism."
+    },
+    {
+      "id": "curator_hhi_may_31_combined",
+      "issue": "003",
+      "section_anchors": ["§02"],
+      "cited_value": 2143.77,
+      "unit": "index",
+      "rounded_cited_in_prose": 2144,
+      "alt_forms_in_prose": ["2,144", "2144"],
+      "cross_check": {
+        "method": "derived_from_snapshot",
+        "snapshot": "content/snapshots/2026-05-31-curator-hhi-combined.json",
+        "derive": "field",
+        "params": { "field_path": "summary.hhi" }
+      },
+      "threshold_pct": 1.0,
+      "historical_wrong_alarms": [
+        "not captured",
+        "3,103 V1-only May 31"
+      ],
+      "last_verified_at": "2026-07-08T12:00:00Z",
+      "notes": "Morpho V1+V2 combined curator HHI at May 31, 2026. Archive-node backfill via Alchemy at block 25218796. Top-50 V1 + top-50 V2 vaults (V2 filtered by creationTimestamp <= May 31 UTC). See scripts/query-curator-hhi-may-31.ts and content/snapshots/2026-05-31-curator-hhi-combined.json for methodology."
+    },
+    {
+      "id": "morpho_top3_share_may_31_combined",
+      "issue": "003",
+      "section_anchors": ["§02"],
+      "cited_value": 77.32,
+      "unit": "%",
+      "rounded_cited_in_prose": 77.3,
+      "alt_forms_in_prose": ["77.3%", "77.3 percent"],
+      "cross_check": {
+        "method": "derived_from_snapshot",
+        "snapshot": "content/snapshots/2026-05-31-curator-hhi-combined.json",
+        "derive": "field",
+        "params": { "field_path": "summary.top_3_share_pct" }
+      },
+      "threshold_pct": 1.0,
+      "historical_wrong_alarms": [
+        "not captured",
+        "93.9% V1-only May 31"
+      ],
+      "last_verified_at": "2026-07-08T12:00:00Z",
+      "notes": "Top-3 curator share (Steakhouse 31.1% + Sentora 27.7% + Gauntlet 18.6%) of combined V1+V2 curated TVL at May 31 archive-node backfill."
     }
   ]
 }
