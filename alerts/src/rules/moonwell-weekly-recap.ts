@@ -7,12 +7,9 @@ import {
   type MoonwellChain,
 } from "../config";
 import { MoonwellDefiLlamaClient } from "../sources/moonwell";
-import { fetchOevTrailing7d, hasMoonwellDb } from "../sources/moonwellNeon";
-import { findMarketSnapshotAtOrBefore } from "../state/moonwell-d1";
+import { fetchMarketDeltaPairs, fetchOevTrailing7d, hasMoonwellDb } from "../sources/moonwellNeon";
 import { fmtPct, fmtUsdCompact, moonwellUrl, pctChange } from "./moonwell-helpers";
 
-const SEVEN_DAYS_MS = 7 * 24 * 3600 * 1000;
-const TOLERANCE_MS = 36 * 3600 * 1000;
 const PERIOD_TOP_N = 3;
 
 export interface WeeklyRecapDeps {
@@ -40,7 +37,17 @@ export function createMoonwellWeeklyRecapRule(deps: WeeklyRecapDeps = {}): Alert
       const rangeLabel = `${formatDate(periodStart)} to ${formatDate(periodEnd)}, ${periodEnd.getUTCFullYear()}`;
 
       // ── Markets section ───
-      const pools = await client.getLendingPools();
+      // 2026-07-14 rewrite: sourced from moonwell-dashboard's Neon
+      // daily_chain_snapshots via fetchMarketDeltaPairs — the same
+      // verified source the daily delta rules use. The previous
+      // DefiLlama-pools implementation read pool.totalSupplyUsd ?? 0,
+      // and DefiLlama REMOVED that field from the yields API, so every
+      // market's "current" collapsed to $0 against a real prior — the
+      // Jul-13 recap confidently reported MORPHO/CBBTC/AERO supply
+      // "-100% ($10.6M -> $0)" for markets that were sitting at $11M+
+      // on-chain the whole time. If the Neon read fails, the markets
+      // section is omitted entirely rather than backfilled with dead
+      // DefiLlama fields.
       const marketLines: string[] = [];
       const movers: Array<{
         chain: MoonwellChain;
@@ -50,41 +57,37 @@ export function createMoonwellWeeklyRecapRule(deps: WeeklyRecapDeps = {}): Alert
         priorUsd: number;
         currentUsd: number;
       }> = [];
-      for (const pool of pools) {
-        const chain = normalizeChain(pool.chain);
-        if (!chain) continue;
-        const cutoff = nowMs - SEVEN_DAYS_MS;
-        const prior = await findMarketSnapshotAtOrBefore(
-          ctx.env,
-          chain,
-          pool.symbol,
-          cutoff,
-        );
-        if (!prior) continue;
-        if (prior.snapshot_at < cutoff - TOLERANCE_MS) continue;
-        const supplyUsd = pool.totalSupplyUsd ?? 0;
-        const borrowUsd = pool.totalBorrowUsd ?? 0;
-        const supplyDelta = pctChange(prior.supply_usd, supplyUsd);
-        const borrowDelta = pctChange(prior.borrow_usd, borrowUsd);
-        if (supplyDelta !== null && Math.abs(supplyDelta) >= MOONWELL_MARKET_DELTA_NORMAL_PCT) {
-          movers.push({
-            chain,
-            symbol: pool.symbol,
-            field: "supply",
-            deltaPct: supplyDelta,
-            priorUsd: prior.supply_usd,
-            currentUsd: supplyUsd,
-          });
-        }
-        if (borrowDelta !== null && Math.abs(borrowDelta) >= MOONWELL_MARKET_DELTA_NORMAL_PCT) {
-          movers.push({
-            chain,
-            symbol: pool.symbol,
-            field: "borrow",
-            deltaPct: borrowDelta,
-            priorUsd: prior.borrow_usd,
-            currentUsd: borrowUsd,
-          });
+      if (hasMoonwellDb(ctx.env)) {
+        try {
+          const pairs = await fetchMarketDeltaPairs(ctx.env, 7, 2);
+          for (const p of pairs) {
+            const chain = normalizeChain(p.chain);
+            if (!chain) continue;
+            const supplyDelta = pctChange(p.prior_supply_usd, p.current_supply_usd);
+            const borrowDelta = pctChange(p.prior_borrow_usd, p.current_borrow_usd);
+            if (supplyDelta !== null && Math.abs(supplyDelta) >= MOONWELL_MARKET_DELTA_NORMAL_PCT) {
+              movers.push({
+                chain,
+                symbol: p.market_symbol,
+                field: "supply",
+                deltaPct: supplyDelta,
+                priorUsd: p.prior_supply_usd,
+                currentUsd: p.current_supply_usd,
+              });
+            }
+            if (borrowDelta !== null && Math.abs(borrowDelta) >= MOONWELL_MARKET_DELTA_NORMAL_PCT) {
+              movers.push({
+                chain,
+                symbol: p.market_symbol,
+                field: "borrow",
+                deltaPct: borrowDelta,
+                priorUsd: p.prior_borrow_usd,
+                currentUsd: p.current_borrow_usd,
+              });
+            }
+          }
+        } catch (e: any) {
+          console.error(`weekly-recap markets source failed, omitting section: ${(e?.message ?? "").slice(0, 150)}`);
         }
       }
       // Sort by absolute delta and take top-N per chain.

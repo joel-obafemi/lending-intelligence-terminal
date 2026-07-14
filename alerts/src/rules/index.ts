@@ -25,6 +25,7 @@ import { createMoonwellRevenueDailyAthRule } from "./moonwell-revenue-daily-ath"
 import { createMoonwellVaultTvlThresholdRule } from "./moonwell-vault-tvl-threshold";
 import { createMoonwellVaultDepositSpikeRule } from "./moonwell-vault-deposit-spike";
 import { createMoonwellWeeklyRecapRule } from "./moonwell-weekly-recap";
+import { createMoonwellDashboardAuditFailRule } from "./moonwell-dashboard-audit-fail";
 
 /**
  * Build the full registry of rules using shared DefiLlama, FRED, Morpho,
@@ -62,6 +63,7 @@ export function buildRuleRegistry(): AlertRule[] {
     createMoonwellVaultTvlThresholdRule({ client: moonwell }),
     createMoonwellVaultDepositSpikeRule({ client: moonwell }),
     createMoonwellWeeklyRecapRule({ client: moonwell }),
+    createMoonwellDashboardAuditFailRule(),
   ];
 }
 

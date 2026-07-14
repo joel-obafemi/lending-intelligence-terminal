@@ -68,6 +68,7 @@ describe("registry", () => {
     expect(moonwellIds.sort()).toEqual(
       [
         "moonwell_borrow_delta_7d",
+        "moonwell_dashboard_audit_fail",
         "moonwell_liquidation_daily_spike",
         "moonwell_liquidation_whale",
         "moonwell_monthly_revenue_threshold",

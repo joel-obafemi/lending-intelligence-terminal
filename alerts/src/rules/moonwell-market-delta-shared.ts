@@ -66,8 +66,19 @@ export async function evaluateMarketDelta(
   try {
     pairs = await fetchMarketDeltaPairs(ctx.env, 7, 2);
   } catch (e: any) {
-    console.warn(`market-delta source read failed, falling back: ${(e?.message ?? "").slice(0, 100)}`);
-    return await evaluateMarketDeltaLegacy(ctx, args);
+    // NO legacy fallback here — skip this tick instead. The legacy
+    // DefiLlama path emits actively WRONG data now (tvlUsd = available
+    // liquidity mislabeled as supply, DefiLlama's own symbol names), so
+    // a silent downgrade produces confident-looking garbage alerts.
+    // That's exactly what happened 2026-06-29 → 2026-07-14: the Neon
+    // query above threw on every call (untyped-parameter Postgres
+    // error), this catch fell back to legacy, and the user got
+    // "ETH supply on Base down -42%" style alerts that didn't survive
+    // scrutiny. A missed tick is recoverable; a wrong alert costs
+    // trust. Legacy stays available ONLY for envs with no Moonwell DB
+    // configured (the hasMoonwellDb branch above).
+    console.error(`market-delta Neon read failed, SKIPPING tick (no legacy fallback): ${(e?.message ?? "").slice(0, 150)}`);
+    return [];
   }
 
   for (const p of pairs) {

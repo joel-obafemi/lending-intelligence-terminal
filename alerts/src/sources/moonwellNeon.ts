@@ -302,6 +302,16 @@ export async function fetchMarketDeltaPairs(
   toleranceDays = 2,
 ): Promise<MarketDeltaRow[]> {
   const sql = getSql(env);
+  // The ::int casts on every interpolated parameter are LOAD-BEARING.
+  // The Neon HTTP driver sends parameters untyped, and Postgres refuses
+  // to plan `$1 + $2` between two unknowns ("operator is not unique:
+  // unknown + unknown"). Pre-fix (until 2026-07-14) this query threw on
+  // EVERY invocation, the delta rules silently fell back to the legacy
+  // DefiLlama path, and the alerts fired with DefiLlama's tvlUsd
+  // (= available liquidity, not supply) under DefiLlama's symbol names
+  // ("ETH supply on Base down -42%" was really Base WETH *liquidity*).
+  // Same param-binding gotcha previously hit the Morpho dashboard's
+  // /assets and /curators routes.
   const rows = (await sql`
     WITH latest AS (
       SELECT DISTINCT ON (chain, market_symbol)
@@ -314,9 +324,9 @@ export async function fetchMarketDeltaPairs(
         chain, market_symbol, date, total_supply_usd AS supply, total_borrow_usd AS borrow
       FROM daily_chain_snapshots
       WHERE date BETWEEN
-            (CURRENT_DATE - (${daysBack} + ${toleranceDays}) * INTERVAL '1 day')::date
-        AND (CURRENT_DATE - (${daysBack} - ${toleranceDays}) * INTERVAL '1 day')::date
-      ORDER BY chain, market_symbol, ABS(date - (CURRENT_DATE - ${daysBack})::date)
+            (CURRENT_DATE - (${daysBack}::int + ${toleranceDays}::int))::date
+        AND (CURRENT_DATE - (${daysBack}::int - ${toleranceDays}::int))::date
+      ORDER BY chain, market_symbol, ABS(date - (CURRENT_DATE - ${daysBack}::int)::date)
     )
     SELECT
       l.chain, l.market_symbol,
