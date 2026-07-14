@@ -921,6 +921,8 @@ describe("morpho_curator_hhi rule", () => {
         top1Name: "Steakhouse",
         top1Pct: 44,
         recordedAt: now.getTime() - 86400_000,
+        methodology: "v1v2-combined",
+        methodologySince: now.getTime() - 30 * 86400_000,
       }),
     );
     const rule = createMorphoCuratorHhiRule({ client: stub as never });
@@ -958,11 +960,53 @@ describe("morpho_curator_hhi rule", () => {
         top1Name: "Steakhouse",
         top1Pct: 38,
         recordedAt: now.getTime() - 86400_000,
+        methodology: "v1v2-combined",
+        methodologySince: now.getTime() - 30 * 86400_000,
       }),
     );
     const rule = createMorphoCuratorHhiRule({ client: stub as never });
     const events = await rule.evaluate({ env, now, fetchedAt: now });
     expect(events).toEqual([]);
+  });
+
+  test("re-seeds silently when stored state predates the combined methodology", async () => {
+    const env = makeEnv();
+    const stub = new StubMorphoClient();
+    // Combined V1+V2 reading is far below the old V1-only baseline; without
+    // the methodology guard this would fire a huge spurious delta.
+    stub.result = {
+      hhi: 2100,
+      totalAssetsUsd: 2_100_000_000,
+      vaultCount: 120,
+      curators: [
+        { name: "Sentora", totalAssetsUsd: 660_000_000, sharePct: 31.2 },
+        { name: "Steakhouse", totalAssetsUsd: 618_000_000, sharePct: 29.2 },
+        { name: "Gauntlet", totalAssetsUsd: 300_000_000, sharePct: 14.2 },
+      ],
+    };
+    const now = new Date("2026-07-14T00:00:00Z");
+    const kv = env.ALERTS_KV as unknown as FakeKV;
+    // V1-only era state: no methodology field.
+    await kv.put(
+      "latest:morpho_curator_hhi:global",
+      JSON.stringify({
+        hhi: 4251,
+        top3CombinedPct: 94.4,
+        top1Name: "Steakhouse Financial",
+        top1Pct: 54.9,
+        recordedAt: now.getTime() - 86400_000,
+      }),
+    );
+    const rule = createMorphoCuratorHhiRule({ client: stub as never });
+    const events = await rule.evaluate({ env, now, fetchedAt: now });
+    expect(events).toEqual([]);
+
+    const upgraded = JSON.parse(
+      (await kv.get("latest:morpho_curator_hhi:global")) as string,
+    );
+    expect(upgraded.methodology).toBe("v1v2-combined");
+    expect(upgraded.hhi).toBe(2100);
+    expect(upgraded.methodologySince).toBe(now.getTime());
   });
 });
 
