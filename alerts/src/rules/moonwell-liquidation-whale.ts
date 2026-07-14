@@ -14,9 +14,19 @@ import {
 } from "../sources/moonwellNeon";
 import { fmtUsdCompact, moonwellUrl, trimTweet } from "./moonwell-helpers";
 
-// Look back this far on each fast-tick run. Cron is every 5 minutes, so
-// 30 minutes covers a small jitter band without re-fetching all-time.
-const LOOKBACK_SECONDS = 30 * 60;
+// Look back this far on each hourly run: cadence (60 min) + a jitter
+// band. Overlap between consecutive runs is harmless — events are
+// dedup-keyed by tx_hash.
+//
+// Was 30 min on the 5-minute "fast" tick. Moved to hourly 2026-07-14
+// for Neon cost: a 5-min tick woke the (scale-to-zero) Moonwell Neon
+// endpoint 288x/day so it never slept, and bought nothing — the
+// upstream liquidation scanner only writes every 30 min, so 5 of 6
+// polls read unchanged data. Hourly aligns with the :00 wake window
+// the dashboard scanners already open. Worst-case alert latency for
+// a whale liquidation goes from ~35 min to ~90 min (scan lag + tick
+// lag), acceptable for a personal analytics feed.
+const LOOKBACK_SECONDS = 75 * 60;
 
 export function createMoonwellLiquidationWhaleRule(): AlertRule {
   return {
@@ -25,7 +35,7 @@ export function createMoonwellLiquidationWhaleRule(): AlertRule {
     description: `Fires per-tx when a single Moonwell liquidation seizes ≥${fmtUsdCompact(
       MOONWELL_LIQ_WHALE_NORMAL_USD,
     )} of collateral. CRITICAL above ${fmtUsdCompact(MOONWELL_LIQ_WHALE_CRITICAL_USD)}.`,
-    schedule: "fast",
+    schedule: "hourly",
     // Each fire is keyed by tx_hash so the cooldown is functionally one-shot;
     // 168h backstop in case the dedupe table ever drops a key.
     cooldownHours: 168,
