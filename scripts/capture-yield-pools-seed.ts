@@ -31,6 +31,10 @@ const OUTPUT_PATH = "content/snapshots/yield-pools-seed.json"
 const RELEVANT_PROJECTS = new Set([
   "aave-v3",
   "spark",
+  // DefiLlama Yields emits SparkLend pools under project "sparklend"; the
+  // "spark" entry above matched nothing, so Spark was dropped from the seed
+  // (and thus from snapshot:rates cold-starts). Mirrors YIELDS_PROJECT_BY_PROTOCOL.
+  "sparklend",
   "morpho-blue",
   "fluid-lending",
   "fluid-dex",
