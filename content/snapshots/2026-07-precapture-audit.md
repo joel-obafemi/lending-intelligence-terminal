@@ -34,19 +34,23 @@ Additional cross-check specific to the July cycle:
 Run:
 
 ```bash
-npm run scan
+npm run scan -- --cutoff 2026-07-31
 ```
 
-Verify each of these tables has non-null rows dated 2026-07-31:
+Table names and date columns below are verified against the live databases
+(2026-08-01). Critical tables — the scan exits 1 if any last_date < cutoff:
 
-- `sector_snapshots_daily` — sector aggregates
-- `per_protocol_daily` — protocol-level TVL/borrowed/utilization
-- `per_asset_daily` — per-asset holdings on Aave V3 (used for constant-price flow decomposition)
-- `liquidation_events` — sector-wide liquidation feed (drives the July liquidation-day identification)
-- `curator_holdings_daily` — Morpho V1+V2 curator TVL (feeds HHI)
-- `rate_matrix_daily` — per-(asset, protocol) supply/borrow APY snapshot
+- `liquidation_events` — sector-wide liquidation feed (drives July liquidation-day identification). Lives in the **liquidator database** (`LIQUIDATOR_DATABASE_URL`), not `DATABASE_URL`; date is a unix `block_timestamp` (bigint).
+- `sector_snapshots` — sector aggregates. Date column `day`.
+- `rate_snapshots` — per-(asset, protocol) supply/borrow APY snapshot. Date column `day`.
+- `morpho_curator_hhi_history` — Morpho V1+V2 curator TVL and HHI (feeds the concentration reading). Date column `date`.
 
-If any table shows the last date < 2026-07-31, run the corresponding snapshot script before capture.
+Reference tables — warn only, never fail the run:
+
+- `protocols` — reference: covered protocol list.
+- `token_metadata` — reference: asset metadata. **Not present in the live schema**; the scan reports "not present" as WARN.
+
+If a critical table's last date is < 2026-07-31, run the corresponding snapshot script before capture.
 
 ## 3. July capture worklist
 
@@ -238,6 +242,41 @@ actual schema. Tables actually referenced in `scripts/` and `lib/`:
 
 Scaffolding (Parts B-E) proceeded regardless, since it is independent of the scan
 and the upstream gate passed 9/9.
+
+### Scan restored (2026-08-01)
+
+`scripts/scan.ts` was built and `npm run scan -- --cutoff 2026-07-31` now runs.
+Schema was verified against the live databases first (the audit's original §2
+table list was wrong on three counts, now corrected in §2): the date columns are
+`day` / `day` / `date`, not `snapshot_date`; `liquidation_events` lives in the
+separate liquidator database (LIQUIDATOR_DATABASE_URL, unix `block_timestamp`),
+not DATABASE_URL; and `token_metadata` does not exist in either database.
+
+```
+Neon table coverage — cutoff 2026-07-31
+  (rows(7d) = rows dated within [2026-07-31 minus 6 days, 2026-07-31])
+
+  TABLE                          LAST DATE    ROWS(7d)  STATUS
+  sector_snapshots               2026-08-01   7         [PASS]
+  rate_snapshots                 2026-04-25   0         [FAIL]
+  morpho_curator_hhi_history     2026-07-02   0         [FAIL]
+  liquidation_events [liq db]    2026-08-01   41        [PASS]
+  protocols [ref]                —            4         [REF]
+  token_metadata [ref]           not present  —         [WARN]  (table absent in DATABASE_URL)
+
+── Summary ──
+  2/4 critical tables covered through 2026-07-31
+
+✗ Coverage gap. Run the corresponding snapshot script(s) before capture:
+    rate_snapshots: last_date 2026-04-25
+    morpho_curator_hhi_history: last_date 2026-07-02
+```
+
+Exit code 1, as designed. **Two critical tables must be re-captured before the
+July pass:** `rate_snapshots` (last 2026-04-25) and `morpho_curator_hhi_history`
+(last 2026-07-02). `sector_snapshots` and `liquidation_events` are already current
+through 2026-08-01. (`protocols` shows 4 rows, a reference table — worth a glance
+since coverage is six protocols, but not a capture blocker.)
 
 ## 10. Sign-off checklist
 
