@@ -278,6 +278,41 @@ July pass:** `rate_snapshots` (last 2026-04-25) and `morpho_curator_hhi_history`
 through 2026-08-01. (`protocols` shows 4 rows, a reference table — worth a glance
 since coverage is six protocols, but not a capture blocker.)
 
+### Scan output after protocols-seed (2026-08-01)
+
+`protocols` was seeded with the two missing covered protocols (`compound-v3`,
+`euler-v2`) — durably in `lib/schema.sql` and applied to the live DB. This
+unblocks the `snapshot:rates` cron, which had been aborting on the compound-v3
+foreign-key violation since Issue 002 expanded coverage. All four critical
+tables pass; dates read 2026-08-01 (the 1-day proxy for the 2026-07-31 anchor,
+the same convention Issue 003 used).
+
+```
+Neon table coverage — cutoff 2026-07-31
+  (rows(7d) = rows dated within [2026-07-31 minus 6 days, 2026-07-31])
+
+  TABLE                          LAST DATE    ROWS(7d)  STATUS
+  sector_snapshots               2026-08-01   7         [PASS]
+  rate_snapshots                 2026-08-01   0         [PASS]
+  morpho_curator_hhi_history     2026-08-01   0         [PASS]
+  liquidation_events [liq db]    2026-08-01   41        [PASS]
+  protocols [ref]                —            6         [REF]
+  token_metadata [ref]           not present  —         [WARN]  (table absent in DATABASE_URL)
+
+── Summary ──
+  4/4 critical tables covered through 2026-07-31
+
+✓ All critical tables covered through 2026-07-31.
+```
+
+`snapshot:rates` now completes for 5 of 6 protocols (aave-v3 10, compound-v3 7,
+euler-v2 7, fluid 8, morpho-blue 5 pairs). **Spark still writes 0** — a separate
+`YIELDS_PROJECT_BY_PROTOCOL` mapping gap in `lib/snapshot-rates.ts` (Spark's
+DefiLlama Yields project name does not match the mapping), unrelated to the
+protocols FK. `rate_snapshots` passes the scan on MAX(day) but is not yet
+complete for all six; the July report's rate cut does not depend on this table
+(`query-rate-dispersion-july` reads live DefiLlama).
+
 ## 10. Sign-off checklist
 
 Before starting §01 draft:

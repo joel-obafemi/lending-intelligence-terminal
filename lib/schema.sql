@@ -134,13 +134,19 @@ CREATE TABLE IF NOT EXISTS daily_market_metrics (
   PRIMARY KEY (market_id, day)
 );
 
--- ─── Seed the four protocols we're launching with ──────────────────────────
+-- ─── Seed the six covered protocols ────────────────────────────────────────
+-- compound-v3 and euler-v2 entered coverage with Issue 002; architecture +
+-- defillama_slug match lib/protocols.ts. pool_address/oracle_address/
+-- deploy_block are left NULL for these two (no single pool contract: Compound
+-- V3 is many Comet markets, Euler V2 is many EVK vaults).
 INSERT INTO protocols (slug, name, architecture, defillama_slug, pool_address, oracle_address, deploy_block)
 VALUES
   ('aave-v3',     'Aave V3',     'pool',     'aave-v3',     '0x87870bca3f3fd6335c3f4ce8392d69350b4fa4e2', '0x54586be62e3c3580375ae3723c145253060ca0c2', 16291127),
   ('spark',       'Spark',       'pool',     'sparklend',   '0xc13e21b648a5ee794902342038ff3adab66be987', NULL,                                         16848000),
   ('morpho-blue', 'Morpho Blue', 'isolated', 'morpho-blue', '0xbbbbbbbbbb9cc5e90e3b3af64bdaf62c37eeffcb', NULL,                                         18883124),
-  ('fluid',       'Fluid',       'vault',    'fluid',       '0x741c2bf99a56246b57f12f53be73ef0abedc7c98', NULL,                                         19575000)
+  ('fluid',       'Fluid',       'vault',    'fluid',       '0x741c2bf99a56246b57f12f53be73ef0abedc7c98', NULL,                                         19575000),
+  ('compound-v3', 'Compound V3', 'pool',     'compound-v3', NULL,                                         NULL,                                         NULL),
+  ('euler-v2',    'Euler V2',    'vault',    'euler-v2',    NULL,                                         NULL,                                         NULL)
 ON CONFLICT (slug) DO UPDATE SET
   name = EXCLUDED.name,
   architecture = EXCLUDED.architecture,
