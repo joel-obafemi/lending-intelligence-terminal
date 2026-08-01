@@ -1,5 +1,5 @@
 /**
- * Compound V3 broken out by Comet market on Ethereum — for Issue 002 §06.5.
+ * Compound V3 broken out by Comet market on Ethereum — for Issue 004.
  *
  *   npm run query:compound-comet-markets
  *
@@ -15,16 +15,16 @@
  *      - numAssets, getAssetInfo(i), totalsCollateral(asset),
  *        ERC20.symbol/decimals on each collateral, getPrice(priceFeed)
  *        → per-collateral USD supplied
- *   2. Snapshot at the LATEST block. Today is 2026-06-04 vs the target
- *      May 31, so the per-market figures reflect about 4 days of drift.
+ *   2. Snapshot at the LATEST block. Today is 2026-08-01 vs the target
+ *      July 31, so the per-market figures reflect about 1 day of drift.
  *      The reconciliation step compares the sector sum against the
  *      dashboard's $1.61B Ethereum-only Compound V3 card value, which is
  *      also a current-block read.
- *   3. The May-31-specific reconciliation against DefiLlama at-day
+ *   3. The July-31-specific reconciliation against DefiLlama at-day
  *      figures is surfaced in source.note_reconciliation as a secondary
  *      check.
  *
- * Output: content/snapshots/2026-05-compound-comet-markets.json
+ * Output: content/snapshots/2026-07-compound-comet-markets.json
  */
 import * as dotenv from "dotenv"
 dotenv.config()
@@ -44,7 +44,7 @@ import {
 import { mainnet } from "viem/chains"
 import { fetchProtocolHistory } from "../lib/defillama"
 
-const OUTPUT_PATH = "content/snapshots/2026-05-compound-comet-markets.json"
+const OUTPUT_PATH = "content/snapshots/2026-07-compound-comet-markets.json"
 const DASHBOARD_CARD_VALUE_USD = 1_610_000_000 // $1.61B Ethereum-only target
 const RECONCILE_TOLERANCE_USD = 50_000_000 // $50M per prompt
 const SECONDS_PER_YEAR = 60 * 60 * 24 * 365
@@ -390,20 +390,20 @@ async function main(): Promise<void> {
   const reconciles = Math.abs(dashboardDelta) <= RECONCILE_TOLERANCE_USD
   console.log("")
 
-  // Also pull DefiLlama May 31 figure as a cross-check.
-  console.log(`[3/3] Cross-checking against DefiLlama Ethereum-only at May 31 …`)
-  let defillamaMay31Usd: number | null = null
+  // Also pull DefiLlama July 31 figure as a cross-check.
+  console.log(`[3/3] Cross-checking against DefiLlama Ethereum-only at July 31 …`)
+  let defillamaJuly31Usd: number | null = null
   let defillamaToday: number | null = null
   try {
     const h = await fetchProtocolHistory("compound-v3")
     const series = [...h.tvl].sort((a, b) => a.timestamp - b.timestamp)
-    const mayTs = Math.floor(new Date("2026-05-31T00:00:00Z").getTime() / 1000)
-    let mayPick = series[0]
+    const julyTs = Math.floor(new Date("2026-07-31T00:00:00Z").getTime() / 1000)
+    let julyPick = series[0]
     for (const pt of series) {
-      if (pt.timestamp <= mayTs) mayPick = pt
+      if (pt.timestamp <= julyTs) julyPick = pt
       else break
     }
-    defillamaMay31Usd = mayPick?.usd ?? null
+    defillamaJuly31Usd = julyPick?.usd ?? null
     defillamaToday = h.currentTvl
   } catch (err: any) {
     console.warn(`  [warn] DefiLlama cross-check failed: ${err?.message ?? err}`)
@@ -435,8 +435,8 @@ async function main(): Promise<void> {
   console.log(`  Full Ethereum sum (base+coll)  : ${fmtUsd(fullEthereumSum)}`)
   console.log(`  Dashboard card value (target)  : ${fmtUsd(DASHBOARD_CARD_VALUE_USD)}`)
   console.log(`  Delta vs dashboard             : ${fmtUsd(dashboardDelta)}  (${reconciles ? "WITHIN" : "OUTSIDE"} ±${fmtUsd(RECONCILE_TOLERANCE_USD)})`)
-  if (defillamaMay31Usd != null) {
-    console.log(`  DefiLlama Ethereum TVL May 31  : ${fmtUsd(defillamaMay31Usd)}`)
+  if (defillamaJuly31Usd != null) {
+    console.log(`  DefiLlama Ethereum TVL July 31  : ${fmtUsd(defillamaJuly31Usd)}`)
   }
   if (defillamaToday != null) {
     console.log(`  DefiLlama Ethereum TVL today   : ${fmtUsd(defillamaToday)}`)
@@ -453,7 +453,7 @@ async function main(): Promise<void> {
       methodology:
         "Per Comet market: baseToken + baseTokenPriceFeed for the base USD; totalSupply / totalBorrow / getUtilization for the size + util; getSupplyRate(util) / getBorrowRate(util) annualised at SECONDS_PER_YEAR; numAssets + getAssetInfo + totalsCollateral + getPrice for per-collateral USD. Base USD plus per-collateral USD makes the full Ethereum-side TVL contribution per market.",
       snapshot_caveat:
-        "On-chain reads are LATEST-BLOCK (June 4, 2026 as of run time), not May 31. The DefiLlama cross-check field provides the May 31 figure for reconciliation against the issue's anchor date.",
+        "On-chain reads are LATEST-BLOCK (August 1, 2026 as of run time), not July 31. The DefiLlama cross-check field provides the July 31 figure for reconciliation against the issue's anchor date.",
       reconciliation_target_usd: DASHBOARD_CARD_VALUE_USD,
       reconciliation_tolerance_usd: RECONCILE_TOLERANCE_USD,
       note:
@@ -470,7 +470,7 @@ async function main(): Promise<void> {
       dashboard_card_value_usd: DASHBOARD_CARD_VALUE_USD,
       delta_vs_dashboard_usd: dashboardDelta,
       reconciles_within_tolerance: reconciles,
-      defillama_ethereum_tvl_may_31_usd: defillamaMay31Usd,
+      defillama_ethereum_tvl_july_31_usd: defillamaJuly31Usd,
       defillama_ethereum_tvl_today_usd: defillamaToday,
     },
   }

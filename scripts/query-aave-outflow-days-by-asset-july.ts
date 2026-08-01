@@ -7,10 +7,11 @@
  *
  *   npm run query:aave-outflow-days-by-asset-july
  *
- * Target dates (from scripts/query-aave-may-daily-flows.ts):
- *   2026-05-15  total net flow -$130M (of which WEETH -$20M)
- *   2026-05-18  total net flow -$139M (of which WEETH -$19M)
- *   2026-05-29  total net flow -$104M (of which WEETH -$0.8M)
+ * Target dates (illustrative placeholders; fill after inspecting the July
+ * daily-flows output, same as TARGET_DAYS_UTC below):
+ *   2026-07-15  example outflow day — actual figures TBD at capture
+ *   2026-07-18  example outflow day — actual figures TBD at capture
+ *   2026-07-29  example outflow day — actual figures TBD at capture
  *
  * Hypothesis: post-May-14 outflow spikes on Aave V3 were NOT LRT-driven
  * but driven by other assets (stables, WSTETH, …). The WEETH share of
