@@ -53,6 +53,7 @@
     "query:ldr-monthly": "tsx scripts/query-ldr-monthly.ts",
     "query:gho-flow": "tsx scripts/query-gho-flow-cross-venue.ts",
     "query:lrt-spot-prices": "tsx scripts/query-lrt-spot-prices.ts",
+    "query:spark-usdc-borrow-daily": "tsx scripts/query-spark-usdc-borrow-daily.ts",
     "scan": "tsx scripts/scan.ts",
     "export:friend": "tsx scripts/export-friend-csvs.ts",
     "export:net-flow-daily": "tsx scripts/export-net-flow-daily.ts",

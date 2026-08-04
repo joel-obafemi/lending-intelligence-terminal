@@ -1,0 +1,421 @@
+{
+  "metadata": {
+    "script": "scripts/query-spark-usdc-borrow-daily.ts",
+    "generated_at_utc": "2026-08-04T06:23:41Z",
+    "methodology": "on_chain_sparklend_getReserveData",
+    "source": "SparkLend Pool 0xC13e21B648A5Ee794902342038FF3aDAB66BE987 getReserveData(0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48).currentVariableBorrowRate + currentLiquidityRate, read at the block nearest each UTC-midnight; ray APR → per-second-compounded APY. Utilization = variableDebt.totalSupply / aToken.totalSupply. USDC priced at $1.00.",
+    "defillama_pool_id": "65ce8276-b4d9-41ba-9f6f-21fc374cf9bc",
+    "note": "DefiLlama /chart carries supply APY only and /chartLendBorrow is paywalled, so the borrow rate is read on-chain."
+  },
+  "window": {
+    "start_date": "2026-06-20",
+    "end_date": "2026-08-05"
+  },
+  "series": [
+    {
+      "date": "2026-06-20",
+      "supply_apy_pct": 3.6989,
+      "borrow_apy_pct": 4.6126,
+      "borrow_apr_pct": 4.5094,
+      "utilization": 0.8951,
+      "tvl_usd": 29252541.64
+    },
+    {
+      "date": "2026-06-21",
+      "supply_apy_pct": 3.6988,
+      "borrow_apy_pct": 4.6126,
+      "borrow_apr_pct": 4.5093,
+      "utilization": 0.8951,
+      "tvl_usd": 29256226.5
+    },
+    {
+      "date": "2026-06-22",
+      "supply_apy_pct": 3.6988,
+      "borrow_apy_pct": 4.6125,
+      "borrow_apr_pct": 4.5093,
+      "utilization": 0.8951,
+      "tvl_usd": 29260109.71
+    },
+    {
+      "date": "2026-06-23",
+      "supply_apy_pct": 3.6984,
+      "borrow_apy_pct": 4.6123,
+      "borrow_apr_pct": 4.5091,
+      "utilization": 0.8949,
+      "tvl_usd": 29302539.12
+    },
+    {
+      "date": "2026-06-24",
+      "supply_apy_pct": 3.6987,
+      "borrow_apy_pct": 4.6125,
+      "borrow_apr_pct": 4.5093,
+      "utilization": 0.8949,
+      "tvl_usd": 29315293.9
+    },
+    {
+      "date": "2026-06-25",
+      "supply_apy_pct": 3.6986,
+      "borrow_apy_pct": 4.6124,
+      "borrow_apr_pct": 4.5092,
+      "utilization": 0.8949,
+      "tvl_usd": 29653462.61
+    },
+    {
+      "date": "2026-06-26",
+      "supply_apy_pct": 3.6987,
+      "borrow_apy_pct": 4.6125,
+      "borrow_apr_pct": 4.5093,
+      "utilization": 0.895,
+      "tvl_usd": 29588664.06
+    },
+    {
+      "date": "2026-06-27",
+      "supply_apy_pct": 3.6987,
+      "borrow_apy_pct": 4.6125,
+      "borrow_apr_pct": 4.5093,
+      "utilization": 0.895,
+      "tvl_usd": 29218521.52
+    },
+    {
+      "date": "2026-06-28",
+      "supply_apy_pct": 3.6987,
+      "borrow_apy_pct": 4.6125,
+      "borrow_apr_pct": 4.5093,
+      "utilization": 0.895,
+      "tvl_usd": 29210553.45
+    },
+    {
+      "date": "2026-06-29",
+      "supply_apy_pct": 3.6987,
+      "borrow_apy_pct": 4.6125,
+      "borrow_apr_pct": 4.5093,
+      "utilization": 0.895,
+      "tvl_usd": 29183072.2
+    },
+    {
+      "date": "2026-06-30",
+      "supply_apy_pct": 3.7,
+      "borrow_apy_pct": 4.6133,
+      "borrow_apr_pct": 4.5101,
+      "utilization": 0.8952,
+      "tvl_usd": 29146370.31
+    },
+    {
+      "date": "2026-07-01",
+      "supply_apy_pct": 3.6988,
+      "borrow_apy_pct": 4.6125,
+      "borrow_apr_pct": 4.5093,
+      "utilization": 0.895,
+      "tvl_usd": 29154436.91
+    },
+    {
+      "date": "2026-07-02",
+      "supply_apy_pct": 3.6988,
+      "borrow_apy_pct": 4.6125,
+      "borrow_apr_pct": 4.5093,
+      "utilization": 0.895,
+      "tvl_usd": 29157625.9
+    },
+    {
+      "date": "2026-07-03",
+      "supply_apy_pct": 3.6988,
+      "borrow_apy_pct": 4.6125,
+      "borrow_apr_pct": 4.5093,
+      "utilization": 0.895,
+      "tvl_usd": 29160528.42
+    },
+    {
+      "date": "2026-07-04",
+      "supply_apy_pct": 3.6988,
+      "borrow_apy_pct": 4.6125,
+      "borrow_apr_pct": 4.5093,
+      "utilization": 0.8951,
+      "tvl_usd": 28912220.61
+    },
+    {
+      "date": "2026-07-05",
+      "supply_apy_pct": 3.6988,
+      "borrow_apy_pct": 4.6125,
+      "borrow_apr_pct": 4.5093,
+      "utilization": 0.8951,
+      "tvl_usd": 28655292.72
+    },
+    {
+      "date": "2026-07-06",
+      "supply_apy_pct": 3.6988,
+      "borrow_apy_pct": 4.6125,
+      "borrow_apr_pct": 4.5093,
+      "utilization": 0.8951,
+      "tvl_usd": 28613462.87
+    },
+    {
+      "date": "2026-07-07",
+      "supply_apy_pct": 3.6987,
+      "borrow_apy_pct": 4.417,
+      "borrow_apr_pct": 4.3222,
+      "utilization": 0.9337,
+      "tvl_usd": 27476991.65
+    },
+    {
+      "date": "2026-07-08",
+      "supply_apy_pct": 3.6987,
+      "borrow_apy_pct": 4.417,
+      "borrow_apr_pct": 4.3222,
+      "utilization": 0.9337,
+      "tvl_usd": 28087094.07
+    },
+    {
+      "date": "2026-07-09",
+      "supply_apy_pct": 3.6987,
+      "borrow_apy_pct": 4.417,
+      "borrow_apr_pct": 4.3222,
+      "utilization": 0.9337,
+      "tvl_usd": 28417602.27
+    },
+    {
+      "date": "2026-07-10",
+      "supply_apy_pct": 3.6986,
+      "borrow_apy_pct": 4.4169,
+      "borrow_apr_pct": 4.3221,
+      "utilization": 0.9337,
+      "tvl_usd": 27924954.24
+    },
+    {
+      "date": "2026-07-11",
+      "supply_apy_pct": 3.6987,
+      "borrow_apy_pct": 4.417,
+      "borrow_apr_pct": 4.3222,
+      "utilization": 0.9337,
+      "tvl_usd": 28020651.78
+    },
+    {
+      "date": "2026-07-12",
+      "supply_apy_pct": 3.6992,
+      "borrow_apy_pct": 4.4173,
+      "borrow_apr_pct": 4.3225,
+      "utilization": 0.9338,
+      "tvl_usd": 28114514.16
+    },
+    {
+      "date": "2026-07-13",
+      "supply_apy_pct": 3.6987,
+      "borrow_apy_pct": 4.417,
+      "borrow_apr_pct": 4.3222,
+      "utilization": 0.9337,
+      "tvl_usd": 28132654
+    },
+    {
+      "date": "2026-07-14",
+      "supply_apy_pct": 3.6992,
+      "borrow_apy_pct": 4.4172,
+      "borrow_apr_pct": 4.3225,
+      "utilization": 0.9338,
+      "tvl_usd": 28181515.98
+    },
+    {
+      "date": "2026-07-15",
+      "supply_apy_pct": 3.6987,
+      "borrow_apy_pct": 4.417,
+      "borrow_apr_pct": 4.3222,
+      "utilization": 0.9338,
+      "tvl_usd": 28167095.5
+    },
+    {
+      "date": "2026-07-16",
+      "supply_apy_pct": 3.6987,
+      "borrow_apy_pct": 4.417,
+      "borrow_apr_pct": 4.3222,
+      "utilization": 0.9338,
+      "tvl_usd": 28115975.12
+    },
+    {
+      "date": "2026-07-17",
+      "supply_apy_pct": 3.6987,
+      "borrow_apy_pct": 4.417,
+      "borrow_apr_pct": 4.3222,
+      "utilization": 0.9338,
+      "tvl_usd": 28133000.79
+    },
+    {
+      "date": "2026-07-18",
+      "supply_apy_pct": 3.6987,
+      "borrow_apy_pct": 4.417,
+      "borrow_apr_pct": 4.3222,
+      "utilization": 0.9338,
+      "tvl_usd": 28007175.85
+    },
+    {
+      "date": "2026-07-19",
+      "supply_apy_pct": 3.6988,
+      "borrow_apy_pct": 4.417,
+      "borrow_apr_pct": 4.3222,
+      "utilization": 0.9338,
+      "tvl_usd": 28012912.47
+    },
+    {
+      "date": "2026-07-20",
+      "supply_apy_pct": 3.6987,
+      "borrow_apy_pct": 4.417,
+      "borrow_apr_pct": 4.3222,
+      "utilization": 0.9338,
+      "tvl_usd": 27918609.88
+    },
+    {
+      "date": "2026-07-21",
+      "supply_apy_pct": 3.6987,
+      "borrow_apy_pct": 4.417,
+      "borrow_apr_pct": 4.3222,
+      "utilization": 0.9337,
+      "tvl_usd": 27926060.57
+    },
+    {
+      "date": "2026-07-22",
+      "supply_apy_pct": 3.6987,
+      "borrow_apy_pct": 4.417,
+      "borrow_apr_pct": 4.3222,
+      "utilization": 0.9337,
+      "tvl_usd": 27890403.56
+    },
+    {
+      "date": "2026-07-23",
+      "supply_apy_pct": 3.6987,
+      "borrow_apy_pct": 4.417,
+      "borrow_apr_pct": 4.3222,
+      "utilization": 0.9337,
+      "tvl_usd": 27966027.61
+    },
+    {
+      "date": "2026-07-24",
+      "supply_apy_pct": 3.5334,
+      "borrow_apy_pct": 4.2791,
+      "borrow_apr_pct": 4.1901,
+      "utilization": 0.9208,
+      "tvl_usd": 28409748.46
+    },
+    {
+      "date": "2026-07-25",
+      "supply_apy_pct": 3.5334,
+      "borrow_apy_pct": 4.2791,
+      "borrow_apr_pct": 4.1901,
+      "utilization": 0.9208,
+      "tvl_usd": 28430606.82
+    },
+    {
+      "date": "2026-07-26",
+      "supply_apy_pct": 3.5334,
+      "borrow_apy_pct": 4.2791,
+      "borrow_apr_pct": 4.1901,
+      "utilization": 0.9209,
+      "tvl_usd": 28440233.54
+    },
+    {
+      "date": "2026-07-27",
+      "supply_apy_pct": 3.5334,
+      "borrow_apy_pct": 4.2791,
+      "borrow_apr_pct": 4.1901,
+      "utilization": 0.9209,
+      "tvl_usd": 28437906.36
+    },
+    {
+      "date": "2026-07-28",
+      "supply_apy_pct": 3.5334,
+      "borrow_apy_pct": 4.2791,
+      "borrow_apr_pct": 4.1901,
+      "utilization": 0.9209,
+      "tvl_usd": 28385338.5
+    },
+    {
+      "date": "2026-07-29",
+      "supply_apy_pct": 3.5334,
+      "borrow_apy_pct": 4.2791,
+      "borrow_apr_pct": 4.1901,
+      "utilization": 0.9209,
+      "tvl_usd": 28345099.27
+    },
+    {
+      "date": "2026-07-30",
+      "supply_apy_pct": 3.5334,
+      "borrow_apy_pct": 4.2791,
+      "borrow_apr_pct": 4.1901,
+      "utilization": 0.9209,
+      "tvl_usd": 29388080.26
+    },
+    {
+      "date": "2026-07-31",
+      "supply_apy_pct": 3.5334,
+      "borrow_apy_pct": 4.2791,
+      "borrow_apr_pct": 4.1901,
+      "utilization": 0.9209,
+      "tvl_usd": 28933140.55
+    },
+    {
+      "date": "2026-08-01",
+      "supply_apy_pct": 3.5334,
+      "borrow_apy_pct": 4.2791,
+      "borrow_apr_pct": 4.1901,
+      "utilization": 0.9209,
+      "tvl_usd": 28968361.3
+    },
+    {
+      "date": "2026-08-02",
+      "supply_apy_pct": 3.5334,
+      "borrow_apy_pct": 4.2791,
+      "borrow_apr_pct": 4.1901,
+      "utilization": 0.9209,
+      "tvl_usd": 28987581.35
+    },
+    {
+      "date": "2026-08-03",
+      "supply_apy_pct": 3.5336,
+      "borrow_apy_pct": 4.2792,
+      "borrow_apr_pct": 4.1902,
+      "utilization": 0.921,
+      "tvl_usd": 28963677.91
+    },
+    {
+      "date": "2026-08-04",
+      "supply_apy_pct": 3.5334,
+      "borrow_apy_pct": 4.2791,
+      "borrow_apr_pct": 4.1901,
+      "utilization": 0.9209,
+      "tvl_usd": 28960004.03
+    }
+  ],
+  "key_moments": {
+    "detected_steps": [
+      {
+        "from_date": "2026-07-06",
+        "to_date": "2026-07-07",
+        "from_borrow_apy_pct": 4.6125,
+        "to_borrow_apy_pct": 4.417,
+        "delta_bps": -19.6
+      },
+      {
+        "from_date": "2026-07-23",
+        "to_date": "2026-07-24",
+        "from_borrow_apy_pct": 4.417,
+        "to_borrow_apy_pct": 4.2791,
+        "delta_bps": -13.8
+      }
+    ],
+    "requested_jul26_to_jul27": {
+      "pre_change": {
+        "date": "2026-07-26",
+        "borrow_apy_pct": 4.2791
+      },
+      "post_change": {
+        "date": "2026-07-27",
+        "borrow_apy_pct": 4.2791
+      },
+      "delta_bps": 0,
+      "note": "Included because Issue 004's working thesis flagged a Jul-27 step. On-chain, Jul 26→27 is flat; the real step-downs are in detected_steps."
+    }
+  },
+  "summary": {
+    "month_open_borrow_pct": 4.6125,
+    "month_close_borrow_pct": 4.2791,
+    "month_min_borrow_pct": 4.2791,
+    "month_max_borrow_pct": 4.6125,
+    "total_month_step_bps": -33.3
+  }
+}
