@@ -1,7 +1,7 @@
 {
   "source": {
     "script": "scripts/query-lrt-collateral.ts",
-    "generated_at_utc": "2026-08-04T06:13:48Z",
+    "generated_at_utc": "2026-08-04T06:55:33Z",
     "target_dates_utc": {
       "june_30": "2026-06-30",
       "july_31": "2026-07-31"
@@ -9,7 +9,7 @@
     "data_source": "DefiLlama /protocol/<slug> chainTvls.Ethereum.tokensInUsd per day",
     "symbol_normalisation": "Symbols upper-cased and matched against LRT set {WEETH, RSETH, EZETH, OSETH}. Variants like weETH or weEth from DefiLlama collapse onto the same canonical symbol.",
     "methodology": "USD supplied per (protocol, LRT-asset) at the day closest to and not after each target. Uses ACTUAL prices on each day, NOT constant prices. Differs from the Sankey methodology which holds quantities at latest-observed prices to isolate flows from drift.",
-    "note": "DefiLlama actual-price deltas will differ from Sankey constant-price deltas by the LRT price effect across May→June. The reconciliation block surfaces the gap per asset."
+    "note": "June Sankey (constant-price) baseline neutralized to null — it does not apply to July. Reconciliation deferred pending the Issue 004 methodology decision."
   },
   "sector": {
     "june_30": {
@@ -46,37 +46,38 @@
     "pct_change_total": 0.25960156055819084
   },
   "sankey_hypothesis_reconciliation": {
-    "hypothesis_total_usd": -1175000000,
+    "hypothesis_total_usd": null,
     "defillama_actual_total_usd": 758353524.9927301,
-    "total_gap_usd": 1933353524.9927301,
+    "total_gap_usd": null,
+    "note": "June Sankey baseline neutralized; reconciliation deferred pending Issue 004 methodology decision.",
     "per_asset": [
       {
         "asset": "WEETH",
-        "sankey_hypothesis_constant_price_delta_usd": -844000000,
+        "sankey_hypothesis_constant_price_delta_usd": null,
         "defillama_actual_price_delta_usd": 661118145.4308801,
-        "gap_usd": 1505118145.43088,
-        "gap_interpretation": "Larger than $50M — meaningful divergence between flow methodology and actual-price methodology, indicating LRT price moved materially in June."
+        "gap_usd": null,
+        "gap_interpretation": null
       },
       {
         "asset": "RSETH",
-        "sankey_hypothesis_constant_price_delta_usd": -221000000,
+        "sankey_hypothesis_constant_price_delta_usd": null,
         "defillama_actual_price_delta_usd": 41175470.65745008,
-        "gap_usd": 262175470.65745008,
-        "gap_interpretation": "Larger than $50M — meaningful divergence between flow methodology and actual-price methodology, indicating LRT price moved materially in June."
+        "gap_usd": null,
+        "gap_interpretation": null
       },
       {
         "asset": "EZETH",
-        "sankey_hypothesis_constant_price_delta_usd": -64000000,
+        "sankey_hypothesis_constant_price_delta_usd": null,
         "defillama_actual_price_delta_usd": -3575479.29066,
-        "gap_usd": 60424520.70934,
-        "gap_interpretation": "Larger than $50M — meaningful divergence between flow methodology and actual-price methodology, indicating LRT price moved materially in June."
+        "gap_usd": null,
+        "gap_interpretation": null
       },
       {
         "asset": "OSETH",
-        "sankey_hypothesis_constant_price_delta_usd": -46000000,
+        "sankey_hypothesis_constant_price_delta_usd": null,
         "defillama_actual_price_delta_usd": 59635388.195059985,
-        "gap_usd": 105635388.19505998,
-        "gap_interpretation": "Larger than $50M — meaningful divergence between flow methodology and actual-price methodology, indicating LRT price moved materially in June."
+        "gap_usd": null,
+        "gap_interpretation": null
       }
     ]
   },

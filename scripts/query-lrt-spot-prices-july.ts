@@ -236,10 +236,10 @@ async function main(): Promise<void> {
       weeth_june_30_supply_usd_used: JUNE30_WEETH_SUPPLY_USD,
       weeth_per_unit_change_pct: weethReading?.per_unit_change_pct ?? null,
       weeth_implied_price_effect_usd: weethImpliedPriceEffectUsd,
-      documented_lrt_price_decline_usd_total: -443_000_000,
-      documented_lrt_price_decline_usd_weeth_share_approx: -336_000_000,
+      documented_lrt_price_decline_usd_total: null,
+      documented_lrt_price_decline_usd_weeth_share_approx: null,
       reconciliation_note:
-        "The implied price-effect figure is point-in-time (May 31 supply × per-unit move). The §05 documented number is the time-averaged effect across June. The two will not match exactly but should land within roughly $50M for the narrative to hold.",
+        "June §05 baseline (documented LRT price-decline figures) neutralized to null — the implied-price-effect reconciliation is deferred pending the Issue 004 methodology decision, parallel to the lrt-collateral Sankey scrub.",
     },
   }
 

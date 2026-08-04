@@ -4,9 +4,10 @@
  *
  *   npm run query:lrt-collateral-july
  *
- * Hypothesis to test: roughly $1.17B of LRT net outflow in June per the
- * Sankey (WEETH $844M, RSETH $221M, EZETH $64M, OSETH $46M). This script
- * confirms or refutes against DefiLlama-derived figures.
+ * July snapshot; June baseline reconciliation deferred pending the Issue 004
+ * methodology decision. (The prior version reconciled July actual-price deltas
+ * against a hardcoded June Sankey constant-price hypothesis; those June
+ * baselines don't apply to July and are neutralized to null.)
  *
  * Methodology:
  *   1. For each of the 6 protocols, fetch DefiLlama protocol history
@@ -42,12 +43,16 @@ const LRT_ASSETS = ["WEETH", "RSETH", "EZETH", "OSETH"] as const
 type LrtAsset = (typeof LRT_ASSETS)[number]
 const OUTPUT_PATH = "content/snapshots/2026-07-lrt-collateral.json"
 
-// Sankey hypothesis from the issue brief — constant-price net outflows in June.
-const SANKEY_HYPOTHESIS_USD: Record<LrtAsset, number> = {
-  WEETH: -844_000_000,
-  RSETH: -221_000_000,
-  EZETH: -64_000_000,
-  OSETH: -46_000_000,
+// June baseline NEUTRALIZED. The Sankey hypothesis was Issue-003 (June)
+// constant-price net outflow — it does NOT apply to July. Set to null (not
+// deleted) so any consumer sees an explicit "no baseline available".
+// Reconciliation deferred pending the Issue 004 methodology decision.
+// Parallels the $845M scrub in query-aave-v3-per-asset-flow-july.ts.
+const SANKEY_HYPOTHESIS_USD: Record<LrtAsset, number | null> = {
+  WEETH: null,
+  RSETH: null,
+  EZETH: null,
+  OSETH: null,
 }
 
 function utcDayKey(unixSec: number): string {
@@ -138,7 +143,7 @@ async function main(): Promise<void> {
   }
   console.log("")
 
-  console.log("[3/3] Aggregating sector totals per LRT + reconciling against Sankey hypothesis …")
+  console.log("[3/3] Aggregating sector totals per LRT (June baseline reconciliation deferred) …")
   const sectorApr: Record<LrtAsset, number> = { WEETH: 0, RSETH: 0, EZETH: 0, OSETH: 0 }
   const sectorMay: Record<LrtAsset, number> = { WEETH: 0, RSETH: 0, EZETH: 0, OSETH: 0 }
   for (const e of protocols) {
@@ -187,33 +192,21 @@ async function main(): Promise<void> {
   }
   console.log("")
 
-  console.log("── Reconciliation against Sankey hypothesis ──────────────")
-  console.log("  Sankey is CONSTANT-PRICE (depositor flow). DefiLlama is ACTUAL prices.")
-  console.log("  Gap = DefiLlama delta minus Sankey hypothesis = the LRT price-decline effect.")
-  console.log("")
-  console.log("  Asset    Sankey hyp.    DL actual Δ    Gap (price effect)")
-  for (const a of LRT_ASSETS) {
-    const hyp = SANKEY_HYPOTHESIS_USD[a]
-    const actual = sectorDelta[a]
-    const gap = actual - hyp
-    console.log(
-      `  ${a.padEnd(8)} ${fmtUsd(hyp).padEnd(13)} ${fmtUsd(actual).padEnd(14)} ${fmtUsd(gap)}`,
-    )
-  }
+  console.log("── June baseline reconciliation: DEFERRED ──────────────────")
+  console.log("  The June Sankey (constant-price) hypothesis is neutralized to null —")
+  console.log("  it does not apply to July. Deferred pending the Issue 004 methodology")
+  console.log("  decision. July actual-price sector deltas are shown above.")
   console.log("")
 
   // ─── Write JSON ──────────────────────────────────────────────────────
-  const sankeyTotal = Object.values(SANKEY_HYPOTHESIS_USD).reduce((s, v) => s + v, 0)
   const actualTotal = Object.values(sectorDelta).reduce((s, v) => s + v, 0)
   const reconciliation = LRT_ASSETS.map((a) => ({
     asset: a,
+    // June baseline neutralized to null — see SANKEY_HYPOTHESIS_USD.
     sankey_hypothesis_constant_price_delta_usd: SANKEY_HYPOTHESIS_USD[a],
     defillama_actual_price_delta_usd: sectorDelta[a],
-    gap_usd: sectorDelta[a] - SANKEY_HYPOTHESIS_USD[a],
-    gap_interpretation:
-      Math.abs(sectorDelta[a] - SANKEY_HYPOTHESIS_USD[a]) < 50_000_000
-        ? "Within $50M — constant-price flow methodology and actual-price methodology align; the June LRT bleed was primarily depositor exit, not price decline."
-        : "Larger than $50M — meaningful divergence between flow methodology and actual-price methodology, indicating LRT price moved materially in June.",
+    gap_usd: null,
+    gap_interpretation: null,
   }))
 
   const out = {
@@ -226,7 +219,7 @@ async function main(): Promise<void> {
         "Symbols upper-cased and matched against LRT set {WEETH, RSETH, EZETH, OSETH}. Variants like weETH or weEth from DefiLlama collapse onto the same canonical symbol.",
       methodology:
         "USD supplied per (protocol, LRT-asset) at the day closest to and not after each target. Uses ACTUAL prices on each day, NOT constant prices. Differs from the Sankey methodology which holds quantities at latest-observed prices to isolate flows from drift.",
-      note: "DefiLlama actual-price deltas will differ from Sankey constant-price deltas by the LRT price effect across May→June. The reconciliation block surfaces the gap per asset.",
+      note: "June Sankey (constant-price) baseline neutralized to null — it does not apply to July. Reconciliation deferred pending the Issue 004 methodology decision.",
     },
     sector: {
       june_30: {
@@ -243,9 +236,10 @@ async function main(): Promise<void> {
       pct_change_total: sectorAprTotal > 0 ? sectorTotalDelta / sectorAprTotal : NaN,
     },
     sankey_hypothesis_reconciliation: {
-      hypothesis_total_usd: sankeyTotal,
+      hypothesis_total_usd: null,
       defillama_actual_total_usd: actualTotal,
-      total_gap_usd: actualTotal - sankeyTotal,
+      total_gap_usd: null,
+      note: "June Sankey baseline neutralized; reconciliation deferred pending Issue 004 methodology decision.",
       per_asset: reconciliation,
     },
     per_protocol: protocols,

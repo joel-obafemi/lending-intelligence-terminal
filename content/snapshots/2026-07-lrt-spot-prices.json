@@ -1,7 +1,7 @@
 {
   "source": {
     "script": "scripts/query-lrt-spot-prices.ts",
-    "generated_at_utc": "2026-08-04T06:13:58Z",
+    "generated_at_utc": "2026-08-04T06:55:47Z",
     "primary_endpoint": "DefiLlama /coins/prices/historical/{ts}/ethereum:<address>",
     "fallback_endpoint": "CoinGecko /coins/{id}/history?date=DD-MM-YYYY",
     "notes": "DefiLlama prices may be aged by a few minutes from the requested timestamp (the raw_age_sec field surfaces the gap). CoinGecko's historical endpoint is UTC-day-anchored so its returned price is the day's open or close depending on token coverage."
@@ -88,8 +88,8 @@
     "weeth_june_30_supply_usd_used": 0,
     "weeth_per_unit_change_pct": 18.94211226821051,
     "weeth_implied_price_effect_usd": null,
-    "documented_lrt_price_decline_usd_total": -443000000,
-    "documented_lrt_price_decline_usd_weeth_share_approx": -336000000,
-    "reconciliation_note": "The implied price-effect figure is point-in-time (May 31 supply × per-unit move). The §05 documented number is the time-averaged effect across June. The two will not match exactly but should land within roughly $50M for the narrative to hold."
+    "documented_lrt_price_decline_usd_total": null,
+    "documented_lrt_price_decline_usd_weeth_share_approx": null,
+    "reconciliation_note": "June §05 baseline (documented LRT price-decline figures) neutralized to null — the implied-price-effect reconciliation is deferred pending the Issue 004 methodology decision, parallel to the lrt-collateral Sankey scrub."
   }
 }
