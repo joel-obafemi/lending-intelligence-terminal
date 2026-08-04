@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "generated_at": "2026-08-04T05:26:24.853Z",
+  "generated_at": "2026-08-04T06:13:30.971Z",
   "issue": "002 §06.1 (Aave V3 WEETH by market)",
   "targets": {
     "june30_utc": "2026-06-30T23:59:00Z",
@@ -71,6 +71,6 @@
     "dominant_market_id": "core",
     "dominant_market_share_june30_pct": 100,
     "dominant_market_share_july31_pct": 100,
-    "finding": "At both endpoints, ≥95% of Aave V3 Ethereum WEETH supply sits in the Aave V3 Core (Ethereum) market. The May 31 → June 30 change is effectively a single-market story."
+    "finding": "At both endpoints, ≥95% of Aave V3 Ethereum WEETH supply sits in the Aave V3 Core (Ethereum) market. The June 30 → July 31 change is effectively a single-market story."
   }
 }

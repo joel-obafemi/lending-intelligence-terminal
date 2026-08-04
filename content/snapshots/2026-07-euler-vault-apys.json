@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "generated_at": "2026-08-04T05:34:25.905Z",
+  "generated_at": "2026-08-04T06:14:31.600Z",
   "issue": "002 §06.6 (yield-vs-event analysis)",
   "source": {
     "input": "content/snapshots/2026-07-euler-vault-flows.json",
@@ -54,10 +54,10 @@
           "delta_from_target_sec": -3350
         }
       ],
-      "may_avg_apy_pct": 0.9502206451612905,
-      "may_min_apy_pct": 0.61551,
-      "may_max_apy_pct": 1.14802,
-      "may_delta_pp": 0.3304100000000001,
+      "jul_avg_apy_pct": 0.9502206451612905,
+      "jul_min_apy_pct": 0.61551,
+      "jul_max_apy_pct": 1.14802,
+      "jul_delta_pp": 0.3304100000000001,
       "hypothesis": "yield_stable"
     },
     {
@@ -88,10 +88,10 @@
           "delta_from_target_sec": -3350
         }
       ],
-      "may_avg_apy_pct": 3.959178387096774,
-      "may_min_apy_pct": 2.72193,
-      "may_max_apy_pct": 6.56459,
-      "may_delta_pp": 2.50899,
+      "jul_avg_apy_pct": 3.959178387096774,
+      "jul_min_apy_pct": 2.72193,
+      "jul_max_apy_pct": 6.56459,
+      "jul_delta_pp": 2.50899,
       "hypothesis": "yield_rose"
     },
     {
@@ -122,10 +122,10 @@
           "delta_from_target_sec": -3350
         }
       ],
-      "may_avg_apy_pct": 7.597692903225806,
-      "may_min_apy_pct": 0.01489,
-      "may_max_apy_pct": 16.2,
-      "may_delta_pp": 11.33531,
+      "jul_avg_apy_pct": 7.597692903225806,
+      "jul_min_apy_pct": 0.01489,
+      "jul_max_apy_pct": 16.2,
+      "jul_delta_pp": 11.33531,
       "hypothesis": "yield_rose"
     },
     {
@@ -156,10 +156,10 @@
           "delta_from_target_sec": -3350
         }
       ],
-      "may_avg_apy_pct": 2.9813287096774195,
-      "may_min_apy_pct": 1.55721,
-      "may_max_apy_pct": 10.81835,
-      "may_delta_pp": -1.5967699999999998,
+      "jul_avg_apy_pct": 2.9813287096774195,
+      "jul_min_apy_pct": 1.55721,
+      "jul_max_apy_pct": 10.81835,
+      "jul_delta_pp": -1.5967699999999998,
       "hypothesis": "yield_collapse"
     },
     {
@@ -190,10 +190,10 @@
           "delta_from_target_sec": -3350
         }
       ],
-      "may_avg_apy_pct": 1.8153767741935483,
-      "may_min_apy_pct": 1.12872,
-      "may_max_apy_pct": 3.25225,
-      "may_delta_pp": 2.03898,
+      "jul_avg_apy_pct": 1.8153767741935483,
+      "jul_min_apy_pct": 1.12872,
+      "jul_max_apy_pct": 3.25225,
+      "jul_delta_pp": 2.03898,
       "hypothesis": "yield_rose"
     }
   ],
@@ -226,10 +226,10 @@
           "delta_from_target_sec": -3350
         }
       ],
-      "may_avg_apy_pct": 1.1319809677419357,
-      "may_min_apy_pct": 0.59263,
-      "may_max_apy_pct": 1.94293,
-      "may_delta_pp": -0.9725999999999999,
+      "jul_avg_apy_pct": 1.1319809677419357,
+      "jul_min_apy_pct": 0.59263,
+      "jul_max_apy_pct": 1.94293,
+      "jul_delta_pp": -0.9725999999999999,
       "hypothesis": "ambiguous"
     },
     {
@@ -260,10 +260,10 @@
           "delta_from_target_sec": -3350
         }
       ],
-      "may_avg_apy_pct": 0.9353264516129031,
-      "may_min_apy_pct": 0.00124,
-      "may_max_apy_pct": 1.26864,
-      "may_delta_pp": -1.2415,
+      "jul_avg_apy_pct": 0.9353264516129031,
+      "jul_min_apy_pct": 0.00124,
+      "jul_max_apy_pct": 1.26864,
+      "jul_delta_pp": -1.2415,
       "hypothesis": "ambiguous"
     },
     {
@@ -294,10 +294,10 @@
           "delta_from_target_sec": -3350
         }
       ],
-      "may_avg_apy_pct": 0,
-      "may_min_apy_pct": 0,
-      "may_max_apy_pct": 0,
-      "may_delta_pp": 0,
+      "jul_avg_apy_pct": 0,
+      "jul_min_apy_pct": 0,
+      "jul_max_apy_pct": 0,
+      "jul_delta_pp": 0,
       "hypothesis": "yield_stable"
     },
     {
@@ -328,10 +328,10 @@
           "delta_from_target_sec": -3350
         }
       ],
-      "may_avg_apy_pct": 6.152675161290323,
-      "may_min_apy_pct": 3.84151,
-      "may_max_apy_pct": 15.19999,
-      "may_delta_pp": -9.364189999999999,
+      "jul_avg_apy_pct": 6.152675161290323,
+      "jul_min_apy_pct": 3.84151,
+      "jul_max_apy_pct": 15.19999,
+      "jul_delta_pp": -9.364189999999999,
       "hypothesis": "yield_collapse"
     },
     {
@@ -362,10 +362,10 @@
           "delta_from_target_sec": -3350
         }
       ],
-      "may_avg_apy_pct": 1.7419354838709677,
-      "may_min_apy_pct": 0,
-      "may_max_apy_pct": 18,
-      "may_delta_pp": 0,
+      "jul_avg_apy_pct": 1.7419354838709677,
+      "jul_min_apy_pct": 0,
+      "jul_max_apy_pct": 18,
+      "jul_delta_pp": 0,
       "hypothesis": "yield_stable"
     }
   ]

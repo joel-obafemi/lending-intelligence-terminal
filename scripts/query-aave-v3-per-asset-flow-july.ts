@@ -1,15 +1,15 @@
 /**
  * Per-asset decomposition of Aave V3's July 2026 constant-price net flow
- * across the FULL MONTH. For Issue 003 Pass 4b, verifies whether the
- * +$845M protocol-level inflow was USDC-driven, non-USDC-driven, or mixed.
+ * across the FULL MONTH. For Issue 004, verifies whether the protocol-level
+ * net inflow was USDC-driven, non-USDC-driven, or mixed.
  *
  *   npx tsx scripts/query-aave-v3-per-asset-flow-july.ts
  *
  * Follows the same fetchProtocolHistory → suppliedByAssetQty × latest_price
- * methodology used by query-aave-june-daily-flows.ts and query-aave-
- * outflow-days-by-asset.ts. Sums per-asset daily deltas across every day
- * in June (June 1 to June 30), so the ranked output reconciles to the
- * protocol-level +$845M cumulative flow within rounding.
+ * methodology used by query-aave-july-daily-flows.ts and query-aave-
+ * outflow-days-by-asset-july.ts. Sums per-asset daily deltas across every
+ * day in July (July 1 to July 31); the ranked per-asset sum is the
+ * decomposition of the month's protocol-level constant-price flow.
  *
  * Output: content/snapshots/2026-07-aave-v3-per-asset-flow.json
  */
@@ -84,22 +84,22 @@ async function main() {
   console.log(`  latest prices resolved for ${latestPriceByAsset.size} assets`)
   console.log("")
 
-  console.log("[3/3] Summing per-asset constant-price deltas across June …")
+  console.log("[3/3] Summing per-asset constant-price deltas across July …")
   const totals = new Map<string, AssetTotal>()
   for (const asset of qtyByDayByAsset.keys()) {
     const price = latestPriceByAsset.get(asset)
     if (!price) continue
     const qtyMap = qtyByDayByAsset.get(asset)!
-    const juneQtyDays = [...qtyMap.keys()]
+    const julyQtyDays = [...qtyMap.keys()]
       .filter((t) => t >= julyStart - 86400 && t <= julyEnd + 86400)
       .sort((a, b) => a - b)
-    if (juneQtyDays.length < 2) continue
+    if (julyQtyDays.length < 2) continue
     let cumDeltaUsd = 0
     let contributingDays = 0
-    for (let i = 1; i < juneQtyDays.length; i++) {
-      const t = juneQtyDays[i]
-      const tPrev = juneQtyDays[i - 1]
-      // Only accrue the delta if the CURRENT day is within June proper
+    for (let i = 1; i < julyQtyDays.length; i++) {
+      const t = julyQtyDays[i]
+      const tPrev = julyQtyDays[i - 1]
+      // Only accrue the delta if the CURRENT day is within July proper
       // (t >= julyStart and t <= julyEnd)
       if (t < julyStart || t > julyEnd + 86400) continue
       const q = qtyMap.get(t)!
@@ -132,8 +132,6 @@ async function main() {
   }
   console.log("")
   console.log(`  Sum across all assets: ${(sum / 1e6).toFixed(2)}M USD`)
-  console.log(`  Expected protocol-level:      +$845M`)
-  console.log(`  Reconciliation delta:         ${((sum - 845e6) / 1e6).toFixed(2)}M`)
   console.log("")
 
   const payload = {
@@ -154,9 +152,6 @@ async function main() {
     reconciliation: {
       per_asset_sum_usd: sum,
       per_asset_sum_millions: Number((sum / 1e6).toFixed(2)),
-      protocol_level_expected_usd: 845e6,
-      delta_from_expected_usd: sum - 845e6,
-      delta_from_expected_millions: Number(((sum - 845e6) / 1e6).toFixed(2)),
     },
   }
 

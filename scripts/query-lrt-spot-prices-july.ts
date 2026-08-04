@@ -1,6 +1,6 @@
 /**
  * Historical per-unit spot prices for WEETH, RSETH, EZETH, OSETH plus ETH
- * at May 31, 2026 23:59 UTC and July 31, 2026 23:59 UTC — for §05 / §06.1.
+ * at June 30, 2026 23:59 UTC and July 31, 2026 23:59 UTC — for §05 / §06.1.
  *
  *   npm run query:lrt-spot-prices-july
  *
@@ -142,7 +142,7 @@ function pct(curr: number, base: number): number {
 }
 
 async function main(): Promise<void> {
-  console.log(`LRT spot prices · May 31, 2026 vs July 31, 2026`)
+  console.log(`LRT spot prices · June 30, 2026 vs July 31, 2026`)
   console.log("")
 
   const readings: AssetReading[] = []
@@ -176,7 +176,7 @@ async function main(): Promise<void> {
         ? `${r.per_unit_change_pct >= 0 ? "+" : ""}${r.per_unit_change_pct.toFixed(2)}%`
         : "—"
     console.log(
-      `  ${asset.displayName.padEnd(24)} May 31 ${mayStr.padStart(10)}  |  June 30 ${juneStr.padStart(10)}  |  Δ ${chgStr.padStart(8)}`,
+      `  ${asset.displayName.padEnd(24)} June 30 ${mayStr.padStart(10)}  |  July 31 ${juneStr.padStart(10)}  |  Δ ${chgStr.padStart(8)}`,
     )
   }
   console.log("")

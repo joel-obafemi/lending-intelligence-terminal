@@ -251,7 +251,7 @@ async function main(): Promise<void> {
   console.log("")
 
   // ─── Stage 3: per-asset June 30 + 12-month aggregation ────────────
-  console.log("[3/3] Computing per-asset June 30 + 12-month dispersion …")
+  console.log("[3/3] Computing per-asset July 31 + 12-month dispersion …")
   const perAsset: DispersionRow[] = []
   for (const asset of ASSETS) {
     const protocolEntries = charted.filter((c) => c.asset === asset)
@@ -406,7 +406,7 @@ async function main(): Promise<void> {
   console.log("")
   console.log("── Per-asset dispersion summary ───────────────────────────")
   console.log(
-    `  ${"Asset".padEnd(6)} ${"June 30".padStart(10)}  ${"12mo avg".padStart(10)}  ${"ratio".padStart(8)}  protocols`,
+    `  ${"Asset".padEnd(6)} ${"July 31".padStart(10)}  ${"12mo avg".padStart(10)}  ${"ratio".padStart(8)}  protocols`,
   )
   for (const a of perAsset) {
     const ratioStr =
@@ -424,7 +424,7 @@ async function main(): Promise<void> {
     )
   }
   console.log("")
-  console.log("── Per-protocol June 30 supply APYs by asset ───────────────")
+  console.log("── Per-protocol July 31 supply APYs by asset ───────────────")
   for (const a of perAsset) {
     console.log(`  ${a.asset}`)
     for (const p of [...a.july31.per_protocol].sort(

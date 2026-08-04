@@ -1,9 +1,9 @@
 /**
- * One-shot — APY trajectory across May for the Euler V2 vaults that
+ * One-shot — APY trajectory across July for the Euler V2 vaults that
  * drove the outflow. Reads pool IDs from the previous run's output
  * (`content/snapshots/2026-07-euler-vault-flows.json`) and pulls
  * DefiLlama `/chart/<poolId>` per vault to extract apyBase on key
- * dates in May. For Issue 003 §06.6 yield-vs-event analysis.
+ * dates in July. For Issue 004 §06.6 yield-vs-event analysis.
  *
  *   npm run query:euler-vault-apys-july
  *   # or: npx tsx scripts/query-euler-vault-apys.ts
@@ -13,10 +13,10 @@
  * elsewhere) or EVENT-DRIVEN (APYs held but capital left anyway,
  * pointing to security / governance / curator-mandated rotation)?
  *
- * Output: top_outflows (and top_inflows for contrast) get their May 1,
- * May 15, May 31, May average, May min, and May max apyBase. The
- * console summary highlights any vault whose May 31 APY is dramatically
- * below its May 1 value — that's the yield-collapse story.
+ * Output: top_outflows (and top_inflows for contrast) get their Jul 1,
+ * Jul 15, Jul 31, July average, July min, and July max apyBase. The
+ * console summary highlights any vault whose Jul 31 APY is dramatically
+ * below its Jul 1 value — that's the yield-collapse story.
  */
 import * as dotenv from "dotenv"
 dotenv.config()
@@ -29,8 +29,8 @@ import { fetchYieldChart, type YieldChartPoint } from "../lib/defillama"
 const INPUT_PATH = "content/snapshots/2026-07-euler-vault-flows.json"
 const OUTPUT_PATH = "content/snapshots/2026-07-euler-vault-apys.json"
 
-// Probe dates within May. Mid-month gives us a clue whether the change
-// was abrupt or gradual; min/max across May surface any short-lived
+// Probe dates within July. Mid-month gives us a clue whether the change
+// was abrupt or gradual; min/max across July surface any short-lived
 // spike or capitulation we'd otherwise miss with three discrete points.
 const PROBE_DATES_UTC = [
   { label: "jul1", iso: "2026-07-01T00:00:00Z" },
@@ -81,14 +81,14 @@ interface ApyTrajectory {
   symbol: string
   pool_meta: string | null
   probes: ApyProbe[]
-  /** Average apyBase across all May datapoints. */
-  may_avg_apy_pct: number | null
-  /** Minimum apyBase observed in May (rate compression low). */
-  may_min_apy_pct: number | null
-  /** Maximum apyBase observed in May. */
-  may_max_apy_pct: number | null
-  /** apyBase May 31 minus May 1, in percentage points. Positive = APY rose. */
-  may_delta_pp: number | null
+  /** Average apyBase across all July datapoints. */
+  jul_avg_apy_pct: number | null
+  /** Minimum apyBase observed in July (rate compression low). */
+  jul_min_apy_pct: number | null
+  /** Maximum apyBase observed in July. */
+  jul_max_apy_pct: number | null
+  /** apyBase Jul 31 minus Jul 1, in percentage points. Positive = APY rose. */
+  jul_delta_pp: number | null
   /** Quick classification for the console summary. */
   hypothesis: "yield_collapse" | "yield_stable" | "yield_rose" | "ambiguous" | "no_data"
 }
@@ -145,29 +145,29 @@ function fmtPp(n: number | null, decimals = 2): string {
   return `${sign}${n.toFixed(decimals)}pp`
 }
 
-/** Heuristic for the console summary line — what story does the May
+/** Heuristic for the console summary line — what story does the July
  *  trajectory most likely tell? Calibrated for stablecoin lending APYs
  *  in the 1-20% range; not robust against pathological cases. */
 function classifyHypothesis(t: {
-  may_delta_pp: number | null
-  may_max_apy_pct: number | null
-  may_min_apy_pct: number | null
+  jul_delta_pp: number | null
+  jul_max_apy_pct: number | null
+  jul_min_apy_pct: number | null
 }): ApyTrajectory["hypothesis"] {
-  if (t.may_delta_pp == null) return "no_data"
+  if (t.jul_delta_pp == null) return "no_data"
   // Yield collapse: APY dropped > 1.5pp AND lost > 30% of its starting
   // level. Both conditions catch the "8% → 3%" case but ignore a
   // "0.5% → 0.1%" twitchy series.
   if (
-    t.may_max_apy_pct != null &&
-    t.may_min_apy_pct != null &&
-    t.may_delta_pp < -1.5 &&
-    t.may_max_apy_pct > 0 &&
-    t.may_min_apy_pct / t.may_max_apy_pct < 0.7
+    t.jul_max_apy_pct != null &&
+    t.jul_min_apy_pct != null &&
+    t.jul_delta_pp < -1.5 &&
+    t.jul_max_apy_pct > 0 &&
+    t.jul_min_apy_pct / t.jul_max_apy_pct < 0.7
   ) {
     return "yield_collapse"
   }
-  if (t.may_delta_pp > 1.5) return "yield_rose"
-  if (Math.abs(t.may_delta_pp) < 0.5) return "yield_stable"
+  if (t.jul_delta_pp > 1.5) return "yield_rose"
+  if (Math.abs(t.jul_delta_pp) < 0.5) return "yield_stable"
   return "ambiguous"
 }
 
@@ -182,10 +182,10 @@ async function buildTrajectory(input: {
   const base: Omit<
     ApyTrajectory,
     | "probes"
-    | "may_avg_apy_pct"
-    | "may_min_apy_pct"
-    | "may_max_apy_pct"
-    | "may_delta_pp"
+    | "jul_avg_apy_pct"
+    | "jul_min_apy_pct"
+    | "jul_max_apy_pct"
+    | "jul_delta_pp"
     | "hypothesis"
   > = {
     pool_id: input.pool_id,
@@ -208,10 +208,10 @@ async function buildTrajectory(input: {
         source_timestamp_iso: null,
         delta_from_target_sec: null,
       })),
-      may_avg_apy_pct: null,
-      may_min_apy_pct: null,
-      may_max_apy_pct: null,
-      may_delta_pp: null,
+      jul_avg_apy_pct: null,
+      jul_min_apy_pct: null,
+      jul_max_apy_pct: null,
+      jul_delta_pp: null,
       hypothesis: "no_data",
     }
   }
@@ -241,7 +241,7 @@ async function buildTrajectory(input: {
     }
   })
 
-  // ─── May window stats (avg / min / max / Δ) ────────────────────
+  // ─── July window stats (avg / min / max / Δ) ────────────────────
   const winStart = Math.floor(new Date(WINDOW_START_UTC).getTime() / 1000)
   const winEnd = Math.floor(new Date(WINDOW_END_UTC).getTime() / 1000)
   const inWindow = chart.filter(
@@ -260,10 +260,10 @@ async function buildTrajectory(input: {
   const traj: ApyTrajectory = {
     ...base,
     probes,
-    may_avg_apy_pct: avg,
-    may_min_apy_pct: min,
-    may_max_apy_pct: max,
-    may_delta_pp: delta,
+    jul_avg_apy_pct: avg,
+    jul_min_apy_pct: min,
+    jul_max_apy_pct: max,
+    jul_delta_pp: delta,
     hypothesis: "no_data",
   }
   traj.hypothesis = classifyHypothesis(traj)
@@ -358,13 +358,13 @@ async function main(): Promise<void> {
         `Jul 1: ${fmtPct(jul1).padStart(6)}  ` +
         `Mid: ${fmtPct(jul15).padStart(6)}  ` +
         `Jul 31: ${fmtPct(jul31).padStart(6)}  ` +
-        `Δ ${fmtPp(t.may_delta_pp).padStart(8)}  ` +
+        `Δ ${fmtPp(t.jul_delta_pp).padStart(8)}  ` +
         `[${t.hypothesis}]`,
     )
     console.log(
-      `${" ".repeat(30)}  May avg: ${fmtPct(t.may_avg_apy_pct).padStart(6)}  ` +
-        `min: ${fmtPct(t.may_min_apy_pct).padStart(6)}  ` +
-        `max: ${fmtPct(t.may_max_apy_pct).padStart(6)}`,
+      `${" ".repeat(30)}  Jul avg: ${fmtPct(t.jul_avg_apy_pct).padStart(6)}  ` +
+        `min: ${fmtPct(t.jul_min_apy_pct).padStart(6)}  ` +
+        `max: ${fmtPct(t.jul_max_apy_pct).padStart(6)}`,
     )
   }
   console.log("")
@@ -376,7 +376,7 @@ async function main(): Promise<void> {
       `  ${t.display_name.padEnd(28)}  ` +
         `Jul 1: ${fmtPct(jul1).padStart(6)}  ` +
         `Jul 31: ${fmtPct(jul31).padStart(6)}  ` +
-        `Δ ${fmtPp(t.may_delta_pp).padStart(8)}  ` +
+        `Δ ${fmtPp(t.jul_delta_pp).padStart(8)}  ` +
         `[${t.hypothesis}]`,
     )
   }

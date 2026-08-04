@@ -1,7 +1,7 @@
 {
   "source": {
     "script": "scripts/query-lrt-spot-prices.ts",
-    "generated_at_utc": "2026-08-04T05:30:58Z",
+    "generated_at_utc": "2026-08-04T06:13:58Z",
     "primary_endpoint": "DefiLlama /coins/prices/historical/{ts}/ethereum:<address>",
     "fallback_endpoint": "CoinGecko /coins/{id}/history?date=DD-MM-YYYY",
     "notes": "DefiLlama prices may be aged by a few minutes from the requested timestamp (the raw_age_sec field surfaces the gap). CoinGecko's historical endpoint is UTC-day-anchored so its returned price is the day's open or close depending on token coverage."

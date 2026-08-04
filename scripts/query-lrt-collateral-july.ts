@@ -157,7 +157,7 @@ async function main(): Promise<void> {
 
   // ─── Console summary ─────────────────────────────────────────────────
   console.log("── Sector-wide LRT collateral USD (actual prices, not constant) ───")
-  console.log("  Asset    May 31           June 30           Δ (USD)         Δ %")
+  console.log("  Asset    June 30          July 31           Δ (USD)         Δ %")
   for (const a of LRT_ASSETS) {
     console.log(
       `  ${a.padEnd(8)} ${fmtUsd(sectorApr[a]).padEnd(15)} ${fmtUsd(sectorMay[a]).padEnd(15)} ${fmtUsd(sectorDelta[a]).padEnd(14)} ${fmtPct(sectorPctChange[a])}`,
@@ -172,7 +172,7 @@ async function main(): Promise<void> {
   )
   console.log("")
 
-  console.log("── Per-protocol breakdown at June 30 (USD, dominant first) ──────")
+  console.log("── Per-protocol breakdown at July 31 (USD, dominant first) ──────")
   for (const e of protocols) {
     const has = Object.entries(e.july_31.by_lrt).filter(([, v]) => v > 0)
     if (has.length === 0) {

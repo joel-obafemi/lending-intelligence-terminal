@@ -1,7 +1,7 @@
 {
   "source": {
     "script": "scripts/query-aave-v3-per-asset-flow-july.ts",
-    "generated_at_utc": "2026-08-04T05:26:03Z",
+    "generated_at_utc": "2026-08-04T06:13:22Z",
     "methodology": "Per-day, per-asset delta = (qty_D − qty_{D-1}) × latest_price. Sum across all days in July 2026. Constant-price methodology matches the daily-flows CSV convention."
   },
   "window": {
@@ -425,9 +425,6 @@
   ],
   "reconciliation": {
     "per_asset_sum_usd": 627842856.1957276,
-    "per_asset_sum_millions": 627.84,
-    "protocol_level_expected_usd": 845000000,
-    "delta_from_expected_usd": -217157143.8042724,
-    "delta_from_expected_millions": -217.16
+    "per_asset_sum_millions": 627.84
   }
 }

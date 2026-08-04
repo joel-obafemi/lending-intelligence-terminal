@@ -107,7 +107,7 @@ async function main(): Promise<void> {
   const julyTarget = Math.floor(new Date(JULY31_TARGET_UTC).getTime() / 1000)
   const cap = MAX_DATAPOINT_DELTA_HOURS * 3600
 
-  console.log("Aave V3 WEETH by market — May 31 vs July 31, 2026")
+  console.log("Aave V3 WEETH by market — June 30 vs July 31, 2026")
   console.log("")
 
   // ─── Stage 1: identify WEETH pools per market ─────────────────────
@@ -266,7 +266,7 @@ async function main(): Promise<void> {
           dominant_market_id: dominantMay?.market_id ?? null,
           dominant_market_share_june30_pct: Number((mayShare * 100).toFixed(2)),
           dominant_market_share_july31_pct: Number((juneShare * 100).toFixed(2)),
-          finding: `At both endpoints, ≥95% of Aave V3 Ethereum WEETH supply sits in the ${dominantMay?.display_name} market. The May 31 → June 30 change is effectively a single-market story.`,
+          finding: `At both endpoints, ≥95% of Aave V3 Ethereum WEETH supply sits in the ${dominantMay?.display_name} market. The June 30 → July 31 change is effectively a single-market story.`,
         }
       : null
 
@@ -318,15 +318,15 @@ async function main(): Promise<void> {
     }
     console.log(
       `  ${s.display_name.padEnd(34)} ` +
-        `May 31 ${fmtUsd(s.june30?.tvl_usd ?? null).padStart(9)} → ` +
-        `June 30 ${fmtUsd(s.july31?.tvl_usd ?? null).padStart(9)}  ` +
+        `June 30 ${fmtUsd(s.june30?.tvl_usd ?? null).padStart(9)} → ` +
+        `July 31 ${fmtUsd(s.july31?.tvl_usd ?? null).padStart(9)}  ` +
         `Δ ${fmtUsd(s.change_usd).padStart(9)} (${fmtPct(s.change_pct).padStart(7)})`,
     )
   }
   console.log("")
   console.log("── Totals across all listed markets ───────────────────────")
-  console.log(`  May 31 : ${fmtUsd(totalApr)}`)
-  console.log(`  June 30 : ${fmtUsd(totalMay)}`)
+  console.log(`  June 30 : ${fmtUsd(totalApr)}`)
+  console.log(`  July 31 : ${fmtUsd(totalMay)}`)
   console.log(`  Δ      : ${fmtUsd(totalChange)} (${fmtPct(totalChangePct)})`)
   if (concentrationFinding) {
     console.log("")
