@@ -1,22 +1,21 @@
 /**
- * Per-asset decomposition of the biggest July 2026 net-supply outflow days
- * on Aave V3 Ethereum — for Issue 003 (July 31, 2026 data capture).
- * Issue 003 variant of scripts/query-aave-outflow-days-by-asset.ts.
- * TARGET_DAYS_UTC below is a single placeholder; user will edit after
- * inspecting July daily-flows output.
+ * Per-asset decomposition of named Aave V3 Ethereum net-supply outflow
+ * days for Issue 004 (July 31, 2026 data capture). July variant of
+ * scripts/query-aave-outflow-days-by-asset.ts.
  *
  *   npm run query:aave-outflow-days-by-asset-july
  *
- * Target dates (illustrative placeholders; fill after inspecting the July
- * daily-flows output, same as TARGET_DAYS_UTC below):
- *   2026-07-15  example outflow day — actual figures TBD at capture
- *   2026-07-18  example outflow day — actual figures TBD at capture
- *   2026-07-29  example outflow day — actual figures TBD at capture
+ * No Aave V3-specific investigation dates for Issue 004; data-driven
+ * surfacing only. Aave V3 had no protocol-specific July event (attention
+ * has shifted to Aave V4), so TARGET_DAYS_UTC is intentionally empty and
+ * this script writes an empty target_days set. The month's top outflow
+ * days surface in query-aave-july-daily-flows.ts; if one warrants a
+ * per-asset decomposition, add its date to TARGET_DAYS_UTC and re-run.
  *
- * Hypothesis: post-May-14 outflow spikes on Aave V3 were NOT LRT-driven
- * but driven by other assets (stables, WSTETH, …). The WEETH share of
- * each total is small (-$20M / $130M = 15%), so the explanation for the
- * remaining ~85% lives elsewhere. This script puts a name on it.
+ * Methodology (unchanged): for each named day D, per-asset delta_usd =
+ * (qty_D − qty_{D-1}) × latest_price, ranked to surface the assets driving
+ * that day's net flow. Constant-price — isolates real deposit/withdraw
+ * activity from collateral price drift.
  *
  * Source + methodology:
  *   Same `fetchProtocolHistory` → suppliedByAssetQty path used by
@@ -46,7 +45,7 @@ import { dirname, join } from "path"
 import { fetchProtocolHistory } from "../lib/defillama"
 
 const AAVE_V3_DEFILLAMA_SLUG = "aave-v3"
-const TARGET_DAYS_UTC: string[] = [] // TODO(issue-004): fill after inspecting July daily-flows output (the June capture used June 15).
+const TARGET_DAYS_UTC: string[] = [] // Empty by design for Issue 004: no Aave V3-specific July event, so this writes an empty target_days set. Add a date here to decompose a specific outflow day surfaced by query-aave-july-daily-flows.ts, then re-run.
 const OUTPUT_PATH = "content/snapshots/2026-07-aave-outflow-days-by-asset.json"
 
 function utcDayKey(unixSec: number): string {

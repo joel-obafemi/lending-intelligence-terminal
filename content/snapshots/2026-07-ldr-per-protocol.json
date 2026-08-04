@@ -1,0 +1,70 @@
+{
+  "source": {
+    "script": "scripts/query-ldr-monthly.ts",
+    "generated_at_utc": "2026-08-04T05:21:47Z",
+    "data_source": "Neon sector_snapshots table row closest to target date; on-chain overrides applied for May 31, 2026 per lib/compound-onchain.ts and lib/euler-onchain.ts.",
+    "methodology": "LDR = borrowed / (tvl + borrowed) × 100, computed per protocol via lib/sector-derived.ts ldrByProtocol(). Mechanically equivalent to utilization but framed as a depositor-efficiency metric.",
+    "override_notes": [
+      "compound-v3 tvl/borrowed substituted with on-chain Comet totals (USDC+USDT+WETH+USDS bases) per lib/compound-onchain.ts.",
+      "euler-v2 on-chain override unavailable; using snapshot row as captured.",
+      "On-chain readers run at latest block; snapshot row is dated 2026-07-31. Any drift between the two is smaller than DefiLlama's over-count on Compound V3 + Euler V2."
+    ]
+  },
+  "target_date": "2026-07-31",
+  "resolved_snapshot_date": "2026-07-31",
+  "sector": {
+    "ldr_pct": 40.63466583237437,
+    "supplied_usd": 34317166404.289238,
+    "borrowed_usd": 13944665891.522774
+  },
+  "ranking": [
+    {
+      "slug": "euler-v2",
+      "name": "Euler",
+      "tvl_usd": 104887882.51309,
+      "borrowed_usd": 312342151.88807,
+      "supplied_usd": 417230034.40116,
+      "ldr_pct": 74.86089833785982
+    },
+    {
+      "slug": "fluid",
+      "name": "Fluid",
+      "tvl_usd": 459557060.66111,
+      "borrowed_usd": 566042833.682,
+      "supplied_usd": 1025599894.3431101,
+      "ldr_pct": 55.191389625146826
+    },
+    {
+      "slug": "aave-v3",
+      "name": "Aave V3",
+      "tvl_usd": 11439787866.80953,
+      "borrowed_usd": 8853579208.96466,
+      "supplied_usd": 20293367075.774193,
+      "ldr_pct": 43.62794589929772
+    },
+    {
+      "slug": "morpho-blue",
+      "name": "Morpho",
+      "tvl_usd": 3705450078.70208,
+      "borrowed_usd": 1945172733.13779,
+      "supplied_usd": 5650622811.8398695,
+      "ldr_pct": 34.424041347478166
+    },
+    {
+      "slug": "compound-v3",
+      "name": "Compound",
+      "tvl_usd": 907128844.6800841,
+      "borrowed_usd": 456560250.4252627,
+      "supplied_usd": 1363689095.1053467,
+      "ldr_pct": 33.479790376265555
+    },
+    {
+      "slug": "spark",
+      "name": "Spark",
+      "tvl_usd": 3755688779.40057,
+      "borrowed_usd": 1810968713.42499,
+      "supplied_usd": 5566657492.82556,
+      "ldr_pct": 32.532425710743105
+    }
+  ]
+}

@@ -186,9 +186,16 @@ async function main(): Promise<void> {
   // Implied price effect for WEETH = (1 - new/old) × $3.66B. The script
   // surfaces this as a derived field so the prose can cite the math.
   const weethReading = readings.find((r) => r.symbol === "WEETH")
-  const JUNE30_WEETH_SUPPLY_USD = 0 // TODO(issue-004): fill from the July lrt-collateral capture (weETH supply at June 30). June used $3.66B.
+  // Issue 004: prior-month-end weETH supply intentionally unset (0). This
+  // reconciliation carries forward from Issue 003's specific weETH
+  // depositor-addition finding; the July script surfaces its own per-unit
+  // move from the data. Fill from the July lrt-collateral capture (weETH
+  // supply at June 30) during drafting if a comparable finding emerges.
+  // June used $3.66B.
+  const JUNE30_WEETH_SUPPLY_USD = 0
   let weethImpliedPriceEffectUsd: number | null = null
   if (
+    JUNE30_WEETH_SUPPLY_USD > 0 &&
     weethReading?.per_unit_change_pct != null &&
     weethReading.per_unit_change_pct < 0
   ) {
@@ -198,13 +205,10 @@ async function main(): Promise<void> {
       `WEETH per-unit move ${weethReading.per_unit_change_pct.toFixed(2)}% × prior-month-end supply $${(JUNE30_WEETH_SUPPLY_USD / 1e9).toFixed(2)}B = ` +
         `${weethImpliedPriceEffectUsd >= 0 ? "+" : ""}$${(weethImpliedPriceEffectUsd / 1e6).toFixed(2)}M implied price effect.`,
     )
-    console.log(
-      `Compare to documented LRT price-decline component (§05): roughly −$336M for WEETH within the −$443M total. ` +
-        `The small residual is the mid-month average effect (WEETH supply did not sit at May 31 levels all month).`,
-    )
   } else if (weethReading?.per_unit_change_pct != null) {
     console.log(
-      `WEETH per-unit move was +${weethReading.per_unit_change_pct.toFixed(2)}% — no price decline component to reconcile.`,
+      `WEETH per-unit move ${weethReading.per_unit_change_pct >= 0 ? "+" : ""}${weethReading.per_unit_change_pct.toFixed(2)}%. ` +
+        `Prior-month-end weETH supply not set for Issue 004 — skipping implied-price-effect reconciliation (fill during drafting).`,
     )
   } else {
     console.log("WEETH price unavailable for one or both dates — skipping reconciliation block.")

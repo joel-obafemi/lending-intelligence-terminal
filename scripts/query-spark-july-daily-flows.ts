@@ -1,13 +1,13 @@
 /**
  * One-shot — spark daily constant-price net supply flow for July 2026,
- * with a WEETH-specific column (present for schema parity; not thesis-relevant here). For Issue 002 §05's rsETH-unpause /
- * WETH-LTV-restoration concentration thesis.
+ * with a WEETH-specific column (present for schema parity; not thesis-relevant here). For Issue 004's Product Divergence
+ * thesis (Morpho Midnight / V2 Markets launch, July 24).
  *
  *   npm run query:spark-july-daily-flows
  *
  * Output: content/snapshots/2026-07-spark-daily-flows.csv (CSV, header
  * row included), plus a console summary with the top-3 outflow days and
- * the June 1-13 vs June 14-30 cumulative split.
+ * the pre-/post-Morpho-Midnight (July 24) cumulative split.
  *
  * Source + methodology:
  *   No dedicated `net_flows_daily` Neon table exists — the dashboard's
@@ -49,10 +49,11 @@ import { fetchProtocolHistory } from "../lib/defillama"
 const PROTOCOL_DEFILLAMA_SLUG = "sparklend"
 const JULY_FIRST_UTC = "2026-07-01T00:00:00Z"
 const JULY_LAST_UTC = "2026-07-31T23:59:00Z"
-// TODO(issue-004): thesis split constant removed pending the July thesis
-// workshop. The June version split on SPLIT_DAY (rsETH unpause June 14 /
-// WETH LTV restoration June 17). Re-add a SPLIT_DAY here and restore the
-// consuming block below once July's thesis-relevant split day is known.
+// The July thesis split: Morpho Midnight (V2 Markets fixed-rate/fixed-term
+// app) launched July 24 — the single sector-level product event of the
+// month. Split July 1-23 (pre-Midnight) from July 24-31 (post-Midnight) to
+// compare cumulative net flow on either side of the launch.
+const SPLIT_DAY = "2026-07-24"
 const WEETH_KEY = "WEETH"
 const OUTPUT_PATH = "content/snapshots/2026-07-spark-daily-flows.csv"
 
@@ -244,11 +245,35 @@ async function main(): Promise<void> {
   }
   console.log("")
 
-  // TODO(issue-004): pre-/post-event cumulative split removed pending the
-  // July thesis workshop (depended on SPLIT_DAY, commented out above). The
-  // June version reported cumulative net flow on either side of the
-  // rsETH-unpause / WETH-LTV-restoration day. Restore once July's split
-  // day is known.
+  // Cumulative split: July 1-23 (pre-Midnight) vs July 24-31 (post-Midnight).
+  const sumWindow = (filterFn: (r: DailyRow) => boolean) =>
+    rows
+      .filter(filterFn)
+      .reduce((s, r) => s + (r.aave_v3_net_supply_change_usd ?? 0), 0)
+  const cumEarly = sumWindow((r) => r.date_utc < SPLIT_DAY)
+  const cumLate = sumWindow((r) => r.date_utc >= SPLIT_DAY)
+  const sumWeeth = (filterFn: (r: DailyRow) => boolean) =>
+    rows
+      .filter(filterFn)
+      .reduce((s, r) => s + (r.aave_v3_weeth_net_supply_change_usd ?? 0), 0)
+  const cumEarlyWeeth = sumWeeth((r) => r.date_utc < SPLIT_DAY)
+  const cumLateWeeth = sumWeeth((r) => r.date_utc >= SPLIT_DAY)
+
+  console.log("── Pre- / post-Morpho-Midnight split ───────────────────────")
+  console.log(
+    `  Cumulative net flow July 1-23  (pre-Midnight):  ${fmtUsd(cumEarly)}` +
+      `  (of which WEETH: ${fmtUsd(cumEarlyWeeth)})`,
+  )
+  console.log(
+    `  Cumulative net flow July 24-31 (post-Midnight): ${fmtUsd(cumLate)}` +
+      `  (of which WEETH: ${fmtUsd(cumLateWeeth)})`,
+  )
+  const totalMonth = cumEarly + cumLate
+  if (totalMonth !== 0 && cumLate !== 0) {
+    const sharePost = (cumLate / totalMonth) * 100
+    console.log(`  Post-Midnight share of net flow: ${sharePost.toFixed(1)}%`)
+  }
+  console.log("")
   console.log(`Wrote ${OUTPUT_PATH}`)
 }
 

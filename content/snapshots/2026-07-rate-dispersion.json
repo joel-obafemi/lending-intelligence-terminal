@@ -1,0 +1,5779 @@
+{
+  "schema_version": 1,
+  "generated_at": "2026-08-04T05:23:50.877Z",
+  "issue": "002 §03 (cross-protocol rate dispersion)",
+  "target_date": "2026-07-31",
+  "trailing_window_days": 365,
+  "assets": [
+    "USDC",
+    "USDT",
+    "WETH"
+  ],
+  "protocols_scope": [
+    "aave-v3",
+    "spark",
+    "morpho-blue",
+    "fluid",
+    "compound-v3",
+    "euler-v2"
+  ],
+  "source": {
+    "pivot_note": "Original brief specified rate_snapshots Neon table; that table stopped accumulating data after 2026-04-25 (snapshot:rates cron halted), so it cannot answer the target-date question. Pivoted to DefiLlama Yields /chart/<poolId> per representative pool — same data shape (daily apyBase), equivalent reading.",
+    "pool_selection": "Largest TVL pool per (project=<yields_slug>, chain=Ethereum, symbol=<asset>). For Aave V3 this resolves to the Core market (poolMeta=null) by default. Morpho's representative is the largest curated vault for the asset.",
+    "apy_field": "apyBase from /chart (gross of reward incentives)",
+    "caveat": "A protocol with no /chart history within ±48h of the target date is excluded from that asset's dispersion (see per-asset excluded_protocols). Excluded protocols are also absent from the 12-month rolling calc for days they had no row."
+  },
+  "per_asset": [
+    {
+      "asset": "USDC",
+      "representative_pools": [
+        {
+          "protocol_slug": "aave-v3",
+          "pool_id": "aa70268e-4b52-42bf-a116-608b370f9501",
+          "pool_meta": null,
+          "tvl_usd": 182211149
+        },
+        {
+          "protocol_slug": "spark",
+          "pool_id": "65ce8276-b4d9-41ba-9f6f-21fc374cf9bc",
+          "pool_meta": null,
+          "tvl_usd": 2295127
+        },
+        {
+          "protocol_slug": "fluid",
+          "pool_id": "4438dabc-7f0c-430b-8136-2722711ae663",
+          "pool_meta": null,
+          "tvl_usd": 151664572
+        },
+        {
+          "protocol_slug": "compound-v3",
+          "pool_id": "7da72d09-56ca-4ec5-a45f-59114353e487",
+          "pool_meta": null,
+          "tvl_usd": 38723734
+        },
+        {
+          "protocol_slug": "euler-v2",
+          "pool_id": "31a0cd94-b781-4e0d-a9f1-1702bc2c238f",
+          "pool_meta": "EVK Vault eUSDC-70",
+          "tvl_usd": 8045145
+        }
+      ],
+      "july31": {
+        "target_date": "2026-07-31",
+        "per_protocol": [
+          {
+            "protocol_slug": "aave-v3",
+            "protocol_name": "Aave V3",
+            "supply_apy_pct": 3.27243,
+            "source_pool_id": "aa70268e-4b52-42bf-a116-608b370f9501",
+            "source_pool_meta": null
+          },
+          {
+            "protocol_slug": "spark",
+            "protocol_name": "Spark",
+            "supply_apy_pct": 3.47241,
+            "source_pool_id": "65ce8276-b4d9-41ba-9f6f-21fc374cf9bc",
+            "source_pool_meta": null
+          },
+          {
+            "protocol_slug": "fluid",
+            "protocol_name": "Fluid",
+            "supply_apy_pct": 4.66,
+            "source_pool_id": "4438dabc-7f0c-430b-8136-2722711ae663",
+            "source_pool_meta": null
+          },
+          {
+            "protocol_slug": "compound-v3",
+            "protocol_name": "Compound V3",
+            "supply_apy_pct": 3.19057,
+            "source_pool_id": "7da72d09-56ca-4ec5-a45f-59114353e487",
+            "source_pool_meta": null
+          },
+          {
+            "protocol_slug": "euler-v2",
+            "protocol_name": "Euler V2",
+            "supply_apy_pct": 3.08905,
+            "source_pool_id": "31a0cd94-b781-4e0d-a9f1-1702bc2c238f",
+            "source_pool_meta": "EVK Vault eUSDC-70"
+          }
+        ],
+        "excluded_protocols": [
+          "morpho-blue"
+        ],
+        "max_supply_apy_pct": 4.66,
+        "min_supply_apy_pct": 3.08905,
+        "dispersion_bps": 157.09500000000003,
+        "leader_protocol": "fluid",
+        "laggard_protocol": "euler-v2"
+      },
+      "twelve_month": {
+        "window_start_date": "2025-08-01",
+        "window_end_date": "2026-07-31",
+        "daily_dispersions_bps": [
+          {
+            "day": "2025-08-02",
+            "dispersion_bps": 415.534,
+            "protocol_count": 4
+          },
+          {
+            "day": "2025-08-03",
+            "dispersion_bps": 590.074,
+            "protocol_count": 4
+          },
+          {
+            "day": "2025-08-04",
+            "dispersion_bps": 445.10900000000004,
+            "protocol_count": 4
+          },
+          {
+            "day": "2025-08-05",
+            "dispersion_bps": 229.84,
+            "protocol_count": 4
+          },
+          {
+            "day": "2025-08-06",
+            "dispersion_bps": 234.71699999999998,
+            "protocol_count": 4
+          },
+          {
+            "day": "2025-08-07",
+            "dispersion_bps": 1269.389,
+            "protocol_count": 4
+          },
+          {
+            "day": "2025-08-08",
+            "dispersion_bps": 1224.743,
+            "protocol_count": 4
+          },
+          {
+            "day": "2025-08-09",
+            "dispersion_bps": 298.1650000000001,
+            "protocol_count": 4
+          },
+          {
+            "day": "2025-08-10",
+            "dispersion_bps": 1284.223,
+            "protocol_count": 4
+          },
+          {
+            "day": "2025-08-11",
+            "dispersion_bps": 1237.464,
+            "protocol_count": 4
+          },
+          {
+            "day": "2025-08-12",
+            "dispersion_bps": 300.171,
+            "protocol_count": 4
+          },
+          {
+            "day": "2025-08-13",
+            "dispersion_bps": 433.967,
+            "protocol_count": 4
+          },
+          {
+            "day": "2025-08-14",
+            "dispersion_bps": 153.32700000000003,
+            "protocol_count": 4
+          },
+          {
+            "day": "2025-08-15",
+            "dispersion_bps": 98.04599999999999,
+            "protocol_count": 4
+          },
+          {
+            "day": "2025-08-16",
+            "dispersion_bps": 54.46799999999996,
+            "protocol_count": 4
+          },
+          {
+            "day": "2025-08-17",
+            "dispersion_bps": 64.05099999999999,
+            "protocol_count": 4
+          },
+          {
+            "day": "2025-08-18",
+            "dispersion_bps": 47.233999999999995,
+            "protocol_count": 4
+          },
+          {
+            "day": "2025-08-19",
+            "dispersion_bps": 265.60499999999996,
+            "protocol_count": 4
+          },
+          {
+            "day": "2025-08-20",
+            "dispersion_bps": 92.75600000000006,
+            "protocol_count": 4
+          },
+          {
+            "day": "2025-08-21",
+            "dispersion_bps": 207.16000000000003,
+            "protocol_count": 4
+          },
+          {
+            "day": "2025-08-22",
+            "dispersion_bps": 105.18,
+            "protocol_count": 4
+          },
+          {
+            "day": "2025-08-23",
+            "dispersion_bps": 134.10699999999994,
+            "protocol_count": 4
+          },
+          {
+            "day": "2025-08-24",
+            "dispersion_bps": 32.92299999999999,
+            "protocol_count": 4
+          },
+          {
+            "day": "2025-08-25",
+            "dispersion_bps": 116.995,
+            "protocol_count": 4
+          },
+          {
+            "day": "2025-08-26",
+            "dispersion_bps": 103.20799999999997,
+            "protocol_count": 4
+          },
+          {
+            "day": "2025-08-27",
+            "dispersion_bps": 142.22199999999992,
+            "protocol_count": 4
+          },
+          {
+            "day": "2025-08-28",
+            "dispersion_bps": 130.84199999999998,
+            "protocol_count": 4
+          },
+          {
+            "day": "2025-08-29",
+            "dispersion_bps": 99.864,
+            "protocol_count": 4
+          },
+          {
+            "day": "2025-08-30",
+            "dispersion_bps": 160.67299999999997,
+            "protocol_count": 4
+          },
+          {
+            "day": "2025-08-31",
+            "dispersion_bps": 137.17299999999994,
+            "protocol_count": 4
+          },
+          {
+            "day": "2025-09-01",
+            "dispersion_bps": 170.88100000000003,
+            "protocol_count": 4
+          },
+          {
+            "day": "2025-09-02",
+            "dispersion_bps": 231.96599999999998,
+            "protocol_count": 4
+          },
+          {
+            "day": "2025-09-03",
+            "dispersion_bps": 346.15399999999994,
+            "protocol_count": 4
+          },
+          {
+            "day": "2025-09-04",
+            "dispersion_bps": 144.20700000000002,
+            "protocol_count": 4
+          },
+          {
+            "day": "2025-09-05",
+            "dispersion_bps": 176.05200000000005,
+            "protocol_count": 4
+          },
+          {
+            "day": "2025-09-06",
+            "dispersion_bps": 94.11199999999997,
+            "protocol_count": 4
+          },
+          {
+            "day": "2025-09-07",
+            "dispersion_bps": 341.303,
+            "protocol_count": 4
+          },
+          {
+            "day": "2025-09-08",
+            "dispersion_bps": 86.54100000000003,
+            "protocol_count": 4
+          },
+          {
+            "day": "2025-09-09",
+            "dispersion_bps": 164.16799999999995,
+            "protocol_count": 4
+          },
+          {
+            "day": "2025-09-10",
+            "dispersion_bps": 160.28099999999998,
+            "protocol_count": 4
+          },
+          {
+            "day": "2025-09-11",
+            "dispersion_bps": 72.025,
+            "protocol_count": 4
+          },
+          {
+            "day": "2025-09-12",
+            "dispersion_bps": 146.16699999999994,
+            "protocol_count": 4
+          },
+          {
+            "day": "2025-09-13",
+            "dispersion_bps": 70.02699999999997,
+            "protocol_count": 4
+          },
+          {
+            "day": "2025-09-14",
+            "dispersion_bps": 46.59899999999997,
+            "protocol_count": 4
+          },
+          {
+            "day": "2025-09-15",
+            "dispersion_bps": 120.771,
+            "protocol_count": 4
+          },
+          {
+            "day": "2025-09-16",
+            "dispersion_bps": 51.812000000000054,
+            "protocol_count": 4
+          },
+          {
+            "day": "2025-09-17",
+            "dispersion_bps": 62.82600000000001,
+            "protocol_count": 4
+          },
+          {
+            "day": "2025-09-18",
+            "dispersion_bps": 190.369,
+            "protocol_count": 4
+          },
+          {
+            "day": "2025-09-19",
+            "dispersion_bps": 70.43300000000005,
+            "protocol_count": 4
+          },
+          {
+            "day": "2025-09-20",
+            "dispersion_bps": 29.65100000000005,
+            "protocol_count": 4
+          },
+          {
+            "day": "2025-09-21",
+            "dispersion_bps": 22.292000000000023,
+            "protocol_count": 4
+          },
+          {
+            "day": "2025-09-22",
+            "dispersion_bps": 41.671000000000014,
+            "protocol_count": 4
+          },
+          {
+            "day": "2025-09-23",
+            "dispersion_bps": 126.67899999999995,
+            "protocol_count": 4
+          },
+          {
+            "day": "2025-09-24",
+            "dispersion_bps": 189.093,
+            "protocol_count": 4
+          },
+          {
+            "day": "2025-09-25",
+            "dispersion_bps": 324.74100000000004,
+            "protocol_count": 4
+          },
+          {
+            "day": "2025-09-26",
+            "dispersion_bps": 248.44999999999996,
+            "protocol_count": 4
+          },
+          {
+            "day": "2025-09-27",
+            "dispersion_bps": 207.29999999999998,
+            "protocol_count": 4
+          },
+          {
+            "day": "2025-09-28",
+            "dispersion_bps": 174.70299999999997,
+            "protocol_count": 4
+          },
+          {
+            "day": "2025-09-29",
+            "dispersion_bps": 158.3,
+            "protocol_count": 4
+          },
+          {
+            "day": "2025-09-30",
+            "dispersion_bps": 83.04800000000002,
+            "protocol_count": 4
+          },
+          {
+            "day": "2025-10-01",
+            "dispersion_bps": 92.68200000000002,
+            "protocol_count": 5
+          },
+          {
+            "day": "2025-10-02",
+            "dispersion_bps": 230.632,
+            "protocol_count": 5
+          },
+          {
+            "day": "2025-10-03",
+            "dispersion_bps": 353.473,
+            "protocol_count": 5
+          },
+          {
+            "day": "2025-10-04",
+            "dispersion_bps": 351.675,
+            "protocol_count": 5
+          },
+          {
+            "day": "2025-10-05",
+            "dispersion_bps": 405.4360000000001,
+            "protocol_count": 5
+          },
+          {
+            "day": "2025-10-06",
+            "dispersion_bps": 466.201,
+            "protocol_count": 5
+          },
+          {
+            "day": "2025-10-07",
+            "dispersion_bps": 709.794,
+            "protocol_count": 5
+          },
+          {
+            "day": "2025-10-08",
+            "dispersion_bps": 495.46999999999997,
+            "protocol_count": 5
+          },
+          {
+            "day": "2025-10-09",
+            "dispersion_bps": 392.496,
+            "protocol_count": 5
+          },
+          {
+            "day": "2025-10-10",
+            "dispersion_bps": 444.257,
+            "protocol_count": 5
+          },
+          {
+            "day": "2025-10-11",
+            "dispersion_bps": 446.72400000000005,
+            "protocol_count": 5
+          },
+          {
+            "day": "2025-10-12",
+            "dispersion_bps": 381.763,
+            "protocol_count": 5
+          },
+          {
+            "day": "2025-10-13",
+            "dispersion_bps": 384.803,
+            "protocol_count": 5
+          },
+          {
+            "day": "2025-10-14",
+            "dispersion_bps": 363.289,
+            "protocol_count": 5
+          },
+          {
+            "day": "2025-10-15",
+            "dispersion_bps": 375.654,
+            "protocol_count": 5
+          },
+          {
+            "day": "2025-10-16",
+            "dispersion_bps": 320.21999999999997,
+            "protocol_count": 5
+          },
+          {
+            "day": "2025-10-17",
+            "dispersion_bps": 297.94199999999995,
+            "protocol_count": 5
+          },
+          {
+            "day": "2025-10-18",
+            "dispersion_bps": 293.46299999999997,
+            "protocol_count": 5
+          },
+          {
+            "day": "2025-10-19",
+            "dispersion_bps": 362.25900000000007,
+            "protocol_count": 5
+          },
+          {
+            "day": "2025-10-20",
+            "dispersion_bps": 328.278,
+            "protocol_count": 5
+          },
+          {
+            "day": "2025-10-21",
+            "dispersion_bps": 423.51899999999995,
+            "protocol_count": 5
+          },
+          {
+            "day": "2025-10-22",
+            "dispersion_bps": 423.40100000000007,
+            "protocol_count": 5
+          },
+          {
+            "day": "2025-10-23",
+            "dispersion_bps": 610.3800000000001,
+            "protocol_count": 5
+          },
+          {
+            "day": "2025-10-24",
+            "dispersion_bps": 351.52099999999996,
+            "protocol_count": 5
+          },
+          {
+            "day": "2025-10-25",
+            "dispersion_bps": 331.78,
+            "protocol_count": 5
+          },
+          {
+            "day": "2025-10-26",
+            "dispersion_bps": 321.47599999999994,
+            "protocol_count": 5
+          },
+          {
+            "day": "2025-10-27",
+            "dispersion_bps": 320.65999999999997,
+            "protocol_count": 5
+          },
+          {
+            "day": "2025-10-28",
+            "dispersion_bps": 297.87600000000003,
+            "protocol_count": 5
+          },
+          {
+            "day": "2025-10-29",
+            "dispersion_bps": 302.845,
+            "protocol_count": 5
+          },
+          {
+            "day": "2025-10-30",
+            "dispersion_bps": 231.25900000000001,
+            "protocol_count": 5
+          },
+          {
+            "day": "2025-10-31",
+            "dispersion_bps": 263.08500000000004,
+            "protocol_count": 5
+          },
+          {
+            "day": "2025-11-01",
+            "dispersion_bps": 314.02500000000003,
+            "protocol_count": 5
+          },
+          {
+            "day": "2025-11-02",
+            "dispersion_bps": 274.38100000000003,
+            "protocol_count": 5
+          },
+          {
+            "day": "2025-11-03",
+            "dispersion_bps": 350.34000000000003,
+            "protocol_count": 5
+          },
+          {
+            "day": "2025-11-04",
+            "dispersion_bps": 573.002,
+            "protocol_count": 5
+          },
+          {
+            "day": "2025-11-05",
+            "dispersion_bps": 494.26700000000005,
+            "protocol_count": 5
+          },
+          {
+            "day": "2025-11-06",
+            "dispersion_bps": 422.2420000000001,
+            "protocol_count": 5
+          },
+          {
+            "day": "2025-11-07",
+            "dispersion_bps": 692.255,
+            "protocol_count": 5
+          },
+          {
+            "day": "2025-11-08",
+            "dispersion_bps": 468.872,
+            "protocol_count": 5
+          },
+          {
+            "day": "2025-11-09",
+            "dispersion_bps": 381.43799999999993,
+            "protocol_count": 5
+          },
+          {
+            "day": "2025-11-10",
+            "dispersion_bps": 336.08500000000004,
+            "protocol_count": 5
+          },
+          {
+            "day": "2025-11-11",
+            "dispersion_bps": 346.24500000000006,
+            "protocol_count": 5
+          },
+          {
+            "day": "2025-11-12",
+            "dispersion_bps": 403.18699999999995,
+            "protocol_count": 5
+          },
+          {
+            "day": "2025-11-13",
+            "dispersion_bps": 517.999,
+            "protocol_count": 5
+          },
+          {
+            "day": "2025-11-14",
+            "dispersion_bps": 383.339,
+            "protocol_count": 5
+          },
+          {
+            "day": "2025-11-15",
+            "dispersion_bps": 418.80299999999994,
+            "protocol_count": 5
+          },
+          {
+            "day": "2025-11-16",
+            "dispersion_bps": 406.156,
+            "protocol_count": 5
+          },
+          {
+            "day": "2025-11-17",
+            "dispersion_bps": 328.547,
+            "protocol_count": 5
+          },
+          {
+            "day": "2025-11-18",
+            "dispersion_bps": 405.362,
+            "protocol_count": 5
+          },
+          {
+            "day": "2025-11-19",
+            "dispersion_bps": 427.62499999999994,
+            "protocol_count": 5
+          },
+          {
+            "day": "2025-11-20",
+            "dispersion_bps": 404.376,
+            "protocol_count": 5
+          },
+          {
+            "day": "2025-11-21",
+            "dispersion_bps": 410.66400000000004,
+            "protocol_count": 5
+          },
+          {
+            "day": "2025-11-22",
+            "dispersion_bps": 420.6569999999999,
+            "protocol_count": 5
+          },
+          {
+            "day": "2025-11-23",
+            "dispersion_bps": 409.966,
+            "protocol_count": 5
+          },
+          {
+            "day": "2025-11-24",
+            "dispersion_bps": 394.866,
+            "protocol_count": 5
+          },
+          {
+            "day": "2025-11-25",
+            "dispersion_bps": 405.12899999999996,
+            "protocol_count": 5
+          },
+          {
+            "day": "2025-11-26",
+            "dispersion_bps": 403.49899999999997,
+            "protocol_count": 5
+          },
+          {
+            "day": "2025-11-27",
+            "dispersion_bps": 408.22200000000004,
+            "protocol_count": 5
+          },
+          {
+            "day": "2025-11-28",
+            "dispersion_bps": 388.89500000000004,
+            "protocol_count": 5
+          },
+          {
+            "day": "2025-11-29",
+            "dispersion_bps": 389.73699999999997,
+            "protocol_count": 5
+          },
+          {
+            "day": "2025-11-30",
+            "dispersion_bps": 392.14000000000004,
+            "protocol_count": 5
+          },
+          {
+            "day": "2025-12-01",
+            "dispersion_bps": 391.88700000000006,
+            "protocol_count": 5
+          },
+          {
+            "day": "2025-12-02",
+            "dispersion_bps": 403.06899999999996,
+            "protocol_count": 5
+          },
+          {
+            "day": "2025-12-03",
+            "dispersion_bps": 367.03700000000003,
+            "protocol_count": 5
+          },
+          {
+            "day": "2025-12-04",
+            "dispersion_bps": 353.898,
+            "protocol_count": 5
+          },
+          {
+            "day": "2025-12-05",
+            "dispersion_bps": 353.0110000000001,
+            "protocol_count": 5
+          },
+          {
+            "day": "2025-12-06",
+            "dispersion_bps": 311.732,
+            "protocol_count": 5
+          },
+          {
+            "day": "2025-12-07",
+            "dispersion_bps": 311.673,
+            "protocol_count": 5
+          },
+          {
+            "day": "2025-12-08",
+            "dispersion_bps": 309.771,
+            "protocol_count": 5
+          },
+          {
+            "day": "2025-12-09",
+            "dispersion_bps": 302.909,
+            "protocol_count": 5
+          },
+          {
+            "day": "2025-12-10",
+            "dispersion_bps": 305.15700000000004,
+            "protocol_count": 5
+          },
+          {
+            "day": "2025-12-11",
+            "dispersion_bps": 307.87,
+            "protocol_count": 5
+          },
+          {
+            "day": "2025-12-12",
+            "dispersion_bps": 307.153,
+            "protocol_count": 5
+          },
+          {
+            "day": "2025-12-13",
+            "dispersion_bps": 235.81099999999998,
+            "protocol_count": 5
+          },
+          {
+            "day": "2025-12-14",
+            "dispersion_bps": 248.146,
+            "protocol_count": 5
+          },
+          {
+            "day": "2025-12-15",
+            "dispersion_bps": 197.55700000000002,
+            "protocol_count": 5
+          },
+          {
+            "day": "2025-12-16",
+            "dispersion_bps": 163.77,
+            "protocol_count": 5
+          },
+          {
+            "day": "2025-12-17",
+            "dispersion_bps": 193.209,
+            "protocol_count": 5
+          },
+          {
+            "day": "2025-12-18",
+            "dispersion_bps": 154.63199999999998,
+            "protocol_count": 5
+          },
+          {
+            "day": "2025-12-19",
+            "dispersion_bps": 250.16100000000003,
+            "protocol_count": 5
+          },
+          {
+            "day": "2025-12-20",
+            "dispersion_bps": 249.604,
+            "protocol_count": 5
+          },
+          {
+            "day": "2025-12-21",
+            "dispersion_bps": 246.12800000000004,
+            "protocol_count": 5
+          },
+          {
+            "day": "2025-12-22",
+            "dispersion_bps": 212.58799999999997,
+            "protocol_count": 5
+          },
+          {
+            "day": "2025-12-23",
+            "dispersion_bps": 213.45699999999997,
+            "protocol_count": 5
+          },
+          {
+            "day": "2025-12-24",
+            "dispersion_bps": 148.098,
+            "protocol_count": 5
+          },
+          {
+            "day": "2025-12-25",
+            "dispersion_bps": 143.227,
+            "protocol_count": 5
+          },
+          {
+            "day": "2025-12-26",
+            "dispersion_bps": 138.035,
+            "protocol_count": 5
+          },
+          {
+            "day": "2025-12-27",
+            "dispersion_bps": 147.78299999999996,
+            "protocol_count": 5
+          },
+          {
+            "day": "2025-12-28",
+            "dispersion_bps": 183.793,
+            "protocol_count": 5
+          },
+          {
+            "day": "2025-12-29",
+            "dispersion_bps": 152.013,
+            "protocol_count": 5
+          },
+          {
+            "day": "2025-12-30",
+            "dispersion_bps": 149.95399999999995,
+            "protocol_count": 5
+          },
+          {
+            "day": "2025-12-31",
+            "dispersion_bps": 146.626,
+            "protocol_count": 5
+          },
+          {
+            "day": "2026-01-01",
+            "dispersion_bps": 175.32400000000004,
+            "protocol_count": 5
+          },
+          {
+            "day": "2026-01-02",
+            "dispersion_bps": 202.11999999999998,
+            "protocol_count": 5
+          },
+          {
+            "day": "2026-01-03",
+            "dispersion_bps": 165.49,
+            "protocol_count": 5
+          },
+          {
+            "day": "2026-01-04",
+            "dispersion_bps": 175.387,
+            "protocol_count": 5
+          },
+          {
+            "day": "2026-01-05",
+            "dispersion_bps": 188.05999999999997,
+            "protocol_count": 5
+          },
+          {
+            "day": "2026-01-06",
+            "dispersion_bps": 146.87599999999998,
+            "protocol_count": 5
+          },
+          {
+            "day": "2026-01-07",
+            "dispersion_bps": 164.02800000000002,
+            "protocol_count": 5
+          },
+          {
+            "day": "2026-01-08",
+            "dispersion_bps": 153.82599999999996,
+            "protocol_count": 5
+          },
+          {
+            "day": "2026-01-09",
+            "dispersion_bps": 110.13599999999997,
+            "protocol_count": 5
+          },
+          {
+            "day": "2026-01-10",
+            "dispersion_bps": 119.95599999999995,
+            "protocol_count": 5
+          },
+          {
+            "day": "2026-01-11",
+            "dispersion_bps": 115.21300000000005,
+            "protocol_count": 5
+          },
+          {
+            "day": "2026-01-12",
+            "dispersion_bps": 133.51000000000002,
+            "protocol_count": 5
+          },
+          {
+            "day": "2026-01-13",
+            "dispersion_bps": 178.44600000000003,
+            "protocol_count": 5
+          },
+          {
+            "day": "2026-01-14",
+            "dispersion_bps": 182.90199999999993,
+            "protocol_count": 5
+          },
+          {
+            "day": "2026-01-15",
+            "dispersion_bps": 150.483,
+            "protocol_count": 5
+          },
+          {
+            "day": "2026-01-16",
+            "dispersion_bps": 116.36899999999999,
+            "protocol_count": 5
+          },
+          {
+            "day": "2026-01-17",
+            "dispersion_bps": 125.50599999999999,
+            "protocol_count": 5
+          },
+          {
+            "day": "2026-01-18",
+            "dispersion_bps": 127.61199999999997,
+            "protocol_count": 5
+          },
+          {
+            "day": "2026-01-19",
+            "dispersion_bps": 132.238,
+            "protocol_count": 5
+          },
+          {
+            "day": "2026-01-20",
+            "dispersion_bps": 132.40099999999998,
+            "protocol_count": 5
+          },
+          {
+            "day": "2026-01-21",
+            "dispersion_bps": 135.64500000000007,
+            "protocol_count": 5
+          },
+          {
+            "day": "2026-01-22",
+            "dispersion_bps": 162.046,
+            "protocol_count": 5
+          },
+          {
+            "day": "2026-01-23",
+            "dispersion_bps": 234.83899999999997,
+            "protocol_count": 5
+          },
+          {
+            "day": "2026-01-24",
+            "dispersion_bps": 232.65400000000005,
+            "protocol_count": 5
+          },
+          {
+            "day": "2026-01-25",
+            "dispersion_bps": 286.053,
+            "protocol_count": 5
+          },
+          {
+            "day": "2026-01-26",
+            "dispersion_bps": 146.753,
+            "protocol_count": 5
+          },
+          {
+            "day": "2026-01-27",
+            "dispersion_bps": 172.215,
+            "protocol_count": 5
+          },
+          {
+            "day": "2026-01-28",
+            "dispersion_bps": 290.18399999999997,
+            "protocol_count": 5
+          },
+          {
+            "day": "2026-01-29",
+            "dispersion_bps": 286.909,
+            "protocol_count": 5
+          },
+          {
+            "day": "2026-01-30",
+            "dispersion_bps": 171.528,
+            "protocol_count": 5
+          },
+          {
+            "day": "2026-01-31",
+            "dispersion_bps": 208.41500000000005,
+            "protocol_count": 5
+          },
+          {
+            "day": "2026-02-01",
+            "dispersion_bps": 219.64300000000003,
+            "protocol_count": 5
+          },
+          {
+            "day": "2026-02-02",
+            "dispersion_bps": 246.88600000000002,
+            "protocol_count": 5
+          },
+          {
+            "day": "2026-02-03",
+            "dispersion_bps": 228.723,
+            "protocol_count": 5
+          },
+          {
+            "day": "2026-02-04",
+            "dispersion_bps": 210.35699999999994,
+            "protocol_count": 5
+          },
+          {
+            "day": "2026-02-05",
+            "dispersion_bps": 227.433,
+            "protocol_count": 5
+          },
+          {
+            "day": "2026-02-06",
+            "dispersion_bps": 240.10700000000003,
+            "protocol_count": 5
+          },
+          {
+            "day": "2026-02-07",
+            "dispersion_bps": 244.02400000000003,
+            "protocol_count": 5
+          },
+          {
+            "day": "2026-02-08",
+            "dispersion_bps": 249.12700000000007,
+            "protocol_count": 5
+          },
+          {
+            "day": "2026-02-09",
+            "dispersion_bps": 240.99299999999997,
+            "protocol_count": 5
+          },
+          {
+            "day": "2026-02-10",
+            "dispersion_bps": 178.36299999999997,
+            "protocol_count": 5
+          },
+          {
+            "day": "2026-02-11",
+            "dispersion_bps": 179.926,
+            "protocol_count": 5
+          },
+          {
+            "day": "2026-02-12",
+            "dispersion_bps": 162.00400000000005,
+            "protocol_count": 5
+          },
+          {
+            "day": "2026-02-13",
+            "dispersion_bps": 217.66199999999998,
+            "protocol_count": 5
+          },
+          {
+            "day": "2026-02-14",
+            "dispersion_bps": 208.05499999999998,
+            "protocol_count": 5
+          },
+          {
+            "day": "2026-02-15",
+            "dispersion_bps": 215.51,
+            "protocol_count": 5
+          },
+          {
+            "day": "2026-02-16",
+            "dispersion_bps": 262.727,
+            "protocol_count": 5
+          },
+          {
+            "day": "2026-02-17",
+            "dispersion_bps": 282.015,
+            "protocol_count": 5
+          },
+          {
+            "day": "2026-02-18",
+            "dispersion_bps": 163.68,
+            "protocol_count": 5
+          },
+          {
+            "day": "2026-02-19",
+            "dispersion_bps": 127.31100000000004,
+            "protocol_count": 5
+          },
+          {
+            "day": "2026-02-20",
+            "dispersion_bps": 124.939,
+            "protocol_count": 5
+          },
+          {
+            "day": "2026-02-21",
+            "dispersion_bps": 121.22299999999998,
+            "protocol_count": 5
+          },
+          {
+            "day": "2026-02-22",
+            "dispersion_bps": 125.203,
+            "protocol_count": 5
+          },
+          {
+            "day": "2026-02-23",
+            "dispersion_bps": 138.50799999999998,
+            "protocol_count": 5
+          },
+          {
+            "day": "2026-02-24",
+            "dispersion_bps": 162.20800000000003,
+            "protocol_count": 5
+          },
+          {
+            "day": "2026-02-25",
+            "dispersion_bps": 132.373,
+            "protocol_count": 5
+          },
+          {
+            "day": "2026-02-26",
+            "dispersion_bps": 125.58599999999997,
+            "protocol_count": 5
+          },
+          {
+            "day": "2026-02-27",
+            "dispersion_bps": 135.18400000000003,
+            "protocol_count": 5
+          },
+          {
+            "day": "2026-02-28",
+            "dispersion_bps": 132.95899999999997,
+            "protocol_count": 5
+          },
+          {
+            "day": "2026-03-01",
+            "dispersion_bps": 138.534,
+            "protocol_count": 5
+          },
+          {
+            "day": "2026-03-02",
+            "dispersion_bps": 173.98399999999998,
+            "protocol_count": 5
+          },
+          {
+            "day": "2026-03-03",
+            "dispersion_bps": 182.30999999999997,
+            "protocol_count": 5
+          },
+          {
+            "day": "2026-03-04",
+            "dispersion_bps": 198.398,
+            "protocol_count": 5
+          },
+          {
+            "day": "2026-03-05",
+            "dispersion_bps": 239.848,
+            "protocol_count": 5
+          },
+          {
+            "day": "2026-03-06",
+            "dispersion_bps": 242.385,
+            "protocol_count": 5
+          },
+          {
+            "day": "2026-03-07",
+            "dispersion_bps": 280.61099999999993,
+            "protocol_count": 5
+          },
+          {
+            "day": "2026-03-08",
+            "dispersion_bps": 277.881,
+            "protocol_count": 5
+          },
+          {
+            "day": "2026-03-09",
+            "dispersion_bps": 246.45499999999996,
+            "protocol_count": 5
+          },
+          {
+            "day": "2026-03-10",
+            "dispersion_bps": 239.87299999999996,
+            "protocol_count": 5
+          },
+          {
+            "day": "2026-03-11",
+            "dispersion_bps": 242.86799999999994,
+            "protocol_count": 5
+          },
+          {
+            "day": "2026-03-12",
+            "dispersion_bps": 237.684,
+            "protocol_count": 5
+          },
+          {
+            "day": "2026-03-13",
+            "dispersion_bps": 229.71400000000003,
+            "protocol_count": 5
+          },
+          {
+            "day": "2026-03-14",
+            "dispersion_bps": 230.19000000000008,
+            "protocol_count": 5
+          },
+          {
+            "day": "2026-03-15",
+            "dispersion_bps": 231.747,
+            "protocol_count": 5
+          },
+          {
+            "day": "2026-03-16",
+            "dispersion_bps": 226.172,
+            "protocol_count": 5
+          },
+          {
+            "day": "2026-03-17",
+            "dispersion_bps": 229.31900000000002,
+            "protocol_count": 5
+          },
+          {
+            "day": "2026-03-18",
+            "dispersion_bps": 208.96699999999996,
+            "protocol_count": 5
+          },
+          {
+            "day": "2026-03-19",
+            "dispersion_bps": 205.06099999999995,
+            "protocol_count": 5
+          },
+          {
+            "day": "2026-03-20",
+            "dispersion_bps": 207.23899999999995,
+            "protocol_count": 5
+          },
+          {
+            "day": "2026-03-21",
+            "dispersion_bps": 203.38599999999997,
+            "protocol_count": 5
+          },
+          {
+            "day": "2026-03-22",
+            "dispersion_bps": 845.6510000000002,
+            "protocol_count": 5
+          },
+          {
+            "day": "2026-03-23",
+            "dispersion_bps": 228.38200000000003,
+            "protocol_count": 5
+          },
+          {
+            "day": "2026-03-24",
+            "dispersion_bps": 291.232,
+            "protocol_count": 5
+          },
+          {
+            "day": "2026-03-25",
+            "dispersion_bps": 202.26100000000002,
+            "protocol_count": 5
+          },
+          {
+            "day": "2026-03-26",
+            "dispersion_bps": 291.353,
+            "protocol_count": 5
+          },
+          {
+            "day": "2026-03-27",
+            "dispersion_bps": 307.889,
+            "protocol_count": 5
+          },
+          {
+            "day": "2026-03-28",
+            "dispersion_bps": 230.15899999999996,
+            "protocol_count": 5
+          },
+          {
+            "day": "2026-03-29",
+            "dispersion_bps": 172.18400000000003,
+            "protocol_count": 5
+          },
+          {
+            "day": "2026-03-30",
+            "dispersion_bps": 178.94199999999998,
+            "protocol_count": 5
+          },
+          {
+            "day": "2026-03-31",
+            "dispersion_bps": 163.822,
+            "protocol_count": 5
+          },
+          {
+            "day": "2026-04-01",
+            "dispersion_bps": 158.72099999999998,
+            "protocol_count": 5
+          },
+          {
+            "day": "2026-04-02",
+            "dispersion_bps": 160.426,
+            "protocol_count": 5
+          },
+          {
+            "day": "2026-04-03",
+            "dispersion_bps": 145.92299999999997,
+            "protocol_count": 5
+          },
+          {
+            "day": "2026-04-04",
+            "dispersion_bps": 162.23800000000006,
+            "protocol_count": 5
+          },
+          {
+            "day": "2026-04-05",
+            "dispersion_bps": 161.23100000000002,
+            "protocol_count": 5
+          },
+          {
+            "day": "2026-04-06",
+            "dispersion_bps": 168.83999999999997,
+            "protocol_count": 5
+          },
+          {
+            "day": "2026-04-07",
+            "dispersion_bps": 166.55200000000002,
+            "protocol_count": 5
+          },
+          {
+            "day": "2026-04-08",
+            "dispersion_bps": 161.504,
+            "protocol_count": 5
+          },
+          {
+            "day": "2026-04-09",
+            "dispersion_bps": 168.38600000000002,
+            "protocol_count": 5
+          },
+          {
+            "day": "2026-04-10",
+            "dispersion_bps": 180.65599999999998,
+            "protocol_count": 5
+          },
+          {
+            "day": "2026-04-11",
+            "dispersion_bps": 184.823,
+            "protocol_count": 5
+          },
+          {
+            "day": "2026-04-12",
+            "dispersion_bps": 154.07999999999998,
+            "protocol_count": 5
+          },
+          {
+            "day": "2026-04-13",
+            "dispersion_bps": 191.517,
+            "protocol_count": 5
+          },
+          {
+            "day": "2026-04-14",
+            "dispersion_bps": 186.06799999999998,
+            "protocol_count": 5
+          },
+          {
+            "day": "2026-04-15",
+            "dispersion_bps": 172.94299999999998,
+            "protocol_count": 5
+          },
+          {
+            "day": "2026-04-16",
+            "dispersion_bps": 169.182,
+            "protocol_count": 5
+          },
+          {
+            "day": "2026-04-17",
+            "dispersion_bps": 180.89199999999997,
+            "protocol_count": 5
+          },
+          {
+            "day": "2026-04-18",
+            "dispersion_bps": 122.566,
+            "protocol_count": 5
+          },
+          {
+            "day": "2026-04-19",
+            "dispersion_bps": 2027.758,
+            "protocol_count": 5
+          },
+          {
+            "day": "2026-04-20",
+            "dispersion_bps": 1008.269,
+            "protocol_count": 5
+          },
+          {
+            "day": "2026-04-21",
+            "dispersion_bps": 934.8430000000001,
+            "protocol_count": 5
+          },
+          {
+            "day": "2026-04-22",
+            "dispersion_bps": 1013.059,
+            "protocol_count": 5
+          },
+          {
+            "day": "2026-04-23",
+            "dispersion_bps": 898.4259999999999,
+            "protocol_count": 5
+          },
+          {
+            "day": "2026-04-24",
+            "dispersion_bps": 456.99499999999995,
+            "protocol_count": 5
+          },
+          {
+            "day": "2026-04-25",
+            "dispersion_bps": 353.61899999999997,
+            "protocol_count": 5
+          },
+          {
+            "day": "2026-04-26",
+            "dispersion_bps": 944.2560000000001,
+            "protocol_count": 5
+          },
+          {
+            "day": "2026-04-27",
+            "dispersion_bps": 332.815,
+            "protocol_count": 5
+          },
+          {
+            "day": "2026-04-28",
+            "dispersion_bps": 169.163,
+            "protocol_count": 5
+          },
+          {
+            "day": "2026-04-29",
+            "dispersion_bps": 137.53300000000004,
+            "protocol_count": 5
+          },
+          {
+            "day": "2026-04-30",
+            "dispersion_bps": 131.03399999999996,
+            "protocol_count": 5
+          },
+          {
+            "day": "2026-05-01",
+            "dispersion_bps": 127.17300000000003,
+            "protocol_count": 5
+          },
+          {
+            "day": "2026-05-02",
+            "dispersion_bps": 126.383,
+            "protocol_count": 5
+          },
+          {
+            "day": "2026-05-03",
+            "dispersion_bps": 150.893,
+            "protocol_count": 5
+          },
+          {
+            "day": "2026-05-04",
+            "dispersion_bps": 126.49399999999997,
+            "protocol_count": 5
+          },
+          {
+            "day": "2026-05-05",
+            "dispersion_bps": 126.07100000000004,
+            "protocol_count": 5
+          },
+          {
+            "day": "2026-05-06",
+            "dispersion_bps": 119.14799999999998,
+            "protocol_count": 5
+          },
+          {
+            "day": "2026-05-07",
+            "dispersion_bps": 117.79900000000004,
+            "protocol_count": 5
+          },
+          {
+            "day": "2026-05-08",
+            "dispersion_bps": 117.76299999999998,
+            "protocol_count": 5
+          },
+          {
+            "day": "2026-05-09",
+            "dispersion_bps": 93.458,
+            "protocol_count": 5
+          },
+          {
+            "day": "2026-05-10",
+            "dispersion_bps": 89.11400000000005,
+            "protocol_count": 5
+          },
+          {
+            "day": "2026-05-11",
+            "dispersion_bps": 88.62900000000002,
+            "protocol_count": 5
+          },
+          {
+            "day": "2026-05-12",
+            "dispersion_bps": 213.53299999999996,
+            "protocol_count": 5
+          },
+          {
+            "day": "2026-05-13",
+            "dispersion_bps": 212.302,
+            "protocol_count": 5
+          },
+          {
+            "day": "2026-05-14",
+            "dispersion_bps": 199.77999999999997,
+            "protocol_count": 5
+          },
+          {
+            "day": "2026-05-15",
+            "dispersion_bps": 197.96999999999997,
+            "protocol_count": 5
+          },
+          {
+            "day": "2026-05-16",
+            "dispersion_bps": 208.47500000000002,
+            "protocol_count": 5
+          },
+          {
+            "day": "2026-05-17",
+            "dispersion_bps": 198.26700000000005,
+            "protocol_count": 5
+          },
+          {
+            "day": "2026-05-18",
+            "dispersion_bps": 200.154,
+            "protocol_count": 5
+          },
+          {
+            "day": "2026-05-19",
+            "dispersion_bps": 238.83499999999995,
+            "protocol_count": 5
+          },
+          {
+            "day": "2026-05-20",
+            "dispersion_bps": 256.666,
+            "protocol_count": 5
+          },
+          {
+            "day": "2026-05-21",
+            "dispersion_bps": 238.11099999999996,
+            "protocol_count": 5
+          },
+          {
+            "day": "2026-05-22",
+            "dispersion_bps": 253.47500000000002,
+            "protocol_count": 5
+          },
+          {
+            "day": "2026-05-23",
+            "dispersion_bps": 165.29699999999997,
+            "protocol_count": 5
+          },
+          {
+            "day": "2026-05-24",
+            "dispersion_bps": 154.59399999999994,
+            "protocol_count": 5
+          },
+          {
+            "day": "2026-05-25",
+            "dispersion_bps": 153.03600000000003,
+            "protocol_count": 5
+          },
+          {
+            "day": "2026-05-26",
+            "dispersion_bps": 171.88400000000001,
+            "protocol_count": 5
+          },
+          {
+            "day": "2026-05-27",
+            "dispersion_bps": 228.92000000000002,
+            "protocol_count": 5
+          },
+          {
+            "day": "2026-05-28",
+            "dispersion_bps": 306.57899999999995,
+            "protocol_count": 5
+          },
+          {
+            "day": "2026-05-29",
+            "dispersion_bps": 1283.427,
+            "protocol_count": 5
+          },
+          {
+            "day": "2026-05-30",
+            "dispersion_bps": 1876.681,
+            "protocol_count": 5
+          },
+          {
+            "day": "2026-05-31",
+            "dispersion_bps": 273.816,
+            "protocol_count": 5
+          },
+          {
+            "day": "2026-06-01",
+            "dispersion_bps": 210.104,
+            "protocol_count": 5
+          },
+          {
+            "day": "2026-06-02",
+            "dispersion_bps": 246.32200000000003,
+            "protocol_count": 5
+          },
+          {
+            "day": "2026-06-03",
+            "dispersion_bps": 267.312,
+            "protocol_count": 5
+          },
+          {
+            "day": "2026-06-04",
+            "dispersion_bps": 247.88500000000005,
+            "protocol_count": 5
+          },
+          {
+            "day": "2026-06-05",
+            "dispersion_bps": 155.82500000000005,
+            "protocol_count": 5
+          },
+          {
+            "day": "2026-06-06",
+            "dispersion_bps": 109.92500000000001,
+            "protocol_count": 5
+          },
+          {
+            "day": "2026-06-07",
+            "dispersion_bps": 105.16900000000003,
+            "protocol_count": 5
+          },
+          {
+            "day": "2026-06-08",
+            "dispersion_bps": 68.892,
+            "protocol_count": 5
+          },
+          {
+            "day": "2026-06-09",
+            "dispersion_bps": 104.03600000000002,
+            "protocol_count": 5
+          },
+          {
+            "day": "2026-06-10",
+            "dispersion_bps": 334.54,
+            "protocol_count": 5
+          },
+          {
+            "day": "2026-06-11",
+            "dispersion_bps": 143.304,
+            "protocol_count": 5
+          },
+          {
+            "day": "2026-06-12",
+            "dispersion_bps": 109.06899999999999,
+            "protocol_count": 5
+          },
+          {
+            "day": "2026-06-13",
+            "dispersion_bps": 106.70899999999999,
+            "protocol_count": 5
+          },
+          {
+            "day": "2026-06-14",
+            "dispersion_bps": 148.97700000000006,
+            "protocol_count": 5
+          },
+          {
+            "day": "2026-06-15",
+            "dispersion_bps": 123.56100000000004,
+            "protocol_count": 5
+          },
+          {
+            "day": "2026-06-16",
+            "dispersion_bps": 217.88399999999996,
+            "protocol_count": 5
+          },
+          {
+            "day": "2026-06-17",
+            "dispersion_bps": 263.301,
+            "protocol_count": 5
+          },
+          {
+            "day": "2026-06-18",
+            "dispersion_bps": 260.53000000000003,
+            "protocol_count": 5
+          },
+          {
+            "day": "2026-06-19",
+            "dispersion_bps": 211.491,
+            "protocol_count": 5
+          },
+          {
+            "day": "2026-06-20",
+            "dispersion_bps": 215.497,
+            "protocol_count": 5
+          },
+          {
+            "day": "2026-06-21",
+            "dispersion_bps": 252.49200000000002,
+            "protocol_count": 5
+          },
+          {
+            "day": "2026-06-22",
+            "dispersion_bps": 236.543,
+            "protocol_count": 5
+          },
+          {
+            "day": "2026-06-23",
+            "dispersion_bps": 289.424,
+            "protocol_count": 5
+          },
+          {
+            "day": "2026-06-24",
+            "dispersion_bps": 453.702,
+            "protocol_count": 5
+          },
+          {
+            "day": "2026-06-25",
+            "dispersion_bps": 323.4669999999999,
+            "protocol_count": 5
+          },
+          {
+            "day": "2026-06-26",
+            "dispersion_bps": 360.46299999999997,
+            "protocol_count": 5
+          },
+          {
+            "day": "2026-06-27",
+            "dispersion_bps": 322.4959999999999,
+            "protocol_count": 5
+          },
+          {
+            "day": "2026-06-28",
+            "dispersion_bps": 263.305,
+            "protocol_count": 5
+          },
+          {
+            "day": "2026-06-29",
+            "dispersion_bps": 312.007,
+            "protocol_count": 5
+          },
+          {
+            "day": "2026-06-30",
+            "dispersion_bps": 292.03700000000003,
+            "protocol_count": 5
+          },
+          {
+            "day": "2026-07-01",
+            "dispersion_bps": 288.413,
+            "protocol_count": 5
+          },
+          {
+            "day": "2026-07-02",
+            "dispersion_bps": 255.91199999999995,
+            "protocol_count": 5
+          },
+          {
+            "day": "2026-07-03",
+            "dispersion_bps": 272.65400000000005,
+            "protocol_count": 5
+          },
+          {
+            "day": "2026-07-04",
+            "dispersion_bps": 232.49800000000005,
+            "protocol_count": 5
+          },
+          {
+            "day": "2026-07-05",
+            "dispersion_bps": 225.956,
+            "protocol_count": 5
+          },
+          {
+            "day": "2026-07-06",
+            "dispersion_bps": 231.349,
+            "protocol_count": 5
+          },
+          {
+            "day": "2026-07-07",
+            "dispersion_bps": 339.577,
+            "protocol_count": 5
+          },
+          {
+            "day": "2026-07-08",
+            "dispersion_bps": 241.26100000000002,
+            "protocol_count": 5
+          },
+          {
+            "day": "2026-07-09",
+            "dispersion_bps": 260.955,
+            "protocol_count": 5
+          },
+          {
+            "day": "2026-07-10",
+            "dispersion_bps": 262.01699999999994,
+            "protocol_count": 5
+          },
+          {
+            "day": "2026-07-11",
+            "dispersion_bps": 225.04000000000005,
+            "protocol_count": 5
+          },
+          {
+            "day": "2026-07-12",
+            "dispersion_bps": 176.49099999999999,
+            "protocol_count": 5
+          },
+          {
+            "day": "2026-07-13",
+            "dispersion_bps": 244.64699999999996,
+            "protocol_count": 5
+          },
+          {
+            "day": "2026-07-14",
+            "dispersion_bps": 174.73399999999995,
+            "protocol_count": 5
+          },
+          {
+            "day": "2026-07-15",
+            "dispersion_bps": 107.46099999999998,
+            "protocol_count": 5
+          },
+          {
+            "day": "2026-07-16",
+            "dispersion_bps": 133.65300000000002,
+            "protocol_count": 5
+          },
+          {
+            "day": "2026-07-17",
+            "dispersion_bps": 208.08899999999997,
+            "protocol_count": 5
+          },
+          {
+            "day": "2026-07-18",
+            "dispersion_bps": 205.94699999999997,
+            "protocol_count": 5
+          },
+          {
+            "day": "2026-07-19",
+            "dispersion_bps": 205.891,
+            "protocol_count": 5
+          },
+          {
+            "day": "2026-07-20",
+            "dispersion_bps": 197.887,
+            "protocol_count": 5
+          },
+          {
+            "day": "2026-07-21",
+            "dispersion_bps": 249.73499999999999,
+            "protocol_count": 5
+          },
+          {
+            "day": "2026-07-22",
+            "dispersion_bps": 408.305,
+            "protocol_count": 5
+          },
+          {
+            "day": "2026-07-23",
+            "dispersion_bps": 239.49099999999999,
+            "protocol_count": 5
+          },
+          {
+            "day": "2026-07-24",
+            "dispersion_bps": 265.353,
+            "protocol_count": 5
+          },
+          {
+            "day": "2026-07-25",
+            "dispersion_bps": 252.332,
+            "protocol_count": 5
+          },
+          {
+            "day": "2026-07-26",
+            "dispersion_bps": 233.324,
+            "protocol_count": 5
+          },
+          {
+            "day": "2026-07-27",
+            "dispersion_bps": 246.588,
+            "protocol_count": 5
+          },
+          {
+            "day": "2026-07-28",
+            "dispersion_bps": 222.453,
+            "protocol_count": 5
+          },
+          {
+            "day": "2026-07-29",
+            "dispersion_bps": 195.54599999999996,
+            "protocol_count": 5
+          },
+          {
+            "day": "2026-07-30",
+            "dispersion_bps": 168.53799999999998,
+            "protocol_count": 5
+          },
+          {
+            "day": "2026-07-31",
+            "dispersion_bps": 157.09500000000003,
+            "protocol_count": 5
+          }
+        ],
+        "observed_days": 364,
+        "avg_dispersion_bps": 268.1953434065935,
+        "median_dispersion_bps": 221.048,
+        "min_dispersion_bps": 22.292000000000023,
+        "max_dispersion_bps": 2027.758
+      },
+      "ratio_july31_vs_12mo_avg": 0.5857484250270465
+    },
+    {
+      "asset": "USDT",
+      "representative_pools": [
+        {
+          "protocol_slug": "aave-v3",
+          "pool_id": "f981a304-bb6c-45b8-b0c5-fd2f515ad23a",
+          "pool_meta": null,
+          "tvl_usd": 484142528
+        },
+        {
+          "protocol_slug": "spark",
+          "pool_id": "8fbe28b8-140d-4e37-8804-5d2aba4daded",
+          "pool_meta": null,
+          "tvl_usd": 66828611
+        },
+        {
+          "protocol_slug": "fluid",
+          "pool_id": "4e8cc592-c8d5-4824-8155-128ba521e903",
+          "pool_meta": null,
+          "tvl_usd": 131244925
+        },
+        {
+          "protocol_slug": "compound-v3",
+          "pool_id": "f4d5b566-e815-4ca2-bb07-7bcd8bc797f1",
+          "pool_meta": null,
+          "tvl_usd": 23536326
+        },
+        {
+          "protocol_slug": "euler-v2",
+          "pool_id": "3ba7480d-ea40-4d80-a7fe-2cc44160cfe0",
+          "pool_meta": "K3 Capital Earn USDT",
+          "tvl_usd": 48915
+        }
+      ],
+      "july31": {
+        "target_date": "2026-07-31",
+        "per_protocol": [
+          {
+            "protocol_slug": "aave-v3",
+            "protocol_name": "Aave V3",
+            "supply_apy_pct": 2.67115,
+            "source_pool_id": "f981a304-bb6c-45b8-b0c5-fd2f515ad23a",
+            "source_pool_meta": null
+          },
+          {
+            "protocol_slug": "spark",
+            "protocol_name": "Spark",
+            "supply_apy_pct": 2.61863,
+            "source_pool_id": "8fbe28b8-140d-4e37-8804-5d2aba4daded",
+            "source_pool_meta": null
+          },
+          {
+            "protocol_slug": "fluid",
+            "protocol_name": "Fluid",
+            "supply_apy_pct": 4.79,
+            "source_pool_id": "4e8cc592-c8d5-4824-8155-128ba521e903",
+            "source_pool_meta": null
+          },
+          {
+            "protocol_slug": "compound-v3",
+            "protocol_name": "Compound V3",
+            "supply_apy_pct": 3.09788,
+            "source_pool_id": "f4d5b566-e815-4ca2-bb07-7bcd8bc797f1",
+            "source_pool_meta": null
+          },
+          {
+            "protocol_slug": "euler-v2",
+            "protocol_name": "Euler V2",
+            "supply_apy_pct": 5.08731,
+            "source_pool_id": "3ba7480d-ea40-4d80-a7fe-2cc44160cfe0",
+            "source_pool_meta": "K3 Capital Earn USDT"
+          }
+        ],
+        "excluded_protocols": [
+          "morpho-blue"
+        ],
+        "max_supply_apy_pct": 5.08731,
+        "min_supply_apy_pct": 2.61863,
+        "dispersion_bps": 246.86800000000005,
+        "leader_protocol": "euler-v2",
+        "laggard_protocol": "spark"
+      },
+      "twelve_month": {
+        "window_start_date": "2025-08-01",
+        "window_end_date": "2026-07-31",
+        "daily_dispersions_bps": [
+          {
+            "day": "2025-08-02",
+            "dispersion_bps": 188.3,
+            "protocol_count": 4
+          },
+          {
+            "day": "2025-08-03",
+            "dispersion_bps": 151.057,
+            "protocol_count": 4
+          },
+          {
+            "day": "2025-08-04",
+            "dispersion_bps": 245.894,
+            "protocol_count": 4
+          },
+          {
+            "day": "2025-08-05",
+            "dispersion_bps": 218.22400000000002,
+            "protocol_count": 4
+          },
+          {
+            "day": "2025-08-06",
+            "dispersion_bps": 246.581,
+            "protocol_count": 4
+          },
+          {
+            "day": "2025-08-07",
+            "dispersion_bps": 264.198,
+            "protocol_count": 4
+          },
+          {
+            "day": "2025-08-08",
+            "dispersion_bps": 255.83300000000003,
+            "protocol_count": 4
+          },
+          {
+            "day": "2025-08-09",
+            "dispersion_bps": 109.24500000000003,
+            "protocol_count": 4
+          },
+          {
+            "day": "2025-08-10",
+            "dispersion_bps": 116.78500000000001,
+            "protocol_count": 4
+          },
+          {
+            "day": "2025-08-11",
+            "dispersion_bps": 175.51200000000003,
+            "protocol_count": 4
+          },
+          {
+            "day": "2025-08-12",
+            "dispersion_bps": 208.31200000000004,
+            "protocol_count": 4
+          },
+          {
+            "day": "2025-08-13",
+            "dispersion_bps": 1444.82,
+            "protocol_count": 4
+          },
+          {
+            "day": "2025-08-14",
+            "dispersion_bps": 236.94499999999996,
+            "protocol_count": 4
+          },
+          {
+            "day": "2025-08-15",
+            "dispersion_bps": 67.09699999999997,
+            "protocol_count": 4
+          },
+          {
+            "day": "2025-08-16",
+            "dispersion_bps": 223.08799999999997,
+            "protocol_count": 4
+          },
+          {
+            "day": "2025-08-17",
+            "dispersion_bps": 433.05099999999993,
+            "protocol_count": 4
+          },
+          {
+            "day": "2025-08-18",
+            "dispersion_bps": 396.789,
+            "protocol_count": 4
+          },
+          {
+            "day": "2025-08-19",
+            "dispersion_bps": 335.217,
+            "protocol_count": 4
+          },
+          {
+            "day": "2025-08-20",
+            "dispersion_bps": 397.5330000000001,
+            "protocol_count": 4
+          },
+          {
+            "day": "2025-08-21",
+            "dispersion_bps": 414.70799999999997,
+            "protocol_count": 4
+          },
+          {
+            "day": "2025-08-22",
+            "dispersion_bps": 190.762,
+            "protocol_count": 4
+          },
+          {
+            "day": "2025-08-23",
+            "dispersion_bps": 270.64399999999995,
+            "protocol_count": 4
+          },
+          {
+            "day": "2025-08-24",
+            "dispersion_bps": 189.153,
+            "protocol_count": 4
+          },
+          {
+            "day": "2025-08-25",
+            "dispersion_bps": 360.86899999999997,
+            "protocol_count": 4
+          },
+          {
+            "day": "2025-08-26",
+            "dispersion_bps": 131.15900000000002,
+            "protocol_count": 4
+          },
+          {
+            "day": "2025-08-27",
+            "dispersion_bps": 252.16199999999995,
+            "protocol_count": 4
+          },
+          {
+            "day": "2025-08-28",
+            "dispersion_bps": 232.538,
+            "protocol_count": 4
+          },
+          {
+            "day": "2025-08-29",
+            "dispersion_bps": 334.28800000000007,
+            "protocol_count": 4
+          },
+          {
+            "day": "2025-08-30",
+            "dispersion_bps": 235.652,
+            "protocol_count": 4
+          },
+          {
+            "day": "2025-08-31",
+            "dispersion_bps": 143.18200000000004,
+            "protocol_count": 4
+          },
+          {
+            "day": "2025-09-01",
+            "dispersion_bps": 320.87100000000004,
+            "protocol_count": 4
+          },
+          {
+            "day": "2025-09-02",
+            "dispersion_bps": 267.53000000000003,
+            "protocol_count": 4
+          },
+          {
+            "day": "2025-09-03",
+            "dispersion_bps": 198.34200000000007,
+            "protocol_count": 4
+          },
+          {
+            "day": "2025-09-04",
+            "dispersion_bps": 182.63399999999996,
+            "protocol_count": 4
+          },
+          {
+            "day": "2025-09-05",
+            "dispersion_bps": 60.190000000000055,
+            "protocol_count": 4
+          },
+          {
+            "day": "2025-09-06",
+            "dispersion_bps": 31.686000000000014,
+            "protocol_count": 4
+          },
+          {
+            "day": "2025-09-07",
+            "dispersion_bps": 105.51999999999997,
+            "protocol_count": 4
+          },
+          {
+            "day": "2025-09-08",
+            "dispersion_bps": 112.33999999999997,
+            "protocol_count": 4
+          },
+          {
+            "day": "2025-09-09",
+            "dispersion_bps": 110.72800000000002,
+            "protocol_count": 4
+          },
+          {
+            "day": "2025-09-10",
+            "dispersion_bps": 156.80899999999997,
+            "protocol_count": 4
+          },
+          {
+            "day": "2025-09-11",
+            "dispersion_bps": 171.06700000000004,
+            "protocol_count": 4
+          },
+          {
+            "day": "2025-09-12",
+            "dispersion_bps": 399.65900000000005,
+            "protocol_count": 4
+          },
+          {
+            "day": "2025-09-13",
+            "dispersion_bps": 83.33,
+            "protocol_count": 4
+          },
+          {
+            "day": "2025-09-14",
+            "dispersion_bps": 17.025999999999986,
+            "protocol_count": 4
+          },
+          {
+            "day": "2025-09-15",
+            "dispersion_bps": 229.488,
+            "protocol_count": 4
+          },
+          {
+            "day": "2025-09-16",
+            "dispersion_bps": 483.02400000000006,
+            "protocol_count": 4
+          },
+          {
+            "day": "2025-09-17",
+            "dispersion_bps": 101.82899999999995,
+            "protocol_count": 4
+          },
+          {
+            "day": "2025-09-18",
+            "dispersion_bps": 48.667000000000016,
+            "protocol_count": 4
+          },
+          {
+            "day": "2025-09-19",
+            "dispersion_bps": 182.66399999999993,
+            "protocol_count": 4
+          },
+          {
+            "day": "2025-09-20",
+            "dispersion_bps": 447.394,
+            "protocol_count": 4
+          },
+          {
+            "day": "2025-09-21",
+            "dispersion_bps": 288.862,
+            "protocol_count": 4
+          },
+          {
+            "day": "2025-09-22",
+            "dispersion_bps": 330.82099999999997,
+            "protocol_count": 4
+          },
+          {
+            "day": "2025-09-23",
+            "dispersion_bps": 259.5,
+            "protocol_count": 4
+          },
+          {
+            "day": "2025-09-24",
+            "dispersion_bps": 380.22900000000004,
+            "protocol_count": 4
+          },
+          {
+            "day": "2025-09-25",
+            "dispersion_bps": 1919.2450000000001,
+            "protocol_count": 4
+          },
+          {
+            "day": "2025-09-26",
+            "dispersion_bps": 214.567,
+            "protocol_count": 4
+          },
+          {
+            "day": "2025-09-27",
+            "dispersion_bps": 407.85600000000005,
+            "protocol_count": 4
+          },
+          {
+            "day": "2025-09-28",
+            "dispersion_bps": 168.56800000000004,
+            "protocol_count": 4
+          },
+          {
+            "day": "2025-09-29",
+            "dispersion_bps": 57.247,
+            "protocol_count": 4
+          },
+          {
+            "day": "2025-09-30",
+            "dispersion_bps": 45.92299999999998,
+            "protocol_count": 4
+          },
+          {
+            "day": "2025-10-01",
+            "dispersion_bps": 162.85600000000002,
+            "protocol_count": 4
+          },
+          {
+            "day": "2025-10-02",
+            "dispersion_bps": 201.287,
+            "protocol_count": 4
+          },
+          {
+            "day": "2025-10-03",
+            "dispersion_bps": 210.52499999999998,
+            "protocol_count": 4
+          },
+          {
+            "day": "2025-10-04",
+            "dispersion_bps": 184.58700000000002,
+            "protocol_count": 4
+          },
+          {
+            "day": "2025-10-05",
+            "dispersion_bps": 82.06099999999998,
+            "protocol_count": 4
+          },
+          {
+            "day": "2025-10-06",
+            "dispersion_bps": 197.50900000000001,
+            "protocol_count": 4
+          },
+          {
+            "day": "2025-10-07",
+            "dispersion_bps": 135.497,
+            "protocol_count": 4
+          },
+          {
+            "day": "2025-10-08",
+            "dispersion_bps": 189.89399999999995,
+            "protocol_count": 4
+          },
+          {
+            "day": "2025-10-09",
+            "dispersion_bps": 153.89399999999998,
+            "protocol_count": 4
+          },
+          {
+            "day": "2025-10-10",
+            "dispersion_bps": 307.117,
+            "protocol_count": 4
+          },
+          {
+            "day": "2025-10-11",
+            "dispersion_bps": 316.383,
+            "protocol_count": 4
+          },
+          {
+            "day": "2025-10-12",
+            "dispersion_bps": 150.17100000000005,
+            "protocol_count": 4
+          },
+          {
+            "day": "2025-10-13",
+            "dispersion_bps": 156.434,
+            "protocol_count": 4
+          },
+          {
+            "day": "2025-10-14",
+            "dispersion_bps": 237.82599999999996,
+            "protocol_count": 4
+          },
+          {
+            "day": "2025-10-15",
+            "dispersion_bps": 226.868,
+            "protocol_count": 4
+          },
+          {
+            "day": "2025-10-16",
+            "dispersion_bps": 132.27,
+            "protocol_count": 4
+          },
+          {
+            "day": "2025-10-17",
+            "dispersion_bps": 170.29799999999997,
+            "protocol_count": 4
+          },
+          {
+            "day": "2025-10-18",
+            "dispersion_bps": 154.15799999999996,
+            "protocol_count": 4
+          },
+          {
+            "day": "2025-10-19",
+            "dispersion_bps": 88.50799999999998,
+            "protocol_count": 4
+          },
+          {
+            "day": "2025-10-20",
+            "dispersion_bps": 71.42400000000002,
+            "protocol_count": 4
+          },
+          {
+            "day": "2025-10-21",
+            "dispersion_bps": 58.73500000000003,
+            "protocol_count": 4
+          },
+          {
+            "day": "2025-10-22",
+            "dispersion_bps": 303.239,
+            "protocol_count": 4
+          },
+          {
+            "day": "2025-10-23",
+            "dispersion_bps": 105.32,
+            "protocol_count": 4
+          },
+          {
+            "day": "2025-10-24",
+            "dispersion_bps": 117.46400000000001,
+            "protocol_count": 4
+          },
+          {
+            "day": "2025-10-25",
+            "dispersion_bps": 108.156,
+            "protocol_count": 4
+          },
+          {
+            "day": "2025-10-26",
+            "dispersion_bps": 111.82400000000001,
+            "protocol_count": 4
+          },
+          {
+            "day": "2025-10-27",
+            "dispersion_bps": 202.152,
+            "protocol_count": 4
+          },
+          {
+            "day": "2025-10-28",
+            "dispersion_bps": 174.459,
+            "protocol_count": 4
+          },
+          {
+            "day": "2025-10-29",
+            "dispersion_bps": 131.03700000000003,
+            "protocol_count": 4
+          },
+          {
+            "day": "2025-10-30",
+            "dispersion_bps": 111.83800000000002,
+            "protocol_count": 4
+          },
+          {
+            "day": "2025-10-31",
+            "dispersion_bps": 134.319,
+            "protocol_count": 4
+          },
+          {
+            "day": "2025-11-01",
+            "dispersion_bps": 191.783,
+            "protocol_count": 4
+          },
+          {
+            "day": "2025-11-02",
+            "dispersion_bps": 311.017,
+            "protocol_count": 4
+          },
+          {
+            "day": "2025-11-03",
+            "dispersion_bps": 190.439,
+            "protocol_count": 4
+          },
+          {
+            "day": "2025-11-04",
+            "dispersion_bps": 91.61700000000002,
+            "protocol_count": 4
+          },
+          {
+            "day": "2025-11-05",
+            "dispersion_bps": 348.316,
+            "protocol_count": 4
+          },
+          {
+            "day": "2025-11-06",
+            "dispersion_bps": 201.23300000000003,
+            "protocol_count": 4
+          },
+          {
+            "day": "2025-11-07",
+            "dispersion_bps": 266.931,
+            "protocol_count": 4
+          },
+          {
+            "day": "2025-11-08",
+            "dispersion_bps": 234.06499999999997,
+            "protocol_count": 4
+          },
+          {
+            "day": "2025-11-09",
+            "dispersion_bps": 143.258,
+            "protocol_count": 4
+          },
+          {
+            "day": "2025-11-10",
+            "dispersion_bps": 101.687,
+            "protocol_count": 4
+          },
+          {
+            "day": "2025-11-11",
+            "dispersion_bps": 169.10599999999997,
+            "protocol_count": 4
+          },
+          {
+            "day": "2025-11-12",
+            "dispersion_bps": 127.64700000000002,
+            "protocol_count": 4
+          },
+          {
+            "day": "2025-11-13",
+            "dispersion_bps": 121.359,
+            "protocol_count": 4
+          },
+          {
+            "day": "2025-11-14",
+            "dispersion_bps": 36.365999999999985,
+            "protocol_count": 4
+          },
+          {
+            "day": "2025-11-15",
+            "dispersion_bps": 27.330999999999996,
+            "protocol_count": 4
+          },
+          {
+            "day": "2025-11-16",
+            "dispersion_bps": 603.2249999999999,
+            "protocol_count": 4
+          },
+          {
+            "day": "2025-11-17",
+            "dispersion_bps": 264.572,
+            "protocol_count": 4
+          },
+          {
+            "day": "2025-11-18",
+            "dispersion_bps": 79.76299999999998,
+            "protocol_count": 4
+          },
+          {
+            "day": "2025-11-19",
+            "dispersion_bps": 104.209,
+            "protocol_count": 4
+          },
+          {
+            "day": "2025-11-20",
+            "dispersion_bps": 190.08800000000002,
+            "protocol_count": 4
+          },
+          {
+            "day": "2025-11-21",
+            "dispersion_bps": 181.96799999999996,
+            "protocol_count": 4
+          },
+          {
+            "day": "2025-11-22",
+            "dispersion_bps": 144.31600000000003,
+            "protocol_count": 4
+          },
+          {
+            "day": "2025-11-23",
+            "dispersion_bps": 76.96799999999998,
+            "protocol_count": 4
+          },
+          {
+            "day": "2025-11-24",
+            "dispersion_bps": 158.393,
+            "protocol_count": 4
+          },
+          {
+            "day": "2025-11-25",
+            "dispersion_bps": 181.36599999999999,
+            "protocol_count": 4
+          },
+          {
+            "day": "2025-11-26",
+            "dispersion_bps": 83.53999999999999,
+            "protocol_count": 4
+          },
+          {
+            "day": "2025-11-27",
+            "dispersion_bps": 108.22100000000003,
+            "protocol_count": 4
+          },
+          {
+            "day": "2025-11-28",
+            "dispersion_bps": 162.10199999999998,
+            "protocol_count": 4
+          },
+          {
+            "day": "2025-11-29",
+            "dispersion_bps": 218.63199999999998,
+            "protocol_count": 4
+          },
+          {
+            "day": "2025-11-30",
+            "dispersion_bps": 144.48799999999994,
+            "protocol_count": 4
+          },
+          {
+            "day": "2025-12-01",
+            "dispersion_bps": 185.35399999999998,
+            "protocol_count": 4
+          },
+          {
+            "day": "2025-12-02",
+            "dispersion_bps": 153.99499999999998,
+            "protocol_count": 4
+          },
+          {
+            "day": "2025-12-03",
+            "dispersion_bps": 140.70699999999997,
+            "protocol_count": 4
+          },
+          {
+            "day": "2025-12-04",
+            "dispersion_bps": 131.08400000000003,
+            "protocol_count": 4
+          },
+          {
+            "day": "2025-12-05",
+            "dispersion_bps": 185.71499999999995,
+            "protocol_count": 4
+          },
+          {
+            "day": "2025-12-06",
+            "dispersion_bps": 204.43099999999998,
+            "protocol_count": 4
+          },
+          {
+            "day": "2025-12-07",
+            "dispersion_bps": 182.85299999999998,
+            "protocol_count": 4
+          },
+          {
+            "day": "2025-12-08",
+            "dispersion_bps": 119.74100000000001,
+            "protocol_count": 4
+          },
+          {
+            "day": "2025-12-09",
+            "dispersion_bps": 56.64500000000005,
+            "protocol_count": 4
+          },
+          {
+            "day": "2025-12-10",
+            "dispersion_bps": 88.01199999999997,
+            "protocol_count": 4
+          },
+          {
+            "day": "2025-12-11",
+            "dispersion_bps": 102.068,
+            "protocol_count": 4
+          },
+          {
+            "day": "2025-12-12",
+            "dispersion_bps": 130.845,
+            "protocol_count": 4
+          },
+          {
+            "day": "2025-12-13",
+            "dispersion_bps": 65.41000000000001,
+            "protocol_count": 4
+          },
+          {
+            "day": "2025-12-14",
+            "dispersion_bps": 86.185,
+            "protocol_count": 4
+          },
+          {
+            "day": "2025-12-15",
+            "dispersion_bps": 63.34300000000002,
+            "protocol_count": 4
+          },
+          {
+            "day": "2025-12-16",
+            "dispersion_bps": 109.80100000000004,
+            "protocol_count": 4
+          },
+          {
+            "day": "2025-12-17",
+            "dispersion_bps": 67.01099999999998,
+            "protocol_count": 4
+          },
+          {
+            "day": "2025-12-18",
+            "dispersion_bps": 75.14599999999999,
+            "protocol_count": 4
+          },
+          {
+            "day": "2025-12-19",
+            "dispersion_bps": 74.91700000000003,
+            "protocol_count": 4
+          },
+          {
+            "day": "2025-12-20",
+            "dispersion_bps": 70.12700000000001,
+            "protocol_count": 4
+          },
+          {
+            "day": "2025-12-21",
+            "dispersion_bps": 75.94600000000003,
+            "protocol_count": 4
+          },
+          {
+            "day": "2025-12-22",
+            "dispersion_bps": 72.506,
+            "protocol_count": 4
+          },
+          {
+            "day": "2025-12-23",
+            "dispersion_bps": 100.59700000000001,
+            "protocol_count": 4
+          },
+          {
+            "day": "2025-12-24",
+            "dispersion_bps": 116.34199999999998,
+            "protocol_count": 4
+          },
+          {
+            "day": "2025-12-25",
+            "dispersion_bps": 139.04999999999998,
+            "protocol_count": 4
+          },
+          {
+            "day": "2025-12-26",
+            "dispersion_bps": 108.26899999999999,
+            "protocol_count": 4
+          },
+          {
+            "day": "2025-12-27",
+            "dispersion_bps": 112.56300000000002,
+            "protocol_count": 4
+          },
+          {
+            "day": "2025-12-28",
+            "dispersion_bps": 146.761,
+            "protocol_count": 4
+          },
+          {
+            "day": "2025-12-29",
+            "dispersion_bps": 112.51699999999998,
+            "protocol_count": 4
+          },
+          {
+            "day": "2025-12-30",
+            "dispersion_bps": 111.47799999999997,
+            "protocol_count": 4
+          },
+          {
+            "day": "2025-12-31",
+            "dispersion_bps": 135.94400000000002,
+            "protocol_count": 4
+          },
+          {
+            "day": "2026-01-01",
+            "dispersion_bps": 84.71900000000004,
+            "protocol_count": 4
+          },
+          {
+            "day": "2026-01-02",
+            "dispersion_bps": 72.31799999999997,
+            "protocol_count": 4
+          },
+          {
+            "day": "2026-01-03",
+            "dispersion_bps": 93.30600000000003,
+            "protocol_count": 4
+          },
+          {
+            "day": "2026-01-04",
+            "dispersion_bps": 74.02800000000002,
+            "protocol_count": 4
+          },
+          {
+            "day": "2026-01-05",
+            "dispersion_bps": 116.93100000000003,
+            "protocol_count": 4
+          },
+          {
+            "day": "2026-01-06",
+            "dispersion_bps": 186.64000000000004,
+            "protocol_count": 4
+          },
+          {
+            "day": "2026-01-07",
+            "dispersion_bps": 92.25300000000001,
+            "protocol_count": 4
+          },
+          {
+            "day": "2026-01-08",
+            "dispersion_bps": 81.74200000000002,
+            "protocol_count": 4
+          },
+          {
+            "day": "2026-01-09",
+            "dispersion_bps": 84.68,
+            "protocol_count": 4
+          },
+          {
+            "day": "2026-01-10",
+            "dispersion_bps": 64.00399999999999,
+            "protocol_count": 4
+          },
+          {
+            "day": "2026-01-11",
+            "dispersion_bps": 80.89600000000003,
+            "protocol_count": 4
+          },
+          {
+            "day": "2026-01-12",
+            "dispersion_bps": 72.07400000000001,
+            "protocol_count": 4
+          },
+          {
+            "day": "2026-01-13",
+            "dispersion_bps": 149.723,
+            "protocol_count": 4
+          },
+          {
+            "day": "2026-01-14",
+            "dispersion_bps": 138.862,
+            "protocol_count": 4
+          },
+          {
+            "day": "2026-01-15",
+            "dispersion_bps": 125.03399999999996,
+            "protocol_count": 4
+          },
+          {
+            "day": "2026-01-16",
+            "dispersion_bps": 119.62599999999996,
+            "protocol_count": 4
+          },
+          {
+            "day": "2026-01-17",
+            "dispersion_bps": 113.85700000000001,
+            "protocol_count": 4
+          },
+          {
+            "day": "2026-01-18",
+            "dispersion_bps": 111.40700000000004,
+            "protocol_count": 4
+          },
+          {
+            "day": "2026-01-19",
+            "dispersion_bps": 158.89,
+            "protocol_count": 4
+          },
+          {
+            "day": "2026-01-20",
+            "dispersion_bps": 149.45499999999998,
+            "protocol_count": 4
+          },
+          {
+            "day": "2026-01-21",
+            "dispersion_bps": 33.51600000000001,
+            "protocol_count": 4
+          },
+          {
+            "day": "2026-01-22",
+            "dispersion_bps": 67.03899999999999,
+            "protocol_count": 4
+          },
+          {
+            "day": "2026-01-23",
+            "dispersion_bps": 60.17600000000001,
+            "protocol_count": 4
+          },
+          {
+            "day": "2026-01-24",
+            "dispersion_bps": 85.873,
+            "protocol_count": 4
+          },
+          {
+            "day": "2026-01-25",
+            "dispersion_bps": 46.99200000000001,
+            "protocol_count": 4
+          },
+          {
+            "day": "2026-01-26",
+            "dispersion_bps": 69.40400000000002,
+            "protocol_count": 4
+          },
+          {
+            "day": "2026-01-27",
+            "dispersion_bps": 75.97900000000001,
+            "protocol_count": 4
+          },
+          {
+            "day": "2026-01-28",
+            "dispersion_bps": 50.19300000000002,
+            "protocol_count": 4
+          },
+          {
+            "day": "2026-01-29",
+            "dispersion_bps": 70.17699999999998,
+            "protocol_count": 4
+          },
+          {
+            "day": "2026-01-30",
+            "dispersion_bps": 107.281,
+            "protocol_count": 4
+          },
+          {
+            "day": "2026-01-31",
+            "dispersion_bps": 95.966,
+            "protocol_count": 4
+          },
+          {
+            "day": "2026-02-01",
+            "dispersion_bps": 37.23999999999998,
+            "protocol_count": 4
+          },
+          {
+            "day": "2026-02-02",
+            "dispersion_bps": 26.144999999999996,
+            "protocol_count": 4
+          },
+          {
+            "day": "2026-02-03",
+            "dispersion_bps": 73.94500000000002,
+            "protocol_count": 4
+          },
+          {
+            "day": "2026-02-04",
+            "dispersion_bps": 71.28400000000002,
+            "protocol_count": 4
+          },
+          {
+            "day": "2026-02-05",
+            "dispersion_bps": 8.313000000000015,
+            "protocol_count": 4
+          },
+          {
+            "day": "2026-02-06",
+            "dispersion_bps": 94.126,
+            "protocol_count": 4
+          },
+          {
+            "day": "2026-02-07",
+            "dispersion_bps": 99.50699999999999,
+            "protocol_count": 4
+          },
+          {
+            "day": "2026-02-08",
+            "dispersion_bps": 94.27400000000002,
+            "protocol_count": 4
+          },
+          {
+            "day": "2026-02-09",
+            "dispersion_bps": 133.108,
+            "protocol_count": 4
+          },
+          {
+            "day": "2026-02-10",
+            "dispersion_bps": 73.18200000000002,
+            "protocol_count": 4
+          },
+          {
+            "day": "2026-02-11",
+            "dispersion_bps": 38.21800000000002,
+            "protocol_count": 4
+          },
+          {
+            "day": "2026-02-12",
+            "dispersion_bps": 121.35599999999998,
+            "protocol_count": 4
+          },
+          {
+            "day": "2026-02-13",
+            "dispersion_bps": 141.98899999999998,
+            "protocol_count": 4
+          },
+          {
+            "day": "2026-02-14",
+            "dispersion_bps": 131.871,
+            "protocol_count": 4
+          },
+          {
+            "day": "2026-02-15",
+            "dispersion_bps": 143.61899999999997,
+            "protocol_count": 5
+          },
+          {
+            "day": "2026-02-16",
+            "dispersion_bps": 130.651,
+            "protocol_count": 5
+          },
+          {
+            "day": "2026-02-17",
+            "dispersion_bps": 123.41600000000001,
+            "protocol_count": 5
+          },
+          {
+            "day": "2026-02-18",
+            "dispersion_bps": 54.27600000000001,
+            "protocol_count": 5
+          },
+          {
+            "day": "2026-02-19",
+            "dispersion_bps": 134.506,
+            "protocol_count": 5
+          },
+          {
+            "day": "2026-02-20",
+            "dispersion_bps": 80.25599999999997,
+            "protocol_count": 5
+          },
+          {
+            "day": "2026-02-21",
+            "dispersion_bps": 80.606,
+            "protocol_count": 5
+          },
+          {
+            "day": "2026-02-22",
+            "dispersion_bps": 80.859,
+            "protocol_count": 5
+          },
+          {
+            "day": "2026-02-23",
+            "dispersion_bps": 114.61599999999999,
+            "protocol_count": 5
+          },
+          {
+            "day": "2026-02-24",
+            "dispersion_bps": 170.77900000000002,
+            "protocol_count": 5
+          },
+          {
+            "day": "2026-02-25",
+            "dispersion_bps": 147.981,
+            "protocol_count": 5
+          },
+          {
+            "day": "2026-02-26",
+            "dispersion_bps": 167.754,
+            "protocol_count": 5
+          },
+          {
+            "day": "2026-02-27",
+            "dispersion_bps": 136.73100000000002,
+            "protocol_count": 5
+          },
+          {
+            "day": "2026-02-28",
+            "dispersion_bps": 48.153,
+            "protocol_count": 5
+          },
+          {
+            "day": "2026-03-01",
+            "dispersion_bps": 55.641000000000005,
+            "protocol_count": 5
+          },
+          {
+            "day": "2026-03-02",
+            "dispersion_bps": 36.71500000000003,
+            "protocol_count": 5
+          },
+          {
+            "day": "2026-03-03",
+            "dispersion_bps": 49.657,
+            "protocol_count": 5
+          },
+          {
+            "day": "2026-03-04",
+            "dispersion_bps": 222.31199999999998,
+            "protocol_count": 5
+          },
+          {
+            "day": "2026-03-05",
+            "dispersion_bps": 66.005,
+            "protocol_count": 5
+          },
+          {
+            "day": "2026-03-06",
+            "dispersion_bps": 51.014000000000024,
+            "protocol_count": 5
+          },
+          {
+            "day": "2026-03-07",
+            "dispersion_bps": 59.877999999999986,
+            "protocol_count": 5
+          },
+          {
+            "day": "2026-03-08",
+            "dispersion_bps": 72.84700000000002,
+            "protocol_count": 5
+          },
+          {
+            "day": "2026-03-09",
+            "dispersion_bps": 80.29100000000003,
+            "protocol_count": 5
+          },
+          {
+            "day": "2026-03-10",
+            "dispersion_bps": 113.75499999999998,
+            "protocol_count": 5
+          },
+          {
+            "day": "2026-03-11",
+            "dispersion_bps": 36.84999999999998,
+            "protocol_count": 5
+          },
+          {
+            "day": "2026-03-12",
+            "dispersion_bps": 40.737999999999985,
+            "protocol_count": 5
+          },
+          {
+            "day": "2026-03-13",
+            "dispersion_bps": 43.855,
+            "protocol_count": 5
+          },
+          {
+            "day": "2026-03-14",
+            "dispersion_bps": 83.67899999999999,
+            "protocol_count": 5
+          },
+          {
+            "day": "2026-03-15",
+            "dispersion_bps": 85.58599999999998,
+            "protocol_count": 5
+          },
+          {
+            "day": "2026-03-16",
+            "dispersion_bps": 67.35099999999998,
+            "protocol_count": 5
+          },
+          {
+            "day": "2026-03-17",
+            "dispersion_bps": 122.02600000000001,
+            "protocol_count": 5
+          },
+          {
+            "day": "2026-03-18",
+            "dispersion_bps": 69.65499999999997,
+            "protocol_count": 5
+          },
+          {
+            "day": "2026-03-19",
+            "dispersion_bps": 68.35799999999999,
+            "protocol_count": 5
+          },
+          {
+            "day": "2026-03-20",
+            "dispersion_bps": 41.954,
+            "protocol_count": 5
+          },
+          {
+            "day": "2026-03-21",
+            "dispersion_bps": 45.314000000000036,
+            "protocol_count": 5
+          },
+          {
+            "day": "2026-03-22",
+            "dispersion_bps": 248.73299999999995,
+            "protocol_count": 5
+          },
+          {
+            "day": "2026-03-23",
+            "dispersion_bps": 444.38300000000004,
+            "protocol_count": 5
+          },
+          {
+            "day": "2026-03-24",
+            "dispersion_bps": 209.98299999999998,
+            "protocol_count": 5
+          },
+          {
+            "day": "2026-03-25",
+            "dispersion_bps": 149.59999999999997,
+            "protocol_count": 5
+          },
+          {
+            "day": "2026-03-26",
+            "dispersion_bps": 136.37500000000003,
+            "protocol_count": 5
+          },
+          {
+            "day": "2026-03-27",
+            "dispersion_bps": 113.231,
+            "protocol_count": 5
+          },
+          {
+            "day": "2026-03-28",
+            "dispersion_bps": 110.08400000000003,
+            "protocol_count": 5
+          },
+          {
+            "day": "2026-03-29",
+            "dispersion_bps": 68.16999999999997,
+            "protocol_count": 5
+          },
+          {
+            "day": "2026-03-30",
+            "dispersion_bps": 74.10199999999998,
+            "protocol_count": 5
+          },
+          {
+            "day": "2026-03-31",
+            "dispersion_bps": 83.94500000000001,
+            "protocol_count": 5
+          },
+          {
+            "day": "2026-04-01",
+            "dispersion_bps": 159.469,
+            "protocol_count": 5
+          },
+          {
+            "day": "2026-04-02",
+            "dispersion_bps": 118.109,
+            "protocol_count": 5
+          },
+          {
+            "day": "2026-04-03",
+            "dispersion_bps": 105.84500000000001,
+            "protocol_count": 5
+          },
+          {
+            "day": "2026-04-04",
+            "dispersion_bps": 85.81400000000001,
+            "protocol_count": 5
+          },
+          {
+            "day": "2026-04-05",
+            "dispersion_bps": 64.822,
+            "protocol_count": 5
+          },
+          {
+            "day": "2026-04-06",
+            "dispersion_bps": 126.14500000000002,
+            "protocol_count": 5
+          },
+          {
+            "day": "2026-04-07",
+            "dispersion_bps": 77.21900000000002,
+            "protocol_count": 5
+          },
+          {
+            "day": "2026-04-08",
+            "dispersion_bps": 88.273,
+            "protocol_count": 5
+          },
+          {
+            "day": "2026-04-09",
+            "dispersion_bps": 110.183,
+            "protocol_count": 5
+          },
+          {
+            "day": "2026-04-10",
+            "dispersion_bps": 155.782,
+            "protocol_count": 5
+          },
+          {
+            "day": "2026-04-11",
+            "dispersion_bps": 139.352,
+            "protocol_count": 5
+          },
+          {
+            "day": "2026-04-12",
+            "dispersion_bps": 174.295,
+            "protocol_count": 5
+          },
+          {
+            "day": "2026-04-13",
+            "dispersion_bps": 116.51899999999999,
+            "protocol_count": 5
+          },
+          {
+            "day": "2026-04-14",
+            "dispersion_bps": 210.06600000000003,
+            "protocol_count": 5
+          },
+          {
+            "day": "2026-04-15",
+            "dispersion_bps": 84.97200000000001,
+            "protocol_count": 5
+          },
+          {
+            "day": "2026-04-16",
+            "dispersion_bps": 68.75300000000001,
+            "protocol_count": 5
+          },
+          {
+            "day": "2026-04-17",
+            "dispersion_bps": 71.33499999999997,
+            "protocol_count": 5
+          },
+          {
+            "day": "2026-04-18",
+            "dispersion_bps": 421.05899999999997,
+            "protocol_count": 5
+          },
+          {
+            "day": "2026-04-19",
+            "dispersion_bps": 967.377,
+            "protocol_count": 5
+          },
+          {
+            "day": "2026-04-20",
+            "dispersion_bps": 969.0310000000001,
+            "protocol_count": 5
+          },
+          {
+            "day": "2026-04-21",
+            "dispersion_bps": 1418.4180000000001,
+            "protocol_count": 5
+          },
+          {
+            "day": "2026-04-22",
+            "dispersion_bps": 991.3249999999999,
+            "protocol_count": 5
+          },
+          {
+            "day": "2026-04-23",
+            "dispersion_bps": 991.415,
+            "protocol_count": 5
+          },
+          {
+            "day": "2026-04-24",
+            "dispersion_bps": 590.151,
+            "protocol_count": 5
+          },
+          {
+            "day": "2026-04-25",
+            "dispersion_bps": 595.622,
+            "protocol_count": 5
+          },
+          {
+            "day": "2026-04-26",
+            "dispersion_bps": 989.4309999999999,
+            "protocol_count": 5
+          },
+          {
+            "day": "2026-04-27",
+            "dispersion_bps": 349.55499999999995,
+            "protocol_count": 5
+          },
+          {
+            "day": "2026-04-28",
+            "dispersion_bps": 254.37399999999997,
+            "protocol_count": 5
+          },
+          {
+            "day": "2026-04-29",
+            "dispersion_bps": 140.69400000000005,
+            "protocol_count": 5
+          },
+          {
+            "day": "2026-04-30",
+            "dispersion_bps": 1338.279,
+            "protocol_count": 5
+          },
+          {
+            "day": "2026-05-01",
+            "dispersion_bps": 267.10999999999996,
+            "protocol_count": 5
+          },
+          {
+            "day": "2026-05-02",
+            "dispersion_bps": 964.503,
+            "protocol_count": 5
+          },
+          {
+            "day": "2026-05-03",
+            "dispersion_bps": 156.341,
+            "protocol_count": 5
+          },
+          {
+            "day": "2026-05-04",
+            "dispersion_bps": 169.243,
+            "protocol_count": 5
+          },
+          {
+            "day": "2026-05-05",
+            "dispersion_bps": 145.29299999999998,
+            "protocol_count": 5
+          },
+          {
+            "day": "2026-05-06",
+            "dispersion_bps": 199.88499999999996,
+            "protocol_count": 5
+          },
+          {
+            "day": "2026-05-07",
+            "dispersion_bps": 178.10199999999998,
+            "protocol_count": 5
+          },
+          {
+            "day": "2026-05-08",
+            "dispersion_bps": 360.338,
+            "protocol_count": 5
+          },
+          {
+            "day": "2026-05-09",
+            "dispersion_bps": 160.61100000000005,
+            "protocol_count": 5
+          },
+          {
+            "day": "2026-05-10",
+            "dispersion_bps": 161.45699999999997,
+            "protocol_count": 5
+          },
+          {
+            "day": "2026-05-11",
+            "dispersion_bps": 151.574,
+            "protocol_count": 5
+          },
+          {
+            "day": "2026-05-12",
+            "dispersion_bps": 68.49400000000001,
+            "protocol_count": 5
+          },
+          {
+            "day": "2026-05-13",
+            "dispersion_bps": 67.583,
+            "protocol_count": 5
+          },
+          {
+            "day": "2026-05-14",
+            "dispersion_bps": 229.891,
+            "protocol_count": 5
+          },
+          {
+            "day": "2026-05-15",
+            "dispersion_bps": 50.522,
+            "protocol_count": 5
+          },
+          {
+            "day": "2026-05-16",
+            "dispersion_bps": 20.079,
+            "protocol_count": 5
+          },
+          {
+            "day": "2026-05-17",
+            "dispersion_bps": 34.104,
+            "protocol_count": 5
+          },
+          {
+            "day": "2026-05-18",
+            "dispersion_bps": 386.72700000000003,
+            "protocol_count": 5
+          },
+          {
+            "day": "2026-05-19",
+            "dispersion_bps": 1292.3369999999998,
+            "protocol_count": 5
+          },
+          {
+            "day": "2026-05-20",
+            "dispersion_bps": 848.5160000000001,
+            "protocol_count": 5
+          },
+          {
+            "day": "2026-05-21",
+            "dispersion_bps": 156.401,
+            "protocol_count": 5
+          },
+          {
+            "day": "2026-05-22",
+            "dispersion_bps": 199.55399999999997,
+            "protocol_count": 5
+          },
+          {
+            "day": "2026-05-23",
+            "dispersion_bps": 196.048,
+            "protocol_count": 5
+          },
+          {
+            "day": "2026-05-24",
+            "dispersion_bps": 241.63300000000004,
+            "protocol_count": 5
+          },
+          {
+            "day": "2026-05-25",
+            "dispersion_bps": 473.38699999999994,
+            "protocol_count": 5
+          },
+          {
+            "day": "2026-05-26",
+            "dispersion_bps": 259.02299999999997,
+            "protocol_count": 5
+          },
+          {
+            "day": "2026-05-27",
+            "dispersion_bps": 153.78800000000004,
+            "protocol_count": 5
+          },
+          {
+            "day": "2026-05-28",
+            "dispersion_bps": 153.25699999999998,
+            "protocol_count": 5
+          },
+          {
+            "day": "2026-05-29",
+            "dispersion_bps": 167.04200000000006,
+            "protocol_count": 5
+          },
+          {
+            "day": "2026-05-30",
+            "dispersion_bps": 461.809,
+            "protocol_count": 5
+          },
+          {
+            "day": "2026-05-31",
+            "dispersion_bps": 161.68099999999995,
+            "protocol_count": 5
+          },
+          {
+            "day": "2026-06-01",
+            "dispersion_bps": 171.40400000000002,
+            "protocol_count": 5
+          },
+          {
+            "day": "2026-06-02",
+            "dispersion_bps": 261.46200000000005,
+            "protocol_count": 5
+          },
+          {
+            "day": "2026-06-03",
+            "dispersion_bps": 3254.083,
+            "protocol_count": 5
+          },
+          {
+            "day": "2026-06-04",
+            "dispersion_bps": 1303.4950000000001,
+            "protocol_count": 5
+          },
+          {
+            "day": "2026-06-05",
+            "dispersion_bps": 316.20399999999995,
+            "protocol_count": 5
+          },
+          {
+            "day": "2026-06-06",
+            "dispersion_bps": 250.15099999999995,
+            "protocol_count": 5
+          },
+          {
+            "day": "2026-06-07",
+            "dispersion_bps": 174.98799999999997,
+            "protocol_count": 5
+          },
+          {
+            "day": "2026-06-08",
+            "dispersion_bps": 149.21499999999997,
+            "protocol_count": 5
+          },
+          {
+            "day": "2026-06-09",
+            "dispersion_bps": 101.69400000000005,
+            "protocol_count": 5
+          },
+          {
+            "day": "2026-06-10",
+            "dispersion_bps": 188.25999999999996,
+            "protocol_count": 5
+          },
+          {
+            "day": "2026-06-11",
+            "dispersion_bps": 194.60400000000004,
+            "protocol_count": 5
+          },
+          {
+            "day": "2026-06-12",
+            "dispersion_bps": 236.61700000000002,
+            "protocol_count": 5
+          },
+          {
+            "day": "2026-06-13",
+            "dispersion_bps": 221.41500000000002,
+            "protocol_count": 5
+          },
+          {
+            "day": "2026-06-14",
+            "dispersion_bps": 233.22500000000002,
+            "protocol_count": 5
+          },
+          {
+            "day": "2026-06-15",
+            "dispersion_bps": 184.06800000000004,
+            "protocol_count": 5
+          },
+          {
+            "day": "2026-06-16",
+            "dispersion_bps": 155.412,
+            "protocol_count": 5
+          },
+          {
+            "day": "2026-06-17",
+            "dispersion_bps": 179.107,
+            "protocol_count": 5
+          },
+          {
+            "day": "2026-06-18",
+            "dispersion_bps": 128.40699999999998,
+            "protocol_count": 5
+          },
+          {
+            "day": "2026-06-19",
+            "dispersion_bps": 161.89399999999998,
+            "protocol_count": 5
+          },
+          {
+            "day": "2026-06-20",
+            "dispersion_bps": 118.73299999999998,
+            "protocol_count": 5
+          },
+          {
+            "day": "2026-06-21",
+            "dispersion_bps": 165.104,
+            "protocol_count": 5
+          },
+          {
+            "day": "2026-06-22",
+            "dispersion_bps": 175.32299999999998,
+            "protocol_count": 5
+          },
+          {
+            "day": "2026-06-23",
+            "dispersion_bps": 204.237,
+            "protocol_count": 5
+          },
+          {
+            "day": "2026-06-24",
+            "dispersion_bps": 448.902,
+            "protocol_count": 5
+          },
+          {
+            "day": "2026-06-25",
+            "dispersion_bps": 500.756,
+            "protocol_count": 5
+          },
+          {
+            "day": "2026-06-26",
+            "dispersion_bps": 602.2280000000001,
+            "protocol_count": 5
+          },
+          {
+            "day": "2026-06-27",
+            "dispersion_bps": 387.83899999999994,
+            "protocol_count": 5
+          },
+          {
+            "day": "2026-06-28",
+            "dispersion_bps": 344.81299999999993,
+            "protocol_count": 5
+          },
+          {
+            "day": "2026-06-29",
+            "dispersion_bps": 661.9209999999999,
+            "protocol_count": 5
+          },
+          {
+            "day": "2026-06-30",
+            "dispersion_bps": 572.1740000000001,
+            "protocol_count": 5
+          },
+          {
+            "day": "2026-07-01",
+            "dispersion_bps": 405.959,
+            "protocol_count": 5
+          },
+          {
+            "day": "2026-07-02",
+            "dispersion_bps": 283.48100000000005,
+            "protocol_count": 5
+          },
+          {
+            "day": "2026-07-03",
+            "dispersion_bps": 164.13899999999998,
+            "protocol_count": 5
+          },
+          {
+            "day": "2026-07-04",
+            "dispersion_bps": 1737.226,
+            "protocol_count": 5
+          },
+          {
+            "day": "2026-07-05",
+            "dispersion_bps": 1436.1340000000002,
+            "protocol_count": 5
+          },
+          {
+            "day": "2026-07-06",
+            "dispersion_bps": 1842.532,
+            "protocol_count": 5
+          },
+          {
+            "day": "2026-07-07",
+            "dispersion_bps": 330.08099999999996,
+            "protocol_count": 5
+          },
+          {
+            "day": "2026-07-08",
+            "dispersion_bps": 321.91600000000005,
+            "protocol_count": 5
+          },
+          {
+            "day": "2026-07-09",
+            "dispersion_bps": 336.395,
+            "protocol_count": 5
+          },
+          {
+            "day": "2026-07-10",
+            "dispersion_bps": 388.71599999999995,
+            "protocol_count": 5
+          },
+          {
+            "day": "2026-07-11",
+            "dispersion_bps": 362.94800000000004,
+            "protocol_count": 5
+          },
+          {
+            "day": "2026-07-12",
+            "dispersion_bps": 1679.1810000000003,
+            "protocol_count": 5
+          },
+          {
+            "day": "2026-07-13",
+            "dispersion_bps": 354.027,
+            "protocol_count": 5
+          },
+          {
+            "day": "2026-07-14",
+            "dispersion_bps": 333.216,
+            "protocol_count": 5
+          },
+          {
+            "day": "2026-07-15",
+            "dispersion_bps": 868.4799999999999,
+            "protocol_count": 5
+          },
+          {
+            "day": "2026-07-16",
+            "dispersion_bps": 868.4149999999998,
+            "protocol_count": 5
+          },
+          {
+            "day": "2026-07-17",
+            "dispersion_bps": 910.12,
+            "protocol_count": 5
+          },
+          {
+            "day": "2026-07-18",
+            "dispersion_bps": 874.3400000000001,
+            "protocol_count": 5
+          },
+          {
+            "day": "2026-07-19",
+            "dispersion_bps": 818.318,
+            "protocol_count": 5
+          },
+          {
+            "day": "2026-07-20",
+            "dispersion_bps": 971.87,
+            "protocol_count": 5
+          },
+          {
+            "day": "2026-07-21",
+            "dispersion_bps": 612.2310000000001,
+            "protocol_count": 5
+          },
+          {
+            "day": "2026-07-22",
+            "dispersion_bps": 592.1410000000001,
+            "protocol_count": 5
+          },
+          {
+            "day": "2026-07-23",
+            "dispersion_bps": 205.655,
+            "protocol_count": 5
+          },
+          {
+            "day": "2026-07-24",
+            "dispersion_bps": 227.23799999999997,
+            "protocol_count": 5
+          },
+          {
+            "day": "2026-07-25",
+            "dispersion_bps": 171.143,
+            "protocol_count": 5
+          },
+          {
+            "day": "2026-07-26",
+            "dispersion_bps": 171.142,
+            "protocol_count": 5
+          },
+          {
+            "day": "2026-07-27",
+            "dispersion_bps": 261.443,
+            "protocol_count": 5
+          },
+          {
+            "day": "2026-07-28",
+            "dispersion_bps": 192.14000000000001,
+            "protocol_count": 5
+          },
+          {
+            "day": "2026-07-29",
+            "dispersion_bps": 192.131,
+            "protocol_count": 5
+          },
+          {
+            "day": "2026-07-30",
+            "dispersion_bps": 227.13799999999998,
+            "protocol_count": 5
+          },
+          {
+            "day": "2026-07-31",
+            "dispersion_bps": 246.86800000000005,
+            "protocol_count": 5
+          }
+        ],
+        "observed_days": 364,
+        "avg_dispersion_bps": 247.03048901098884,
+        "median_dispersion_bps": 154.07649999999995,
+        "min_dispersion_bps": 8.313000000000015,
+        "max_dispersion_bps": 3254.083
+      },
+      "ratio_july31_vs_12mo_avg": 0.9993422309463122
+    },
+    {
+      "asset": "WETH",
+      "representative_pools": [
+        {
+          "protocol_slug": "aave-v3",
+          "pool_id": "e880e828-ca59-4ec6-8d4f-27182a4dc23d",
+          "pool_meta": null,
+          "tvl_usd": 620730549
+        },
+        {
+          "protocol_slug": "spark",
+          "pool_id": "24195b31-d749-445f-bf9e-b65aa025ebdd",
+          "pool_meta": null,
+          "tvl_usd": 111147340
+        },
+        {
+          "protocol_slug": "morpho-blue",
+          "pool_id": "c17dcd78-e16e-474a-8661-443a2959c078",
+          "pool_meta": null,
+          "tvl_usd": 3550510
+        },
+        {
+          "protocol_slug": "fluid",
+          "pool_id": "82da3bb0-00b6-4d88-b720-8435a3affd48",
+          "pool_meta": null,
+          "tvl_usd": 2930884
+        },
+        {
+          "protocol_slug": "compound-v3",
+          "pool_id": "072f6554-daa7-4708-80ba-371b896a89db",
+          "pool_meta": "USDC-pool",
+          "tvl_usd": 114315538
+        },
+        {
+          "protocol_slug": "euler-v2",
+          "pool_id": "e30876ae-e9d3-4ab1-bf5b-96920f4fc9ba",
+          "pool_meta": "EVK Vault eWETH-2",
+          "tvl_usd": 995174
+        }
+      ],
+      "july31": {
+        "target_date": "2026-07-31",
+        "per_protocol": [
+          {
+            "protocol_slug": "aave-v3",
+            "protocol_name": "Aave V3",
+            "supply_apy_pct": 1.49838,
+            "source_pool_id": "e880e828-ca59-4ec6-8d4f-27182a4dc23d",
+            "source_pool_meta": null
+          },
+          {
+            "protocol_slug": "spark",
+            "protocol_name": "Spark",
+            "supply_apy_pct": 1.70607,
+            "source_pool_id": "24195b31-d749-445f-bf9e-b65aa025ebdd",
+            "source_pool_meta": null
+          },
+          {
+            "protocol_slug": "morpho-blue",
+            "protocol_name": "Morpho",
+            "supply_apy_pct": 0,
+            "source_pool_id": "c17dcd78-e16e-474a-8661-443a2959c078",
+            "source_pool_meta": null
+          },
+          {
+            "protocol_slug": "fluid",
+            "protocol_name": "Fluid",
+            "supply_apy_pct": 1.7,
+            "source_pool_id": "82da3bb0-00b6-4d88-b720-8435a3affd48",
+            "source_pool_meta": null
+          },
+          {
+            "protocol_slug": "euler-v2",
+            "protocol_name": "Euler V2",
+            "supply_apy_pct": 0.59263,
+            "source_pool_id": "e30876ae-e9d3-4ab1-bf5b-96920f4fc9ba",
+            "source_pool_meta": "EVK Vault eWETH-2"
+          }
+        ],
+        "excluded_protocols": [
+          "compound-v3"
+        ],
+        "max_supply_apy_pct": 1.70607,
+        "min_supply_apy_pct": 0,
+        "dispersion_bps": 170.607,
+        "leader_protocol": "spark",
+        "laggard_protocol": "morpho-blue"
+      },
+      "twelve_month": {
+        "window_start_date": "2025-08-01",
+        "window_end_date": "2026-07-31",
+        "daily_dispersions_bps": [
+          {
+            "day": "2025-08-02",
+            "dispersion_bps": 156.417,
+            "protocol_count": 4
+          },
+          {
+            "day": "2025-08-03",
+            "dispersion_bps": 58.861000000000004,
+            "protocol_count": 4
+          },
+          {
+            "day": "2025-08-04",
+            "dispersion_bps": 41.754000000000005,
+            "protocol_count": 4
+          },
+          {
+            "day": "2025-08-05",
+            "dispersion_bps": 42.013999999999996,
+            "protocol_count": 4
+          },
+          {
+            "day": "2025-08-06",
+            "dispersion_bps": 42.31600000000002,
+            "protocol_count": 4
+          },
+          {
+            "day": "2025-08-07",
+            "dispersion_bps": 47.18500000000001,
+            "protocol_count": 4
+          },
+          {
+            "day": "2025-08-08",
+            "dispersion_bps": 55.081000000000024,
+            "protocol_count": 4
+          },
+          {
+            "day": "2025-08-09",
+            "dispersion_bps": 30.73000000000001,
+            "protocol_count": 4
+          },
+          {
+            "day": "2025-08-10",
+            "dispersion_bps": 38.519999999999996,
+            "protocol_count": 4
+          },
+          {
+            "day": "2025-08-11",
+            "dispersion_bps": 40.46799999999999,
+            "protocol_count": 4
+          },
+          {
+            "day": "2025-08-12",
+            "dispersion_bps": 53.93400000000001,
+            "protocol_count": 4
+          },
+          {
+            "day": "2025-08-13",
+            "dispersion_bps": 40.662,
+            "protocol_count": 4
+          },
+          {
+            "day": "2025-08-14",
+            "dispersion_bps": 45.523,
+            "protocol_count": 4
+          },
+          {
+            "day": "2025-08-15",
+            "dispersion_bps": 44.24299999999999,
+            "protocol_count": 4
+          },
+          {
+            "day": "2025-08-16",
+            "dispersion_bps": 30.320000000000036,
+            "protocol_count": 4
+          },
+          {
+            "day": "2025-08-17",
+            "dispersion_bps": 45.168000000000006,
+            "protocol_count": 4
+          },
+          {
+            "day": "2025-08-18",
+            "dispersion_bps": 45.74800000000001,
+            "protocol_count": 4
+          },
+          {
+            "day": "2025-08-19",
+            "dispersion_bps": 132.015,
+            "protocol_count": 4
+          },
+          {
+            "day": "2025-08-20",
+            "dispersion_bps": 66.87200000000001,
+            "protocol_count": 4
+          },
+          {
+            "day": "2025-08-21",
+            "dispersion_bps": 60.03600000000002,
+            "protocol_count": 4
+          },
+          {
+            "day": "2025-08-22",
+            "dispersion_bps": 61.641999999999996,
+            "protocol_count": 4
+          },
+          {
+            "day": "2025-08-23",
+            "dispersion_bps": 38.77000000000002,
+            "protocol_count": 4
+          },
+          {
+            "day": "2025-08-24",
+            "dispersion_bps": 52.29400000000002,
+            "protocol_count": 4
+          },
+          {
+            "day": "2025-08-25",
+            "dispersion_bps": 45.26699999999999,
+            "protocol_count": 4
+          },
+          {
+            "day": "2025-08-26",
+            "dispersion_bps": 43.00900000000003,
+            "protocol_count": 4
+          },
+          {
+            "day": "2025-08-27",
+            "dispersion_bps": 39.14400000000002,
+            "protocol_count": 4
+          },
+          {
+            "day": "2025-08-28",
+            "dispersion_bps": 39.93000000000002,
+            "protocol_count": 4
+          },
+          {
+            "day": "2025-08-29",
+            "dispersion_bps": 39.75799999999998,
+            "protocol_count": 4
+          },
+          {
+            "day": "2025-08-30",
+            "dispersion_bps": 37.55400000000002,
+            "protocol_count": 4
+          },
+          {
+            "day": "2025-08-31",
+            "dispersion_bps": 37.519999999999996,
+            "protocol_count": 4
+          },
+          {
+            "day": "2025-09-01",
+            "dispersion_bps": 15.739000000000036,
+            "protocol_count": 4
+          },
+          {
+            "day": "2025-09-02",
+            "dispersion_bps": 32.41299999999998,
+            "protocol_count": 4
+          },
+          {
+            "day": "2025-09-03",
+            "dispersion_bps": 30.258999999999993,
+            "protocol_count": 4
+          },
+          {
+            "day": "2025-09-04",
+            "dispersion_bps": 49.773000000000025,
+            "protocol_count": 4
+          },
+          {
+            "day": "2025-09-05",
+            "dispersion_bps": 56.404999999999994,
+            "protocol_count": 4
+          },
+          {
+            "day": "2025-09-06",
+            "dispersion_bps": 55.871999999999986,
+            "protocol_count": 4
+          },
+          {
+            "day": "2025-09-07",
+            "dispersion_bps": 55.576,
+            "protocol_count": 4
+          },
+          {
+            "day": "2025-09-08",
+            "dispersion_bps": 56.25899999999999,
+            "protocol_count": 4
+          },
+          {
+            "day": "2025-09-09",
+            "dispersion_bps": 21.67899999999998,
+            "protocol_count": 4
+          },
+          {
+            "day": "2025-09-10",
+            "dispersion_bps": 35.10199999999999,
+            "protocol_count": 4
+          },
+          {
+            "day": "2025-09-11",
+            "dispersion_bps": 32.34000000000001,
+            "protocol_count": 4
+          },
+          {
+            "day": "2025-09-12",
+            "dispersion_bps": 59.72500000000001,
+            "protocol_count": 4
+          },
+          {
+            "day": "2025-09-13",
+            "dispersion_bps": 59.053,
+            "protocol_count": 4
+          },
+          {
+            "day": "2025-09-14",
+            "dispersion_bps": 58.834999999999994,
+            "protocol_count": 4
+          },
+          {
+            "day": "2025-09-15",
+            "dispersion_bps": 96.93,
+            "protocol_count": 4
+          },
+          {
+            "day": "2025-09-16",
+            "dispersion_bps": 92.29699999999998,
+            "protocol_count": 4
+          },
+          {
+            "day": "2025-09-17",
+            "dispersion_bps": 66.75300000000001,
+            "protocol_count": 4
+          },
+          {
+            "day": "2025-09-18",
+            "dispersion_bps": 63.991,
+            "protocol_count": 4
+          },
+          {
+            "day": "2025-09-19",
+            "dispersion_bps": 53.66700000000002,
+            "protocol_count": 4
+          },
+          {
+            "day": "2025-09-20",
+            "dispersion_bps": 61.074000000000005,
+            "protocol_count": 4
+          },
+          {
+            "day": "2025-09-21",
+            "dispersion_bps": 46.674000000000014,
+            "protocol_count": 4
+          },
+          {
+            "day": "2025-09-22",
+            "dispersion_bps": 67.165,
+            "protocol_count": 4
+          },
+          {
+            "day": "2025-09-23",
+            "dispersion_bps": 43.31,
+            "protocol_count": 4
+          },
+          {
+            "day": "2025-09-24",
+            "dispersion_bps": 17.992000000000008,
+            "protocol_count": 4
+          },
+          {
+            "day": "2025-09-25",
+            "dispersion_bps": 70.903,
+            "protocol_count": 4
+          },
+          {
+            "day": "2025-09-26",
+            "dispersion_bps": 49.89700000000001,
+            "protocol_count": 4
+          },
+          {
+            "day": "2025-09-27",
+            "dispersion_bps": 45.52400000000001,
+            "protocol_count": 4
+          },
+          {
+            "day": "2025-09-28",
+            "dispersion_bps": 57.47199999999999,
+            "protocol_count": 4
+          },
+          {
+            "day": "2025-09-29",
+            "dispersion_bps": 47.05200000000001,
+            "protocol_count": 3
+          },
+          {
+            "day": "2025-09-30",
+            "dispersion_bps": 67.017,
+            "protocol_count": 3
+          },
+          {
+            "day": "2025-10-01",
+            "dispersion_bps": 63.06799999999999,
+            "protocol_count": 4
+          },
+          {
+            "day": "2025-10-02",
+            "dispersion_bps": 76.407,
+            "protocol_count": 4
+          },
+          {
+            "day": "2025-10-03",
+            "dispersion_bps": 93.61599999999999,
+            "protocol_count": 4
+          },
+          {
+            "day": "2025-10-04",
+            "dispersion_bps": 78.58299999999998,
+            "protocol_count": 4
+          },
+          {
+            "day": "2025-10-05",
+            "dispersion_bps": 77.47500000000001,
+            "protocol_count": 4
+          },
+          {
+            "day": "2025-10-06",
+            "dispersion_bps": 61.364,
+            "protocol_count": 4
+          },
+          {
+            "day": "2025-10-07",
+            "dispersion_bps": 40.772000000000006,
+            "protocol_count": 4
+          },
+          {
+            "day": "2025-10-08",
+            "dispersion_bps": 39.198,
+            "protocol_count": 4
+          },
+          {
+            "day": "2025-10-09",
+            "dispersion_bps": 60.31099999999998,
+            "protocol_count": 4
+          },
+          {
+            "day": "2025-10-10",
+            "dispersion_bps": 113.944,
+            "protocol_count": 4
+          },
+          {
+            "day": "2025-10-11",
+            "dispersion_bps": 381.114,
+            "protocol_count": 4
+          },
+          {
+            "day": "2025-10-12",
+            "dispersion_bps": 36.469000000000015,
+            "protocol_count": 4
+          },
+          {
+            "day": "2025-10-13",
+            "dispersion_bps": 103.64599999999997,
+            "protocol_count": 4
+          },
+          {
+            "day": "2025-10-14",
+            "dispersion_bps": 81.55700000000002,
+            "protocol_count": 4
+          },
+          {
+            "day": "2025-10-15",
+            "dispersion_bps": 82.99500000000002,
+            "protocol_count": 4
+          },
+          {
+            "day": "2025-10-16",
+            "dispersion_bps": 95.608,
+            "protocol_count": 4
+          },
+          {
+            "day": "2025-10-17",
+            "dispersion_bps": 100.19099999999999,
+            "protocol_count": 4
+          },
+          {
+            "day": "2025-10-18",
+            "dispersion_bps": 88.88600000000002,
+            "protocol_count": 4
+          },
+          {
+            "day": "2025-10-19",
+            "dispersion_bps": 94.457,
+            "protocol_count": 4
+          },
+          {
+            "day": "2025-10-20",
+            "dispersion_bps": 75.74099999999997,
+            "protocol_count": 4
+          },
+          {
+            "day": "2025-10-21",
+            "dispersion_bps": 28.403999999999986,
+            "protocol_count": 4
+          },
+          {
+            "day": "2025-10-22",
+            "dispersion_bps": 44.851,
+            "protocol_count": 4
+          },
+          {
+            "day": "2025-10-23",
+            "dispersion_bps": 54.67599999999999,
+            "protocol_count": 4
+          },
+          {
+            "day": "2025-10-24",
+            "dispersion_bps": 76.864,
+            "protocol_count": 4
+          },
+          {
+            "day": "2025-10-25",
+            "dispersion_bps": 67.09100000000001,
+            "protocol_count": 4
+          },
+          {
+            "day": "2025-10-26",
+            "dispersion_bps": 63.652,
+            "protocol_count": 4
+          },
+          {
+            "day": "2025-10-27",
+            "dispersion_bps": 59.087,
+            "protocol_count": 4
+          },
+          {
+            "day": "2025-10-28",
+            "dispersion_bps": 42.462,
+            "protocol_count": 4
+          },
+          {
+            "day": "2025-10-29",
+            "dispersion_bps": 44.61299999999999,
+            "protocol_count": 4
+          },
+          {
+            "day": "2025-10-30",
+            "dispersion_bps": 87.48800000000001,
+            "protocol_count": 4
+          },
+          {
+            "day": "2025-10-31",
+            "dispersion_bps": 47.13400000000001,
+            "protocol_count": 4
+          },
+          {
+            "day": "2025-11-01",
+            "dispersion_bps": 59.142,
+            "protocol_count": 4
+          },
+          {
+            "day": "2025-11-02",
+            "dispersion_bps": 58.82800000000002,
+            "protocol_count": 4
+          },
+          {
+            "day": "2025-11-03",
+            "dispersion_bps": 83.58900000000003,
+            "protocol_count": 4
+          },
+          {
+            "day": "2025-11-04",
+            "dispersion_bps": 223.836,
+            "protocol_count": 4
+          },
+          {
+            "day": "2025-11-05",
+            "dispersion_bps": 615.2840000000001,
+            "protocol_count": 4
+          },
+          {
+            "day": "2025-11-06",
+            "dispersion_bps": 87.548,
+            "protocol_count": 4
+          },
+          {
+            "day": "2025-11-07",
+            "dispersion_bps": 104.62599999999999,
+            "protocol_count": 4
+          },
+          {
+            "day": "2025-11-08",
+            "dispersion_bps": 390.018,
+            "protocol_count": 4
+          },
+          {
+            "day": "2025-11-09",
+            "dispersion_bps": 2578.493,
+            "protocol_count": 4
+          },
+          {
+            "day": "2025-11-10",
+            "dispersion_bps": 2167.6349999999998,
+            "protocol_count": 4
+          },
+          {
+            "day": "2025-11-11",
+            "dispersion_bps": 434.37699999999995,
+            "protocol_count": 4
+          },
+          {
+            "day": "2025-11-12",
+            "dispersion_bps": 106.687,
+            "protocol_count": 4
+          },
+          {
+            "day": "2025-11-13",
+            "dispersion_bps": 158.73600000000002,
+            "protocol_count": 4
+          },
+          {
+            "day": "2025-11-14",
+            "dispersion_bps": 74.17099999999999,
+            "protocol_count": 4
+          },
+          {
+            "day": "2025-11-15",
+            "dispersion_bps": 16.84000000000001,
+            "protocol_count": 4
+          },
+          {
+            "day": "2025-11-16",
+            "dispersion_bps": 33.321,
+            "protocol_count": 4
+          },
+          {
+            "day": "2025-11-17",
+            "dispersion_bps": 73.61999999999999,
+            "protocol_count": 4
+          },
+          {
+            "day": "2025-11-18",
+            "dispersion_bps": 71.66299999999998,
+            "protocol_count": 4
+          },
+          {
+            "day": "2025-11-19",
+            "dispersion_bps": 76.931,
+            "protocol_count": 4
+          },
+          {
+            "day": "2025-11-20",
+            "dispersion_bps": 93.27399999999999,
+            "protocol_count": 4
+          },
+          {
+            "day": "2025-11-21",
+            "dispersion_bps": 87.42899999999997,
+            "protocol_count": 4
+          },
+          {
+            "day": "2025-11-22",
+            "dispersion_bps": 46.46399999999999,
+            "protocol_count": 4
+          },
+          {
+            "day": "2025-11-23",
+            "dispersion_bps": 33.08200000000001,
+            "protocol_count": 4
+          },
+          {
+            "day": "2025-11-24",
+            "dispersion_bps": 69.38300000000001,
+            "protocol_count": 4
+          },
+          {
+            "day": "2025-11-25",
+            "dispersion_bps": 77.64599999999999,
+            "protocol_count": 4
+          },
+          {
+            "day": "2025-11-26",
+            "dispersion_bps": 77.99499999999999,
+            "protocol_count": 4
+          },
+          {
+            "day": "2025-11-27",
+            "dispersion_bps": 56.053,
+            "protocol_count": 4
+          },
+          {
+            "day": "2025-11-28",
+            "dispersion_bps": 47.509999999999984,
+            "protocol_count": 4
+          },
+          {
+            "day": "2025-11-29",
+            "dispersion_bps": 55.854000000000006,
+            "protocol_count": 4
+          },
+          {
+            "day": "2025-11-30",
+            "dispersion_bps": 51.261,
+            "protocol_count": 4
+          },
+          {
+            "day": "2025-12-01",
+            "dispersion_bps": 74.41900000000001,
+            "protocol_count": 4
+          },
+          {
+            "day": "2025-12-02",
+            "dispersion_bps": 68.32000000000001,
+            "protocol_count": 4
+          },
+          {
+            "day": "2025-12-03",
+            "dispersion_bps": 58.40099999999999,
+            "protocol_count": 4
+          },
+          {
+            "day": "2025-12-04",
+            "dispersion_bps": 58.663,
+            "protocol_count": 4
+          },
+          {
+            "day": "2025-12-05",
+            "dispersion_bps": 60.736999999999995,
+            "protocol_count": 4
+          },
+          {
+            "day": "2025-12-06",
+            "dispersion_bps": 68.14499999999998,
+            "protocol_count": 4
+          },
+          {
+            "day": "2025-12-07",
+            "dispersion_bps": 82.25500000000001,
+            "protocol_count": 4
+          },
+          {
+            "day": "2025-12-08",
+            "dispersion_bps": 59.243999999999986,
+            "protocol_count": 4
+          },
+          {
+            "day": "2025-12-09",
+            "dispersion_bps": 98.52699999999999,
+            "protocol_count": 4
+          },
+          {
+            "day": "2025-12-10",
+            "dispersion_bps": 73.58,
+            "protocol_count": 4
+          },
+          {
+            "day": "2025-12-11",
+            "dispersion_bps": 60.84700000000001,
+            "protocol_count": 4
+          },
+          {
+            "day": "2025-12-12",
+            "dispersion_bps": 54.897,
+            "protocol_count": 4
+          },
+          {
+            "day": "2025-12-13",
+            "dispersion_bps": 45.292999999999985,
+            "protocol_count": 4
+          },
+          {
+            "day": "2025-12-14",
+            "dispersion_bps": 71.75799999999998,
+            "protocol_count": 4
+          },
+          {
+            "day": "2025-12-15",
+            "dispersion_bps": 79.074,
+            "protocol_count": 4
+          },
+          {
+            "day": "2025-12-16",
+            "dispersion_bps": 81.535,
+            "protocol_count": 4
+          },
+          {
+            "day": "2025-12-17",
+            "dispersion_bps": 75.922,
+            "protocol_count": 4
+          },
+          {
+            "day": "2025-12-18",
+            "dispersion_bps": 70.90299999999998,
+            "protocol_count": 4
+          },
+          {
+            "day": "2025-12-19",
+            "dispersion_bps": 62.29799999999999,
+            "protocol_count": 4
+          },
+          {
+            "day": "2025-12-20",
+            "dispersion_bps": 62.49,
+            "protocol_count": 4
+          },
+          {
+            "day": "2025-12-21",
+            "dispersion_bps": 57.36500000000002,
+            "protocol_count": 4
+          },
+          {
+            "day": "2025-12-22",
+            "dispersion_bps": 65.85699999999999,
+            "protocol_count": 4
+          },
+          {
+            "day": "2025-12-23",
+            "dispersion_bps": 73.383,
+            "protocol_count": 4
+          },
+          {
+            "day": "2025-12-24",
+            "dispersion_bps": 110.51500000000001,
+            "protocol_count": 4
+          },
+          {
+            "day": "2025-12-25",
+            "dispersion_bps": 123.37,
+            "protocol_count": 4
+          },
+          {
+            "day": "2025-12-26",
+            "dispersion_bps": 115.47800000000001,
+            "protocol_count": 4
+          },
+          {
+            "day": "2025-12-27",
+            "dispersion_bps": 116.47200000000002,
+            "protocol_count": 4
+          },
+          {
+            "day": "2025-12-28",
+            "dispersion_bps": 67.606,
+            "protocol_count": 4
+          },
+          {
+            "day": "2025-12-29",
+            "dispersion_bps": 80.907,
+            "protocol_count": 4
+          },
+          {
+            "day": "2025-12-30",
+            "dispersion_bps": 81.832,
+            "protocol_count": 4
+          },
+          {
+            "day": "2025-12-31",
+            "dispersion_bps": 76.349,
+            "protocol_count": 4
+          },
+          {
+            "day": "2026-01-01",
+            "dispersion_bps": 77.444,
+            "protocol_count": 4
+          },
+          {
+            "day": "2026-01-02",
+            "dispersion_bps": 73.559,
+            "protocol_count": 4
+          },
+          {
+            "day": "2026-01-03",
+            "dispersion_bps": 61.458999999999996,
+            "protocol_count": 4
+          },
+          {
+            "day": "2026-01-04",
+            "dispersion_bps": 65.899,
+            "protocol_count": 4
+          },
+          {
+            "day": "2026-01-05",
+            "dispersion_bps": 57.655000000000015,
+            "protocol_count": 4
+          },
+          {
+            "day": "2026-01-06",
+            "dispersion_bps": 71.71499999999999,
+            "protocol_count": 4
+          },
+          {
+            "day": "2026-01-07",
+            "dispersion_bps": 61.931000000000004,
+            "protocol_count": 4
+          },
+          {
+            "day": "2026-01-08",
+            "dispersion_bps": 60.28300000000002,
+            "protocol_count": 4
+          },
+          {
+            "day": "2026-01-09",
+            "dispersion_bps": 60.010999999999996,
+            "protocol_count": 4
+          },
+          {
+            "day": "2026-01-10",
+            "dispersion_bps": 59.507,
+            "protocol_count": 4
+          },
+          {
+            "day": "2026-01-11",
+            "dispersion_bps": 60.06800000000001,
+            "protocol_count": 4
+          },
+          {
+            "day": "2026-01-12",
+            "dispersion_bps": 51.675000000000004,
+            "protocol_count": 4
+          },
+          {
+            "day": "2026-01-13",
+            "dispersion_bps": 48.788999999999994,
+            "protocol_count": 4
+          },
+          {
+            "day": "2026-01-14",
+            "dispersion_bps": 45.398,
+            "protocol_count": 4
+          },
+          {
+            "day": "2026-01-15",
+            "dispersion_bps": 77.903,
+            "protocol_count": 4
+          },
+          {
+            "day": "2026-01-16",
+            "dispersion_bps": 43.946,
+            "protocol_count": 4
+          },
+          {
+            "day": "2026-01-17",
+            "dispersion_bps": 73.42699999999999,
+            "protocol_count": 4
+          },
+          {
+            "day": "2026-01-18",
+            "dispersion_bps": 52.00899999999999,
+            "protocol_count": 4
+          },
+          {
+            "day": "2026-01-19",
+            "dispersion_bps": 55.42800000000001,
+            "protocol_count": 4
+          },
+          {
+            "day": "2026-01-20",
+            "dispersion_bps": 60.10200000000001,
+            "protocol_count": 4
+          },
+          {
+            "day": "2026-01-21",
+            "dispersion_bps": 58.36900000000001,
+            "protocol_count": 4
+          },
+          {
+            "day": "2026-01-22",
+            "dispersion_bps": 503.25500000000005,
+            "protocol_count": 4
+          },
+          {
+            "day": "2026-01-23",
+            "dispersion_bps": 21.816999999999997,
+            "protocol_count": 4
+          },
+          {
+            "day": "2026-01-24",
+            "dispersion_bps": 27.810000000000002,
+            "protocol_count": 4
+          },
+          {
+            "day": "2026-01-25",
+            "dispersion_bps": 59.301,
+            "protocol_count": 4
+          },
+          {
+            "day": "2026-01-26",
+            "dispersion_bps": 43.647999999999996,
+            "protocol_count": 4
+          },
+          {
+            "day": "2026-01-27",
+            "dispersion_bps": 32.006,
+            "protocol_count": 4
+          },
+          {
+            "day": "2026-01-28",
+            "dispersion_bps": 25.79499999999999,
+            "protocol_count": 4
+          },
+          {
+            "day": "2026-01-29",
+            "dispersion_bps": 27.959,
+            "protocol_count": 4
+          },
+          {
+            "day": "2026-01-30",
+            "dispersion_bps": 18.711999999999996,
+            "protocol_count": 4
+          },
+          {
+            "day": "2026-01-31",
+            "dispersion_bps": 36.96999999999999,
+            "protocol_count": 4
+          },
+          {
+            "day": "2026-02-01",
+            "dispersion_bps": 51.149999999999984,
+            "protocol_count": 4
+          },
+          {
+            "day": "2026-02-02",
+            "dispersion_bps": 10.172000000000004,
+            "protocol_count": 4
+          },
+          {
+            "day": "2026-02-03",
+            "dispersion_bps": 53.66000000000002,
+            "protocol_count": 4
+          },
+          {
+            "day": "2026-02-04",
+            "dispersion_bps": 12.639,
+            "protocol_count": 4
+          },
+          {
+            "day": "2026-02-05",
+            "dispersion_bps": 85.31700000000002,
+            "protocol_count": 4
+          },
+          {
+            "day": "2026-02-06",
+            "dispersion_bps": 257.846,
+            "protocol_count": 4
+          },
+          {
+            "day": "2026-02-07",
+            "dispersion_bps": 136.046,
+            "protocol_count": 4
+          },
+          {
+            "day": "2026-02-08",
+            "dispersion_bps": 37.07100000000001,
+            "protocol_count": 4
+          },
+          {
+            "day": "2026-02-09",
+            "dispersion_bps": 147.013,
+            "protocol_count": 4
+          },
+          {
+            "day": "2026-02-10",
+            "dispersion_bps": 29.622999999999998,
+            "protocol_count": 4
+          },
+          {
+            "day": "2026-02-11",
+            "dispersion_bps": 54.16399999999999,
+            "protocol_count": 4
+          },
+          {
+            "day": "2026-02-12",
+            "dispersion_bps": 25.002000000000013,
+            "protocol_count": 4
+          },
+          {
+            "day": "2026-02-13",
+            "dispersion_bps": 20.81299999999999,
+            "protocol_count": 4
+          },
+          {
+            "day": "2026-02-14",
+            "dispersion_bps": 360.46700000000004,
+            "protocol_count": 4
+          },
+          {
+            "day": "2026-02-15",
+            "dispersion_bps": 177.145,
+            "protocol_count": 4
+          },
+          {
+            "day": "2026-02-16",
+            "dispersion_bps": 98.49,
+            "protocol_count": 4
+          },
+          {
+            "day": "2026-02-17",
+            "dispersion_bps": 42.109000000000016,
+            "protocol_count": 4
+          },
+          {
+            "day": "2026-02-18",
+            "dispersion_bps": 322.27700000000004,
+            "protocol_count": 4
+          },
+          {
+            "day": "2026-02-19",
+            "dispersion_bps": 246.27800000000005,
+            "protocol_count": 4
+          },
+          {
+            "day": "2026-02-20",
+            "dispersion_bps": 34.256,
+            "protocol_count": 4
+          },
+          {
+            "day": "2026-02-21",
+            "dispersion_bps": 26.893999999999973,
+            "protocol_count": 4
+          },
+          {
+            "day": "2026-02-22",
+            "dispersion_bps": 37.029,
+            "protocol_count": 4
+          },
+          {
+            "day": "2026-02-23",
+            "dispersion_bps": 44.14499999999999,
+            "protocol_count": 4
+          },
+          {
+            "day": "2026-02-24",
+            "dispersion_bps": 30.470999999999982,
+            "protocol_count": 4
+          },
+          {
+            "day": "2026-02-25",
+            "dispersion_bps": 45.282000000000025,
+            "protocol_count": 4
+          },
+          {
+            "day": "2026-02-26",
+            "dispersion_bps": 19.215000000000003,
+            "protocol_count": 4
+          },
+          {
+            "day": "2026-02-27",
+            "dispersion_bps": 23.198000000000008,
+            "protocol_count": 4
+          },
+          {
+            "day": "2026-02-28",
+            "dispersion_bps": 32.00100000000001,
+            "protocol_count": 4
+          },
+          {
+            "day": "2026-03-01",
+            "dispersion_bps": 38.46600000000002,
+            "protocol_count": 4
+          },
+          {
+            "day": "2026-03-02",
+            "dispersion_bps": 36.69899999999999,
+            "protocol_count": 4
+          },
+          {
+            "day": "2026-03-03",
+            "dispersion_bps": 47.01500000000001,
+            "protocol_count": 4
+          },
+          {
+            "day": "2026-03-04",
+            "dispersion_bps": 27.30299999999999,
+            "protocol_count": 4
+          },
+          {
+            "day": "2026-03-05",
+            "dispersion_bps": 33.48800000000001,
+            "protocol_count": 4
+          },
+          {
+            "day": "2026-03-06",
+            "dispersion_bps": 24.201000000000008,
+            "protocol_count": 4
+          },
+          {
+            "day": "2026-03-07",
+            "dispersion_bps": 74.74399999999999,
+            "protocol_count": 4
+          },
+          {
+            "day": "2026-03-08",
+            "dispersion_bps": 21.022999999999993,
+            "protocol_count": 4
+          },
+          {
+            "day": "2026-03-09",
+            "dispersion_bps": 13.728999999999992,
+            "protocol_count": 4
+          },
+          {
+            "day": "2026-03-10",
+            "dispersion_bps": 78.59200000000001,
+            "protocol_count": 4
+          },
+          {
+            "day": "2026-03-11",
+            "dispersion_bps": 35.531,
+            "protocol_count": 4
+          },
+          {
+            "day": "2026-03-12",
+            "dispersion_bps": 33.611999999999995,
+            "protocol_count": 4
+          },
+          {
+            "day": "2026-03-13",
+            "dispersion_bps": 55.36700000000001,
+            "protocol_count": 4
+          },
+          {
+            "day": "2026-03-14",
+            "dispersion_bps": 64.48,
+            "protocol_count": 4
+          },
+          {
+            "day": "2026-03-15",
+            "dispersion_bps": 74.79,
+            "protocol_count": 4
+          },
+          {
+            "day": "2026-03-16",
+            "dispersion_bps": 62.11499999999999,
+            "protocol_count": 4
+          },
+          {
+            "day": "2026-03-17",
+            "dispersion_bps": 44.977000000000004,
+            "protocol_count": 4
+          },
+          {
+            "day": "2026-03-18",
+            "dispersion_bps": 42.168000000000006,
+            "protocol_count": 4
+          },
+          {
+            "day": "2026-03-19",
+            "dispersion_bps": 37.422,
+            "protocol_count": 4
+          },
+          {
+            "day": "2026-03-20",
+            "dispersion_bps": 43.884000000000015,
+            "protocol_count": 4
+          },
+          {
+            "day": "2026-03-21",
+            "dispersion_bps": 55.74300000000001,
+            "protocol_count": 4
+          },
+          {
+            "day": "2026-03-22",
+            "dispersion_bps": 68.235,
+            "protocol_count": 4
+          },
+          {
+            "day": "2026-03-23",
+            "dispersion_bps": 68.22300000000001,
+            "protocol_count": 4
+          },
+          {
+            "day": "2026-03-24",
+            "dispersion_bps": 71.882,
+            "protocol_count": 4
+          },
+          {
+            "day": "2026-03-25",
+            "dispersion_bps": 68.038,
+            "protocol_count": 4
+          },
+          {
+            "day": "2026-03-26",
+            "dispersion_bps": 65.167,
+            "protocol_count": 4
+          },
+          {
+            "day": "2026-03-27",
+            "dispersion_bps": 73.089,
+            "protocol_count": 4
+          },
+          {
+            "day": "2026-03-28",
+            "dispersion_bps": 72.495,
+            "protocol_count": 4
+          },
+          {
+            "day": "2026-03-29",
+            "dispersion_bps": 63.13200000000001,
+            "protocol_count": 4
+          },
+          {
+            "day": "2026-03-30",
+            "dispersion_bps": 48.763,
+            "protocol_count": 4
+          },
+          {
+            "day": "2026-03-31",
+            "dispersion_bps": 26.751000000000012,
+            "protocol_count": 4
+          },
+          {
+            "day": "2026-04-01",
+            "dispersion_bps": 47.03199999999998,
+            "protocol_count": 4
+          },
+          {
+            "day": "2026-04-02",
+            "dispersion_bps": 84.63399999999999,
+            "protocol_count": 4
+          },
+          {
+            "day": "2026-04-03",
+            "dispersion_bps": 82.318,
+            "protocol_count": 4
+          },
+          {
+            "day": "2026-04-04",
+            "dispersion_bps": 79.067,
+            "protocol_count": 4
+          },
+          {
+            "day": "2026-04-05",
+            "dispersion_bps": 77.53399999999999,
+            "protocol_count": 4
+          },
+          {
+            "day": "2026-04-06",
+            "dispersion_bps": 83.92099999999998,
+            "protocol_count": 4
+          },
+          {
+            "day": "2026-04-07",
+            "dispersion_bps": 59.98899999999998,
+            "protocol_count": 4
+          },
+          {
+            "day": "2026-04-08",
+            "dispersion_bps": 69.23399999999998,
+            "protocol_count": 4
+          },
+          {
+            "day": "2026-04-09",
+            "dispersion_bps": 64.647,
+            "protocol_count": 4
+          },
+          {
+            "day": "2026-04-10",
+            "dispersion_bps": 58.12599999999999,
+            "protocol_count": 4
+          },
+          {
+            "day": "2026-04-11",
+            "dispersion_bps": 46.05200000000001,
+            "protocol_count": 4
+          },
+          {
+            "day": "2026-04-12",
+            "dispersion_bps": 33.50299999999999,
+            "protocol_count": 4
+          },
+          {
+            "day": "2026-04-13",
+            "dispersion_bps": 57.62999999999998,
+            "protocol_count": 4
+          },
+          {
+            "day": "2026-04-14",
+            "dispersion_bps": 68.47099999999999,
+            "protocol_count": 4
+          },
+          {
+            "day": "2026-04-15",
+            "dispersion_bps": 70.44999999999999,
+            "protocol_count": 4
+          },
+          {
+            "day": "2026-04-16",
+            "dispersion_bps": 31.354000000000013,
+            "protocol_count": 4
+          },
+          {
+            "day": "2026-04-17",
+            "dispersion_bps": 45.958999999999996,
+            "protocol_count": 4
+          },
+          {
+            "day": "2026-04-18",
+            "dispersion_bps": 2748.706,
+            "protocol_count": 4
+          },
+          {
+            "day": "2026-04-19",
+            "dispersion_bps": 6230.642,
+            "protocol_count": 3
+          },
+          {
+            "day": "2026-04-20",
+            "dispersion_bps": 1693.757,
+            "protocol_count": 3
+          },
+          {
+            "day": "2026-04-21",
+            "dispersion_bps": 130.383,
+            "protocol_count": 3
+          },
+          {
+            "day": "2026-04-22",
+            "dispersion_bps": 472.462,
+            "protocol_count": 4
+          },
+          {
+            "day": "2026-04-23",
+            "dispersion_bps": 229.366,
+            "protocol_count": 4
+          },
+          {
+            "day": "2026-04-24",
+            "dispersion_bps": 226.376,
+            "protocol_count": 4
+          },
+          {
+            "day": "2026-04-25",
+            "dispersion_bps": 232.498,
+            "protocol_count": 4
+          },
+          {
+            "day": "2026-04-26",
+            "dispersion_bps": 237.553,
+            "protocol_count": 4
+          },
+          {
+            "day": "2026-04-27",
+            "dispersion_bps": 239.99000000000007,
+            "protocol_count": 4
+          },
+          {
+            "day": "2026-04-28",
+            "dispersion_bps": 221.65300000000002,
+            "protocol_count": 4
+          },
+          {
+            "day": "2026-04-29",
+            "dispersion_bps": 328.054,
+            "protocol_count": 4
+          },
+          {
+            "day": "2026-04-30",
+            "dispersion_bps": 247.77000000000004,
+            "protocol_count": 4
+          },
+          {
+            "day": "2026-05-01",
+            "dispersion_bps": 161.95600000000002,
+            "protocol_count": 4
+          },
+          {
+            "day": "2026-05-02",
+            "dispersion_bps": 334.113,
+            "protocol_count": 4
+          },
+          {
+            "day": "2026-05-03",
+            "dispersion_bps": 168.06499999999997,
+            "protocol_count": 4
+          },
+          {
+            "day": "2026-05-04",
+            "dispersion_bps": 171.17599999999996,
+            "protocol_count": 4
+          },
+          {
+            "day": "2026-05-05",
+            "dispersion_bps": 1515.2279999999998,
+            "protocol_count": 4
+          },
+          {
+            "day": "2026-05-06",
+            "dispersion_bps": 902.6189999999999,
+            "protocol_count": 4
+          },
+          {
+            "day": "2026-05-07",
+            "dispersion_bps": 45.68699999999999,
+            "protocol_count": 4
+          },
+          {
+            "day": "2026-05-08",
+            "dispersion_bps": 23.412999999999997,
+            "protocol_count": 4
+          },
+          {
+            "day": "2026-05-09",
+            "dispersion_bps": 27.943000000000005,
+            "protocol_count": 4
+          },
+          {
+            "day": "2026-05-10",
+            "dispersion_bps": 50.25900000000001,
+            "protocol_count": 4
+          },
+          {
+            "day": "2026-05-11",
+            "dispersion_bps": 56.647000000000006,
+            "protocol_count": 4
+          },
+          {
+            "day": "2026-05-12",
+            "dispersion_bps": 55.91599999999999,
+            "protocol_count": 4
+          },
+          {
+            "day": "2026-05-13",
+            "dispersion_bps": 57.773999999999994,
+            "protocol_count": 4
+          },
+          {
+            "day": "2026-05-14",
+            "dispersion_bps": 74.77699999999999,
+            "protocol_count": 4
+          },
+          {
+            "day": "2026-05-15",
+            "dispersion_bps": 80.444,
+            "protocol_count": 4
+          },
+          {
+            "day": "2026-05-16",
+            "dispersion_bps": 139.801,
+            "protocol_count": 4
+          },
+          {
+            "day": "2026-05-17",
+            "dispersion_bps": 70.24,
+            "protocol_count": 4
+          },
+          {
+            "day": "2026-05-18",
+            "dispersion_bps": 65.08099999999999,
+            "protocol_count": 4
+          },
+          {
+            "day": "2026-05-19",
+            "dispersion_bps": 46.39,
+            "protocol_count": 4
+          },
+          {
+            "day": "2026-05-20",
+            "dispersion_bps": 57.080000000000005,
+            "protocol_count": 4
+          },
+          {
+            "day": "2026-05-21",
+            "dispersion_bps": 41.278999999999996,
+            "protocol_count": 4
+          },
+          {
+            "day": "2026-05-22",
+            "dispersion_bps": 40.605000000000004,
+            "protocol_count": 4
+          },
+          {
+            "day": "2026-05-23",
+            "dispersion_bps": 40.85000000000001,
+            "protocol_count": 4
+          },
+          {
+            "day": "2026-05-24",
+            "dispersion_bps": 55.641000000000005,
+            "protocol_count": 4
+          },
+          {
+            "day": "2026-05-25",
+            "dispersion_bps": 56.554000000000016,
+            "protocol_count": 4
+          },
+          {
+            "day": "2026-05-26",
+            "dispersion_bps": 50.251000000000005,
+            "protocol_count": 4
+          },
+          {
+            "day": "2026-05-27",
+            "dispersion_bps": 58.629,
+            "protocol_count": 4
+          },
+          {
+            "day": "2026-05-28",
+            "dispersion_bps": 61.54000000000002,
+            "protocol_count": 4
+          },
+          {
+            "day": "2026-05-29",
+            "dispersion_bps": 65.58699999999999,
+            "protocol_count": 4
+          },
+          {
+            "day": "2026-05-30",
+            "dispersion_bps": 43.804,
+            "protocol_count": 4
+          },
+          {
+            "day": "2026-05-31",
+            "dispersion_bps": 35.155999999999985,
+            "protocol_count": 4
+          },
+          {
+            "day": "2026-06-01",
+            "dispersion_bps": 41.419000000000004,
+            "protocol_count": 4
+          },
+          {
+            "day": "2026-06-02",
+            "dispersion_bps": 47.253000000000014,
+            "protocol_count": 4
+          },
+          {
+            "day": "2026-06-03",
+            "dispersion_bps": 72.47700000000002,
+            "protocol_count": 4
+          },
+          {
+            "day": "2026-06-04",
+            "dispersion_bps": 56.87,
+            "protocol_count": 4
+          },
+          {
+            "day": "2026-06-05",
+            "dispersion_bps": 63.302000000000014,
+            "protocol_count": 4
+          },
+          {
+            "day": "2026-06-06",
+            "dispersion_bps": 66.07699999999998,
+            "protocol_count": 4
+          },
+          {
+            "day": "2026-06-07",
+            "dispersion_bps": 67.214,
+            "protocol_count": 4
+          },
+          {
+            "day": "2026-06-08",
+            "dispersion_bps": 73.19000000000003,
+            "protocol_count": 4
+          },
+          {
+            "day": "2026-06-09",
+            "dispersion_bps": 28.813999999999986,
+            "protocol_count": 4
+          },
+          {
+            "day": "2026-06-10",
+            "dispersion_bps": 28.63,
+            "protocol_count": 4
+          },
+          {
+            "day": "2026-06-11",
+            "dispersion_bps": 23.638000000000005,
+            "protocol_count": 4
+          },
+          {
+            "day": "2026-06-12",
+            "dispersion_bps": 27.651999999999987,
+            "protocol_count": 4
+          },
+          {
+            "day": "2026-06-13",
+            "dispersion_bps": 18.839000000000006,
+            "protocol_count": 4
+          },
+          {
+            "day": "2026-06-14",
+            "dispersion_bps": 13.139999999999997,
+            "protocol_count": 4
+          },
+          {
+            "day": "2026-06-15",
+            "dispersion_bps": 11.026999999999987,
+            "protocol_count": 4
+          },
+          {
+            "day": "2026-06-16",
+            "dispersion_bps": 9.958999999999985,
+            "protocol_count": 4
+          },
+          {
+            "day": "2026-06-17",
+            "dispersion_bps": 15.907999999999989,
+            "protocol_count": 4
+          },
+          {
+            "day": "2026-06-18",
+            "dispersion_bps": 16.895000000000017,
+            "protocol_count": 4
+          },
+          {
+            "day": "2026-06-19",
+            "dispersion_bps": 24.797999999999988,
+            "protocol_count": 4
+          },
+          {
+            "day": "2026-06-20",
+            "dispersion_bps": 27.533999999999992,
+            "protocol_count": 4
+          },
+          {
+            "day": "2026-06-21",
+            "dispersion_bps": 32.614999999999995,
+            "protocol_count": 4
+          },
+          {
+            "day": "2026-06-22",
+            "dispersion_bps": 29.840999999999983,
+            "protocol_count": 4
+          },
+          {
+            "day": "2026-06-23",
+            "dispersion_bps": 32.07899999999999,
+            "protocol_count": 4
+          },
+          {
+            "day": "2026-06-24",
+            "dispersion_bps": 26.885000000000005,
+            "protocol_count": 4
+          },
+          {
+            "day": "2026-06-25",
+            "dispersion_bps": 20.125000000000014,
+            "protocol_count": 4
+          },
+          {
+            "day": "2026-06-26",
+            "dispersion_bps": 22.015000000000008,
+            "protocol_count": 4
+          },
+          {
+            "day": "2026-06-27",
+            "dispersion_bps": 10.259000000000018,
+            "protocol_count": 4
+          },
+          {
+            "day": "2026-06-28",
+            "dispersion_bps": 21.384000000000004,
+            "protocol_count": 4
+          },
+          {
+            "day": "2026-06-29",
+            "dispersion_bps": 20.07399999999999,
+            "protocol_count": 4
+          },
+          {
+            "day": "2026-06-30",
+            "dispersion_bps": 20.025000000000006,
+            "protocol_count": 4
+          },
+          {
+            "day": "2026-07-01",
+            "dispersion_bps": 25.177000000000007,
+            "protocol_count": 4
+          },
+          {
+            "day": "2026-07-02",
+            "dispersion_bps": 23.57499999999999,
+            "protocol_count": 4
+          },
+          {
+            "day": "2026-07-03",
+            "dispersion_bps": 18.202999999999992,
+            "protocol_count": 4
+          },
+          {
+            "day": "2026-07-04",
+            "dispersion_bps": 19.330000000000002,
+            "protocol_count": 4
+          },
+          {
+            "day": "2026-07-05",
+            "dispersion_bps": 21.487000000000013,
+            "protocol_count": 4
+          },
+          {
+            "day": "2026-07-06",
+            "dispersion_bps": 24.351999999999997,
+            "protocol_count": 4
+          },
+          {
+            "day": "2026-07-07",
+            "dispersion_bps": 52.856000000000016,
+            "protocol_count": 4
+          },
+          {
+            "day": "2026-07-08",
+            "dispersion_bps": 52.64,
+            "protocol_count": 4
+          },
+          {
+            "day": "2026-07-09",
+            "dispersion_bps": 33.49499999999998,
+            "protocol_count": 4
+          },
+          {
+            "day": "2026-07-10",
+            "dispersion_bps": 35.116000000000014,
+            "protocol_count": 4
+          },
+          {
+            "day": "2026-07-11",
+            "dispersion_bps": 36.185,
+            "protocol_count": 4
+          },
+          {
+            "day": "2026-07-12",
+            "dispersion_bps": 52.544999999999995,
+            "protocol_count": 4
+          },
+          {
+            "day": "2026-07-13",
+            "dispersion_bps": 75.14800000000001,
+            "protocol_count": 4
+          },
+          {
+            "day": "2026-07-14",
+            "dispersion_bps": 77.01,
+            "protocol_count": 4
+          },
+          {
+            "day": "2026-07-15",
+            "dispersion_bps": 86.68800000000002,
+            "protocol_count": 4
+          },
+          {
+            "day": "2026-07-16",
+            "dispersion_bps": 52.35299999999998,
+            "protocol_count": 4
+          },
+          {
+            "day": "2026-07-17",
+            "dispersion_bps": 54.29199999999999,
+            "protocol_count": 4
+          },
+          {
+            "day": "2026-07-18",
+            "dispersion_bps": 54.664999999999985,
+            "protocol_count": 4
+          },
+          {
+            "day": "2026-07-19",
+            "dispersion_bps": 55.523999999999994,
+            "protocol_count": 4
+          },
+          {
+            "day": "2026-07-20",
+            "dispersion_bps": 79.123,
+            "protocol_count": 4
+          },
+          {
+            "day": "2026-07-21",
+            "dispersion_bps": 87.49699999999999,
+            "protocol_count": 4
+          },
+          {
+            "day": "2026-07-22",
+            "dispersion_bps": 169,
+            "protocol_count": 5
+          },
+          {
+            "day": "2026-07-23",
+            "dispersion_bps": 167.807,
+            "protocol_count": 5
+          },
+          {
+            "day": "2026-07-24",
+            "dispersion_bps": 167,
+            "protocol_count": 5
+          },
+          {
+            "day": "2026-07-25",
+            "dispersion_bps": 167,
+            "protocol_count": 5
+          },
+          {
+            "day": "2026-07-26",
+            "dispersion_bps": 168,
+            "protocol_count": 5
+          },
+          {
+            "day": "2026-07-27",
+            "dispersion_bps": 182.81300000000002,
+            "protocol_count": 5
+          },
+          {
+            "day": "2026-07-28",
+            "dispersion_bps": 170.856,
+            "protocol_count": 5
+          },
+          {
+            "day": "2026-07-29",
+            "dispersion_bps": 176.017,
+            "protocol_count": 5
+          },
+          {
+            "day": "2026-07-30",
+            "dispersion_bps": 174.42,
+            "protocol_count": 5
+          },
+          {
+            "day": "2026-07-31",
+            "dispersion_bps": 170.607,
+            "protocol_count": 5
+          }
+        ],
+        "observed_days": 364,
+        "avg_dispersion_bps": 123.0441401098901,
+        "median_dispersion_bps": 58.51499999999999,
+        "min_dispersion_bps": 9.958999999999985,
+        "max_dispersion_bps": 6230.642
+      },
+      "ratio_july31_vs_12mo_avg": 1.3865511990057533
+    }
+  ]
+}

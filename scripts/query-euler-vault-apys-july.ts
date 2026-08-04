@@ -253,9 +253,9 @@ async function buildTrajectory(input: {
   const min = apys.length > 0 ? Math.min(...apys) : null
   const max = apys.length > 0 ? Math.max(...apys) : null
 
-  const may1 = probes.find((p) => p.date_label === "may1")?.apy_base_pct ?? null
-  const june30 = probes.find((p) => p.date_label === "june30")?.apy_base_pct ?? null
-  const delta = may1 != null && june30 != null ? june30 - may1 : null
+  const jul1 = probes.find((p) => p.date_label === "jul1")?.apy_base_pct ?? null
+  const jul31 = probes.find((p) => p.date_label === "jul31")?.apy_base_pct ?? null
+  const delta = jul1 != null && jul31 != null ? jul31 - jul1 : null
 
   const traj: ApyTrajectory = {
     ...base,
@@ -350,14 +350,14 @@ async function main(): Promise<void> {
   // ─── Console summary ──────────────────────────────────────────────
   console.log("── Outflow vaults · apyBase trajectory (July 2026) ─────────")
   for (const t of outflowTrajectories) {
-    const may1 = t.probes.find((p) => p.date_label === "may1")?.apy_base_pct ?? null
-    const may15 = t.probes.find((p) => p.date_label === "may15")?.apy_base_pct ?? null
-    const june30 = t.probes.find((p) => p.date_label === "june30")?.apy_base_pct ?? null
+    const jul1 = t.probes.find((p) => p.date_label === "jul1")?.apy_base_pct ?? null
+    const jul15 = t.probes.find((p) => p.date_label === "jul15")?.apy_base_pct ?? null
+    const jul31 = t.probes.find((p) => p.date_label === "jul31")?.apy_base_pct ?? null
     console.log(
       `  ${t.display_name.padEnd(28)}  ` +
-        `May 1: ${fmtPct(may1).padStart(6)}  ` +
-        `Mid: ${fmtPct(may15).padStart(6)}  ` +
-        `May 31: ${fmtPct(june30).padStart(6)}  ` +
+        `Jul 1: ${fmtPct(jul1).padStart(6)}  ` +
+        `Mid: ${fmtPct(jul15).padStart(6)}  ` +
+        `Jul 31: ${fmtPct(jul31).padStart(6)}  ` +
         `Δ ${fmtPp(t.may_delta_pp).padStart(8)}  ` +
         `[${t.hypothesis}]`,
     )
@@ -370,12 +370,12 @@ async function main(): Promise<void> {
   console.log("")
   console.log("── Inflow vaults · apyBase trajectory (for contrast) ─────")
   for (const t of inflowTrajectories) {
-    const may1 = t.probes.find((p) => p.date_label === "may1")?.apy_base_pct ?? null
-    const june30 = t.probes.find((p) => p.date_label === "june30")?.apy_base_pct ?? null
+    const jul1 = t.probes.find((p) => p.date_label === "jul1")?.apy_base_pct ?? null
+    const jul31 = t.probes.find((p) => p.date_label === "jul31")?.apy_base_pct ?? null
     console.log(
       `  ${t.display_name.padEnd(28)}  ` +
-        `May 1: ${fmtPct(may1).padStart(6)}  ` +
-        `May 31: ${fmtPct(june30).padStart(6)}  ` +
+        `Jul 1: ${fmtPct(jul1).padStart(6)}  ` +
+        `Jul 31: ${fmtPct(jul31).padStart(6)}  ` +
         `Δ ${fmtPp(t.may_delta_pp).padStart(8)}  ` +
         `[${t.hypothesis}]`,
     )

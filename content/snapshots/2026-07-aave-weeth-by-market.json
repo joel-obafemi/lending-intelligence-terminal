@@ -1,0 +1,76 @@
+{
+  "schema_version": 1,
+  "generated_at": "2026-08-04T05:26:24.853Z",
+  "issue": "002 §06.1 (Aave V3 WEETH by market)",
+  "targets": {
+    "june30_utc": "2026-06-30T23:59:00Z",
+    "july31_utc": "2026-07-31T23:59:00Z",
+    "datapoint_tolerance_hours": 48
+  },
+  "source": {
+    "method": "DefiLlama Yields /pools to enumerate Aave V3 Ethereum markets by poolMeta; /chart/<poolId> for per-pool TVL history.",
+    "market_split": "poolMeta=null → Core, 'Prime Instance' → Prime, 'Aave Horizon Market' → Horizon. 'Umbrella' / 'Legacy' poolMetas are not lending markets and excluded.",
+    "caveat": "DefiLlama tvlUsd per pool = available liquidity (supplied − borrowed). For aTokens with full utilization this can underread the supplied-stake figure, but for WEETH on Core the utilization is dominated by collateral-only deposits so tvlUsd ≈ supplied in practice."
+  },
+  "per_market": [
+    {
+      "market_id": "core",
+      "display_name": "Aave V3 Core (Ethereum)",
+      "pool_meta_match": null,
+      "status": "ok",
+      "pool_id": "db678df9-3281-4bc2-a8bb-01160ffd6d48",
+      "june30": {
+        "timestamp_iso": "2026-06-30T23:01:56.000Z",
+        "tvl_usd": 1673986289,
+        "delta_from_target_sec": -3424
+      },
+      "july31": {
+        "timestamp_iso": "2026-07-31T23:01:06.000Z",
+        "tvl_usd": 2283542295,
+        "delta_from_target_sec": -3474
+      },
+      "change_usd": 609556006,
+      "change_pct": 36.41344077938263,
+      "current_tvl_usd": 2238180643,
+      "notes": null
+    },
+    {
+      "market_id": "prime",
+      "display_name": "Aave V3 Prime (Ethereum)",
+      "pool_meta_match": "Prime Instance",
+      "status": "not_listed",
+      "pool_id": null,
+      "june30": null,
+      "july31": null,
+      "change_usd": null,
+      "change_pct": null,
+      "current_tvl_usd": null,
+      "notes": "WEETH is not listed in this market. DefiLlama Yields returns zero pools matching project=aave-v3, chain=Ethereum, symbol=WEETH, poolMeta=\"Prime Instance\"."
+    },
+    {
+      "market_id": "horizon",
+      "display_name": "Aave V3 Horizon (Ethereum)",
+      "pool_meta_match": "Aave Horizon Market",
+      "status": "not_listed",
+      "pool_id": null,
+      "june30": null,
+      "july31": null,
+      "change_usd": null,
+      "change_pct": null,
+      "current_tvl_usd": null,
+      "notes": "WEETH is not listed in this market. DefiLlama Yields returns zero pools matching project=aave-v3, chain=Ethereum, symbol=WEETH, poolMeta=\"Aave Horizon Market\"."
+    }
+  ],
+  "totals": {
+    "june30_tvl_usd": 1673986289,
+    "july31_tvl_usd": 2283542295,
+    "change_usd": 609556006,
+    "change_pct": 36.41344077938263
+  },
+  "concentration_finding": {
+    "dominant_market_id": "core",
+    "dominant_market_share_june30_pct": 100,
+    "dominant_market_share_july31_pct": 100,
+    "finding": "At both endpoints, ≥95% of Aave V3 Ethereum WEETH supply sits in the Aave V3 Core (Ethereum) market. The May 31 → June 30 change is effectively a single-market story."
+  }
+}

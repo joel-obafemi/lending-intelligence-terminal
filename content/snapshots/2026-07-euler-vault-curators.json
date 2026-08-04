@@ -1,0 +1,146 @@
+{
+  "schema_version": 1,
+  "generated_at": "2026-08-04T05:35:30.696Z",
+  "issue": "002 §06.6 (curator-concentration analysis)",
+  "source": {
+    "input": "content/snapshots/2026-07-euler-vault-flows.json",
+    "subgraph": "https://api.goldsky.com/api/public/project_cm4iagnemt1wp01xn4gh1agft/subgraphs/euler-v2-mainnet/latest/gn",
+    "method": "Goldsky public Euler V2 mainnet subgraph → eulerVaults → governonAdmin; ENS reverse-resolved via mainnet RPC.",
+    "caveat": "governonAdmin is the vault's GOVERNOR multisig, NOT the depositor. A shared governor across two outflowing vaults means one operator controls those vaults' risk parameters — strong signal that the outflows are correlated, but not proof a single LP withdrew."
+  },
+  "outflow_vault_curators": [
+    {
+      "display_name": "EVK Vault eUSD0-4",
+      "underlying_symbol": "USD0",
+      "expected_symbol": "eUSD0-4",
+      "category": "outflow",
+      "vault_address": null,
+      "vault_name": null,
+      "governor_admin": null,
+      "is_finalized": false,
+      "governor_ens": null,
+      "curator_hint": null,
+      "match_status": "subgraph_unreachable"
+    },
+    {
+      "display_name": "EVK Vault eUSDC-80",
+      "underlying_symbol": "USDC",
+      "expected_symbol": "eUSDC-80",
+      "category": "outflow",
+      "vault_address": null,
+      "vault_name": null,
+      "governor_admin": null,
+      "is_finalized": false,
+      "governor_ens": null,
+      "curator_hint": null,
+      "match_status": "subgraph_unreachable"
+    },
+    {
+      "display_name": "EVK Vault ePYUSD-8",
+      "underlying_symbol": "PYUSD",
+      "expected_symbol": "ePYUSD-8",
+      "category": "outflow",
+      "vault_address": null,
+      "vault_name": null,
+      "governor_admin": null,
+      "is_finalized": false,
+      "governor_ens": null,
+      "curator_hint": null,
+      "match_status": "subgraph_unreachable"
+    },
+    {
+      "display_name": "EVK Vault ePYUSD-6",
+      "underlying_symbol": "PYUSD",
+      "expected_symbol": "ePYUSD-6",
+      "category": "outflow",
+      "vault_address": null,
+      "vault_name": null,
+      "governor_admin": null,
+      "is_finalized": false,
+      "governor_ens": null,
+      "curator_hint": null,
+      "match_status": "subgraph_unreachable"
+    },
+    {
+      "display_name": "EVK Vault eRLUSD-7",
+      "underlying_symbol": "RLUSD",
+      "expected_symbol": "eRLUSD-7",
+      "category": "outflow",
+      "vault_address": null,
+      "vault_name": null,
+      "governor_admin": null,
+      "is_finalized": false,
+      "governor_ens": null,
+      "curator_hint": null,
+      "match_status": "subgraph_unreachable"
+    }
+  ],
+  "inflow_vault_curators": [
+    {
+      "display_name": "EVK Vault eWETH-2",
+      "underlying_symbol": "WETH",
+      "expected_symbol": "eWETH-2",
+      "category": "inflow",
+      "vault_address": null,
+      "vault_name": null,
+      "governor_admin": null,
+      "is_finalized": false,
+      "governor_ens": null,
+      "curator_hint": null,
+      "match_status": "subgraph_unreachable"
+    },
+    {
+      "display_name": "EVK Vault eUSDC-22",
+      "underlying_symbol": "USDC",
+      "expected_symbol": "eUSDC-22",
+      "category": "inflow",
+      "vault_address": null,
+      "vault_name": null,
+      "governor_admin": null,
+      "is_finalized": false,
+      "governor_ens": null,
+      "curator_hint": null,
+      "match_status": "subgraph_unreachable"
+    },
+    {
+      "display_name": "EVK Vault etETH-3",
+      "underlying_symbol": "TETH",
+      "expected_symbol": "etETH-3",
+      "category": "inflow",
+      "vault_address": null,
+      "vault_name": null,
+      "governor_admin": null,
+      "is_finalized": false,
+      "governor_ens": null,
+      "curator_hint": null,
+      "match_status": "subgraph_unreachable"
+    },
+    {
+      "display_name": "EVK Vault eAUSD-7",
+      "underlying_symbol": "AUSD",
+      "expected_symbol": "eAUSD-7",
+      "category": "inflow",
+      "vault_address": null,
+      "vault_name": null,
+      "governor_admin": null,
+      "is_finalized": false,
+      "governor_ens": null,
+      "curator_hint": null,
+      "match_status": "subgraph_unreachable"
+    },
+    {
+      "display_name": "EVK Vault eUSDC-130",
+      "underlying_symbol": "USDC",
+      "expected_symbol": "eUSDC-130",
+      "category": "inflow",
+      "vault_address": null,
+      "vault_name": null,
+      "governor_admin": null,
+      "is_finalized": false,
+      "governor_ens": null,
+      "curator_hint": null,
+      "match_status": "subgraph_unreachable"
+    }
+  ],
+  "governor_concentrations": []
+}

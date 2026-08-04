@@ -1,0 +1,357 @@
+{
+  "schema_version": 2,
+  "as_of_utc": "2026-08-04T05:29:42.487Z",
+  "as_of_date": "2026-08-04",
+  "source": {
+    "method": "blue-api.morpho.org GraphQL — V1 (vaults) + V2 (vaultV2s) combined",
+    "endpoint": "https://blue-api.morpho.org/graphql",
+    "query_v1": "vaults(first: 50, where: {chainId_in: [1]}, orderBy: TotalAssetsUsd, orderDirection: Desc)",
+    "query_v2": "vaultV2s(first: 50, where: {chainId_in: [1]})",
+    "grouping": "V1: state.curators[0].name; V2: curators.items[0].name (case-sensitive); null/empty → 'Uncurated'",
+    "hhi_definition": "Σ (share_pct² across curators excluding Uncurated). Range 0 (perfect competition) → 10000 (monopoly).",
+    "comparability_note": "Values are NOT directly comparable to Issue 002's V1-only readings (May 31 dashboard HHI 3,103, pre-fix June 30 HHI 4,558). Treat pre-fix series as a separate metric family."
+  },
+  "scope": "Top 50 Ethereum vaults per Morpho version (V1 + V2 = up to 100 vaults)",
+  "version_split": {
+    "v1_vault_count": 50,
+    "v1_tvl_usd": 698303880.1879432,
+    "v2_vault_count": 50,
+    "v2_tvl_usd": 1774369784.0020497,
+    "combined_tvl_usd": 2472673664.189993
+  },
+  "chain_id": 1,
+  "summary": {
+    "hhi": 2337.24,
+    "top_3_share_pct": 77.89,
+    "curator_count": 19,
+    "total_curated_tvl_usd": 2208157448.205446
+  },
+  "top_curators": [
+    {
+      "name": "Sentora",
+      "share_pct": 33.56,
+      "tvl_usd": 741076062.9737613,
+      "v1_tvl_usd": 0,
+      "v2_tvl_usd": 741076062.9737613,
+      "vault_count": 3,
+      "v1_vault_count": 0,
+      "v2_vault_count": 3
+    },
+    {
+      "name": "Steakhouse Financial",
+      "share_pct": 31.31,
+      "tvl_usd": 691355055.7122486,
+      "v1_tvl_usd": 265774548.38163802,
+      "v2_tvl_usd": 425580507.3306105,
+      "vault_count": 18,
+      "v1_vault_count": 9,
+      "v2_vault_count": 9
+    },
+    {
+      "name": "Gauntlet",
+      "share_pct": 13.02,
+      "tvl_usd": 287429871.1198831,
+      "v1_tvl_usd": 168992261.94684875,
+      "v2_tvl_usd": 118437609.17303438,
+      "vault_count": 22,
+      "v1_vault_count": 18,
+      "v2_vault_count": 4
+    },
+    {
+      "name": "Sky Money",
+      "share_pct": 5.46,
+      "tvl_usd": 120553598.50854255,
+      "v1_tvl_usd": 0,
+      "v2_tvl_usd": 120553598.50854255,
+      "vault_count": 3,
+      "v1_vault_count": 0,
+      "v2_vault_count": 3
+    },
+    {
+      "name": "Galaxy Curation",
+      "share_pct": 3.6,
+      "tvl_usd": 79412861.32275857,
+      "v1_tvl_usd": 0,
+      "v2_tvl_usd": 79412861.32275857,
+      "vault_count": 4,
+      "v1_vault_count": 0,
+      "v2_vault_count": 4
+    },
+    {
+      "name": "Armitage by Wintermute",
+      "share_pct": 2.59,
+      "tvl_usd": 57092745.03980969,
+      "v1_tvl_usd": 0,
+      "v2_tvl_usd": 57092745.03980969,
+      "vault_count": 2,
+      "v1_vault_count": 0,
+      "v2_vault_count": 2
+    },
+    {
+      "name": "RockawayX",
+      "share_pct": 1.77,
+      "tvl_usd": 39067075.09946421,
+      "v1_tvl_usd": 0,
+      "v2_tvl_usd": 39067075.09946421,
+      "vault_count": 3,
+      "v1_vault_count": 0,
+      "v2_vault_count": 3
+    },
+    {
+      "name": "Clearstar",
+      "share_pct": 1.56,
+      "tvl_usd": 34359534.33604377,
+      "v1_tvl_usd": 4721688.114374444,
+      "v2_tvl_usd": 29637846.221669327,
+      "vault_count": 4,
+      "v1_vault_count": 2,
+      "v2_vault_count": 2
+    },
+    {
+      "name": "KPK",
+      "share_pct": 1.19,
+      "tvl_usd": 26363220.01201641,
+      "v1_tvl_usd": 0,
+      "v2_tvl_usd": 26363220.01201641,
+      "vault_count": 2,
+      "v1_vault_count": 0,
+      "v2_vault_count": 2
+    },
+    {
+      "name": "Waterline",
+      "share_pct": 1.17,
+      "tvl_usd": 25842924.33155509,
+      "v1_tvl_usd": 1204211.7836927818,
+      "v2_tvl_usd": 24638712.54786231,
+      "vault_count": 3,
+      "v1_vault_count": 1,
+      "v2_vault_count": 2
+    }
+  ],
+  "all_curators": [
+    {
+      "name": "Sentora",
+      "share_pct": 33.56,
+      "tvl_usd": 741076062.9737613,
+      "v1_tvl_usd": 0,
+      "v2_tvl_usd": 741076062.9737613,
+      "vault_count": 3,
+      "v1_vault_count": 0,
+      "v2_vault_count": 3,
+      "is_uncurated": false
+    },
+    {
+      "name": "Steakhouse Financial",
+      "share_pct": 31.31,
+      "tvl_usd": 691355055.7122486,
+      "v1_tvl_usd": 265774548.38163802,
+      "v2_tvl_usd": 425580507.3306105,
+      "vault_count": 18,
+      "v1_vault_count": 9,
+      "v2_vault_count": 9,
+      "is_uncurated": false
+    },
+    {
+      "name": "Gauntlet",
+      "share_pct": 13.02,
+      "tvl_usd": 287429871.1198831,
+      "v1_tvl_usd": 168992261.94684875,
+      "v2_tvl_usd": 118437609.17303438,
+      "vault_count": 22,
+      "v1_vault_count": 18,
+      "v2_vault_count": 4,
+      "is_uncurated": false
+    },
+    {
+      "name": "Uncurated",
+      "share_pct": null,
+      "tvl_usd": 264516215.98454776,
+      "v1_tvl_usd": 205162106.4633348,
+      "v2_tvl_usd": 59354109.52121295,
+      "vault_count": 19,
+      "v1_vault_count": 12,
+      "v2_vault_count": 7,
+      "is_uncurated": true
+    },
+    {
+      "name": "Sky Money",
+      "share_pct": 5.46,
+      "tvl_usd": 120553598.50854255,
+      "v1_tvl_usd": 0,
+      "v2_tvl_usd": 120553598.50854255,
+      "vault_count": 3,
+      "v1_vault_count": 0,
+      "v2_vault_count": 3,
+      "is_uncurated": false
+    },
+    {
+      "name": "Galaxy Curation",
+      "share_pct": 3.6,
+      "tvl_usd": 79412861.32275857,
+      "v1_tvl_usd": 0,
+      "v2_tvl_usd": 79412861.32275857,
+      "vault_count": 4,
+      "v1_vault_count": 0,
+      "v2_vault_count": 4,
+      "is_uncurated": false
+    },
+    {
+      "name": "Armitage by Wintermute",
+      "share_pct": 2.59,
+      "tvl_usd": 57092745.03980969,
+      "v1_tvl_usd": 0,
+      "v2_tvl_usd": 57092745.03980969,
+      "vault_count": 2,
+      "v1_vault_count": 0,
+      "v2_vault_count": 2,
+      "is_uncurated": false
+    },
+    {
+      "name": "RockawayX",
+      "share_pct": 1.77,
+      "tvl_usd": 39067075.09946421,
+      "v1_tvl_usd": 0,
+      "v2_tvl_usd": 39067075.09946421,
+      "vault_count": 3,
+      "v1_vault_count": 0,
+      "v2_vault_count": 3,
+      "is_uncurated": false
+    },
+    {
+      "name": "Clearstar",
+      "share_pct": 1.56,
+      "tvl_usd": 34359534.33604377,
+      "v1_tvl_usd": 4721688.114374444,
+      "v2_tvl_usd": 29637846.221669327,
+      "vault_count": 4,
+      "v1_vault_count": 2,
+      "v2_vault_count": 2,
+      "is_uncurated": false
+    },
+    {
+      "name": "KPK",
+      "share_pct": 1.19,
+      "tvl_usd": 26363220.01201641,
+      "v1_tvl_usd": 0,
+      "v2_tvl_usd": 26363220.01201641,
+      "vault_count": 2,
+      "v1_vault_count": 0,
+      "v2_vault_count": 2,
+      "is_uncurated": false
+    },
+    {
+      "name": "Waterline",
+      "share_pct": 1.17,
+      "tvl_usd": 25842924.33155509,
+      "v1_tvl_usd": 1204211.7836927818,
+      "v2_tvl_usd": 24638712.54786231,
+      "vault_count": 3,
+      "v1_vault_count": 1,
+      "v2_vault_count": 2,
+      "is_uncurated": false
+    },
+    {
+      "name": "Hakutora",
+      "share_pct": 1.08,
+      "tvl_usd": 23806588.33740133,
+      "v1_tvl_usd": 23806588.33740133,
+      "v2_tvl_usd": 0,
+      "vault_count": 2,
+      "v1_vault_count": 2,
+      "v2_vault_count": 0,
+      "is_uncurated": false
+    },
+    {
+      "name": "Yearn",
+      "share_pct": 0.83,
+      "tvl_usd": 18220624.76241105,
+      "v1_tvl_usd": 18220624.76241105,
+      "v2_tvl_usd": 0,
+      "vault_count": 2,
+      "v1_vault_count": 2,
+      "v2_vault_count": 0,
+      "is_uncurated": false
+    },
+    {
+      "name": "Hyperithm",
+      "share_pct": 0.78,
+      "tvl_usd": 17267269.966827713,
+      "v1_tvl_usd": 2201080.185349134,
+      "v2_tvl_usd": 15066189.781478582,
+      "vault_count": 4,
+      "v1_vault_count": 1,
+      "v2_vault_count": 3,
+      "is_uncurated": false
+    },
+    {
+      "name": "Api3",
+      "share_pct": 0.76,
+      "tvl_usd": 16869610.83224409,
+      "v1_tvl_usd": 0,
+      "v2_tvl_usd": 16869610.83224409,
+      "vault_count": 2,
+      "v1_vault_count": 0,
+      "v2_vault_count": 2,
+      "is_uncurated": false
+    },
+    {
+      "name": "Keyrock",
+      "share_pct": 0.36,
+      "tvl_usd": 7907420.914721057,
+      "v1_tvl_usd": 0,
+      "v2_tvl_usd": 7907420.914721057,
+      "vault_count": 1,
+      "v1_vault_count": 0,
+      "v2_vault_count": 1,
+      "is_uncurated": false
+    },
+    {
+      "name": "Flowdesk",
+      "share_pct": 0.35,
+      "tvl_usd": 7718497.791702945,
+      "v1_tvl_usd": 0,
+      "v2_tvl_usd": 7718497.791702945,
+      "vault_count": 1,
+      "v1_vault_count": 0,
+      "v2_vault_count": 1,
+      "is_uncurated": false
+    },
+    {
+      "name": "MEV Capital",
+      "share_pct": 0.32,
+      "tvl_usd": 7032431.251892152,
+      "v1_tvl_usd": 7032431.251892152,
+      "v2_tvl_usd": 0,
+      "vault_count": 2,
+      "v1_vault_count": 2,
+      "v2_vault_count": 0,
+      "is_uncurated": false
+    },
+    {
+      "name": "AlphaPing",
+      "share_pct": 0.17,
+      "tvl_usd": 3779987.3527747137,
+      "v1_tvl_usd": 1188338.9610005212,
+      "v2_tvl_usd": 2591648.3917741925,
+      "vault_count": 2,
+      "v1_vault_count": 1,
+      "v2_vault_count": 1,
+      "is_uncurated": false
+    },
+    {
+      "name": "Presto",
+      "share_pct": 0.14,
+      "tvl_usd": 3002068.5393867865,
+      "v1_tvl_usd": 0,
+      "v2_tvl_usd": 3002068.5393867865,
+      "vault_count": 1,
+      "v1_vault_count": 0,
+      "v2_vault_count": 1,
+      "is_uncurated": false
+    }
+  ],
+  "notes": [
+    "Uncurated TVL (excluded from HHI): $264.52M.",
+    "share_pct is share of CURATED TVL only. To convert to share of TOTAL TVL (curated + uncurated), multiply by curated_tvl_usd / (curated_tvl_usd + uncurated_tvl_usd)."
+  ]
+}

@@ -1,0 +1,95 @@
+{
+  "source": {
+    "script": "scripts/query-lrt-spot-prices.ts",
+    "generated_at_utc": "2026-08-04T05:30:58Z",
+    "primary_endpoint": "DefiLlama /coins/prices/historical/{ts}/ethereum:<address>",
+    "fallback_endpoint": "CoinGecko /coins/{id}/history?date=DD-MM-YYYY",
+    "notes": "DefiLlama prices may be aged by a few minutes from the requested timestamp (the raw_age_sec field surfaces the gap). CoinGecko's historical endpoint is UTC-day-anchored so its returned price is the day's open or close depending on token coverage."
+  },
+  "timestamps": {
+    "june_30_utc": "2026-06-30T23:59:00Z",
+    "june_30_unix": 1782863940,
+    "july_31_utc": "2026-07-31T23:59:00Z",
+    "july_31_unix": 1785542340
+  },
+  "per_asset": [
+    {
+      "symbol": "WEETH",
+      "display_name": "weETH (ether.fi)",
+      "category": "lrt",
+      "address": "0xcd5fe23c85820f7b72d0926fc9b05b43e359b7ee",
+      "coingecko_id": "wrapped-eeth",
+      "june_30_price_usd": 1722.869766799139,
+      "june_30_source": "defillama",
+      "june_30_raw_age_sec": 7,
+      "july_31_price_usd": 2049.2176922612884,
+      "july_31_source": "defillama",
+      "july_31_raw_age_sec": 356,
+      "per_unit_change_pct": 18.94211226821051
+    },
+    {
+      "symbol": "RSETH",
+      "display_name": "rsETH (Kelp)",
+      "category": "lrt",
+      "address": "0xa1290d69c65a6fe4df752f95823fae25cb99e5a7",
+      "coingecko_id": "kelp-dao-restaked-eth",
+      "june_30_price_usd": 1682.4331927827243,
+      "june_30_source": "defillama",
+      "june_30_raw_age_sec": 7,
+      "july_31_price_usd": 1998.9060527278855,
+      "july_31_source": "defillama",
+      "july_31_raw_age_sec": 355,
+      "per_unit_change_pct": 18.810426547857087
+    },
+    {
+      "symbol": "EZETH",
+      "display_name": "ezETH (Renzo)",
+      "category": "lrt",
+      "address": "0xbf5495efe5db9ce00f80364c8b423567e58d2110",
+      "coingecko_id": "renzo-restaked-eth",
+      "june_30_price_usd": 1691.245245905252,
+      "june_30_source": "defillama",
+      "june_30_raw_age_sec": 7,
+      "july_31_price_usd": 2010.4666523469473,
+      "july_31_source": "defillama",
+      "july_31_raw_age_sec": 355,
+      "per_unit_change_pct": 18.874932965196873
+    },
+    {
+      "symbol": "OSETH",
+      "display_name": "osETH (StakeWise)",
+      "category": "lrt",
+      "address": "0xf1c9acdc66974dfb6decb12aa385b9cd01190e38",
+      "coingecko_id": "stakewise-v3-oseth",
+      "june_30_price_usd": 1674.1810453052403,
+      "june_30_source": "defillama",
+      "june_30_raw_age_sec": 7,
+      "july_31_price_usd": 1984.9444111220812,
+      "july_31_source": "defillama",
+      "july_31_raw_age_sec": 356,
+      "per_unit_change_pct": 18.562112304896022
+    },
+    {
+      "symbol": "ETH",
+      "display_name": "ETH",
+      "category": "reference",
+      "address": "0x0000000000000000000000000000000000000000",
+      "coingecko_id": "ethereum",
+      "june_30_price_usd": 1569.5666497853338,
+      "june_30_source": "defillama",
+      "june_30_raw_age_sec": -1,
+      "july_31_price_usd": 1860.3130124484903,
+      "july_31_source": "defillama",
+      "july_31_raw_age_sec": -2,
+      "per_unit_change_pct": 18.523989580367378
+    }
+  ],
+  "section_05_reconciliation": {
+    "weeth_june_30_supply_usd_used": 0,
+    "weeth_per_unit_change_pct": 18.94211226821051,
+    "weeth_implied_price_effect_usd": null,
+    "documented_lrt_price_decline_usd_total": -443000000,
+    "documented_lrt_price_decline_usd_weeth_share_approx": -336000000,
+    "reconciliation_note": "The implied price-effect figure is point-in-time (May 31 supply × per-unit move). The §05 documented number is the time-averaged effect across June. The two will not match exactly but should land within roughly $50M for the narrative to hold."
+  }
+}

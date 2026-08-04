@@ -1,0 +1,219 @@
+{
+  "generated_at_utc": "2026-08-04T05:21:59Z",
+  "window": {
+    "start_utc": "2026-07-01T00:00:00Z",
+    "end_utc": "2026-07-31T23:59:00Z"
+  },
+  "daily": [
+    {
+      "day_utc": "2026-07-01",
+      "events": 53,
+      "collateral_seized_usd": 840610.0712219584,
+      "debt_repaid_usd": 868090.9897602069,
+      "gross_profit_usd": -27480.918538248723
+    },
+    {
+      "day_utc": "2026-07-02",
+      "events": 13,
+      "collateral_seized_usd": 2784865.228572431,
+      "debt_repaid_usd": 2772587.5430491455,
+      "gross_profit_usd": 12277.685523285738
+    },
+    {
+      "day_utc": "2026-07-03",
+      "events": 2,
+      "collateral_seized_usd": 94015.90137573723,
+      "debt_repaid_usd": 138218.59761678186,
+      "gross_profit_usd": -44202.69624104463
+    },
+    {
+      "day_utc": "2026-07-04",
+      "events": 11,
+      "collateral_seized_usd": 49705.58615580736,
+      "debt_repaid_usd": 76591.41779141343,
+      "gross_profit_usd": -26885.831635606075
+    },
+    {
+      "day_utc": "2026-07-05",
+      "events": 1,
+      "collateral_seized_usd": 1810.1625977458896,
+      "debt_repaid_usd": 1772.0859530158577,
+      "gross_profit_usd": 38.07664473003183
+    },
+    {
+      "day_utc": "2026-07-06",
+      "events": 4,
+      "collateral_seized_usd": 5848.533967954753,
+      "debt_repaid_usd": 5632.435160876906,
+      "gross_profit_usd": 216.0988070778472
+    },
+    {
+      "day_utc": "2026-07-07",
+      "events": 9,
+      "collateral_seized_usd": 23939.908057236098,
+      "debt_repaid_usd": 22939.497191128892,
+      "gross_profit_usd": 1000.410866107208
+    },
+    {
+      "day_utc": "2026-07-08",
+      "events": 40,
+      "collateral_seized_usd": 13885.481849696504,
+      "debt_repaid_usd": 13305.169861711025,
+      "gross_profit_usd": 580.3119879854808
+    },
+    {
+      "day_utc": "2026-07-09",
+      "events": 25,
+      "collateral_seized_usd": 7127.657775011599,
+      "debt_repaid_usd": 6035.781955193955,
+      "gross_profit_usd": 1091.8758198176438
+    },
+    {
+      "day_utc": "2026-07-10",
+      "events": 6,
+      "collateral_seized_usd": 56274.12343914562,
+      "debt_repaid_usd": 53911.14858926612,
+      "gross_profit_usd": 2362.974849879498
+    },
+    {
+      "day_utc": "2026-07-11",
+      "events": 4,
+      "collateral_seized_usd": 55402.95916465248,
+      "debt_repaid_usd": 53062.58580559862,
+      "gross_profit_usd": 2340.3733590538595
+    },
+    {
+      "day_utc": "2026-07-12",
+      "events": 11,
+      "collateral_seized_usd": 38168.19827642911,
+      "debt_repaid_usd": 36567.70191847723,
+      "gross_profit_usd": 1600.4963579518735
+    },
+    {
+      "day_utc": "2026-07-13",
+      "events": 11,
+      "collateral_seized_usd": 1285.6504949965356,
+      "debt_repaid_usd": 1441.2083326224554,
+      "gross_profit_usd": -155.55783762591963
+    },
+    {
+      "day_utc": "2026-07-14",
+      "events": 18,
+      "collateral_seized_usd": 51526.97879829553,
+      "debt_repaid_usd": 49961.51756635583,
+      "gross_profit_usd": 1565.4612319397065
+    },
+    {
+      "day_utc": "2026-07-15",
+      "events": 39,
+      "collateral_seized_usd": 3799870.782760035,
+      "debt_repaid_usd": 4111571.5283896932,
+      "gross_profit_usd": -311700.7456296589
+    },
+    {
+      "day_utc": "2026-07-16",
+      "events": 22,
+      "collateral_seized_usd": 195689.41361142314,
+      "debt_repaid_usd": 231686.94184268665,
+      "gross_profit_usd": -35997.528231263525
+    },
+    {
+      "day_utc": "2026-07-17",
+      "events": 14,
+      "collateral_seized_usd": 190772.94438290354,
+      "debt_repaid_usd": 183737.42988311852,
+      "gross_profit_usd": 7035.514499785081
+    },
+    {
+      "day_utc": "2026-07-18",
+      "events": 9,
+      "collateral_seized_usd": 1721.3388762810596,
+      "debt_repaid_usd": 1680.000559231942,
+      "gross_profit_usd": 41.338317049117904
+    },
+    {
+      "day_utc": "2026-07-19",
+      "events": 22,
+      "collateral_seized_usd": 226223.911991756,
+      "debt_repaid_usd": 216231.54587324738,
+      "gross_profit_usd": 9992.366118508704
+    },
+    {
+      "day_utc": "2026-07-20",
+      "events": 7,
+      "collateral_seized_usd": 1497.1328898210988,
+      "debt_repaid_usd": 1402.886134114869,
+      "gross_profit_usd": 94.24675570623006
+    },
+    {
+      "day_utc": "2026-07-21",
+      "events": 11,
+      "collateral_seized_usd": 70660.84270963627,
+      "debt_repaid_usd": 69158.69782143133,
+      "gross_profit_usd": 1502.1448882049615
+    },
+    {
+      "day_utc": "2026-07-22",
+      "events": 10,
+      "collateral_seized_usd": 74524.6183986709,
+      "debt_repaid_usd": 78117.00969733232,
+      "gross_profit_usd": -3592.39129866142
+    },
+    {
+      "day_utc": "2026-07-23",
+      "events": 4,
+      "collateral_seized_usd": 72319.74179861411,
+      "debt_repaid_usd": 59390.11703855287,
+      "gross_profit_usd": 12929.624760061237
+    },
+    {
+      "day_utc": "2026-07-24",
+      "events": 6,
+      "collateral_seized_usd": 283487.6365339004,
+      "debt_repaid_usd": 271279.7627373629,
+      "gross_profit_usd": 12207.873796537522
+    },
+    {
+      "day_utc": "2026-07-25",
+      "events": 3,
+      "collateral_seized_usd": 3411.073322137722,
+      "debt_repaid_usd": 3389.3235700418545,
+      "gross_profit_usd": 21.749752095866988
+    },
+    {
+      "day_utc": "2026-07-26",
+      "events": 4,
+      "collateral_seized_usd": 20283.414437741994,
+      "debt_repaid_usd": 20306.167241007788,
+      "gross_profit_usd": -22.752803265791055
+    },
+    {
+      "day_utc": "2026-07-28",
+      "events": 5,
+      "collateral_seized_usd": 9182.613534260103,
+      "debt_repaid_usd": 8787.744241664624,
+      "gross_profit_usd": 394.86929259547844
+    },
+    {
+      "day_utc": "2026-07-29",
+      "events": 10,
+      "collateral_seized_usd": 5.799808565080178,
+      "debt_repaid_usd": 5.591582205425034,
+      "gross_profit_usd": 0.20822635965514347
+    },
+    {
+      "day_utc": "2026-07-30",
+      "events": 15,
+      "collateral_seized_usd": 2123655.587253869,
+      "debt_repaid_usd": 2013789.496112369,
+      "gross_profit_usd": 109866.09114149935
+    },
+    {
+      "day_utc": "2026-07-31",
+      "events": 4,
+      "collateral_seized_usd": 37879.62515797563,
+      "debt_repaid_usd": 36112.07434201734,
+      "gross_profit_usd": 1767.55081595829
+    }
+  ]
+}

@@ -1,0 +1,372 @@
+{
+  "schema_version": 1,
+  "generated_at": "2026-08-04T05:34:25.905Z",
+  "issue": "002 §06.6 (yield-vs-event analysis)",
+  "source": {
+    "input": "content/snapshots/2026-07-euler-vault-flows.json",
+    "chart_endpoint": "https://yields.llama.fi/chart/<poolId>",
+    "note": "apyBase is DefiLlama's headline supply APY (gross of reward tokens). Use it for stable comparisons — apy (= apyBase + apyReward) would conflate incentive-driven and rate-driven movements."
+  },
+  "probes": [
+    {
+      "label": "jul1",
+      "iso": "2026-07-01T00:00:00Z"
+    },
+    {
+      "label": "jul15",
+      "iso": "2026-07-15T00:00:00Z"
+    },
+    {
+      "label": "jul31",
+      "iso": "2026-07-31T23:59:00Z"
+    }
+  ],
+  "window": {
+    "start_utc": "2026-07-01T00:00:00Z",
+    "end_utc": "2026-07-31T23:59:00Z"
+  },
+  "outflow_vault_trajectories": [
+    {
+      "pool_id": "4d48ed69-2a14-4609-91c0-bc129a6dc586",
+      "display_name": "EVK Vault eUSD0-4",
+      "symbol": "USD0",
+      "pool_meta": "EVK Vault eUSD0-4",
+      "probes": [
+        {
+          "date_label": "jul1",
+          "target_utc": "2026-07-01T00:00:00Z",
+          "apy_base_pct": 0.81761,
+          "source_timestamp_iso": "2026-06-30T23:04:38.000Z",
+          "delta_from_target_sec": -3322
+        },
+        {
+          "date_label": "jul15",
+          "target_utc": "2026-07-15T00:00:00Z",
+          "apy_base_pct": 0.81764,
+          "source_timestamp_iso": "2026-07-14T23:03:31.000Z",
+          "delta_from_target_sec": -3389
+        },
+        {
+          "date_label": "jul31",
+          "target_utc": "2026-07-31T23:59:00Z",
+          "apy_base_pct": 1.14802,
+          "source_timestamp_iso": "2026-07-31T23:03:10.000Z",
+          "delta_from_target_sec": -3350
+        }
+      ],
+      "may_avg_apy_pct": 0.9502206451612905,
+      "may_min_apy_pct": 0.61551,
+      "may_max_apy_pct": 1.14802,
+      "may_delta_pp": 0.3304100000000001,
+      "hypothesis": "yield_stable"
+    },
+    {
+      "pool_id": "0fde8996-ecdf-441c-94a9-ec67403e9b8c",
+      "display_name": "EVK Vault eUSDC-80",
+      "symbol": "USDC",
+      "pool_meta": "EVK Vault eUSDC-80",
+      "probes": [
+        {
+          "date_label": "jul1",
+          "target_utc": "2026-07-01T00:00:00Z",
+          "apy_base_pct": 2.83242,
+          "source_timestamp_iso": "2026-06-30T23:04:38.000Z",
+          "delta_from_target_sec": -3322
+        },
+        {
+          "date_label": "jul15",
+          "target_utc": "2026-07-15T00:00:00Z",
+          "apy_base_pct": 4.47435,
+          "source_timestamp_iso": "2026-07-14T23:03:31.000Z",
+          "delta_from_target_sec": -3389
+        },
+        {
+          "date_label": "jul31",
+          "target_utc": "2026-07-31T23:59:00Z",
+          "apy_base_pct": 5.34141,
+          "source_timestamp_iso": "2026-07-31T23:03:10.000Z",
+          "delta_from_target_sec": -3350
+        }
+      ],
+      "may_avg_apy_pct": 3.959178387096774,
+      "may_min_apy_pct": 2.72193,
+      "may_max_apy_pct": 6.56459,
+      "may_delta_pp": 2.50899,
+      "hypothesis": "yield_rose"
+    },
+    {
+      "pool_id": "1e2030e0-0b74-4119-a03d-0f6a126ede33",
+      "display_name": "EVK Vault ePYUSD-8",
+      "symbol": "PYUSD",
+      "pool_meta": "EVK Vault ePYUSD-8",
+      "probes": [
+        {
+          "date_label": "jul1",
+          "target_utc": "2026-07-01T00:00:00Z",
+          "apy_base_pct": 0.01675,
+          "source_timestamp_iso": "2026-06-30T23:04:38.000Z",
+          "delta_from_target_sec": -3322
+        },
+        {
+          "date_label": "jul15",
+          "target_utc": "2026-07-15T00:00:00Z",
+          "apy_base_pct": 0.07916,
+          "source_timestamp_iso": "2026-07-14T23:03:31.000Z",
+          "delta_from_target_sec": -3389
+        },
+        {
+          "date_label": "jul31",
+          "target_utc": "2026-07-31T23:59:00Z",
+          "apy_base_pct": 11.35206,
+          "source_timestamp_iso": "2026-07-31T23:03:10.000Z",
+          "delta_from_target_sec": -3350
+        }
+      ],
+      "may_avg_apy_pct": 7.597692903225806,
+      "may_min_apy_pct": 0.01489,
+      "may_max_apy_pct": 16.2,
+      "may_delta_pp": 11.33531,
+      "hypothesis": "yield_rose"
+    },
+    {
+      "pool_id": "fa55aa2b-e244-4ce4-ab00-9e96b39df32b",
+      "display_name": "EVK Vault ePYUSD-6",
+      "symbol": "PYUSD",
+      "pool_meta": "EVK Vault ePYUSD-6",
+      "probes": [
+        {
+          "date_label": "jul1",
+          "target_utc": "2026-07-01T00:00:00Z",
+          "apy_base_pct": 3.39287,
+          "source_timestamp_iso": "2026-06-30T23:04:38.000Z",
+          "delta_from_target_sec": -3322
+        },
+        {
+          "date_label": "jul15",
+          "target_utc": "2026-07-15T00:00:00Z",
+          "apy_base_pct": 2.49257,
+          "source_timestamp_iso": "2026-07-14T23:03:31.000Z",
+          "delta_from_target_sec": -3389
+        },
+        {
+          "date_label": "jul31",
+          "target_utc": "2026-07-31T23:59:00Z",
+          "apy_base_pct": 1.7961,
+          "source_timestamp_iso": "2026-07-31T23:03:10.000Z",
+          "delta_from_target_sec": -3350
+        }
+      ],
+      "may_avg_apy_pct": 2.9813287096774195,
+      "may_min_apy_pct": 1.55721,
+      "may_max_apy_pct": 10.81835,
+      "may_delta_pp": -1.5967699999999998,
+      "hypothesis": "yield_collapse"
+    },
+    {
+      "pool_id": "73e933a7-73b2-43ec-b1e9-d5d1d42ce2de",
+      "display_name": "EVK Vault eRLUSD-7",
+      "symbol": "RLUSD",
+      "pool_meta": "EVK Vault eRLUSD-7",
+      "probes": [
+        {
+          "date_label": "jul1",
+          "target_utc": "2026-07-01T00:00:00Z",
+          "apy_base_pct": 1.21327,
+          "source_timestamp_iso": "2026-06-30T23:04:38.000Z",
+          "delta_from_target_sec": -3322
+        },
+        {
+          "date_label": "jul15",
+          "target_utc": "2026-07-15T00:00:00Z",
+          "apy_base_pct": 2.07296,
+          "source_timestamp_iso": "2026-07-14T23:03:31.000Z",
+          "delta_from_target_sec": -3389
+        },
+        {
+          "date_label": "jul31",
+          "target_utc": "2026-07-31T23:59:00Z",
+          "apy_base_pct": 3.25225,
+          "source_timestamp_iso": "2026-07-31T23:03:10.000Z",
+          "delta_from_target_sec": -3350
+        }
+      ],
+      "may_avg_apy_pct": 1.8153767741935483,
+      "may_min_apy_pct": 1.12872,
+      "may_max_apy_pct": 3.25225,
+      "may_delta_pp": 2.03898,
+      "hypothesis": "yield_rose"
+    }
+  ],
+  "inflow_vault_trajectories": [
+    {
+      "pool_id": "e30876ae-e9d3-4ab1-bf5b-96920f4fc9ba",
+      "display_name": "EVK Vault eWETH-2",
+      "symbol": "WETH",
+      "pool_meta": "EVK Vault eWETH-2",
+      "probes": [
+        {
+          "date_label": "jul1",
+          "target_utc": "2026-07-01T00:00:00Z",
+          "apy_base_pct": 1.56523,
+          "source_timestamp_iso": "2026-06-30T23:04:38.000Z",
+          "delta_from_target_sec": -3322
+        },
+        {
+          "date_label": "jul15",
+          "target_utc": "2026-07-15T00:00:00Z",
+          "apy_base_pct": 0.8199,
+          "source_timestamp_iso": "2026-07-14T23:03:31.000Z",
+          "delta_from_target_sec": -3389
+        },
+        {
+          "date_label": "jul31",
+          "target_utc": "2026-07-31T23:59:00Z",
+          "apy_base_pct": 0.59263,
+          "source_timestamp_iso": "2026-07-31T23:03:10.000Z",
+          "delta_from_target_sec": -3350
+        }
+      ],
+      "may_avg_apy_pct": 1.1319809677419357,
+      "may_min_apy_pct": 0.59263,
+      "may_max_apy_pct": 1.94293,
+      "may_delta_pp": -0.9725999999999999,
+      "hypothesis": "ambiguous"
+    },
+    {
+      "pool_id": "fa68041a-2ce5-4ee5-88a0-ec5185f0bdb7",
+      "display_name": "EVK Vault eUSDC-22",
+      "symbol": "USDC",
+      "pool_meta": "EVK Vault eUSDC-22",
+      "probes": [
+        {
+          "date_label": "jul1",
+          "target_utc": "2026-07-01T00:00:00Z",
+          "apy_base_pct": 1.24274,
+          "source_timestamp_iso": "2026-06-30T23:04:38.000Z",
+          "delta_from_target_sec": -3322
+        },
+        {
+          "date_label": "jul15",
+          "target_utc": "2026-07-15T00:00:00Z",
+          "apy_base_pct": 0.92733,
+          "source_timestamp_iso": "2026-07-14T23:03:31.000Z",
+          "delta_from_target_sec": -3389
+        },
+        {
+          "date_label": "jul31",
+          "target_utc": "2026-07-31T23:59:00Z",
+          "apy_base_pct": 0.00124,
+          "source_timestamp_iso": "2026-07-31T23:03:10.000Z",
+          "delta_from_target_sec": -3350
+        }
+      ],
+      "may_avg_apy_pct": 0.9353264516129031,
+      "may_min_apy_pct": 0.00124,
+      "may_max_apy_pct": 1.26864,
+      "may_delta_pp": -1.2415,
+      "hypothesis": "ambiguous"
+    },
+    {
+      "pool_id": "77871537-d13b-475f-ab01-453778ad1521",
+      "display_name": "EVK Vault etETH-3",
+      "symbol": "TETH",
+      "pool_meta": "EVK Vault etETH-3",
+      "probes": [
+        {
+          "date_label": "jul1",
+          "target_utc": "2026-07-01T00:00:00Z",
+          "apy_base_pct": 0,
+          "source_timestamp_iso": "2026-06-30T23:04:38.000Z",
+          "delta_from_target_sec": -3322
+        },
+        {
+          "date_label": "jul15",
+          "target_utc": "2026-07-15T00:00:00Z",
+          "apy_base_pct": 0,
+          "source_timestamp_iso": "2026-07-14T23:03:31.000Z",
+          "delta_from_target_sec": -3389
+        },
+        {
+          "date_label": "jul31",
+          "target_utc": "2026-07-31T23:59:00Z",
+          "apy_base_pct": 0,
+          "source_timestamp_iso": "2026-07-31T23:03:10.000Z",
+          "delta_from_target_sec": -3350
+        }
+      ],
+      "may_avg_apy_pct": 0,
+      "may_min_apy_pct": 0,
+      "may_max_apy_pct": 0,
+      "may_delta_pp": 0,
+      "hypothesis": "yield_stable"
+    },
+    {
+      "pool_id": "ac5c5923-519a-44bf-afea-c80215145fa8",
+      "display_name": "EVK Vault eAUSD-7",
+      "symbol": "AUSD",
+      "pool_meta": "EVK Vault eAUSD-7",
+      "probes": [
+        {
+          "date_label": "jul1",
+          "target_utc": "2026-07-01T00:00:00Z",
+          "apy_base_pct": 15.2,
+          "source_timestamp_iso": "2026-06-30T23:04:38.000Z",
+          "delta_from_target_sec": -3322
+        },
+        {
+          "date_label": "jul15",
+          "target_utc": "2026-07-15T00:00:00Z",
+          "apy_base_pct": 5.75234,
+          "source_timestamp_iso": "2026-07-14T23:03:31.000Z",
+          "delta_from_target_sec": -3389
+        },
+        {
+          "date_label": "jul31",
+          "target_utc": "2026-07-31T23:59:00Z",
+          "apy_base_pct": 5.83581,
+          "source_timestamp_iso": "2026-07-31T23:03:10.000Z",
+          "delta_from_target_sec": -3350
+        }
+      ],
+      "may_avg_apy_pct": 6.152675161290323,
+      "may_min_apy_pct": 3.84151,
+      "may_max_apy_pct": 15.19999,
+      "may_delta_pp": -9.364189999999999,
+      "hypothesis": "yield_collapse"
+    },
+    {
+      "pool_id": "3a321934-f4bf-4e64-9851-1e059ba7bac8",
+      "display_name": "EVK Vault eUSDC-130",
+      "symbol": "USDC",
+      "pool_meta": "EVK Vault eUSDC-130",
+      "probes": [
+        {
+          "date_label": "jul1",
+          "target_utc": "2026-07-01T00:00:00Z",
+          "apy_base_pct": 0,
+          "source_timestamp_iso": "2026-06-30T23:04:38.000Z",
+          "delta_from_target_sec": -3322
+        },
+        {
+          "date_label": "jul15",
+          "target_utc": "2026-07-15T00:00:00Z",
+          "apy_base_pct": 0,
+          "source_timestamp_iso": "2026-07-14T23:03:31.000Z",
+          "delta_from_target_sec": -3389
+        },
+        {
+          "date_label": "jul31",
+          "target_utc": "2026-07-31T23:59:00Z",
+          "apy_base_pct": 0,
+          "source_timestamp_iso": "2026-07-31T23:03:10.000Z",
+          "delta_from_target_sec": -3350
+        }
+      ],
+      "may_avg_apy_pct": 1.7419354838709677,
+      "may_min_apy_pct": 0,
+      "may_max_apy_pct": 18,
+      "may_delta_pp": 0,
+      "hypothesis": "yield_stable"
+    }
+  ]
+}

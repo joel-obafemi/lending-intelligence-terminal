@@ -1,0 +1,42 @@
+{
+  "source": {
+    "script": "scripts/query-aave-outflow-days-by-asset.ts",
+    "generated_at_utc": "2026-08-04T05:26:15Z",
+    "data_source": "DefiLlama fetchProtocolHistory (suppliedByAssetQty per asset, per day) for protocol slug 'aave-v3'",
+    "methodology": "Per-asset delta on day D = (qty_D − qty_{D-1}) × latest_observed_price. Constant-price flow methodology — isolates real deposit/withdraw activity from collateral price drift. Same data path as scripts/query-aave-may-daily-flows.ts and the dashboard's Sankey aggregator (lib/net-flows-sankey.ts).",
+    "caveat": "USD figures use the LATEST observed price per asset, not the price on the target day. Cross-citing against the dashboard's price-current TVL is not valid — only the net-change figures are.",
+    "note": "No single asset is the #1 outflow on more than 1 of the 3 target days. The three big outflow days were each driven by a different asset; the post-May-14 outflow story on Aave V3 is not one-asset-led."
+  },
+  "target_days": [],
+  "cumulative_across_3_days_by_asset": [
+    {
+      "asset": "USDC",
+      "cumulative_across_3_days_usd": 0
+    },
+    {
+      "asset": "USDT",
+      "cumulative_across_3_days_usd": 0
+    },
+    {
+      "asset": "DAI",
+      "cumulative_across_3_days_usd": 0
+    },
+    {
+      "asset": "WETH",
+      "cumulative_across_3_days_usd": 0
+    },
+    {
+      "asset": "WSTETH",
+      "cumulative_across_3_days_usd": 0
+    },
+    {
+      "asset": "WEETH",
+      "cumulative_across_3_days_usd": 0
+    },
+    {
+      "asset": "WBTC",
+      "cumulative_across_3_days_usd": 0
+    }
+  ],
+  "cumulative_total_across_3_days_usd": 0
+}
