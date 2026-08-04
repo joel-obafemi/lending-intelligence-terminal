@@ -789,6 +789,530 @@
       ],
       "last_verified_at": "2026-07-08T14:00:00Z",
       "notes": "Sector-wide June net constant-price depositor flow. Rendered as +$1.33B in prose and the §04 table; the intro (Pass 4f) lists all six per-protocol components explicitly."
+    },
+    {
+      "id": "rys_july_31",
+      "issue": "004",
+      "section_anchors": [
+        "TBD"
+      ],
+      "threshold_pct": 3,
+      "historical_wrong_alarms": [
+        "−37.1 bps",
+        "−37.1 basis points",
+        "second-deepest month-end inversion of 2026"
+      ],
+      "last_verified_at": "2026-08-04T07:39:21Z",
+      "cited_value": -75.47529283830654,
+      "unit": "bps",
+      "rounded_cited_in_prose": -75,
+      "alt_forms_in_prose": [
+        "−75.48 bps",
+        "−75.5 bps",
+        "−75 basis points",
+        "−0.75 pp"
+      ],
+      "cross_check": {
+        "method": "derived_from_snapshot",
+        "snapshot": "content/snapshots/2026-07-rys-historical.json",
+        "derive": "field",
+        "params": {
+          "field_path": "target_anchor.spread_bps"
+        }
+      },
+      "notes": "July 31 close of blended stablecoin supply APY minus 4-week T-bill (FRED TB4WK)."
+    },
+    {
+      "id": "sector_ldr_july_31",
+      "issue": "004",
+      "section_anchors": [
+        "TBD"
+      ],
+      "threshold_pct": 1,
+      "historical_wrong_alarms": [
+        "40.99%",
+        "40.99 percent"
+      ],
+      "last_verified_at": "2026-08-04T07:39:21Z",
+      "cited_value": 40.63466583237437,
+      "unit": "%",
+      "rounded_cited_in_prose": 40.6,
+      "alt_forms_in_prose": [
+        "40.63%",
+        "40.6 percent",
+        "40.63 percent"
+      ],
+      "cross_check": {
+        "method": "derived_from_snapshot",
+        "snapshot": "content/snapshots/2026-07-ldr-per-protocol.json",
+        "derive": "field",
+        "params": {
+          "field_path": "sector.ldr_pct"
+        }
+      },
+      "notes": "Sector loan-to-deposit ratio at July 31 (borrows / (tvl+borrows))."
+    },
+    {
+      "id": "curator_hhi_v1_v2_july_31",
+      "issue": "004",
+      "section_anchors": [
+        "TBD"
+      ],
+      "threshold_pct": 1,
+      "historical_wrong_alarms": [
+        "2095",
+        "2,095",
+        "HHI of 2,095"
+      ],
+      "last_verified_at": "2026-08-04T07:39:21Z",
+      "cited_value": 2337.24,
+      "unit": "absolute",
+      "rounded_cited_in_prose": 2337,
+      "alt_forms_in_prose": [
+        "2,337",
+        "2,337.24",
+        "HHI of 2,337"
+      ],
+      "cross_check": {
+        "method": "derived_from_snapshot",
+        "snapshot": "content/snapshots/2026-07-31-curator-hhi.json",
+        "derive": "field",
+        "params": {
+          "field_path": "summary.hhi"
+        }
+      },
+      "notes": "Morpho V1+V2 combined curator HHI (2026-08-04 now-as-proxy for July 31)."
+    },
+    {
+      "id": "curator_top3_share_v1_v2_july_31",
+      "issue": "004",
+      "section_anchors": [
+        "TBD"
+      ],
+      "threshold_pct": 1,
+      "historical_wrong_alarms": [
+        "74.6 percent",
+        "top-3 curator share of 74.6",
+        "74.6%"
+      ],
+      "last_verified_at": "2026-08-04T07:39:21Z",
+      "cited_value": 77.89,
+      "unit": "%",
+      "rounded_cited_in_prose": 77.9,
+      "alt_forms_in_prose": [
+        "77.89%",
+        "77.9 percent",
+        "top-3 curator share of 77.9"
+      ],
+      "cross_check": {
+        "method": "derived_from_snapshot",
+        "snapshot": "content/snapshots/2026-07-31-curator-hhi.json",
+        "derive": "field",
+        "params": {
+          "field_path": "summary.top_3_share_pct"
+        }
+      },
+      "notes": "Sentora + Steakhouse + Gauntlet combined share of Morpho curated TVL (V1+V2)."
+    },
+    {
+      "id": "sentora_curator_share_july_31",
+      "issue": "004",
+      "section_anchors": [
+        "TBD"
+      ],
+      "threshold_pct": 2,
+      "historical_wrong_alarms": [
+        "31.2 percent",
+        "31.2%"
+      ],
+      "last_verified_at": "2026-08-04T07:39:21Z",
+      "cited_value": 33.56,
+      "unit": "%",
+      "rounded_cited_in_prose": 33.6,
+      "alt_forms_in_prose": [
+        "33.56%",
+        "33.6 percent"
+      ],
+      "cross_check": {
+        "method": "derived_from_snapshot",
+        "snapshot": "content/snapshots/2026-07-31-curator-hhi.json",
+        "derive": "find_in_array_field",
+        "params": {
+          "array_path": "top_curators",
+          "match_key": "name",
+          "match_value": "Sentora",
+          "field": "share_pct"
+        }
+      },
+      "notes": "Sentora share of Morpho curated TVL (V1+V2), #1 curator."
+    },
+    {
+      "id": "steakhouse_curator_share_july_31",
+      "issue": "004",
+      "section_anchors": [
+        "TBD"
+      ],
+      "threshold_pct": 2,
+      "historical_wrong_alarms": [
+        "29.2 percent",
+        "29.2%"
+      ],
+      "last_verified_at": "2026-08-04T07:39:21Z",
+      "cited_value": 31.31,
+      "unit": "%",
+      "rounded_cited_in_prose": 31.3,
+      "alt_forms_in_prose": [
+        "31.31%",
+        "31.3 percent"
+      ],
+      "cross_check": {
+        "method": "derived_from_snapshot",
+        "snapshot": "content/snapshots/2026-07-31-curator-hhi.json",
+        "derive": "find_in_array_field",
+        "params": {
+          "array_path": "top_curators",
+          "match_key": "name",
+          "match_value": "Steakhouse Financial",
+          "field": "share_pct"
+        }
+      },
+      "notes": "Steakhouse Financial share of Morpho curated TVL (V1+V2), #2 curator."
+    },
+    {
+      "id": "aave_v3_july_net_flow",
+      "issue": "004",
+      "section_anchors": [
+        "TBD"
+      ],
+      "threshold_pct": 5,
+      "historical_wrong_alarms": [
+        "+$845M",
+        "gained $845 million",
+        "$845M"
+      ],
+      "last_verified_at": "2026-08-04T07:39:21Z",
+      "cited_value": 648.79,
+      "unit": "USD_millions",
+      "rounded_cited_in_prose": 649,
+      "alt_forms_in_prose": [
+        "+$648.79M",
+        "+$649M",
+        "gained $649 million",
+        "roughly $650 million"
+      ],
+      "cross_check": {
+        "method": "manual",
+        "params": {
+          "evidence_url": "Sum of the aave_v3_net_supply_change_usd column in content/snapshots/2026-07-aave-daily-flows.csv = +648.79 (millions USD, constant-price)."
+        }
+      },
+      "notes": "Aave V3 July protocol-level constant-price net supply flow."
+    },
+    {
+      "id": "aave_v3_usdc_net_flow_july",
+      "issue": "004",
+      "section_anchors": [
+        "TBD"
+      ],
+      "threshold_pct": 5,
+      "historical_wrong_alarms": [
+        "−$162M",
+        "shed $162 million"
+      ],
+      "last_verified_at": "2026-08-04T07:39:21Z",
+      "cited_value": -20.14,
+      "unit": "USD_millions",
+      "rounded_cited_in_prose": -20,
+      "alt_forms_in_prose": [
+        "−$20.14M",
+        "−$20M",
+        "shed $20 million"
+      ],
+      "cross_check": {
+        "method": "derived_from_snapshot",
+        "snapshot": "content/snapshots/2026-07-aave-v3-per-asset-flow.json",
+        "derive": "find_in_array_field",
+        "params": {
+          "array_path": "per_asset_ranked",
+          "match_key": "asset",
+          "match_value": "USDC",
+          "field": "cumulative_delta_millions"
+        }
+      },
+      "notes": "Aave V3 USDC-only July constant-price net flow (contrast to collateral-led protocol total)."
+    },
+    {
+      "id": "aave_v3_usdc_supply_apy_july_31",
+      "issue": "004",
+      "section_anchors": [
+        "TBD"
+      ],
+      "threshold_pct": 3,
+      "historical_wrong_alarms": [
+        "Aave V3 USDC at 3.19"
+      ],
+      "last_verified_at": "2026-08-04T07:39:21Z",
+      "cited_value": 3.27243,
+      "unit": "%",
+      "rounded_cited_in_prose": 3.27,
+      "alt_forms_in_prose": [
+        "3.27%",
+        "3.27 percent"
+      ],
+      "cross_check": {
+        "method": "manual",
+        "params": {
+          "evidence_url": "content/snapshots/2026-07-rate-dispersion.json#/per_asset/0/july31/per_protocol/0/supply_apy_pct"
+        }
+      },
+      "notes": "Aave V3 USDC supply APY at July 31 (DefiLlama Yields)."
+    },
+    {
+      "id": "fluid_usdc_supply_apy_july_31",
+      "issue": "004",
+      "section_anchors": [
+        "TBD"
+      ],
+      "threshold_pct": 3,
+      "historical_wrong_alarms": [
+        "Fluid at 6.41 percent",
+        "6.41%"
+      ],
+      "last_verified_at": "2026-08-04T07:39:21Z",
+      "cited_value": 4.66,
+      "unit": "%",
+      "rounded_cited_in_prose": 4.66,
+      "alt_forms_in_prose": [
+        "4.66%",
+        "4.66 percent"
+      ],
+      "cross_check": {
+        "method": "manual",
+        "params": {
+          "evidence_url": "content/snapshots/2026-07-rate-dispersion.json#/per_asset/0/july31/per_protocol/2/supply_apy_pct"
+        }
+      },
+      "notes": "Fluid USDC supply APY at July 31; still the sector leader."
+    },
+    {
+      "id": "spark_usdc_supply_apy_july_31",
+      "issue": "004",
+      "section_anchors": [
+        "TBD"
+      ],
+      "threshold_pct": 3,
+      "historical_wrong_alarms": [],
+      "last_verified_at": "2026-08-04T07:39:21Z",
+      "cited_value": 3.47241,
+      "unit": "%",
+      "rounded_cited_in_prose": 3.47,
+      "alt_forms_in_prose": [
+        "3.47%",
+        "3.47 percent"
+      ],
+      "cross_check": {
+        "method": "manual",
+        "params": {
+          "evidence_url": "content/snapshots/2026-07-rate-dispersion.json#/per_asset/0/july31/per_protocol/1/supply_apy_pct"
+        }
+      },
+      "notes": "Spark USDC supply APY at July 31."
+    },
+    {
+      "id": "spark_usdc_borrow_rate_july_31",
+      "issue": "004",
+      "section_anchors": [
+        "TBD"
+      ],
+      "threshold_pct": 2,
+      "historical_wrong_alarms": [
+        "3.72%",
+        "3.72 percent"
+      ],
+      "last_verified_at": "2026-08-04T07:39:21Z",
+      "cited_value": 4.2791,
+      "unit": "%",
+      "rounded_cited_in_prose": 4.28,
+      "alt_forms_in_prose": [
+        "4.28%",
+        "4.28 percent",
+        "4.2791%"
+      ],
+      "cross_check": {
+        "method": "derived_from_snapshot",
+        "snapshot": "content/snapshots/2026-07-spark-usdc-borrow-daily.json",
+        "derive": "field",
+        "params": {
+          "field_path": "summary.month_close_borrow_pct"
+        }
+      },
+      "notes": "SparkLend USDC RETAIL variable borrow rate at July 31 (on-chain). Distinct from the 3.72% Sky Base Rate."
+    },
+    {
+      "id": "sky_base_rate_july_31",
+      "issue": "004",
+      "section_anchors": [
+        "TBD"
+      ],
+      "threshold_pct": 1,
+      "historical_wrong_alarms": [],
+      "last_verified_at": "2026-08-04T07:39:21Z",
+      "cited_value": 3.72,
+      "unit": "%",
+      "rounded_cited_in_prose": 3.72,
+      "alt_forms_in_prose": [
+        "3.72%",
+        "3.72 percent"
+      ],
+      "cross_check": {
+        "method": "derived_from_snapshot",
+        "snapshot": "content/snapshots/2026-07-sky-base-rate-daily.json",
+        "derive": "field",
+        "params": {
+          "field_path": "summary.month_close_base_rate_pct"
+        }
+      },
+      "notes": "Sky Base Rate (SSR 3.52% + 0.20% margin) at July 31. The wholesale rate SparkLend pays."
+    },
+    {
+      "id": "sky_base_rate_atlas_edit_execution",
+      "issue": "004",
+      "section_anchors": [
+        "TBD"
+      ],
+      "threshold_pct": 0,
+      "historical_wrong_alarms": [
+        "July 24",
+        "July 27",
+        "2026-07-24",
+        "2026-07-27"
+      ],
+      "last_verified_at": "2026-08-04T07:39:21Z",
+      "cited_value": "2026-07-23",
+      "unit": "date",
+      "rounded_cited_in_prose": "2026-07-23",
+      "alt_forms_in_prose": [
+        "July 23",
+        "23 July",
+        "July 23, 2026"
+      ],
+      "cross_check": {
+        "method": "manual",
+        "params": {
+          "evidence_url": "On-chain: sUSDS File(\"ssr\") in tx 0x12435f652eeb08f9de4f4b6402a88de38ac092aef2a6656c87ed0be2f6f6619b at block 25596101 (2026-07-23T14:43:23Z). Sky forum week-of-2026-07-20 Atlas Edit: https://forum.skyeco.com/t/atlas-edit-weekly-cycle-proposal-week-of-2026-07-20/28062"
+        }
+      },
+      "notes": "Atlas Edit (SSR cut + Sky Spread 0.1%→0%) execution date. SSR leg on-chain-verified; Sky Spread leg forum-corroborated."
+    },
+    {
+      "id": "compound_cwethv3_supply_usd",
+      "issue": "004",
+      "section_anchors": [
+        "TBD"
+      ],
+      "threshold_pct": 5,
+      "historical_wrong_alarms": [
+        "50,000",
+        "$50K",
+        "~$50K"
+      ],
+      "last_verified_at": "2026-08-04T07:39:21Z",
+      "cited_value": 94871517.9708346,
+      "unit": "USD",
+      "rounded_cited_in_prose": 94.87,
+      "alt_forms_in_prose": [
+        "$94.87M",
+        "$94.9M",
+        "94.87 million"
+      ],
+      "cross_check": {
+        "method": "derived_from_snapshot",
+        "snapshot": "content/snapshots/2026-07-compound-comet-markets.json",
+        "derive": "find_in_array_field",
+        "params": {
+          "array_path": "markets",
+          "match_key": "base_symbol",
+          "match_value": "WETH",
+          "field": "total_supply_usd"
+        }
+      },
+      "notes": "Compound V3 cWETHv3 base supply at July 31 (on-chain, ETH-denominated pricing intact — the pre-fix bug read ~$50K)."
+    },
+    {
+      "id": "sector_constant_price_flow_july",
+      "issue": "004",
+      "section_anchors": [
+        "TBD"
+      ],
+      "threshold_pct": 3,
+      "historical_wrong_alarms": [],
+      "last_verified_at": "2026-08-04T07:39:21Z",
+      "cited_value": 552.88,
+      "unit": "USD_millions",
+      "rounded_cited_in_prose": 553,
+      "alt_forms_in_prose": [
+        "+$552.87M",
+        "+$553M",
+        "roughly $550 million"
+      ],
+      "cross_check": {
+        "method": "manual",
+        "params": {
+          "evidence_url": "Sum of the six per-protocol constant-price daily net-flow captures (net_supply_change column of each 2026-07-<proto>-daily-flows.csv): Aave V3 648.79 + Spark -202.54 + Morpho 134.84 + Fluid 25.74 + Compound V3 -23.36 + Euler V2 -30.6 = +552.87 (millions USD)"
+        }
+      },
+      "notes": "Six-protocol sector constant-price net supply flow for July."
+    },
+    {
+      "id": "morpho_v2_share_of_curated_july_31",
+      "issue": "004",
+      "section_anchors": [
+        "TBD"
+      ],
+      "threshold_pct": 2,
+      "historical_wrong_alarms": [],
+      "last_verified_at": "2026-08-04T07:39:21Z",
+      "cited_value": 71.76,
+      "unit": "%",
+      "rounded_cited_in_prose": 72,
+      "alt_forms_in_prose": [
+        "71.76%",
+        "72 percent",
+        "roughly 72 percent",
+        "V2 majority"
+      ],
+      "cross_check": {
+        "method": "manual",
+        "params": {
+          "evidence_url": "version_split.v2_tvl_usd / version_split.combined_tvl_usd from content/snapshots/2026-07-31-curator-hhi.json = 1774369784 / 2472673664 = 71.76%"
+        }
+      },
+      "notes": "Morpho Vault-V2 share of V1+V2 curated TVL — grounds the 'V2 is the majority venue' framing."
+    },
+    {
+      "id": "euler_labeled_curator_tvl_share_july_31",
+      "issue": "004",
+      "section_anchors": [
+        "TBD"
+      ],
+      "threshold_pct": 2,
+      "historical_wrong_alarms": [],
+      "last_verified_at": "2026-08-04T07:39:21Z",
+      "cited_value": 87.56,
+      "unit": "%",
+      "rounded_cited_in_prose": 88,
+      "alt_forms_in_prose": [
+        "87.56%",
+        "88 percent",
+        "roughly 88 percent"
+      ],
+      "cross_check": {
+        "method": "manual",
+        "params": {
+          "evidence_url": "summary.labeled_supply_usd / summary.total_resolved_supply_usd from content/snapshots/2026-07-euler-vault-curators.json = 34619939 / 39539269 = 87.56%"
+        }
+      },
+      "notes": "88% of Euler V2 curated TVL labeled by curator name; long tail unlabeled per Aug 2026 on-chain investigation."
     }
   ]
 }
