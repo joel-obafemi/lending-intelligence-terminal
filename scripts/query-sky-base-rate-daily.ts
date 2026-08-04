@@ -40,10 +40,23 @@ const WINDOW_START = "2026-06-20"
 const WINDOW_END = "2026-08-05"
 const OUTPUT_PATH = "content/snapshots/2026-07-sky-base-rate-daily.json"
 
-// Governance margin (Base Rate = SSR + margin). Assumption, not on-chain.
-const MARGIN_BPS_PRE = 30 // pre-Atlas-Edit
-const MARGIN_BPS_POST = 20 // post-Atlas-Edit
-const ATLAS_EDIT_IMPL_DATE = "2026-07-24" // assumed; confirm vs Sky governance execution
+// Base Rate = SSR + margin, where margin = Sky Spread + 0.2% Distribution
+// Reward Fee. The Atlas Edit narrowed the Sky Spread 0.1% → 0%, so margin
+// 0.30% → 0.20%.
+const MARGIN_BPS_PRE = 30 // pre-Atlas-Edit (0.1% Sky Spread + 0.2% Distribution Reward Fee)
+const MARGIN_BPS_POST = 20 // post-Atlas-Edit (0.0% Sky Spread + 0.2% Distribution Reward Fee)
+// VERIFIED on-chain: the week-of-2026-07-20 Atlas Edit executed 2026-07-23
+// 14:43:23 UTC (block 25596101, tx 0x12435f65…f6619b) — the Sky weekly rate
+// spell that filed the new SSR (3.60%→3.52%) alongside stability-fee duties;
+// the forum-documented Sky Spread 0.1%→0% cut is part of that same weekly
+// Atlas Edit. Because execution was mid-day (after 00:00), the daily 00:00
+// snapshots first show the new margin at the 2026-07-24 snapshot, so the
+// series flips margin on ATLAS_EDIT_SNAPSHOT_DATE (a 00:00-sampling artifact —
+// the real event is 2026-07-23). See metadata.margin_execution_verification.
+const ATLAS_EDIT_EXECUTION_UTC = "2026-07-23T14:43:23Z"
+const ATLAS_EDIT_EXECUTION_BLOCK = 25596101
+const ATLAS_EDIT_EXECUTION_TX = "0x12435f652eeb08f9de4f4b6402a88de38ac092aef2a6656c87ed0be2f6f6619b"
+const ATLAS_EDIT_SNAPSHOT_DATE = "2026-07-24" // first UTC-00:00 snapshot reflecting the 2026-07-23 execution
 const STEP_THRESHOLD_BPS = 3 // day-over-day SSR move counted as a step
 
 const PUBLIC_RPCS = [
@@ -99,7 +112,7 @@ async function blockForTs(
   return corrected
 }
 function marginBpsFor(date: string): number {
-  return date >= ATLAS_EDIT_IMPL_DATE ? MARGIN_BPS_POST : MARGIN_BPS_PRE
+  return date >= ATLAS_EDIT_SNAPSHOT_DATE ? MARGIN_BPS_POST : MARGIN_BPS_PRE
 }
 
 interface DayRow {
@@ -141,7 +154,7 @@ async function main(): Promise<void> {
         ssr_pct: ssrPct,
         margin_bps: marginBps,
         base_rate_pct: Number((ssrPct + marginBps / 100).toFixed(4)),
-        source_note: `ssr: authoritative on-chain read; margin: ${(marginBps / 100).toFixed(2)}% (${marginBps === MARGIN_BPS_POST ? "post" : "pre"}-Atlas-Edit, assumed effective ${ATLAS_EDIT_IMPL_DATE})`,
+        source_note: `ssr: authoritative on-chain read; margin: ${(marginBps / 100).toFixed(2)}% (${marginBps === MARGIN_BPS_POST ? "post" : "pre"}-Atlas-Edit; execution verified on-chain 2026-07-23 14:43 UTC)`,
       })
     } catch (err: any) {
       console.error(`  [warn] ${day} (blk ${blk}) ssr() read failed: ${err?.shortMessage ?? err?.message}`)
@@ -163,16 +176,13 @@ async function main(): Promise<void> {
       })
     }
   }
-  // Assumed margin change.
-  const implRow = rows.find((r) => r.date === ATLAS_EDIT_IMPL_DATE)
-  if (implRow) {
-    keyMoments.push({
-      date: ATLAS_EDIT_IMPL_DATE,
-      event: "margin_change_assumed",
-      detail: `Atlas Edit margin narrowed ${(MARGIN_BPS_PRE / 100).toFixed(2)}% → ${(MARGIN_BPS_POST / 100).toFixed(2)}% (−${MARGIN_BPS_PRE - MARGIN_BPS_POST} bps). ASSUMED effective date — confirm vs Sky governance execution.`,
-      source: "assumption",
-    })
-  }
+  // Verified Atlas Edit execution (SSR + margin), on-chain + forum-corroborated.
+  keyMoments.push({
+    date: "2026-07-23",
+    event: "atlas_edit_executed",
+    detail: `Sky weekly rate spell executed ${ATLAS_EDIT_EXECUTION_UTC} (block ${ATLAS_EDIT_EXECUTION_BLOCK}, tx ${ATLAS_EDIT_EXECUTION_TX}): SSR 3.60%→3.52% filed on-chain (verified). The week-of-2026-07-20 Atlas Edit also narrowed the Sky Spread 0.1%→0% (margin ${(MARGIN_BPS_PRE / 100).toFixed(2)}%→${(MARGIN_BPS_POST / 100).toFixed(2)}%, −${MARGIN_BPS_PRE - MARGIN_BPS_POST} bps) — forum-documented, same weekly spell. Base Rate 3.90%→3.72%. The daily 00:00 series shows it from the 2026-07-24 snapshot.`,
+    source: "on_chain_verified + forum",
+  })
   keyMoments.sort((a, b) => a.date.localeCompare(b.date))
 
   const byDate = (d: string) => rows.find((r) => r.date === d) ?? null
@@ -183,14 +193,21 @@ async function main(): Promise<void> {
     metadata: {
       script: "scripts/query-sky-base-rate-daily.ts",
       generated_at_utc: new Date().toISOString().replace(/\.\d{3}Z$/, "Z"),
-      source_used: "3 (on-chain sUSDS.ssr) + governance-margin assumption",
+      source_used: "3 (on-chain sUSDS.ssr) + verified on-chain Atlas Edit execution",
       methodology:
-        `Sky Base Rate = SSR + margin. SSR read on-chain from sUSDS ${SUSDS} ssr() at the block nearest each UTC-midnight, ray → per-second-compounded APY. Margin is a Sky governance parameter (not on-chain here).`,
-      assumptions: {
-        margin_pre_atlas_edit_bps: MARGIN_BPS_PRE,
-        margin_post_atlas_edit_bps: MARGIN_BPS_POST,
-        atlas_edit_impl_date_assumed: ATLAS_EDIT_IMPL_DATE,
-        note: "Every ssr_pct is an authoritative on-chain read. Only margin_bps and the margin-change date are assumed; base_rate_pct inherits that assumption. At 2026-07-31 this reconciles to 3.72%, matching Spark's public figure.",
+        `Sky Base Rate = SSR + margin. SSR read on-chain from sUSDS ${SUSDS} ssr() at the block nearest each UTC-midnight, ray → per-second-compounded APY. Margin (Sky Spread + 0.2% Distribution Reward Fee) is a Sky governance parameter.`,
+      margin_execution_verification: {
+        verified: true,
+        execution_utc: ATLAS_EDIT_EXECUTION_UTC,
+        block: ATLAS_EDIT_EXECUTION_BLOCK,
+        tx: ATLAS_EDIT_EXECUTION_TX,
+        ssr_change: 'VERIFIED on-chain: 3.60% → 3.52%, filed via sUSDS File("ssr") in the Sky weekly rate spell (which also set stability-fee duties for ETH/WBTC/WSTETH ilks).',
+        sky_spread_change:
+          "0.1% → 0% (margin 0.30% → 0.20%): documented in the week-of-2026-07-20 Atlas Edit (forum.skyeco.com); the 2026-07-23 spell is that cycle's on-chain execution, so best-dated to the same tx. Forum-corroborated — a standalone on-chain Sky-Spread parameter event was not isolated.",
+        margin_pre_bps: MARGIN_BPS_PRE,
+        margin_post_bps: MARGIN_BPS_POST,
+        snapshot_flip_date: ATLAS_EDIT_SNAPSHOT_DATE,
+        note: "Execution was 2026-07-23 14:43 UTC, NOT the previously assumed 2026-07-24. Because it was mid-day, the daily 00:00 series first shows the new Base Rate at the 2026-07-24 snapshot; the 00:00 series values are therefore unchanged. Reconciles to 3.72% at 2026-07-31, matching Spark's public figure.",
       },
     },
     window: { start_date: WINDOW_START, end_date: WINDOW_END },
