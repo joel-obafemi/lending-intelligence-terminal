@@ -1,0 +1,363 @@
+{
+  "metadata": {
+    "script": "scripts/query-sky-base-rate-daily.ts",
+    "generated_at_utc": "2026-08-04T06:47:44Z",
+    "source_used": "3 (on-chain sUSDS.ssr) + governance-margin assumption",
+    "methodology": "Sky Base Rate = SSR + margin. SSR read on-chain from sUSDS 0xa3931d71877C0E7a3148CB7Eb4463524FEc27fbD ssr() at the block nearest each UTC-midnight, ray → per-second-compounded APY. Margin is a Sky governance parameter (not on-chain here).",
+    "assumptions": {
+      "margin_pre_atlas_edit_bps": 30,
+      "margin_post_atlas_edit_bps": 20,
+      "atlas_edit_impl_date_assumed": "2026-07-24",
+      "note": "Every ssr_pct is an authoritative on-chain read. Only margin_bps and the margin-change date are assumed; base_rate_pct inherits that assumption. At 2026-07-31 this reconciles to 3.72%, matching Spark's public figure."
+    }
+  },
+  "window": {
+    "start_date": "2026-06-20",
+    "end_date": "2026-08-05"
+  },
+  "series": [
+    {
+      "date": "2026-06-20",
+      "ssr_pct": 3.6,
+      "margin_bps": 30,
+      "base_rate_pct": 3.9,
+      "source_note": "ssr: authoritative on-chain read; margin: 0.30% (pre-Atlas-Edit, assumed effective 2026-07-24)"
+    },
+    {
+      "date": "2026-06-21",
+      "ssr_pct": 3.6,
+      "margin_bps": 30,
+      "base_rate_pct": 3.9,
+      "source_note": "ssr: authoritative on-chain read; margin: 0.30% (pre-Atlas-Edit, assumed effective 2026-07-24)"
+    },
+    {
+      "date": "2026-06-22",
+      "ssr_pct": 3.6,
+      "margin_bps": 30,
+      "base_rate_pct": 3.9,
+      "source_note": "ssr: authoritative on-chain read; margin: 0.30% (pre-Atlas-Edit, assumed effective 2026-07-24)"
+    },
+    {
+      "date": "2026-06-23",
+      "ssr_pct": 3.6,
+      "margin_bps": 30,
+      "base_rate_pct": 3.9,
+      "source_note": "ssr: authoritative on-chain read; margin: 0.30% (pre-Atlas-Edit, assumed effective 2026-07-24)"
+    },
+    {
+      "date": "2026-06-24",
+      "ssr_pct": 3.6,
+      "margin_bps": 30,
+      "base_rate_pct": 3.9,
+      "source_note": "ssr: authoritative on-chain read; margin: 0.30% (pre-Atlas-Edit, assumed effective 2026-07-24)"
+    },
+    {
+      "date": "2026-06-25",
+      "ssr_pct": 3.6,
+      "margin_bps": 30,
+      "base_rate_pct": 3.9,
+      "source_note": "ssr: authoritative on-chain read; margin: 0.30% (pre-Atlas-Edit, assumed effective 2026-07-24)"
+    },
+    {
+      "date": "2026-06-26",
+      "ssr_pct": 3.6,
+      "margin_bps": 30,
+      "base_rate_pct": 3.9,
+      "source_note": "ssr: authoritative on-chain read; margin: 0.30% (pre-Atlas-Edit, assumed effective 2026-07-24)"
+    },
+    {
+      "date": "2026-06-27",
+      "ssr_pct": 3.6,
+      "margin_bps": 30,
+      "base_rate_pct": 3.9,
+      "source_note": "ssr: authoritative on-chain read; margin: 0.30% (pre-Atlas-Edit, assumed effective 2026-07-24)"
+    },
+    {
+      "date": "2026-06-28",
+      "ssr_pct": 3.6,
+      "margin_bps": 30,
+      "base_rate_pct": 3.9,
+      "source_note": "ssr: authoritative on-chain read; margin: 0.30% (pre-Atlas-Edit, assumed effective 2026-07-24)"
+    },
+    {
+      "date": "2026-06-29",
+      "ssr_pct": 3.6,
+      "margin_bps": 30,
+      "base_rate_pct": 3.9,
+      "source_note": "ssr: authoritative on-chain read; margin: 0.30% (pre-Atlas-Edit, assumed effective 2026-07-24)"
+    },
+    {
+      "date": "2026-06-30",
+      "ssr_pct": 3.6,
+      "margin_bps": 30,
+      "base_rate_pct": 3.9,
+      "source_note": "ssr: authoritative on-chain read; margin: 0.30% (pre-Atlas-Edit, assumed effective 2026-07-24)"
+    },
+    {
+      "date": "2026-07-01",
+      "ssr_pct": 3.6,
+      "margin_bps": 30,
+      "base_rate_pct": 3.9,
+      "source_note": "ssr: authoritative on-chain read; margin: 0.30% (pre-Atlas-Edit, assumed effective 2026-07-24)"
+    },
+    {
+      "date": "2026-07-02",
+      "ssr_pct": 3.6,
+      "margin_bps": 30,
+      "base_rate_pct": 3.9,
+      "source_note": "ssr: authoritative on-chain read; margin: 0.30% (pre-Atlas-Edit, assumed effective 2026-07-24)"
+    },
+    {
+      "date": "2026-07-03",
+      "ssr_pct": 3.6,
+      "margin_bps": 30,
+      "base_rate_pct": 3.9,
+      "source_note": "ssr: authoritative on-chain read; margin: 0.30% (pre-Atlas-Edit, assumed effective 2026-07-24)"
+    },
+    {
+      "date": "2026-07-04",
+      "ssr_pct": 3.6,
+      "margin_bps": 30,
+      "base_rate_pct": 3.9,
+      "source_note": "ssr: authoritative on-chain read; margin: 0.30% (pre-Atlas-Edit, assumed effective 2026-07-24)"
+    },
+    {
+      "date": "2026-07-05",
+      "ssr_pct": 3.6,
+      "margin_bps": 30,
+      "base_rate_pct": 3.9,
+      "source_note": "ssr: authoritative on-chain read; margin: 0.30% (pre-Atlas-Edit, assumed effective 2026-07-24)"
+    },
+    {
+      "date": "2026-07-06",
+      "ssr_pct": 3.6,
+      "margin_bps": 30,
+      "base_rate_pct": 3.9,
+      "source_note": "ssr: authoritative on-chain read; margin: 0.30% (pre-Atlas-Edit, assumed effective 2026-07-24)"
+    },
+    {
+      "date": "2026-07-07",
+      "ssr_pct": 3.6,
+      "margin_bps": 30,
+      "base_rate_pct": 3.9,
+      "source_note": "ssr: authoritative on-chain read; margin: 0.30% (pre-Atlas-Edit, assumed effective 2026-07-24)"
+    },
+    {
+      "date": "2026-07-08",
+      "ssr_pct": 3.6,
+      "margin_bps": 30,
+      "base_rate_pct": 3.9,
+      "source_note": "ssr: authoritative on-chain read; margin: 0.30% (pre-Atlas-Edit, assumed effective 2026-07-24)"
+    },
+    {
+      "date": "2026-07-09",
+      "ssr_pct": 3.6,
+      "margin_bps": 30,
+      "base_rate_pct": 3.9,
+      "source_note": "ssr: authoritative on-chain read; margin: 0.30% (pre-Atlas-Edit, assumed effective 2026-07-24)"
+    },
+    {
+      "date": "2026-07-10",
+      "ssr_pct": 3.6,
+      "margin_bps": 30,
+      "base_rate_pct": 3.9,
+      "source_note": "ssr: authoritative on-chain read; margin: 0.30% (pre-Atlas-Edit, assumed effective 2026-07-24)"
+    },
+    {
+      "date": "2026-07-11",
+      "ssr_pct": 3.6,
+      "margin_bps": 30,
+      "base_rate_pct": 3.9,
+      "source_note": "ssr: authoritative on-chain read; margin: 0.30% (pre-Atlas-Edit, assumed effective 2026-07-24)"
+    },
+    {
+      "date": "2026-07-12",
+      "ssr_pct": 3.6,
+      "margin_bps": 30,
+      "base_rate_pct": 3.9,
+      "source_note": "ssr: authoritative on-chain read; margin: 0.30% (pre-Atlas-Edit, assumed effective 2026-07-24)"
+    },
+    {
+      "date": "2026-07-13",
+      "ssr_pct": 3.6,
+      "margin_bps": 30,
+      "base_rate_pct": 3.9,
+      "source_note": "ssr: authoritative on-chain read; margin: 0.30% (pre-Atlas-Edit, assumed effective 2026-07-24)"
+    },
+    {
+      "date": "2026-07-14",
+      "ssr_pct": 3.6,
+      "margin_bps": 30,
+      "base_rate_pct": 3.9,
+      "source_note": "ssr: authoritative on-chain read; margin: 0.30% (pre-Atlas-Edit, assumed effective 2026-07-24)"
+    },
+    {
+      "date": "2026-07-15",
+      "ssr_pct": 3.6,
+      "margin_bps": 30,
+      "base_rate_pct": 3.9,
+      "source_note": "ssr: authoritative on-chain read; margin: 0.30% (pre-Atlas-Edit, assumed effective 2026-07-24)"
+    },
+    {
+      "date": "2026-07-16",
+      "ssr_pct": 3.6,
+      "margin_bps": 30,
+      "base_rate_pct": 3.9,
+      "source_note": "ssr: authoritative on-chain read; margin: 0.30% (pre-Atlas-Edit, assumed effective 2026-07-24)"
+    },
+    {
+      "date": "2026-07-17",
+      "ssr_pct": 3.6,
+      "margin_bps": 30,
+      "base_rate_pct": 3.9,
+      "source_note": "ssr: authoritative on-chain read; margin: 0.30% (pre-Atlas-Edit, assumed effective 2026-07-24)"
+    },
+    {
+      "date": "2026-07-18",
+      "ssr_pct": 3.6,
+      "margin_bps": 30,
+      "base_rate_pct": 3.9,
+      "source_note": "ssr: authoritative on-chain read; margin: 0.30% (pre-Atlas-Edit, assumed effective 2026-07-24)"
+    },
+    {
+      "date": "2026-07-19",
+      "ssr_pct": 3.6,
+      "margin_bps": 30,
+      "base_rate_pct": 3.9,
+      "source_note": "ssr: authoritative on-chain read; margin: 0.30% (pre-Atlas-Edit, assumed effective 2026-07-24)"
+    },
+    {
+      "date": "2026-07-20",
+      "ssr_pct": 3.6,
+      "margin_bps": 30,
+      "base_rate_pct": 3.9,
+      "source_note": "ssr: authoritative on-chain read; margin: 0.30% (pre-Atlas-Edit, assumed effective 2026-07-24)"
+    },
+    {
+      "date": "2026-07-21",
+      "ssr_pct": 3.6,
+      "margin_bps": 30,
+      "base_rate_pct": 3.9,
+      "source_note": "ssr: authoritative on-chain read; margin: 0.30% (pre-Atlas-Edit, assumed effective 2026-07-24)"
+    },
+    {
+      "date": "2026-07-22",
+      "ssr_pct": 3.6,
+      "margin_bps": 30,
+      "base_rate_pct": 3.9,
+      "source_note": "ssr: authoritative on-chain read; margin: 0.30% (pre-Atlas-Edit, assumed effective 2026-07-24)"
+    },
+    {
+      "date": "2026-07-23",
+      "ssr_pct": 3.6,
+      "margin_bps": 30,
+      "base_rate_pct": 3.9,
+      "source_note": "ssr: authoritative on-chain read; margin: 0.30% (pre-Atlas-Edit, assumed effective 2026-07-24)"
+    },
+    {
+      "date": "2026-07-24",
+      "ssr_pct": 3.52,
+      "margin_bps": 20,
+      "base_rate_pct": 3.72,
+      "source_note": "ssr: authoritative on-chain read; margin: 0.20% (post-Atlas-Edit, assumed effective 2026-07-24)"
+    },
+    {
+      "date": "2026-07-25",
+      "ssr_pct": 3.52,
+      "margin_bps": 20,
+      "base_rate_pct": 3.72,
+      "source_note": "ssr: authoritative on-chain read; margin: 0.20% (post-Atlas-Edit, assumed effective 2026-07-24)"
+    },
+    {
+      "date": "2026-07-26",
+      "ssr_pct": 3.52,
+      "margin_bps": 20,
+      "base_rate_pct": 3.72,
+      "source_note": "ssr: authoritative on-chain read; margin: 0.20% (post-Atlas-Edit, assumed effective 2026-07-24)"
+    },
+    {
+      "date": "2026-07-27",
+      "ssr_pct": 3.52,
+      "margin_bps": 20,
+      "base_rate_pct": 3.72,
+      "source_note": "ssr: authoritative on-chain read; margin: 0.20% (post-Atlas-Edit, assumed effective 2026-07-24)"
+    },
+    {
+      "date": "2026-07-28",
+      "ssr_pct": 3.52,
+      "margin_bps": 20,
+      "base_rate_pct": 3.72,
+      "source_note": "ssr: authoritative on-chain read; margin: 0.20% (post-Atlas-Edit, assumed effective 2026-07-24)"
+    },
+    {
+      "date": "2026-07-29",
+      "ssr_pct": 3.52,
+      "margin_bps": 20,
+      "base_rate_pct": 3.72,
+      "source_note": "ssr: authoritative on-chain read; margin: 0.20% (post-Atlas-Edit, assumed effective 2026-07-24)"
+    },
+    {
+      "date": "2026-07-30",
+      "ssr_pct": 3.52,
+      "margin_bps": 20,
+      "base_rate_pct": 3.72,
+      "source_note": "ssr: authoritative on-chain read; margin: 0.20% (post-Atlas-Edit, assumed effective 2026-07-24)"
+    },
+    {
+      "date": "2026-07-31",
+      "ssr_pct": 3.52,
+      "margin_bps": 20,
+      "base_rate_pct": 3.72,
+      "source_note": "ssr: authoritative on-chain read; margin: 0.20% (post-Atlas-Edit, assumed effective 2026-07-24)"
+    },
+    {
+      "date": "2026-08-01",
+      "ssr_pct": 3.52,
+      "margin_bps": 20,
+      "base_rate_pct": 3.72,
+      "source_note": "ssr: authoritative on-chain read; margin: 0.20% (post-Atlas-Edit, assumed effective 2026-07-24)"
+    },
+    {
+      "date": "2026-08-02",
+      "ssr_pct": 3.52,
+      "margin_bps": 20,
+      "base_rate_pct": 3.72,
+      "source_note": "ssr: authoritative on-chain read; margin: 0.20% (post-Atlas-Edit, assumed effective 2026-07-24)"
+    },
+    {
+      "date": "2026-08-03",
+      "ssr_pct": 3.52,
+      "margin_bps": 20,
+      "base_rate_pct": 3.72,
+      "source_note": "ssr: authoritative on-chain read; margin: 0.20% (post-Atlas-Edit, assumed effective 2026-07-24)"
+    },
+    {
+      "date": "2026-08-04",
+      "ssr_pct": 3.52,
+      "margin_bps": 20,
+      "base_rate_pct": 3.72,
+      "source_note": "ssr: authoritative on-chain read; margin: 0.20% (post-Atlas-Edit, assumed effective 2026-07-24)"
+    }
+  ],
+  "key_moments": [
+    {
+      "date": "2026-07-24",
+      "event": "ssr_step",
+      "detail": "SSR 3.60% → 3.52% (-8.0 bps, on-chain)",
+      "source": "on_chain"
+    },
+    {
+      "date": "2026-07-24",
+      "event": "margin_change_assumed",
+      "detail": "Atlas Edit margin narrowed 0.30% → 0.20% (−10 bps). ASSUMED effective date — confirm vs Sky governance execution.",
+      "source": "assumption"
+    }
+  ],
+  "summary": {
+    "month_open_base_rate_pct": 3.9,
+    "month_close_base_rate_pct": 3.72,
+    "total_delta_bps": -18,
+    "ssr_open_jul1_pct": 3.6,
+    "ssr_close_jul31_pct": 3.52
+  }
+}
