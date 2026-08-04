@@ -10,14 +10,14 @@
  * The Sky Base Rate = SSR (Sky Savings Rate) + a governance-set margin.
  * SSR is read ON-CHAIN from Sky's sUSDS (SavingsUSDS) contract `ssr()` — a
  * per-second ray accumulator (like Maker's DSR/pot) — at the block nearest
- * each UTC midnight, June 20 → August 5, 2026. SSR APY = (ssr/1e27)^SPY − 1.
+ * each UTC day-end (23:59), June 20 → August 5, 2026. SSR APY = (ssr/1e27)^SPY − 1.
  *
- * The margin is NOT on-chain-derivable here: it is a Sky governance
- * parameter, 0.30% before the Atlas Edit implementation and 0.20% after.
- * We assume implementation on 2026-07-24 (matches SparkLend's second retail
- * step-down); this is the ONE assumed input — every SSR value is an
- * authoritative on-chain read. The margin assumption is flagged per-row in
- * `source_note` and in `metadata.assumptions` so §01 can cite it honestly.
+ * The margin is a Sky governance parameter: 0.30% before the Atlas Edit and
+ * 0.20% after. The Atlas Edit executed on-chain 2026-07-23 14:43 UTC (verified;
+ * see metadata.margin_execution_verification), so with day-end (23:59)
+ * sampling the Base Rate steps to 3.72% on the 2026-07-23 row (the calendar
+ * event day). Every SSR value is an authoritative on-chain read; the Sky
+ * Spread leg is forum-corroborated.
  *
  * Reconciliation: at 2026-07-31, SSR ≈ 3.52% + margin 0.20% = 3.72%, which
  * matches the "3.72%" Spark publicised — confirming 3.72% is the Base Rate,
@@ -49,14 +49,15 @@ const MARGIN_BPS_POST = 20 // post-Atlas-Edit (0.0% Sky Spread + 0.2% Distributi
 // 14:43:23 UTC (block 25596101, tx 0x12435f65…f6619b) — the Sky weekly rate
 // spell that filed the new SSR (3.60%→3.52%) alongside stability-fee duties;
 // the forum-documented Sky Spread 0.1%→0% cut is part of that same weekly
-// Atlas Edit. Because execution was mid-day (after 00:00), the daily 00:00
-// snapshots first show the new margin at the 2026-07-24 snapshot, so the
-// series flips margin on ATLAS_EDIT_SNAPSHOT_DATE (a 00:00-sampling artifact —
-// the real event is 2026-07-23). See metadata.margin_execution_verification.
+// Atlas Edit. With day-end (23:59) sampling, the 2026-07-23 row is sampled
+// after the 14:43 execution, so it already reflects the new margin — the
+// series flips margin on ATLAS_EDIT_SNAPSHOT_DATE = the execution day, and the
+// Base Rate steps to 3.72% on the 2026-07-23 row. See
+// metadata.margin_execution_verification.
 const ATLAS_EDIT_EXECUTION_UTC = "2026-07-23T14:43:23Z"
 const ATLAS_EDIT_EXECUTION_BLOCK = 25596101
 const ATLAS_EDIT_EXECUTION_TX = "0x12435f652eeb08f9de4f4b6402a88de38ac092aef2a6656c87ed0be2f6f6619b"
-const ATLAS_EDIT_SNAPSHOT_DATE = "2026-07-24" // first UTC-00:00 snapshot reflecting the 2026-07-23 execution
+const ATLAS_EDIT_SNAPSHOT_DATE = "2026-07-23" // day whose 23:59 snapshot first reflects the 2026-07-23 14:43 execution
 const STEP_THRESHOLD_BPS = 3 // day-over-day SSR move counted as a step
 
 const PUBLIC_RPCS = [
@@ -137,7 +138,7 @@ async function main(): Promise<void> {
   const rows: DayRow[] = []
   console.log(`[1/2] Reading sUSDS.ssr() at ${days.length} daily blocks …`)
   for (const day of days) {
-    const ts = Math.floor(new Date(`${day}T00:00:00Z`).getTime() / 1000)
+    const ts = Math.floor(new Date(`${day}T23:59:00Z`).getTime() / 1000)
     if (ts > latestTs) break
     const blk = await blockForTs(c, ts, latestNum, latestTs)
     try {
@@ -180,7 +181,7 @@ async function main(): Promise<void> {
   keyMoments.push({
     date: "2026-07-23",
     event: "atlas_edit_executed",
-    detail: `Sky weekly rate spell executed ${ATLAS_EDIT_EXECUTION_UTC} (block ${ATLAS_EDIT_EXECUTION_BLOCK}, tx ${ATLAS_EDIT_EXECUTION_TX}): SSR 3.60%→3.52% filed on-chain (verified). The week-of-2026-07-20 Atlas Edit also narrowed the Sky Spread 0.1%→0% (margin ${(MARGIN_BPS_PRE / 100).toFixed(2)}%→${(MARGIN_BPS_POST / 100).toFixed(2)}%, −${MARGIN_BPS_PRE - MARGIN_BPS_POST} bps) — forum-documented, same weekly spell. Base Rate 3.90%→3.72%. The daily 00:00 series shows it from the 2026-07-24 snapshot.`,
+    detail: `Sky weekly rate spell executed ${ATLAS_EDIT_EXECUTION_UTC} (block ${ATLAS_EDIT_EXECUTION_BLOCK}, tx ${ATLAS_EDIT_EXECUTION_TX}): SSR 3.60%→3.52% filed on-chain (verified). The week-of-2026-07-20 Atlas Edit also narrowed the Sky Spread 0.1%→0% (margin ${(MARGIN_BPS_PRE / 100).toFixed(2)}%→${(MARGIN_BPS_POST / 100).toFixed(2)}%, −${MARGIN_BPS_PRE - MARGIN_BPS_POST} bps) — forum-documented, same weekly spell. Base Rate 3.90%→3.72%. With day-end (23:59) sampling the daily series steps on the 2026-07-23 row.`,
     source: "on_chain_verified + forum",
   })
   keyMoments.sort((a, b) => a.date.localeCompare(b.date))
@@ -195,7 +196,7 @@ async function main(): Promise<void> {
       generated_at_utc: new Date().toISOString().replace(/\.\d{3}Z$/, "Z"),
       source_used: "3 (on-chain sUSDS.ssr) + verified on-chain Atlas Edit execution",
       methodology:
-        `Sky Base Rate = SSR + margin. SSR read on-chain from sUSDS ${SUSDS} ssr() at the block nearest each UTC-midnight, ray → per-second-compounded APY. Margin (Sky Spread + 0.2% Distribution Reward Fee) is a Sky governance parameter.`,
+        `Sky Base Rate = SSR + margin. SSR read on-chain from sUSDS ${SUSDS} ssr() at the block nearest each UTC day-end (23:59), ray → per-second-compounded APY. Margin (Sky Spread + 0.2% Distribution Reward Fee) is a Sky governance parameter.`,
       margin_execution_verification: {
         verified: true,
         execution_utc: ATLAS_EDIT_EXECUTION_UTC,
@@ -207,7 +208,7 @@ async function main(): Promise<void> {
         margin_pre_bps: MARGIN_BPS_PRE,
         margin_post_bps: MARGIN_BPS_POST,
         snapshot_flip_date: ATLAS_EDIT_SNAPSHOT_DATE,
-        note: "Execution was 2026-07-23 14:43 UTC, NOT the previously assumed 2026-07-24. Because it was mid-day, the daily 00:00 series first shows the new Base Rate at the 2026-07-24 snapshot; the 00:00 series values are therefore unchanged. Reconciles to 3.72% at 2026-07-31, matching Spark's public figure.",
+        note: "Execution was 2026-07-23 14:43 UTC (verified on-chain), NOT the previously assumed 2026-07-24. With day-end (23:59) sampling the daily series steps to 3.72% on the 2026-07-23 row — the calendar event day. Reconciles to 3.72% at 2026-07-31, matching Spark's public figure.",
       },
     },
     window: { start_date: WINDOW_START, end_date: WINDOW_END },

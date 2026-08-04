@@ -11,7 +11,7 @@
  * apyBaseBorrow) and /chartLendBorrow/<poolId> is a paid "Upgrade to Pro"
  * endpoint. SparkLend is an Aave-V3 fork, so the authoritative rate is the
  * pool's own `getReserveData(USDC).currentVariableBorrowRate` — a ray
- * (1e27) APR we read at the block nearest each UTC midnight across the
+ * (1e27) APR we read at the block nearest each UTC day-end (23:59) across the
  * window, then convert to a per-second-compounded APY (the convention the
  * Spark UI shows). Supply APY (currentLiquidityRate) + utilization + TVL
  * are read alongside for context. This is more authoritative than any API
@@ -169,7 +169,7 @@ async function main(): Promise<void> {
   const rows: DayRow[] = []
   console.log(`[1/2] Reading ${days.length} daily blocks on-chain …`)
   for (const day of days) {
-    const ts = Math.floor(new Date(`${day}T00:00:00Z`).getTime() / 1000)
+    const ts = Math.floor(new Date(`${day}T23:59:00Z`).getTime() / 1000)
     if (ts > latestTs) break
     const blk = await blockForTs(c, ts, latestNum, latestTs)
     try {
@@ -233,7 +233,7 @@ async function main(): Promise<void> {
       script: "scripts/query-spark-usdc-borrow-daily.ts",
       generated_at_utc: new Date().toISOString().replace(/\.\d{3}Z$/, "Z"),
       methodology: "on_chain_sparklend_getReserveData",
-      source: `SparkLend Pool ${SPARK_POOL} getReserveData(${USDC}).currentVariableBorrowRate + currentLiquidityRate, read at the block nearest each UTC-midnight; ray APR → per-second-compounded APY. Utilization = variableDebt.totalSupply / aToken.totalSupply. USDC priced at $${USDC_PRICE_USD.toFixed(2)}.`,
+      source: `SparkLend Pool ${SPARK_POOL} getReserveData(${USDC}).currentVariableBorrowRate + currentLiquidityRate, read at the block nearest each UTC day-end (23:59); ray APR → per-second-compounded APY. Utilization = variableDebt.totalSupply / aToken.totalSupply. USDC priced at $${USDC_PRICE_USD.toFixed(2)}.`,
       defillama_pool_id: "65ce8276-b4d9-41ba-9f6f-21fc374cf9bc",
       note: "DefiLlama /chart carries supply APY only and /chartLendBorrow is paywalled, so the borrow rate is read on-chain.",
     },

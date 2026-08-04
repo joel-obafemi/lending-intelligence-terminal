@@ -1,9 +1,9 @@
 {
   "metadata": {
     "script": "scripts/query-sky-base-rate-daily.ts",
-    "generated_at_utc": "2026-08-04T07:24:08Z",
+    "generated_at_utc": "2026-08-04T07:33:27Z",
     "source_used": "3 (on-chain sUSDS.ssr) + verified on-chain Atlas Edit execution",
-    "methodology": "Sky Base Rate = SSR + margin. SSR read on-chain from sUSDS 0xa3931d71877C0E7a3148CB7Eb4463524FEc27fbD ssr() at the block nearest each UTC-midnight, ray → per-second-compounded APY. Margin (Sky Spread + 0.2% Distribution Reward Fee) is a Sky governance parameter.",
+    "methodology": "Sky Base Rate = SSR + margin. SSR read on-chain from sUSDS 0xa3931d71877C0E7a3148CB7Eb4463524FEc27fbD ssr() at the block nearest each UTC day-end (23:59), ray → per-second-compounded APY. Margin (Sky Spread + 0.2% Distribution Reward Fee) is a Sky governance parameter.",
     "margin_execution_verification": {
       "verified": true,
       "execution_utc": "2026-07-23T14:43:23Z",
@@ -13,8 +13,8 @@
       "sky_spread_change": "0.1% → 0% (margin 0.30% → 0.20%): documented in the week-of-2026-07-20 Atlas Edit (forum.skyeco.com); the 2026-07-23 spell is that cycle's on-chain execution, so best-dated to the same tx. Forum-corroborated — a standalone on-chain Sky-Spread parameter event was not isolated.",
       "margin_pre_bps": 30,
       "margin_post_bps": 20,
-      "snapshot_flip_date": "2026-07-24",
-      "note": "Execution was 2026-07-23 14:43 UTC, NOT the previously assumed 2026-07-24. Because it was mid-day, the daily 00:00 series first shows the new Base Rate at the 2026-07-24 snapshot; the 00:00 series values are therefore unchanged. Reconciles to 3.72% at 2026-07-31, matching Spark's public figure."
+      "snapshot_flip_date": "2026-07-23",
+      "note": "Execution was 2026-07-23 14:43 UTC (verified on-chain), NOT the previously assumed 2026-07-24. With day-end (23:59) sampling the daily series steps to 3.72% on the 2026-07-23 row — the calendar event day. Reconciles to 3.72% at 2026-07-31, matching Spark's public figure."
     }
   },
   "window": {
@@ -255,10 +255,10 @@
     },
     {
       "date": "2026-07-23",
-      "ssr_pct": 3.6,
-      "margin_bps": 30,
-      "base_rate_pct": 3.9,
-      "source_note": "ssr: authoritative on-chain read; margin: 0.30% (pre-Atlas-Edit; execution verified on-chain 2026-07-23 14:43 UTC)"
+      "ssr_pct": 3.52,
+      "margin_bps": 20,
+      "base_rate_pct": 3.72,
+      "source_note": "ssr: authoritative on-chain read; margin: 0.20% (post-Atlas-Edit; execution verified on-chain 2026-07-23 14:43 UTC)"
     },
     {
       "date": "2026-07-24",
@@ -336,27 +336,20 @@
       "margin_bps": 20,
       "base_rate_pct": 3.72,
       "source_note": "ssr: authoritative on-chain read; margin: 0.20% (post-Atlas-Edit; execution verified on-chain 2026-07-23 14:43 UTC)"
-    },
-    {
-      "date": "2026-08-04",
-      "ssr_pct": 3.52,
-      "margin_bps": 20,
-      "base_rate_pct": 3.72,
-      "source_note": "ssr: authoritative on-chain read; margin: 0.20% (post-Atlas-Edit; execution verified on-chain 2026-07-23 14:43 UTC)"
     }
   ],
   "key_moments": [
     {
       "date": "2026-07-23",
-      "event": "atlas_edit_executed",
-      "detail": "Sky weekly rate spell executed 2026-07-23T14:43:23Z (block 25596101, tx 0x12435f652eeb08f9de4f4b6402a88de38ac092aef2a6656c87ed0be2f6f6619b): SSR 3.60%→3.52% filed on-chain (verified). The week-of-2026-07-20 Atlas Edit also narrowed the Sky Spread 0.1%→0% (margin 0.30%→0.20%, −10 bps) — forum-documented, same weekly spell. Base Rate 3.90%→3.72%. The daily 00:00 series shows it from the 2026-07-24 snapshot.",
-      "source": "on_chain_verified + forum"
-    },
-    {
-      "date": "2026-07-24",
       "event": "ssr_step",
       "detail": "SSR 3.60% → 3.52% (-8.0 bps, on-chain)",
       "source": "on_chain"
+    },
+    {
+      "date": "2026-07-23",
+      "event": "atlas_edit_executed",
+      "detail": "Sky weekly rate spell executed 2026-07-23T14:43:23Z (block 25596101, tx 0x12435f652eeb08f9de4f4b6402a88de38ac092aef2a6656c87ed0be2f6f6619b): SSR 3.60%→3.52% filed on-chain (verified). The week-of-2026-07-20 Atlas Edit also narrowed the Sky Spread 0.1%→0% (margin 0.30%→0.20%, −10 bps) — forum-documented, same weekly spell. Base Rate 3.90%→3.72%. With day-end (23:59) sampling the daily series steps on the 2026-07-23 row.",
+      "source": "on_chain_verified + forum"
     }
   ],
   "summary": {
