@@ -1,0 +1,723 @@
+{
+  "metadata": {
+    "script": "query-spark-reserve-mechanism.ts",
+    "run_at_utc": "2026-08-04T11:08:16Z",
+    "methodology": "on_chain_sparklend_irm",
+    "spark_pool_address": "0xC13e21B648A5Ee794902342038FF3aDAB66BE987",
+    "susds_address": "0xa3931d71877C0E7a3148CB7Eb4463524FEc27fbD",
+    "sky_event_dates_probed": [
+      "2026-07-06",
+      "2026-07-23"
+    ],
+    "reserve_count": 18
+  },
+  "reserves": [
+    {
+      "asset_symbol": "DAI",
+      "asset_address": "0x6B175474E89094C44Da98b954EedeAC495271d0F",
+      "reserve_address": "0x6B175474E89094C44Da98b954EedeAC495271d0F",
+      "irm_strategy_address": "0x8a95998639A34462A1FdAaaA5506F66F90Ef2fDd",
+      "irm_type": "sky_linked",
+      "sky_linked_evidence": [
+        "RATE_SOURCE 0x57027B6262083E3aC3c8B2EB99f7e8005f669973 bytecode references sUSDS 0xa3931d71877C0E7a3148CB7Eb4463524FEc27fbD"
+      ],
+      "borrow_rate_pct_by_date": {
+        "2026-07-01": 4.0224,
+        "2026-07-05": 4.0225,
+        "2026-07-06": 4.0223,
+        "2026-07-22": 4.0223,
+        "2026-07-24": 3.8379,
+        "2026-07-31": 3.838
+      },
+      "utilization_pct_by_date": {
+        "2026-07-01": 65.99,
+        "2026-07-05": 65.99,
+        "2026-07-06": 65.98,
+        "2026-07-22": 65.98,
+        "2026-07-24": 64.05,
+        "2026-07-31": 64.05
+      },
+      "moved_jul23": true,
+      "moved_jul6": false,
+      "moved_on_sky_event_days": true,
+      "notes": "rate moved Jul22→24 (4.0223%→3.8379%) with util stable"
+    },
+    {
+      "asset_symbol": "sDAI",
+      "asset_address": "0x83F20F44975D03b1b09e64809B757c47f942BEeA",
+      "reserve_address": "0x83F20F44975D03b1b09e64809B757c47f942BEeA",
+      "irm_strategy_address": "0xeC4cf692c18E62159a39704Aa1Db82ca2306fF90",
+      "irm_type": "utilization_curve",
+      "sky_linked_evidence": null,
+      "borrow_rate_pct_by_date": {
+        "2026-07-01": 1.005,
+        "2026-07-05": 1.005,
+        "2026-07-06": 1.005,
+        "2026-07-22": 1.005,
+        "2026-07-24": 1.005,
+        "2026-07-31": 1.005
+      },
+      "utilization_pct_by_date": {
+        "2026-07-01": 0,
+        "2026-07-05": 0,
+        "2026-07-06": 0,
+        "2026-07-22": 0,
+        "2026-07-24": 0,
+        "2026-07-31": 0
+      },
+      "moved_jul23": false,
+      "moved_jul6": false,
+      "moved_on_sky_event_days": false,
+      "notes": "no rate move on probed event days"
+    },
+    {
+      "asset_symbol": "USDC",
+      "asset_address": "0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48",
+      "reserve_address": "0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48",
+      "irm_strategy_address": "0xDE99e49E9e42B1d8490C38926e6C9A79010e6eF2",
+      "irm_type": "sky_linked",
+      "sky_linked_evidence": [
+        "RATE_SOURCE 0x57027B6262083E3aC3c8B2EB99f7e8005f669973 bytecode references sUSDS 0xa3931d71877C0E7a3148CB7Eb4463524FEc27fbD"
+      ],
+      "borrow_rate_pct_by_date": {
+        "2026-07-01": 4.6125,
+        "2026-07-05": 4.6125,
+        "2026-07-06": 4.417,
+        "2026-07-22": 4.417,
+        "2026-07-24": 4.2791,
+        "2026-07-31": 4.2791
+      },
+      "utilization_pct_by_date": {
+        "2026-07-01": 89.5,
+        "2026-07-05": 89.51,
+        "2026-07-06": 93.37,
+        "2026-07-22": 93.37,
+        "2026-07-24": 92.08,
+        "2026-07-31": 92.09
+      },
+      "moved_jul23": true,
+      "moved_jul6": true,
+      "moved_on_sky_event_days": true,
+      "notes": "rate moved Jul22→24 (4.417%→4.2791%) with util stable; rate moved Jul5→6 (4.6125%→4.417%) with util stable"
+    },
+    {
+      "asset_symbol": "WETH",
+      "asset_address": "0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2",
+      "reserve_address": "0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2",
+      "irm_strategy_address": "0xDFB6206FfC5BA5B48D2852370ee6A1bf6887476a",
+      "irm_type": "utilization_curve",
+      "sky_linked_evidence": null,
+      "borrow_rate_pct_by_date": {
+        "2026-07-01": 2.0847,
+        "2026-07-05": 2.0074,
+        "2026-07-06": 2.0353,
+        "2026-07-22": 2.0241,
+        "2026-07-24": 2.0126,
+        "2026-07-31": 2.0869
+      },
+      "utilization_pct_by_date": {
+        "2026-07-01": 84.88,
+        "2026-07-05": 83.87,
+        "2026-07-06": 85.81,
+        "2026-07-22": 85.8,
+        "2026-07-24": 86.57,
+        "2026-07-31": 86.95
+      },
+      "moved_jul23": false,
+      "moved_jul6": false,
+      "moved_on_sky_event_days": false,
+      "notes": "no rate move on probed event days"
+    },
+    {
+      "asset_symbol": "wstETH",
+      "asset_address": "0x7f39C581F595B53c5cb19bD0b3f8dA6c935E2Ca0",
+      "reserve_address": "0x7f39C581F595B53c5cb19bD0b3f8dA6c935E2Ca0",
+      "irm_strategy_address": "0xDD94eC5C14407e0bd6760c8eBDcD4Ec1327D3656",
+      "irm_type": "utilization_curve",
+      "sky_linked_evidence": null,
+      "borrow_rate_pct_by_date": {
+        "2026-07-01": 0,
+        "2026-07-05": 0,
+        "2026-07-06": 0,
+        "2026-07-22": 0,
+        "2026-07-24": 0,
+        "2026-07-31": 0
+      },
+      "utilization_pct_by_date": {
+        "2026-07-01": 0,
+        "2026-07-05": 0,
+        "2026-07-06": 0,
+        "2026-07-22": 0,
+        "2026-07-24": 0,
+        "2026-07-31": 0
+      },
+      "moved_jul23": false,
+      "moved_jul6": false,
+      "moved_on_sky_event_days": false,
+      "notes": "no rate move on probed event days"
+    },
+    {
+      "asset_symbol": "WBTC",
+      "asset_address": "0x2260FAC5E5542a773Aa44fBCfeDf7C193bc2C599",
+      "reserve_address": "0x2260FAC5E5542a773Aa44fBCfeDf7C193bc2C599",
+      "irm_strategy_address": "0xD2139d6d63Acb1e7Cc91cE32bbD86eFb17eBEe46",
+      "irm_type": "utilization_curve",
+      "sky_linked_evidence": null,
+      "borrow_rate_pct_by_date": {
+        "2026-07-01": 0.0045,
+        "2026-07-05": 0.0051,
+        "2026-07-06": 0.0051,
+        "2026-07-22": 0.0053,
+        "2026-07-24": 0.0051,
+        "2026-07-31": 0.0047
+      },
+      "utilization_pct_by_date": {
+        "2026-07-01": 0.14,
+        "2026-07-05": 0.15,
+        "2026-07-06": 0.15,
+        "2026-07-22": 0.16,
+        "2026-07-24": 0.15,
+        "2026-07-31": 0.14
+      },
+      "moved_jul23": false,
+      "moved_jul6": false,
+      "moved_on_sky_event_days": false,
+      "notes": "no rate move on probed event days"
+    },
+    {
+      "asset_symbol": "GNO",
+      "asset_address": "0x6810e776880C02933D47DB1b9fc05908e5386b96",
+      "reserve_address": "0x6810e776880C02933D47DB1b9fc05908e5386b96",
+      "irm_strategy_address": "0x554265A713D6746A62d86A797254590784D436AA",
+      "irm_type": "utilization_curve",
+      "sky_linked_evidence": null,
+      "borrow_rate_pct_by_date": {
+        "2026-07-01": 1.005,
+        "2026-07-05": 1.005,
+        "2026-07-06": 1.005,
+        "2026-07-22": 1.005,
+        "2026-07-24": 1.005,
+        "2026-07-31": 1.005
+      },
+      "utilization_pct_by_date": {
+        "2026-07-01": null,
+        "2026-07-05": null,
+        "2026-07-06": null,
+        "2026-07-22": null,
+        "2026-07-24": null,
+        "2026-07-31": null
+      },
+      "moved_jul23": false,
+      "moved_jul6": false,
+      "moved_on_sky_event_days": false,
+      "notes": "no rate move on probed event days"
+    },
+    {
+      "asset_symbol": "rETH",
+      "asset_address": "0xae78736Cd615f374D3085123A210448E74Fc6393",
+      "reserve_address": "0xae78736Cd615f374D3085123A210448E74Fc6393",
+      "irm_strategy_address": "0xc1077B2De7b328A84c66A3e419369F8537DC1cFe",
+      "irm_type": "utilization_curve",
+      "sky_linked_evidence": null,
+      "borrow_rate_pct_by_date": {
+        "2026-07-01": 0.2523,
+        "2026-07-05": 0.2523,
+        "2026-07-06": 0.2523,
+        "2026-07-22": 0.2523,
+        "2026-07-24": 0.2523,
+        "2026-07-31": 0.2523
+      },
+      "utilization_pct_by_date": {
+        "2026-07-01": 0.01,
+        "2026-07-05": 0.01,
+        "2026-07-06": 0.01,
+        "2026-07-22": 0.01,
+        "2026-07-24": 0.01,
+        "2026-07-31": 0.01
+      },
+      "moved_jul23": false,
+      "moved_jul6": false,
+      "moved_on_sky_event_days": false,
+      "notes": "no rate move on probed event days"
+    },
+    {
+      "asset_symbol": "USDT",
+      "asset_address": "0xdAC17F958D2ee523a2206206994597C13D831ec7",
+      "reserve_address": "0xdAC17F958D2ee523a2206206994597C13D831ec7",
+      "irm_strategy_address": "0x4E494988E68e6Fc52309BE4937869e27F0C304AC",
+      "irm_type": "sky_linked",
+      "sky_linked_evidence": [
+        "RATE_SOURCE 0x57027B6262083E3aC3c8B2EB99f7e8005f669973 bytecode references sUSDS 0xa3931d71877C0E7a3148CB7Eb4463524FEc27fbD"
+      ],
+      "borrow_rate_pct_by_date": {
+        "2026-07-01": 3.5787,
+        "2026-07-05": 3.5787,
+        "2026-07-06": 3.5787,
+        "2026-07-22": 4.0297,
+        "2026-07-24": 3.5435,
+        "2026-07-31": 3.5437
+      },
+      "utilization_pct_by_date": {
+        "2026-07-01": 82.76,
+        "2026-07-05": 82.76,
+        "2026-07-06": 82.75,
+        "2026-07-22": 92.98,
+        "2026-07-24": 83.55,
+        "2026-07-31": 83.56
+      },
+      "moved_jul23": true,
+      "moved_jul6": false,
+      "moved_on_sky_event_days": false,
+      "notes": "rate moved Jul22→24 (4.0297%→3.5435%) with util also moving"
+    },
+    {
+      "asset_symbol": "weETH",
+      "asset_address": "0xCd5fE23C85820F7B72D0926FC9b05b43E359b7ee",
+      "reserve_address": "0xCd5fE23C85820F7B72D0926FC9b05b43E359b7ee",
+      "irm_strategy_address": "0xDe5Dde40E12763464dc859A9F03793988dE953FB",
+      "irm_type": "utilization_curve",
+      "sky_linked_evidence": null,
+      "borrow_rate_pct_by_date": {
+        "2026-07-01": 5.1271,
+        "2026-07-05": 5.1271,
+        "2026-07-06": 5.1271,
+        "2026-07-22": 5.1271,
+        "2026-07-24": 5.1271,
+        "2026-07-31": 5.1271
+      },
+      "utilization_pct_by_date": {
+        "2026-07-01": 0,
+        "2026-07-05": 0,
+        "2026-07-06": 0,
+        "2026-07-22": 0,
+        "2026-07-24": 0,
+        "2026-07-31": 0
+      },
+      "moved_jul23": false,
+      "moved_jul6": false,
+      "moved_on_sky_event_days": false,
+      "notes": "no rate move on probed event days"
+    },
+    {
+      "asset_symbol": "cbBTC",
+      "asset_address": "0xcbB7C0000aB88B473b1f5aFd9ef808440eed33Bf",
+      "reserve_address": "0xcbB7C0000aB88B473b1f5aFd9ef808440eed33Bf",
+      "irm_strategy_address": "0x75a1397c72e2965447D2282Dd99eFC75cC080396",
+      "irm_type": "utilization_curve",
+      "sky_linked_evidence": null,
+      "borrow_rate_pct_by_date": {
+        "2026-07-01": 0.044,
+        "2026-07-05": 0.0229,
+        "2026-07-06": 0.0225,
+        "2026-07-22": 0.0239,
+        "2026-07-24": 0.0221,
+        "2026-07-31": 0.0276
+      },
+      "utilization_pct_by_date": {
+        "2026-07-01": 3.52,
+        "2026-07-05": 1.83,
+        "2026-07-06": 1.8,
+        "2026-07-22": 1.91,
+        "2026-07-24": 1.77,
+        "2026-07-31": 2.21
+      },
+      "moved_jul23": false,
+      "moved_jul6": false,
+      "moved_on_sky_event_days": false,
+      "notes": "no rate move on probed event days"
+    },
+    {
+      "asset_symbol": "sUSDS",
+      "asset_address": "0xa3931d71877C0E7a3148CB7Eb4463524FEc27fbD",
+      "reserve_address": "0xa3931d71877C0E7a3148CB7Eb4463524FEc27fbD",
+      "irm_strategy_address": "0xa8632b2f0A3C5327a77ee51a47A168B6490A7178",
+      "irm_type": "utilization_curve",
+      "sky_linked_evidence": null,
+      "borrow_rate_pct_by_date": {
+        "2026-07-01": 0,
+        "2026-07-05": 0,
+        "2026-07-06": 0,
+        "2026-07-22": 0,
+        "2026-07-24": 0,
+        "2026-07-31": 0
+      },
+      "utilization_pct_by_date": {
+        "2026-07-01": 0,
+        "2026-07-05": 0,
+        "2026-07-06": 0,
+        "2026-07-22": 0,
+        "2026-07-24": 0,
+        "2026-07-31": 0
+      },
+      "moved_jul23": false,
+      "moved_jul6": false,
+      "moved_on_sky_event_days": false,
+      "notes": "no rate move on probed event days"
+    },
+    {
+      "asset_symbol": "USDS",
+      "asset_address": "0xdC035D45d973E3EC169d2276DDab16f1e407384F",
+      "reserve_address": "0xdC035D45d973E3EC169d2276DDab16f1e407384F",
+      "irm_strategy_address": "0x8a95998639A34462A1FdAaaA5506F66F90Ef2fDd",
+      "irm_type": "sky_linked",
+      "sky_linked_evidence": [
+        "RATE_SOURCE 0x57027B6262083E3aC3c8B2EB99f7e8005f669973 bytecode references sUSDS 0xa3931d71877C0E7a3148CB7Eb4463524FEc27fbD"
+      ],
+      "borrow_rate_pct_by_date": {
+        "2026-07-01": 3.9,
+        "2026-07-05": 3.9001,
+        "2026-07-06": 3.8999,
+        "2026-07-22": 3.8999,
+        "2026-07-24": 3.7156,
+        "2026-07-31": 3.7157
+      },
+      "utilization_pct_by_date": {
+        "2026-07-01": 63.95,
+        "2026-07-05": 63.95,
+        "2026-07-06": 63.94,
+        "2026-07-22": 63.94,
+        "2026-07-24": 61.98,
+        "2026-07-31": 61.98
+      },
+      "moved_jul23": true,
+      "moved_jul6": false,
+      "moved_on_sky_event_days": true,
+      "notes": "rate moved Jul22→24 (3.8999%→3.7156%) with util stable"
+    },
+    {
+      "asset_symbol": "LBTC",
+      "asset_address": "0x8236a87084f8B84306f72007F36F2618A5634494",
+      "reserve_address": "0x8236a87084f8B84306f72007F36F2618A5634494",
+      "irm_strategy_address": "0xDe5Dde40E12763464dc859A9F03793988dE953FB",
+      "irm_type": "utilization_curve",
+      "sky_linked_evidence": null,
+      "borrow_rate_pct_by_date": {
+        "2026-07-01": 5.1271,
+        "2026-07-05": 5.1271,
+        "2026-07-06": 5.1271,
+        "2026-07-22": 5.1271,
+        "2026-07-24": 5.1271,
+        "2026-07-31": 5.1271
+      },
+      "utilization_pct_by_date": {
+        "2026-07-01": 0,
+        "2026-07-05": 0,
+        "2026-07-06": 0,
+        "2026-07-22": 0,
+        "2026-07-24": 0,
+        "2026-07-31": 0
+      },
+      "moved_jul23": false,
+      "moved_jul6": false,
+      "moved_on_sky_event_days": false,
+      "notes": "no rate move on probed event days"
+    },
+    {
+      "asset_symbol": "tBTC",
+      "asset_address": "0x18084fbA666a33d37592fA2633fD49a74DD93a88",
+      "reserve_address": "0x18084fbA666a33d37592fA2633fD49a74DD93a88",
+      "irm_strategy_address": "0x75a1397c72e2965447D2282Dd99eFC75cC080396",
+      "irm_type": "utilization_curve",
+      "sky_linked_evidence": null,
+      "borrow_rate_pct_by_date": {
+        "2026-07-01": 0,
+        "2026-07-05": 0,
+        "2026-07-06": 0,
+        "2026-07-22": 0,
+        "2026-07-24": 0,
+        "2026-07-31": 0
+      },
+      "utilization_pct_by_date": {
+        "2026-07-01": 0,
+        "2026-07-05": 0,
+        "2026-07-06": 0,
+        "2026-07-22": 0,
+        "2026-07-24": 0,
+        "2026-07-31": 0
+      },
+      "moved_jul23": false,
+      "moved_jul6": false,
+      "moved_on_sky_event_days": false,
+      "notes": "no rate move on probed event days"
+    },
+    {
+      "asset_symbol": "ezETH",
+      "asset_address": "0xbf5495Efe5DB9ce00f80364C8B423567e58d2110",
+      "reserve_address": "0xbf5495Efe5DB9ce00f80364C8B423567e58d2110",
+      "irm_strategy_address": "0xDe5Dde40E12763464dc859A9F03793988dE953FB",
+      "irm_type": "utilization_curve",
+      "sky_linked_evidence": null,
+      "borrow_rate_pct_by_date": {
+        "2026-07-01": 5.1271,
+        "2026-07-05": 5.1271,
+        "2026-07-06": 5.1271,
+        "2026-07-22": 5.1271,
+        "2026-07-24": 5.1271,
+        "2026-07-31": 5.1271
+      },
+      "utilization_pct_by_date": {
+        "2026-07-01": 0,
+        "2026-07-05": 0,
+        "2026-07-06": 0,
+        "2026-07-22": 0,
+        "2026-07-24": 0,
+        "2026-07-31": 0
+      },
+      "moved_jul23": false,
+      "moved_jul6": false,
+      "moved_on_sky_event_days": false,
+      "notes": "no rate move on probed event days"
+    },
+    {
+      "asset_symbol": "rsETH",
+      "asset_address": "0xA1290d69c65A6Fe4DF752f95823fae25cB99e5A7",
+      "reserve_address": "0xA1290d69c65A6Fe4DF752f95823fae25cB99e5A7",
+      "irm_strategy_address": "0xDe5Dde40E12763464dc859A9F03793988dE953FB",
+      "irm_type": "utilization_curve",
+      "sky_linked_evidence": null,
+      "borrow_rate_pct_by_date": {
+        "2026-07-01": 5.1271,
+        "2026-07-05": 5.1271,
+        "2026-07-06": 5.1271,
+        "2026-07-22": 5.1271,
+        "2026-07-24": 5.1271,
+        "2026-07-31": 5.1271
+      },
+      "utilization_pct_by_date": {
+        "2026-07-01": 0,
+        "2026-07-05": 0,
+        "2026-07-06": 0,
+        "2026-07-22": 0,
+        "2026-07-24": 0,
+        "2026-07-31": 0
+      },
+      "moved_jul23": false,
+      "moved_jul6": false,
+      "moved_on_sky_event_days": false,
+      "notes": "no rate move on probed event days"
+    },
+    {
+      "asset_symbol": "PYUSD",
+      "asset_address": "0x6c3ea9036406852006290770BEdFcAbA0e23A0e8",
+      "reserve_address": "0x6c3ea9036406852006290770BEdFcAbA0e23A0e8",
+      "irm_strategy_address": "0xDF7dedCfd522B1ee8da2c8526f642745800c8035",
+      "irm_type": "sky_linked",
+      "sky_linked_evidence": [
+        "RATE_SOURCE 0x57027B6262083E3aC3c8B2EB99f7e8005f669973 bytecode references sUSDS 0xa3931d71877C0E7a3148CB7Eb4463524FEc27fbD",
+        "getBaseVariableBorrowRateSpread() present (RateTarget strategy)"
+      ],
+      "borrow_rate_pct_by_date": {
+        "2026-07-01": 3.7719,
+        "2026-07-05": 3.7719,
+        "2026-07-06": 3.7719,
+        "2026-07-22": 3.7863,
+        "2026-07-24": 3.7062,
+        "2026-07-31": 3.7151
+      },
+      "utilization_pct_by_date": {
+        "2026-07-01": 7.87,
+        "2026-07-05": 7.88,
+        "2026-07-06": 7.88,
+        "2026-07-22": 8.53,
+        "2026-07-24": 8.54,
+        "2026-07-31": 8.94
+      },
+      "moved_jul23": true,
+      "moved_jul6": false,
+      "moved_on_sky_event_days": true,
+      "notes": "rate moved Jul22→24 (3.7863%→3.7062%) with util stable"
+    }
+  ],
+  "irm_strategies": [
+    {
+      "address": "0x8a95998639A34462A1FdAaaA5506F66F90Ef2fDd",
+      "type": "sky_linked",
+      "evidence": [
+        "RATE_SOURCE 0x57027B6262083E3aC3c8B2EB99f7e8005f669973 bytecode references sUSDS 0xa3931d71877C0E7a3148CB7Eb4463524FEc27fbD"
+      ],
+      "probes": {
+        "getVariableRateSlope1": "47094644783474038423088000",
+        "getVariableRateSlope2": "150000000000000000000000000",
+        "getBaseVariableBorrowRate": "0",
+        "OPTIMAL_USAGE_RATIO": "800000000000000000000000000",
+        "getMaxVariableBorrowRate": "197094644783474038423088000",
+        "RATE_SOURCE": "0x57027B6262083E3aC3c8B2EB99f7e8005f669973",
+        "_rate_source_resolved": "0x57027B6262083E3aC3c8B2EB99f7e8005f669973"
+      }
+    },
+    {
+      "address": "0xeC4cf692c18E62159a39704Aa1Db82ca2306fF90",
+      "type": "utilization_curve",
+      "evidence": [],
+      "probes": {
+        "getVariableRateSlope1": "0",
+        "getVariableRateSlope2": "0",
+        "getBaseVariableBorrowRate": "10000000000000000000000000",
+        "OPTIMAL_USAGE_RATIO": "1000000000000000000000000000",
+        "getMaxVariableBorrowRate": "10000000000000000000000000"
+      }
+    },
+    {
+      "address": "0xDE99e49E9e42B1d8490C38926e6C9A79010e6eF2",
+      "type": "sky_linked",
+      "evidence": [
+        "RATE_SOURCE 0x57027B6262083E3aC3c8B2EB99f7e8005f669973 bytecode references sUSDS 0xa3931d71877C0E7a3148CB7Eb4463524FEc27fbD"
+      ],
+      "probes": {
+        "getVariableRateSlope1": "44594644783474038423088000",
+        "getVariableRateSlope2": "150000000000000000000000000",
+        "getBaseVariableBorrowRate": "0",
+        "OPTIMAL_USAGE_RATIO": "980000000000000000000000000",
+        "getMaxVariableBorrowRate": "194594644783474038423088000",
+        "RATE_SOURCE": "0x57027B6262083E3aC3c8B2EB99f7e8005f669973",
+        "_rate_source_resolved": "0x57027B6262083E3aC3c8B2EB99f7e8005f669973"
+      }
+    },
+    {
+      "address": "0xDFB6206FfC5BA5B48D2852370ee6A1bf6887476a",
+      "type": "utilization_curve",
+      "evidence": [],
+      "probes": {
+        "getVariableRateSlope1": "20667411677152117000000000",
+        "getVariableRateSlope2": "750000000000000000000000000",
+        "getBaseVariableBorrowRate": "0",
+        "OPTIMAL_USAGE_RATIO": "900000000000000000000000000",
+        "getMaxVariableBorrowRate": "770667411677152117000000000",
+        "RATE_SOURCE": "0xaBc99f366D2bE1f4e5b8DFC0F561a751dd836246",
+        "_rate_source_resolved": "0xaBc99f366D2bE1f4e5b8DFC0F561a751dd836246"
+      }
+    },
+    {
+      "address": "0xDD94eC5C14407e0bd6760c8eBDcD4Ec1327D3656",
+      "type": "utilization_curve",
+      "evidence": [],
+      "probes": {
+        "getVariableRateSlope1": "20000000000000000000000000",
+        "getVariableRateSlope2": "2000000000000000000000000000",
+        "getBaseVariableBorrowRate": "0",
+        "OPTIMAL_USAGE_RATIO": "700000000000000000000000000",
+        "getMaxVariableBorrowRate": "2020000000000000000000000000"
+      }
+    },
+    {
+      "address": "0xD2139d6d63Acb1e7Cc91cE32bbD86eFb17eBEe46",
+      "type": "utilization_curve",
+      "evidence": [],
+      "probes": {
+        "getVariableRateSlope1": "20000000000000000000000000",
+        "getVariableRateSlope2": "3000000000000000000000000000",
+        "getBaseVariableBorrowRate": "0",
+        "OPTIMAL_USAGE_RATIO": "600000000000000000000000000",
+        "getMaxVariableBorrowRate": "3020000000000000000000000000"
+      }
+    },
+    {
+      "address": "0x554265A713D6746A62d86A797254590784D436AA",
+      "type": "utilization_curve",
+      "evidence": [],
+      "probes": {
+        "getVariableRateSlope1": "0",
+        "getVariableRateSlope2": "0",
+        "getBaseVariableBorrowRate": "10000000000000000000000000",
+        "OPTIMAL_USAGE_RATIO": "1000000000000000000000000000",
+        "getMaxVariableBorrowRate": "10000000000000000000000000"
+      }
+    },
+    {
+      "address": "0xc1077B2De7b328A84c66A3e419369F8537DC1cFe",
+      "type": "utilization_curve",
+      "evidence": [],
+      "probes": {
+        "getVariableRateSlope1": "70000000000000000000000000",
+        "getVariableRateSlope2": "3000000000000000000000000000",
+        "getBaseVariableBorrowRate": "2500000000000000000000000",
+        "OPTIMAL_USAGE_RATIO": "450000000000000000000000000",
+        "getMaxVariableBorrowRate": "3072500000000000000000000000"
+      }
+    },
+    {
+      "address": "0x4E494988E68e6Fc52309BE4937869e27F0C304AC",
+      "type": "sky_linked",
+      "evidence": [
+        "RATE_SOURCE 0x57027B6262083E3aC3c8B2EB99f7e8005f669973 bytecode references sUSDS 0xa3931d71877C0E7a3148CB7Eb4463524FEc27fbD"
+      ],
+      "probes": {
+        "getVariableRateSlope1": "39594644783474038423088000",
+        "getVariableRateSlope2": "150000000000000000000000000",
+        "getBaseVariableBorrowRate": "0",
+        "OPTIMAL_USAGE_RATIO": "950000000000000000000000000",
+        "getMaxVariableBorrowRate": "189594644783474038423088000",
+        "RATE_SOURCE": "0x57027B6262083E3aC3c8B2EB99f7e8005f669973",
+        "_rate_source_resolved": "0x57027B6262083E3aC3c8B2EB99f7e8005f669973"
+      }
+    },
+    {
+      "address": "0xDe5Dde40E12763464dc859A9F03793988dE953FB",
+      "type": "utilization_curve",
+      "evidence": [],
+      "probes": {
+        "getVariableRateSlope1": "150000000000000000000000000",
+        "getVariableRateSlope2": "3000000000000000000000000000",
+        "getBaseVariableBorrowRate": "50000000000000000000000000",
+        "OPTIMAL_USAGE_RATIO": "450000000000000000000000000",
+        "getMaxVariableBorrowRate": "3200000000000000000000000000"
+      }
+    },
+    {
+      "address": "0x75a1397c72e2965447D2282Dd99eFC75cC080396",
+      "type": "utilization_curve",
+      "evidence": [],
+      "probes": {
+        "getVariableRateSlope1": "10000000000000000000000000",
+        "getVariableRateSlope2": "3000000000000000000000000000",
+        "getBaseVariableBorrowRate": "0",
+        "OPTIMAL_USAGE_RATIO": "800000000000000000000000000",
+        "getMaxVariableBorrowRate": "3010000000000000000000000000"
+      }
+    },
+    {
+      "address": "0xa8632b2f0A3C5327a77ee51a47A168B6490A7178",
+      "type": "utilization_curve",
+      "evidence": [],
+      "probes": {
+        "getVariableRateSlope1": "20000000000000000000000000",
+        "getVariableRateSlope2": "3000000000000000000000000000",
+        "getBaseVariableBorrowRate": "0",
+        "OPTIMAL_USAGE_RATIO": "800000000000000000000000000",
+        "getMaxVariableBorrowRate": "3020000000000000000000000000"
+      }
+    },
+    {
+      "address": "0xDF7dedCfd522B1ee8da2c8526f642745800c8035",
+      "type": "sky_linked",
+      "evidence": [
+        "RATE_SOURCE 0x57027B6262083E3aC3c8B2EB99f7e8005f669973 bytecode references sUSDS 0xa3931d71877C0E7a3148CB7Eb4463524FEc27fbD",
+        "getBaseVariableBorrowRateSpread() present (RateTarget strategy)"
+      ],
+      "probes": {
+        "getVariableRateSlope1": "20000000000000000000000000",
+        "getVariableRateSlope2": "150000000000000000000000000",
+        "getBaseVariableBorrowRate": "34594644783474038423088000",
+        "OPTIMAL_USAGE_RATIO": "950000000000000000000000000",
+        "getMaxVariableBorrowRate": "204594644783474038423088000",
+        "getBaseVariableBorrowRateSpread": "0",
+        "RATE_SOURCE": "0x57027B6262083E3aC3c8B2EB99f7e8005f669973",
+        "_rate_source_resolved": "0x57027B6262083E3aC3c8B2EB99f7e8005f669973"
+      }
+    }
+  ],
+  "summary": {
+    "utilization_curve_count": 13,
+    "sky_linked_count": 5,
+    "unknown_count": 0,
+    "sky_linked_assets": [
+      "DAI",
+      "USDC",
+      "USDT",
+      "USDS",
+      "PYUSD"
+    ],
+    "unknown_assets": [],
+    "conclusion": "SparkLend is MIXED: 5 of 18 reserves (DAI, USDC, USDT, USDS, PYUSD) are Sky-linked; the rest use standard Aave utilization curves."
+  }
+}

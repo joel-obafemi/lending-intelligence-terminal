@@ -54,6 +54,7 @@
     "query:gho-flow": "tsx scripts/query-gho-flow-cross-venue.ts",
     "query:lrt-spot-prices": "tsx scripts/query-lrt-spot-prices.ts",
     "query:spark-usdc-borrow-daily": "tsx scripts/query-spark-usdc-borrow-daily.ts",
+    "query:spark-reserve-mechanism": "tsx scripts/query-spark-reserve-mechanism.ts",
     "query:sky-base-rate-daily": "tsx scripts/query-sky-base-rate-daily.ts",
     "scan": "tsx scripts/scan.ts",
     "export:friend": "tsx scripts/export-friend-csvs.ts",
