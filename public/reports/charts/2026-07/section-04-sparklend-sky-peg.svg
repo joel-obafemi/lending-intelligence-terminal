@@ -12,7 +12,7 @@
   </style>
   <rect width="880" height="480" fill="#F7F4ED"/>
   <text class="title" x="48" y="40">SparkLend USDC retail borrow rate vs Sky Base Rate — daily, July 2026</text>
-  <rect x="340" y="31" width="12" height="12" rx="2" fill="#1F3A5F"/><text x="358" y="41" class="lbl">Sky Base Rate (wholesale)</text><rect x="567.0" y="31" width="12" height="12" rx="2" fill="#C5511A"/><text x="585.0" y="41" class="lbl">SparkLend USDC retail borrow</text>
+  <rect x="48" y="57" width="12" height="12" rx="2" fill="#1F3A5F"/><text x="66" y="67" class="lbl">Sky Base Rate (wholesale)</text><rect x="275.0" y="57" width="12" height="12" rx="2" fill="#C5511A"/><text x="293.0" y="67" class="lbl">SparkLend USDC retail borrow</text>
   <line class="grid" x1="84" y1="372.0" x2="828" y2="372.0"/>
   <text class="axis" x="76" y="376.0" text-anchor="end">3.5%</text>
   <line class="grid" x1="84" y1="329.5" x2="828" y2="329.5"/>

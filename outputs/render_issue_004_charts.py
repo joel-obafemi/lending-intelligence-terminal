@@ -100,7 +100,7 @@ def render_02():
     tbill = 3.60
 
     s = head("USDC supply APY across pool-based markets — June 30 vs July 31, 2026")
-    s += f'  {legend([(p[0], p[2]) for p in protos], 300, 40)}\n'
+    s += f'  {legend([(p[0], p[2]) for p in protos], 48, 66)}\n'
     # y grid + ticks
     for v in range(0, 8):
         y = baseline - v * ysc
@@ -156,7 +156,7 @@ def render_04():
     i06 = idx.get("2026-07-06")
 
     s = head("SparkLend USDC retail borrow rate vs Sky Base Rate — daily, July 2026")
-    s += f'  {legend([("Sky Base Rate (wholesale)", COBALT), ("SparkLend USDC retail borrow", TERRACOTTA)], 340, 40)}\n'
+    s += f'  {legend([("Sky Base Rate (wholesale)", COBALT), ("SparkLend USDC retail borrow", TERRACOTTA)], 48, 66)}\n'
     # y grid + ticks (3.5..4.8 by 0.2)
     v = ylo
     while v <= yhi + 1e-9:
