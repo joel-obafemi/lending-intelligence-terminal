@@ -1,0 +1,368 @@
+---
+issue: "004"
+title: "State of DeFi Lending on Ethereum — Issue 004"
+subtitle: "Halved Growth, Deeper Concentration"
+period: "July 2026"
+draft_pass: 1
+date: 2026-08-04
+snapshot_cutoff: 2026-07-31T23:59:00Z
+assembly_note: "Pass 1 assembly. §01 is at Pass 3, all other sections at Pass 1. Order in §04 is narrative-weighted (Aave V3 → SparkLend → Morpho → Fluid → Compound V3 → Euler V2), not alphabetical."
+---
+
+# State of DeFi Lending on Ethereum
+
+## Issue 004 · July 2026
+
+*Halved Growth, Deeper Concentration*
+
+
+<SectionHeading number="01" title="Halved Growth, Deeper Concentration" />
+
+Aave V3 was the only major DeFi lending protocol on Ethereum that grew in July. Its net constant-price deposit flow was +$649M. The other five covered protocols (SparkLend, Morpho V1, Fluid, Compound V3, Euler V2) combined for a net −$96M in the same window. The sector's aggregate +$553M inflow was Aave V3, with a small amount left over. Without Aave, the sector would have contracted.
+
+That is the shape of a depositor market running out of participants. July halved June's aggregate growth (from +$1.33B to +$553M) while curator concentration on the Morpho vault surface climbed for the second consecutive month (HHI 2,095 → 2,337), and the sector's real yield on stablecoin supply deepened to −75 bps below the 4-week T-bill (from −37 bps at the June close). Fluid's June rate leadership on USDC (the sector's only positive real-yield spread over T-bill at the June close) narrowed from +281 bps to −107 bps as its USDC supply APY fell from 6.41% to 4.66%.
+
+### Aave V3 carried the sector
+
+Aave V3's +$649M July flow was collateral-driven, not stablecoin-driven. USDC on Aave V3 shed $20M across the month, a much smaller drain than June's −$162M but still a decline. USDT shed another $62M, and WETH shed $29M. The net inflow came through the LRT and BTC-variant reserves, with weETH alone contributing +$285M. This is the second consecutive month of the same pattern: collateral in, base stablecoin and ETH reserves flat to negative. Aave V3's growth mechanism in this cycle is depositors supplying collateral for borrow capacity, not depositors chasing supply APY.
+
+### Curator concentration continued climbing
+
+Morpho V1 + V2 combined curator concentration read HHI 2,337 at the July 31 close, up from 2,095 at June 30 (+242 index points, +11.6%). Top-three curator share moved from 74.6% to 77.9% (+3.3 pp). Underneath that aggregate view, the composition rotated. Sentora grew from 27.65% at May 31 to 33.56% at July 31, overtaking Steakhouse Financial to become the largest single curator on the Morpho vault surface. Steakhouse held roughly flat across the two months (31.08% → 31.31%). Gauntlet declined for the second consecutive month, from 18.59% to 13.02%. The "concentration climbing" story is really "Sentora rising, Gauntlet declining, Steakhouse steady."
+
+<ChartCard
+  src="/reports/charts/2026-07/section-01-curator-crossover.svg"
+  caption="Morpho V1 + V2 combined curator TVL share at May 31, June 30, and July 31, 2026. Sentora overtook Steakhouse to become the largest single curator; Gauntlet declined for the second consecutive month; the long tail held roughly flat."
+  sources={["2026-05-31-curator-hhi-combined.json", "2026-06-30-curator-hhi.json", "2026-07-31-curator-hhi.json"]}
+/>
+
+### Real Yield Spread deepened
+
+The sector's blended stablecoin supply APY minus the 4-week T-bill closed July at −75 bps, down from −37 bps at June 30. Real yield on stablecoin supply worsened relative to T-bills by 38 bps across the month. The mechanism is the same as June: soft stablecoin borrow demand while T-bill rates held around 3.60%.
+
+Fluid's USDC supply APY fell from 6.41% at June 30 to 4.66% at July 31. Fluid still leads the sector on USDC supply, but the gap to Aave V3 (3.27%) narrowed from 322 bps to 139 bps. Fluid was the sector's only positive real-yield spread over T-bill at the June close (+281 bps); at the July close it sits at −107 bps below the T-bill. Section 02 covers the full sector rate picture.
+
+### The sector's borrow book barely moved
+
+Sector loan-to-deposit ratio at July 31 was 40.63%, essentially unchanged from June's 40.99% (−36 bps). Borrow book utilization is not the July story. The July story is on the depositor side and the curator layer: growth halved, concentration climbed, real yield deepened, and one protocol absorbed almost all of what growth remained. The winners keep winning, and the pool of new capital they are winning from is shrinking.
+
+### Bridge to Section 02
+
+The sections that follow decompose those aggregate numbers. Section 02 covers the rate compression: Fluid's rate leadership eroded, real yield on stablecoins slipped further below T-bills, and cross-protocol USDC dispersion halved. Section 03 covers where the July money actually went, protocol by protocol. Section 04 opens up per-protocol depth, including SparkLend's Sky-governance-priced stablecoin book, which is the most consequential mechanism finding of the month.
+
+---
+
+
+<SectionHeading number="02" title="Rate Compression Across the Sector" />
+
+Fluid held the sector's only positive real-yield spread on USDC at the June close, paying depositors 281 bps above the 4-week T-bill. By July 31 it paid 107 bps below the T-bill. Fluid lost more than half its rate lead in a single month while the sector's real-yield deficit deepened by another 38 bps. Stablecoin depositors on DeFi lending markets are being paid less than a T-bill everywhere in the sector, and Fluid's June rate premium is being priced away.
+
+The sector's blended stablecoin supply APY closed July at 2.85%, against a 4-week T-bill of 3.60%. Real Yield Spread: −75 bps. That is deeper than June's −37 bps close and marks two consecutive months of materially negative RYS after May sat close to parity at −0.3 bps.
+
+### Fluid's rate leadership narrowed
+
+Fluid's USDC supply APY fell from 6.41% at the June 30 close to 4.66% at July 31, a decline of 175 bps in a month. Aave V3's USDC supply rate moved 8 bps across the same window (3.19% → 3.27%). The Fluid compression was idiosyncratic, not sector-wide.
+
+Fluid still leads the pool-based USDC field at the July close, and by a meaningful margin:
+
+- Fluid: 4.66% (June: 6.41%, −175 bps)
+- Aave V3: 3.27% (June: 3.19%, +8 bps)
+- Compound V3: 3.19%
+- Euler V2: 3.09%
+
+Fluid's lead over Aave V3 narrowed from 322 bps at June 30 to 139 bps at July 31. Issue 003 called out the +281 bps positive spread over T-bill as the sector's only positive real-yield reading and treated it as evidence of Fluid's structural rate advantage. That framing holds: Fluid's smart lending and smart debt architecture supports higher supply APYs than a pure Aave-style pool at any given utilization, and Fluid still leads the sector at July close by 139 bps over Aave V3. What has changed is the specific magnitude. The +281 bps June spread was an unusually elevated condition on top of Fluid's structural lead, and it did not carry through July. At July 31 Fluid pays 107 bps below the T-bill, and its lead over Aave V3 sits closer to what its structural advantage sustains than what June's exceptional print suggested.
+
+<ChartCard
+  src="/reports/charts/2026-07/section-02-usdc-rate-dispersion.svg"
+  caption="USDC supply APY across the four pool-based covered protocols at the June 30 and July 31 closes. Fluid gave back most of its June rate premium; the other three markets held roughly flat."
+  sources={["2026-07-rate-dispersion.json", "2026-06-rate-dispersion.json"]}
+/>
+
+### One methodology caveat on SparkLend
+
+SparkLend's USDC supply APY at July 31 was 3.47%, which reads as mid-pack against the four pool-based markets above. Comparing it as a like-for-like is misleading. SparkLend's stablecoin supply rate is set by a Sky-linked interest rate model that feeds off Sky governance parameters, not by pool utilization on SparkLend itself. The SparkLend subsection in per-protocol coverage covers the mechanism in full. For any cross-protocol rate comparison in this section, the four pool-based markets (Aave V3, Fluid, Compound V3, Euler V2) are the fair comparison set. SparkLend's rate reflects a different input entirely.
+
+### What the compression means
+
+Two forces are converging on the sector's stablecoin markets. First, T-bill yields held steady around 3.60% through July, providing a hard floor for any risk-free comparison. Second, stablecoin lending rates across the pool-based markets compressed toward one another and toward that floor. Even Fluid, whose structural capital efficiency has kept it above the pack, gave back most of the extra premium it carried at the June close.
+
+The result is a sector where stablecoin lending pays less than a T-bill in every pool-based market, and where the dispersion across those markets is compressing. At the June 30 close the spread from top to bottom of the pool-based USDC field was 322 bps (Fluid 6.41% to Aave V3 3.19%). At July 31 it was 157 bps (Fluid 4.66% to Euler V2 3.09%). The dispersion halved.
+
+Issue 003 closed with RYS at −37 bps and framed it as a compression signal. Issue 004 closes with it at −75 bps. The compression has followed through, and it is now the second consecutive month of deep negative real yield on the sector's largest asset class. That matters more than the specific level. Compression is now a trend, not a data point.
+
+### Bridge to Section 03
+
+Section 01 showed the aggregate: growth halved, concentration climbing, one protocol carrying the sector. This section showed how the rate side compressed alongside the flow side. Section 03 zooms into the flow decomposition itself, which protocols lost aggregate ground in July and where the money that did arrive actually went across the six covered venues.
+
+---
+
+
+<SectionHeading number="03" title="Where the Money Went" />
+
+The July flow map has one dominant venue, one clear loser, and four protocols that broadly held or added modest ground. The full picture, in constant-price net deposit flow across the month:
+
+- Aave V3: **+$649M**
+- Morpho V1: +$135M
+- Fluid: +$26M
+- Compound V3: −$23M
+- Euler V2: −$31M
+- SparkLend: **−$203M**
+
+Sector total: +$553M. Aave V3 alone accounted for 117% of the sector's net inflow, with the other five protocols combining for −$96M. SparkLend was the largest single-protocol contraction of the month.
+
+### Aave V3's composition
+
+Aave V3's July composition mirrored June. USDC contracted by $20M across the month, a much smaller drain than June's −$162M but still a net decline in the deepest stablecoin market on the platform. The remaining +$669M came from collateral inflows across the LRT and BTC-variant reserves, with the largest additions in:
+
+- WEETH: +$285M
+- sUSDe: +$145M
+- WBTC: +$124M
+
+The observation from Issue 003 continues to hold. Aave V3's growth mechanism in this cycle is collateral supply attracted by borrow-book depth, not stablecoin depositors chasing rates. Two consecutive months of the same pattern is now a trend, not a June anomaly. Depositors adding WEETH, sUSDe, and WBTC to Aave V3 are almost certainly borrowing against that collateral, and the growth reflects demand for Aave's stablecoin borrow depth.
+
+### SparkLend's outflow
+
+SparkLend's July −$203M net constant-price flow was the sector's largest single-protocol contraction. The month contained two outsized single-day outflows that shape the total: July 12 (−$315M) and July 28 (−$173M). The other 29 days combined for approximately +$285M of offsetting inflows.
+
+The July 28 outflow followed the July 23 Atlas Edit spell that cut SparkLend's stablecoin borrow rate by 18 bps. Depositors reallocating out of a rate-just-cut venue is consistent with the timing. The July 12 outflow does not align with any known Sky governance action and appears unrelated to the Atlas Edit cycle. Per-protocol coverage covers both events in the SparkLend subsection.
+
+### The mixed middle
+
+Morpho V1 added +$135M despite the curator layer's continued consolidation into V2 vaults through the month. The V1 protocol-level inflow is not inconsistent with the V2 curator concentration story. Depositors are net-adding to Morpho at the protocol level, and the curator layer is redistributing that TVL toward V2 vaults inside the Morpho surface. Per-protocol coverage unpacks the V1/V2 split in the Morpho subsection.
+
+Fluid added +$26M, a near-flat outcome. Rate leadership narrowing did not cause aggregate outflows on Fluid at the protocol level, even though the +281 bps June yield premium over T-bill eroded to −107 bps by month-end. Depositors did not treat the Fluid rate compression as a reason to leave.
+
+Compound V3 and Euler V2 each shed roughly $25M to $30M in the month, modest contractions on protocols with smaller absolute TVL bases.
+
+### Cross-protocol read
+
+The July flow map is not "everyone shrank." It is one protocol growing large, one protocol shedding material capital, and four protocols broadly holding. The concentration in aggregate flow toward Aave V3 sits alongside stability in the middle. That picture is more consistent with a sector in which capital is picking a winner than one in which capital is broadly leaving.
+
+Aave V3's +$669M of collateral inflow also matters for what it says about the current use case. Depositors adding LRT and BTC-variant collateral to Aave V3 are supplying it to unlock borrow capacity, not to earn a supply APY. Aave's growth in July is a function of borrowers wanting access to Aave's stablecoin borrow depth. That is a different growth mechanism than "depositors chose Aave for its yield," and it has now shown up two months in a row.
+
+### Bridge to Section 04
+
+Per-protocol coverage follows. Each of the six covered protocols gets a subsection with what changed in July, what carried forward from June, and what to watch into August. SparkLend's Sky-linked stablecoin book (including the July 12 and July 28 outflow events), Morpho's Midnight launch and the V1/V2 curator mix, and the standard flow and rate readings for Aave V3, Fluid, Compound V3, and Euler V2 all sit inside that section.
+
+---
+
+<SectionHeading number="04" title="Per-Protocol Coverage" />
+
+Each of the six covered protocols in narrative-weighted order (largest and analytically heaviest first).
+
+
+<SectionHeading number="04" subsection="Aave V3" title="Aave V3" />
+
+Aave V3's July constant-price net deposit flow was +$649M, down from June's +$845M but positive for the second consecutive month. Aave V3 is the only major covered protocol to have grown in each of the last two months at constant prices. Available pool liquidity at July 31: $11.44B. Borrow book: $8.85B, the deepest in the sector. Loan-to-deposit ratio (borrowed as a share of total supplied deposits): 43.63%, above the 40.63% sector aggregate.
+
+### Composition
+
+The +$649M net inflow decomposed unevenly across the reserves. Top additions:
+
+- WEETH: +$285M
+- sUSDe: +$145M
+- WBTC: +$124M
+- wstETH: +$113M
+- cbBTC: +$63M
+
+Top drains:
+
+- rsETH: −$93M
+- USDT: −$62M
+- WETH: −$29M
+- PT-sUSDe-25JUN2026: −$28M
+- USDC: −$20M
+
+The July shape mirrors June: collateral inflows dominate; stablecoin and base ETH reserves flat to negative. Two consecutive months of the same pattern is a trend, not a one-month effect.
+
+### LRT rotation inside the collateral book
+
+The gross LRT figure (all liquid restaking tokens combined) masks a real rotation happening inside the LRT complex. WEETH added +$285M in July while rsETH shed −$93M in the same window. Depositors did not add LRTs to Aave V3 in aggregate; they concentrated the addition into weETH specifically and rotated out of rsETH. That is a within-class preference shift, not a uniform "restaking inflow."
+
+The most likely mechanism is where the deepest looping venue sits. WEETH (ether.fi) has been the sector's dominant LRT by TVL for most of 2026, and its inclusion as high-LTV collateral on Aave V3's Core Market has attracted looping strategies (deposit weETH, borrow WETH, buy more weETH, repeat). rsETH (Kelp) does not sustain the same looping activity at the same scale on Aave V3 because its borrow book depth for the paired asset is smaller. Capital rotated toward the venue where the loop closes.
+
+### The stablecoin composition shift
+
+USDC's −$20M drain gets attention because Issue 003 flagged USDC's June drain of −$162M as evidence that Aave V3's growth was not USDC-driven. July's drain is smaller in magnitude but the same direction. The larger July stablecoin outflow was actually USDT at −$62M.
+
+The full stablecoin picture on Aave V3 is not a straightforward drain. Combined outflow across USDC, USDT, and the maturing PT-sUSDe-25JUN2026 reserve totaled roughly −$110M. Combined inflow across sUSDe, USDe, USDTB, and PT-sUSDe-22OCT2026 totaled roughly +$255M. Net stablecoin position on Aave V3 grew by roughly +$145M in July, but the growth landed in the USDe complex (Ethena's synthetic dollar and its Pendle-tokenised forwards) rather than in USDC or USDT.
+
+That is a different depositor composition than early 2026. The USDe complex has become a meaningful stablecoin surface on Aave V3 and is growing at the expense of USDC and USDT positions. Two interpretations are consistent with the data: institutional carry-trade demand routing through Ethena's cash-and-carry basis, or depositor preference for higher-yield synthetic dollar exposure. Both point to the same thing: Aave V3's stablecoin depositor mix is shifting toward yield-bearing synthetic dollars.
+
+### Loan-to-deposit ratio
+
+Aave V3's LDR at July 31 sat at 43.63%, above the 40.63% sector aggregate. The borrow book depth of $8.85B is the growth mechanism from the collateral side. Depositors add LRT and BTC-variant collateral because Aave V3's stablecoin borrow depth is where they access leverage. Without the borrow book, the collateral inflows do not have a use case.
+
+### What August tests
+
+Whether the LRT rotation continues (weETH inflow, rsETH outflow) or reverses. Whether the USDe-complex growth accelerates or plateaus. Whether the USDC drain resumes at June's magnitude or continues its July slowdown. No Aave V3 protocol-specific governance actions or market listings landed in July.
+
+
+<SectionHeading number="04" subsection="SparkLend" title="SparkLend" />
+
+SparkLend's July constant-price net deposit flow was −$203M at the protocol level. That is the largest single-protocol contraction of the month across the six covered protocols. Available pool liquidity at July 31: $3.76B. Borrow book: $1.81B. Loan-to-deposit ratio: 32.53%, below the 40.63% sector aggregate.
+
+The month contained two outsized single-day outflows that shape the total: July 12 (−$315M) and July 28 (−$173M). The other 29 days combined for approximately +$285M of offsetting inflows. The July 28 outflow followed the July 23 Atlas Edit spell that cut SparkLend's stablecoin borrow rate by 18 bps. Depositors reallocating out of a rate-just-cut venue is consistent with the timing. The July 12 outflow does not align with any known Sky governance action and appears unrelated to the Atlas Edit cycle.
+
+The rest of this subsection unpacks the SparkLend stablecoin rate mechanism itself, since that is the analytical thread that runs through both the July 6 and July 23 rate events and is likely to shape SparkLend's read for months to come.
+
+### SparkLend's stablecoin book runs on a different clock
+
+Five of SparkLend's eighteen reserves price their borrow rate off a single external anchor rather than off pool utilization. All five are stablecoins. All five stepped together on July 23. The mechanism showed up in the data that day.
+
+At 14:43 UTC on July 23, 2026, Sky's weekly Atlas Edit executive spell executed on-chain. In that single transaction, Sky cut the Sky Savings Rate from 3.60% to 3.52%, tightened the Sky Spread from 0.10% to 0.00%, and reduced the total wholesale spread that Sky Agents pay to borrow USDS from SSR + 0.30% to SSR + 0.20%. The Sky Base Rate, which is the wholesale cost of capital that SparkLend as a Sky Agent pays for its USDS inventory, dropped from 3.90% to 3.72%. 18 bps, one transaction, one governance decision.
+
+SparkLend's on-chain USDC borrow rate followed the same day. The retail rate stepped from 4.42% to 4.28% at the same execution, closing July at 4.28% after a full-month decline of 33 bps. The earlier step, on July 6, cut USDC 19.6 bps from 4.61% to 4.42%. The Sky Base Rate did not move on July 6; it held flat at 3.90% from July 1 through July 22. And SparkLend's other four Sky-linked stablecoins (DAI, USDT, USDS, PYUSD) did not step that day either. The July 6 move is therefore a SparkLend-side adjustment: a change to the local interest rate model on USDC that SparkLend layers on top of the shared Sky rate source, not a downstream reflection of Sky governance. Sky sets the wholesale rate; SparkLend adds a per-market markup on top of it. July 6 was Spark cutting its own USDC markup. July 23 was Sky cutting the wholesale rate everything is built on.
+
+<ChartCard
+  src="/reports/charts/2026-07/section-04-sparklend-sky-peg.svg"
+  caption="Sky Base Rate (wholesale) and SparkLend USDC retail borrow rate, daily through July 2026. Both step down on July 23 following the Atlas Edit weekly cycle. USDC is shown as representative; DAI, USDS, USDT, and PYUSD stepped in unison the same day. SparkLend's July 6 step on USDC is not accompanied by a Sky Base Rate move and did not repeat across the other stablecoins."
+  sources={["2026-07-sky-base-rate-daily.json", "2026-07-spark-usdc-borrow-daily.json", "2026-07-spark-reserve-mechanism.json"]}
+/>
+
+The chart makes the July 23 pass-through visible. Sky's governance decision propagated to SparkLend's user-facing rate in the same transaction cycle. The distance between the two lines, SparkLend's markup over the Sky Base Rate, narrowed from 0.71 pp on July 22 to 0.56 pp on July 23. SparkLend absorbed a portion of the wholesale cut into its own spread.
+
+The pass-through is not USDC-specific. On-chain reads of SparkLend's eighteen reserves show that DAI, USDC, USDT, USDS, and PYUSD all point their variable-borrow interest rate model at a single Sky-linked rate source contract at address 0x57027B62. That contract references sUSDS in its bytecode and derives its rate from the Sky Base Rate. DAI and USDS share the same interest rate model contract; USDC, USDT, and PYUSD each have their own model contract that reads from the same rate source. All five stablecoins stepped roughly −18 bps at the July 23 Atlas Edit execution. None of the other thirteen SparkLend reserves moved that day.
+
+The other thirteen reserves are the collateral book: WETH, wstETH, WBTC, weETH, rETH, cbBTC, LBTC, tBTC, ezETH, rsETH, GNO, sDAI, and sUSDS. Each uses a standard Aave-shape interest rate strategy with base rate, slope 1, slope 2, and optimal utilization parameters set at listing. When utilization on these markets moves, the rate moves. When utilization holds, the rate holds. They are ordinary money markets.
+
+SparkLend is therefore not a single-mechanism protocol. It is a hybrid: a Sky-linked stablecoin book bolted onto a standard Aave-style collateral book. The stablecoin side derives its rate from Sky's D3M-supplied USDS wholesale inventory, priced governance-first. The collateral side clears on utilization curves like any Aave fork.
+
+Aave V3, Morpho V1, Fluid, Compound V3, and Euler V2 all set their USDC borrow rates through utilization curves. SparkLend's collateral book follows the same convention. SparkLend's stablecoin book does not. Comparing Fluid's 4.66% supply APY on USDC to SparkLend's 3.47% supply APY on USDC is not a fair like-for-like: the two rates are set by different mechanisms responding to different inputs. Fluid's rate reflects lender-borrower matching. SparkLend's rate reflects Sky governance.
+
+### What August tests
+
+Whether the July 12 outflow event has a Sky-side or SparkLend-side cause that becomes visible after the fact. Whether depositor reallocation out of SparkLend following rate cuts continues or stabilises. Whether Sky governance runs another Atlas Edit adjustment to the Base Rate margin that would move SparkLend's stablecoin rates again. Whether SparkLend's USDC borrow rate holds at the July 4.28% close or drifts further with subsequent Sky governance moves.
+
+
+<SectionHeading number="04" subsection="Morpho" title="Morpho" />
+
+Morpho's July constant-price net deposit flow was +$135M at the protocol level. That is the second-highest positive flow among covered protocols after Aave V3, and it landed even as the vault surface underneath continued consolidating into fewer curator hands and the version mix continued shifting toward Morpho V2.
+
+Combined V1 + V2 curated TVL at July 31: **$2.21 billion**.
+
+- Morpho V1 (MetaMorpho vaults): $698M
+- Morpho V2 (Vault V2): $1.77B
+
+V2 accounted for 71.76% of curated TVL at July 31. That share has been climbing through the year as curators migrate vault TVL onto V2. The V2 majority is not a July event; Morpho V2 shipped in late 2025 and the migration has been ongoing since. What July shows is continued momentum in the same direction, not a threshold crossed this month.
+
+### Curator concentration
+
+Combined V1+V2 curator concentration read HHI 2,337 at the July 31 close, up from 2,095 at June 30 (+242 index points, +11.6%). Top-three curator share moved from 74.6% to 77.9% (+3.3 pp). The three largest curators at July 31:
+
+- **Sentora: 33.56% share ($741M).** 3 vaults, all V2
+- **Steakhouse Financial: 31.31% share ($691M).** 18 vaults, 9 V1 + 9 V2
+- **Gauntlet: 13.02% share ($287M).** 22 vaults, 18 V1 + 4 V2
+
+The structural difference across these three is worth naming. Sentora runs a concentrated model: three large V2 vaults absorbing over $740M of depositor TVL. Steakhouse runs a mixed model: 18 vaults split roughly evenly across V1 and V2, indicating both legacy V1 exposures held and new V2 mandates opened. Gauntlet runs a legacy-heavy model: 22 vaults with 82% of TVL in V1 and only 18% in V2, suggesting slower migration or a deliberate preference for the V1 vault architecture.
+
+Two curators outside the top three grew notably in July: Sky Money at 5.46% ($121M, all V2) and Galaxy Curation at 3.60% ($79M, all V2). Both are relatively new entrants on the curator leaderboard, both are V2-only, and both moved up in July. The pattern is consistent: growth on Morpho's vault surface is landing predominantly in V2 vaults, whether the curator is an established player like Sentora or a newer name like Sky Money.
+
+The concentration dynamic at the top of the table is coincident, not competitive. Sentora and Steakhouse both grew share in July, and the ground they gained came from the long tail of unlabeled and smaller-share curators rather than from each other. Two consecutive months of the same coincident-growth pattern is what Section 01 called out as the sector's consolidation signal. Morpho is where that signal shows up most cleanly.
+
+### Morpho Midnight
+
+Morpho shipped Midnight, a fixed-rate and fixed-term lending product built on Morpho V2 markets, on July 24, 2026. Midnight is a departure from pool-based variable-rate lending in a way that the rest of the sector does not currently offer at scale. On Aave V3, Fluid, Compound V3, and Euler V2, a lender supplies capital to a pool and earns a variable rate that reflects current utilization, with the position redeemable at any time at the prevailing rate. On Midnight, a lender or borrower selects a specific maturity date and a fixed rate at origination. The rate does not float with utilization; the position runs to maturity.
+
+For a depositor market this is a categorical change. Fixed-rate exposure removes rate uncertainty for both sides of the trade. For a lender, that means locking in yield over a term. For a borrower, that means locking in cost. Neither is a new concept in traditional finance; both are new as first-class primitives in DeFi lending at the scale Morpho is deploying them.
+
+Midnight sits inside Morpho V2 markets, which means the same curator layer described above is what allocates through it. A curator running fixed-rate Morpho markets will price them alongside variable Morpho V1/V2 markets and route depositor capital based on relative yield expectations. Curators, in other words, become fixed-vs-variable rate portfolio managers on Morpho.
+
+Two things to watch as Midnight matures beyond its July 24 launch:
+
+- Whether depositor and borrower interest converges into the same maturity buckets, which would produce actual liquidity at specific dates, or spreads across many maturities, which would leave individual markets thin
+- Whether curator vaults start blending Midnight fixed-rate exposure with V1/V2 variable-rate exposure to construct portfolio-level yield strategies
+
+Neither dynamic will be observable in July's data. It is a launch signal in July and needs at least two months of post-launch operation before its shape can be read from flow numbers.
+
+### Robinhood Chain context
+
+Morpho extended its non-Ethereum footprint in July with a Robinhood Chain deployment that crossed $495M in TVL in its first month of operation. Robinhood Chain is not Ethereum, so those figures do not appear in this report's covered set. The Robinhood deployment matters for Morpho as an organisation: it established the protocol as a distribution rail into a mainstream US brokerage environment. That is likely to shape institutional demand for Morpho-hosted vaults on Ethereum over the coming quarters, even though the Robinhood TVL itself sits off-scope for this coverage.
+
+### What August tests
+
+Whether V2 share of curated TVL continues to climb (a plateau in the 70-75% range or a push toward 80%+). Whether Sentora and Steakhouse continue to gain share coincidentally or one starts absorbing the other's growth. Whether Midnight's first full month of operation produces observable maturity-bucket clustering or leaves the fixed-rate market surface too fragmented. Whether Gauntlet's high V1 weighting reverses as V2 migration continues.
+
+
+<SectionHeading number="04" subsection="Fluid" title="Fluid" />
+
+Fluid's July constant-price net deposit flow was +$26M at the protocol level. That is essentially flat: a small positive number in a month when Fluid's rate leadership on USDC narrowed materially, as covered in Section 02. This subsection covers what happened to Fluid's balance sheet under that rate compression.
+
+Available pool liquidity at July 31: $464M. Borrow book: $571M. Loan-to-deposit ratio (borrowed as a share of total supplied deposits): 55.19%. That is above the 40.63% sector aggregate and second only to Euler V2's 74.86% among the six covered protocols. Fluid's above-sector LDR reading is a function of its smart lending and smart debt architecture: the same capital can serve as both lending liquidity and DEX liquidity through Fluid's cross-utilization design, which produces a higher effective borrow-to-deposit ratio than a pure Aave-style pool.
+
+### Rate compression without corresponding outflow
+
+Fluid's USDC supply APY fell from 6.41% at June 30 to 4.66% at July 31, a decline of 175 bps in a month. If Fluid ran on a pure yield-chasing depositor base, that kind of rate compression would typically produce a visible outflow. It did not. Fluid was net-positive on constant-price deposit flow in July, even with the rate premium over Aave V3 narrowing from 322 bps to 139 bps.
+
+That is a data point about depositor stickiness on Fluid. The depositor base did not treat rate leadership erosion as a reason to leave. One interpretation is that Fluid's depositor pool skews toward participants who value the protocol's structural yield advantage across a cycle rather than chasing month-over-month rate changes. Another is that the July flow window (only 31 days after the June peak) is too short for a rate-reactive depositor base to fully rotate. August will resolve which reading is right.
+
+### What August tests
+
+Whether the +$26M flat outcome carries into August or turns negative if rates continue compressing. Whether Fluid's USDC supply APY stabilises around 4.6% to 4.7% or continues drifting toward Aave V3's 3.27%. Whether Fluid's LDR holds above 50% or contracts as borrow demand eases.
+
+
+<SectionHeading number="04" subsection="Compound V3" title="Compound V3" />
+
+Compound V3's July constant-price net deposit flow was −$23M at the protocol level. That is a modest contraction. Available pool liquidity at July 31: $908M. Borrow book: $460M. Loan-to-deposit ratio: 33.48%, below the sector's 40.63% aggregate.
+
+Compound V3 currently runs six Comet markets on Ethereum, one per base asset: USDC, USDT, WETH, wstETH, WBTC, and USDS. The cWETHv3 base (WETH-denominated) held $94.87M in supply at July 31.
+
+### USDC supply APY
+
+Compound V3's USDC supply APY at July 31 was 3.19%, at the low end of the four pool-based covered protocols. Aave V3 sat at 3.27%, Fluid at 4.66%, Euler V2 at 3.09%. Compound V3's rate is only 10 bps above the sector's laggard (Euler V2) and 8 bps below Aave V3. That is not a rate-competitive position for a protocol that historically led on USDC yields in earlier cycles.
+
+The Comet architecture (isolated per-base pools with each collateral asset priced against a single borrowable base) trades cross-collateral efficiency for market simplicity. On a month when the sector's stablecoin lending competition is compressing toward the T-bill floor, that trade-off is producing modest outflows rather than growth.
+
+### What August tests
+
+Whether the modest July outflow continues or reverses. Whether the cWETHv3 base grows meaningfully above $94.87M or plateaus. Whether the two newer Comet bases (wstETH and WBTC) show any material activity, which would speak to whether Compound V3's multi-base expansion is finding users beyond the two originals.
+
+
+<SectionHeading number="04" subsection="Euler V2" title="Euler V2" />
+
+Euler V2's July constant-price net deposit flow was −$31M at the protocol level. That is the second-largest single-protocol contraction of the month after SparkLend, on the smallest available-liquidity base among the covered protocols. Available pool liquidity at July 31: $99M. Borrow book: $308M. Loan-to-deposit ratio: 74.86%, the highest among the six covered protocols.
+
+The LDR reading above 70% is a function of the Euler Vault Kit (EVK) architecture, which allows individual vaults to be structured with high utilization targets. Euler V2's small available-liquidity base combined with a comparatively large borrow book produces high LDR, and the small denominator means each flow event moves the percentage share numbers meaningfully.
+
+### Curator concentration
+
+The Euler V2 vault surface is highly concentrated at the curator layer. Sentora runs 72.2% of Euler V2's curated TVL through five vaults. K3 Capital runs 14.3% through 13 vaults. The remaining share is distributed across a long tail of curators (roughly 12% of TVL held by curators the on-chain investigation could not resolve to a labeled name at the July 31 close). The combined V1+V2 HHI for Euler V2's curator layer is 5,512, which is materially higher than Morpho's 2,337 combined-view HHI. On a per-protocol basis, Euler V2 is more concentrated at the curator layer than Morpho, and the top curator (Sentora) commands a much larger share on Euler V2 than on Morpho.
+
+### USDC supply APY
+
+Euler V2's USDC supply APY at July 31 was 3.09%, the lowest among the four pool-based covered protocols. Combined with the −$31M protocol-level outflow, this puts Euler V2 in the position of being both the lowest-yielding and the most-contracting pool-based covered protocol in July.
+
+### What August tests
+
+Whether the Sentora-dominated curator concentration on Euler V2 holds or a competing curator gains material share. Whether the −$31M outflow continues or reverses. Whether the USDC supply APY closes any of the gap to Aave V3's 3.27% or drifts further behind. Whether K3 Capital's V2-heavy vault footprint expands.
+
+---
+
+
+<SectionHeading number="05" title="What August Tests" />
+
+Issue 004 documents a sector at half speed. Growth halved from June, concentration on the curator layer climbed for a second consecutive month, the real-yield deficit deepened, and one protocol carried most of the aggregate flow. Whether these are trend prints or one-month artifacts is what August resolves. The specific tests, grouped by decisiveness:
+
+### The pattern tests
+
+**Does one protocol continue to carry the sector?** July's aggregate of +$553M was Aave V3 plus a small remainder. Two consecutive months of Aave-dominant growth (June +$845M, July +$649M) is not a base case for a healthy multi-protocol sector. August's per-protocol flow numbers decide whether concentration in flow is now a three-month trend or reverts as depositors return to a broader set of venues.
+
+**Does curator concentration keep building?** Morpho combined V1+V2 HHI moved from 2,095 at June 30 to 2,337 at July 31. Sentora and Steakhouse together added 447 bps of share coincidentally. A third consecutive month of climbing HHI hardens the two-curator dominance framing. Even a modest reversal shifts the read to "consolidation had a peak in July."
+
+**Does the real-yield deficit deepen further?** RYS went from −37 bps in June to −75 bps in July. Sector-wide stablecoin lending now pays less than a T-bill in every pool-based market. Another 30+ bps deepening in August pushes the deficit toward levels not seen since March. A reversal would suggest the July compression was cyclical rather than structural.
+
+### The protocol-specific tests
+
+**Aave V3:** whether the LRT rotation (weETH in, rsETH out) continues; whether the USDe-complex stablecoin composition shift accelerates; whether the USDC drain resumes at June's magnitude or holds at July's slower pace.
+
+**SparkLend:** whether depositor outflow following the July 23 Sky rate cut continues or stabilises; whether another Atlas Edit adjustment moves the Base Rate margin again; whether the unattributed July 12 outflow event finds a public cause after the fact.
+
+**Morpho:** whether V2 share of curated TVL pushes above 80% or plateaus in the 70-75% range; whether Midnight's first full post-launch month produces observable maturity-bucket clustering; whether Gauntlet's V1-heavy footprint reverses as migration continues.
+
+**Fluid:** whether depositor stickiness holds under continued rate compression, or the +$26M flat July becomes a negative August; whether USDC supply APY stabilises around 4.6% or drifts further toward Aave V3's 3.27%.
+
+**Compound V3 and Euler V2:** whether the modest July outflows continue or reverse; whether either protocol shows signs of gaining ground on the pool-based rate front, where both currently sit at the low end of the sector.
+
+### What would change the read
+
+A month in which Aave V3 goes flat or negative while another protocol absorbs material inflow would falsify the concentration-in-flow trend and force a re-read of what July's pattern actually meant. Without that, the base case for Issue 005 is: same shape, deeper. If concentration and compression climb for a third consecutive month, the sector is in a phase where the winners have already won and the depositor pool is thinning. If either pattern reverses, Issue 005 gets a story about what changed.

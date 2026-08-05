@@ -1,0 +1,42 @@
+---
+issue: "004"
+section: "01"
+title: "Halved Growth, Deeper Concentration"
+draft_pass: 3
+date: 2026-08-04
+snapshot_cutoff: 2026-07-31T23:59:00Z
+---
+
+<SectionHeading number="01" title="Halved Growth, Deeper Concentration" />
+
+Aave V3 was the only major DeFi lending protocol on Ethereum that grew in July. Its net constant-price deposit flow was +$649M. The other five covered protocols (SparkLend, Morpho V1, Fluid, Compound V3, Euler V2) combined for a net −$96M in the same window. The sector's aggregate +$553M inflow was Aave V3, with a small amount left over. Without Aave, the sector would have contracted.
+
+That is the shape of a depositor market running out of participants. July halved June's aggregate growth (from +$1.33B to +$553M) while curator concentration on the Morpho vault surface climbed for the second consecutive month (HHI 2,095 → 2,337), and the sector's real yield on stablecoin supply deepened to −75 bps below the 4-week T-bill (from −37 bps at the June close). Fluid's June rate leadership on USDC (the sector's only positive real-yield spread over T-bill at the June close) narrowed from +281 bps to −107 bps as its USDC supply APY fell from 6.41% to 4.66%.
+
+### Aave V3 carried the sector
+
+Aave V3's +$649M July flow was collateral-driven, not stablecoin-driven. USDC on Aave V3 shed $20M across the month, a much smaller drain than June's −$162M but still a decline. USDT shed another $62M, and WETH shed $29M. The net inflow came through the LRT and BTC-variant reserves, with weETH alone contributing +$285M. This is the second consecutive month of the same pattern: collateral in, base stablecoin and ETH reserves flat to negative. Aave V3's growth mechanism in this cycle is depositors supplying collateral for borrow capacity, not depositors chasing supply APY.
+
+### Curator concentration continued climbing
+
+Morpho V1 + V2 combined curator concentration read HHI 2,337 at the July 31 close, up from 2,095 at June 30 (+242 index points, +11.6%). Top-three curator share moved from 74.6% to 77.9% (+3.3 pp). Underneath that aggregate view, the composition rotated. Sentora grew from 27.65% at May 31 to 33.56% at July 31, overtaking Steakhouse Financial to become the largest single curator on the Morpho vault surface. Steakhouse held roughly flat across the two months (31.08% → 31.31%). Gauntlet declined for the second consecutive month, from 18.59% to 13.02%. The "concentration climbing" story is really "Sentora rising, Gauntlet declining, Steakhouse steady."
+
+<ChartCard
+  src="/reports/charts/2026-07/section-01-curator-crossover.svg"
+  caption="Morpho V1 + V2 combined curator TVL share at May 31, June 30, and July 31, 2026. Sentora overtook Steakhouse to become the largest single curator; Gauntlet declined for the second consecutive month; the long tail held roughly flat."
+  sources={["2026-05-31-curator-hhi-combined.json", "2026-06-30-curator-hhi.json", "2026-07-31-curator-hhi.json"]}
+/>
+
+### Real Yield Spread deepened
+
+The sector's blended stablecoin supply APY minus the 4-week T-bill closed July at −75 bps, down from −37 bps at June 30. Real yield on stablecoin supply worsened relative to T-bills by 38 bps across the month. The mechanism is the same as June: soft stablecoin borrow demand while T-bill rates held around 3.60%.
+
+Fluid's USDC supply APY fell from 6.41% at June 30 to 4.66% at July 31. Fluid still leads the sector on USDC supply, but the gap to Aave V3 (3.27%) narrowed from 322 bps to 139 bps. Fluid was the sector's only positive real-yield spread over T-bill at the June close (+281 bps); at the July close it sits at −107 bps below the T-bill. Section 02 covers the full sector rate picture.
+
+### The sector's borrow book barely moved
+
+Sector loan-to-deposit ratio at July 31 was 40.63%, essentially unchanged from June's 40.99% (−36 bps). Borrow book utilization is not the July story. The July story is on the depositor side and the curator layer: growth halved, concentration climbed, real yield deepened, and one protocol absorbed almost all of what growth remained. The winners keep winning, and the pool of new capital they are winning from is shrinking.
+
+### Bridge to Section 02
+
+The sections that follow decompose those aggregate numbers. Section 02 covers the rate compression: Fluid's rate leadership eroded, real yield on stablecoins slipped further below T-bills, and cross-protocol USDC dispersion halved. Section 03 covers where the July money actually went, protocol by protocol. Section 04 opens up per-protocol depth, including SparkLend's Sky-governance-priced stablecoin book, which is the most consequential mechanism finding of the month.

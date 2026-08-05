@@ -6,13 +6,10 @@ writes SVGs to public/reports/charts/2026-07/ in the established Datum Labs
 in-report chart style (cream ground, cobalt/terracotta, Source Serif 4 /
 JetBrains Mono, matching public/reports/charts/2026-05-may-chart-*.svg).
 
-Currently renders:
+Renders:
+  - section-01-curator-crossover.svg   (Sentora overtakes Steakhouse)
   - section-02-usdc-rate-dispersion.svg
   - section-04-sparklend-sky-peg.svg
-
-section-01-curator-concentration is intentionally NOT rendered here pending a
-data-framing review (the May 31 combined figures tell a different 3-month
-story than the draft caption implies; see the hand-off report).
 
   python3 outputs/render_issue_004_charts.py
 """
@@ -194,9 +191,89 @@ def render_04():
     return s
 
 
+# ─── Chart 01: curator crossover (four lines, three dates) ─────────────────
+def render_01():
+    may = load("2026-05-31-curator-hhi-combined.json")["top_curators"]  # field: curator
+    jun = load("2026-06-30-curator-hhi.json")["top_curators"]           # field: name
+    jul = load("2026-07-31-curator-hhi.json")["top_curators"]           # field: name
+
+    def share(arr, name):
+        for c in arr:
+            if c.get("curator", c.get("name")) == name:
+                return c["share_pct"]
+        raise SystemExit(f"curator {name!r} not found in source")
+
+    names = ["Sentora", "Steakhouse Financial", "Gauntlet"]
+    series = {n: [share(may, n), share(jun, n), share(jul, n)] for n in names}
+    series["All other"] = [round(100 - sum(share(a, n) for n in names), 2) for a in (may, jun, jul)]
+
+    expect = {"Sentora": [27.65, 31.23, 33.56], "Steakhouse Financial": [31.08, 29.17, 31.31],
+              "Gauntlet": [18.59, 14.19, 13.02], "All other": [22.68, 25.41, 22.11]}
+    for k, ev in expect.items():
+        for got, exp in zip(series[k], ev):
+            if abs(got - exp) > 0.5:
+                raise SystemExit(f"SANITY FAIL {k}: got {series[k]} vs expected {ev}")
+
+    xs = [240, 480, 720]
+    ax0, ax1 = 160, 800
+    ytop, ybot, ylo, yhi = 100, 360, 10, 40
+    ysc = (ybot - ytop) / (yhi - ylo)
+
+    def Y(v):
+        return ybot - (v - ylo) * ysc
+
+    # name: (color, width, marker, dash)
+    style = {
+        "Sentora": (COBALT, 3, "filled", None),
+        "Steakhouse Financial": (TERRACOTTA, 3, "filled", None),
+        "Gauntlet": (MUTED, 1.5, "hollow", None),
+        "All other": (FOG, 1, "hollow", "4 3"),
+    }
+
+    s = head("Sentora overtakes Steakhouse as Morpho's largest curator")
+    s += f'  {legend([("Sentora", COBALT), ("Steakhouse Financial", TERRACOTTA), ("Gauntlet", MUTED), ("All other", FOG)], 48, 66)}\n'
+    for v in range(ylo, yhi + 1, 5):
+        y = Y(v)
+        s += f'  <line class="grid" x1="{ax0}" y1="{y:.1f}" x2="{ax1}" y2="{y:.1f}"/>\n'
+        s += f'  <text class="axis" x="{ax0-8}" y="{y+4:.1f}" text-anchor="end">{v}%</text>\n'
+    for xi, lbl in zip(xs, ["May 31", "June 30", "July 31"]):
+        s += f'  <text class="lbl" x="{xi}" y="{ybot+22}" text-anchor="middle" font-weight="600">{lbl}</text>\n'
+    # lines back-to-front
+    for n in ["All other", "Gauntlet", "Steakhouse Financial", "Sentora"]:
+        color, w, marker, dash = style[n]
+        pts = " ".join(f"{xs[i]},{Y(series[n][i]):.1f}" for i in range(3))
+        da = f' stroke-dasharray="{dash}"' if dash else ""
+        s += f'  <polyline points="{pts}" fill="none" stroke="{color}" stroke-width="{w}"{da}/>\n'
+        for i in range(3):
+            cx, cy = xs[i], Y(series[n][i])
+            if marker == "filled":
+                s += f'  <circle cx="{cx}" cy="{cy:.1f}" r="4" fill="{color}"/>\n'
+            else:
+                s += f'  <circle cx="{cx}" cy="{cy:.1f}" r="3.2" fill="{CREAM}" stroke="{color}" stroke-width="1.4"/>\n'
+    # July end labels
+    for n in ["Sentora", "Steakhouse Financial", "Gauntlet", "All other"]:
+        color = style[n][0]
+        v = series[n][2]
+        s += f'  <text x="{xs[2]+10}" y="{Y(v)+4:.1f}" class="val" fill="{color if color != FOG else SLATE}">{v:.2f}%</text>\n'
+    # crossover marker + callout (Sentora × Steakhouse, between May and June)
+    sen, stk = series["Sentora"], series["Steakhouse Financial"]
+    t = (stk[0] - sen[0]) / ((sen[1] - sen[0]) - (stk[1] - stk[0]))
+    xc = xs[0] + t * (xs[1] - xs[0])
+    yc = Y(sen[0] + t * (sen[1] - sen[0]))
+    s += f'  <line x1="{xc-5:.1f}" y1="{yc-5:.1f}" x2="{xc+5:.1f}" y2="{yc+5:.1f}" stroke="{SLATE}" stroke-width="1.6"/>\n'
+    s += f'  <line x1="{xc-5:.1f}" y1="{yc+5:.1f}" x2="{xc+5:.1f}" y2="{yc-5:.1f}" stroke="{SLATE}" stroke-width="1.6"/>\n'
+    s += f'  <line class="ref" x1="{xc:.1f}" y1="{yc-8:.1f}" x2="{xc:.1f}" y2="154" stroke="{MUTED}" stroke-opacity="0.5"/>\n'
+    s += f'  <text x="{xc:.1f}" y="147" text-anchor="middle" font-family="{MONO}" font-size="10" fill="{MUTED}">Sentora overtakes Steakhouse</text>\n'
+    s += foot(
+        "Morpho V1 + V2 combined curator TVL share at May 31, June 30, and July 31, 2026. Sentora climbed from #2 to #1 between May and June; Steakhouse dipped and partly recovered; Gauntlet declined for the second consecutive month.",
+        "Source: Datum Labs Research")
+    return s
+
+
 def main():
     os.makedirs(OUTDIR, exist_ok=True)
     charts = {
+        "section-01-curator-crossover.svg": render_01(),
         "section-02-usdc-rate-dispersion.svg": render_02(),
         "section-04-sparklend-sky-peg.svg": render_04(),
     }
