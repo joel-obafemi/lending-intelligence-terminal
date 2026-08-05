@@ -174,8 +174,9 @@ def render_04():
     if i23 is not None:
         xx = X(i23)
         s += f'  <line class="ref" x1="{xx:.1f}" y1="{ytop}" x2="{xx:.1f}" y2="{ybot}" stroke="{TERRACOTTA}" stroke-opacity="0.85"/>\n'
-        s += f'  <text x="{xx-6:.1f}" y="{ytop+14}" text-anchor="end" font="600 11px {MONO}" fill="{TERRACOTTA}">Atlas Edit executed</text>\n'
-        s += f'  <text x="{xx-6:.1f}" y="{ytop+28}" text-anchor="end" font="600 11px {MONO}" fill="{TERRACOTTA}">Jul 23, 14:43 UTC</text>\n'
+        # Label to the RIGHT of the line so it clears the Jul 6 "spread cut" label.
+        s += f'  <text x="{xx+7:.1f}" y="{ytop+14}" text-anchor="start" font="600 11px {MONO}" fill="{TERRACOTTA}">Atlas Edit executed</text>\n'
+        s += f'  <text x="{xx+7:.1f}" y="{ytop+28}" text-anchor="start" font="600 11px {MONO}" fill="{TERRACOTTA}">Jul 23, 14:43 UTC</text>\n'
     # July 6 small label
     if i06 is not None:
         xx = X(i06)

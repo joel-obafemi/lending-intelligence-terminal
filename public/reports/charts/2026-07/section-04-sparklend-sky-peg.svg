@@ -34,8 +34,8 @@
   <text class="axis" x="633.1" y="390" text-anchor="middle">07-23</text>
   <text class="axis" x="792.6" y="390" text-anchor="middle">08-01</text>
   <line class="ref" x1="633.1" y1="96" x2="633.1" y2="372" stroke="#C5511A" stroke-opacity="0.85"/>
-  <text x="627.1" y="110" text-anchor="end" font="600 11px 'JetBrains Mono', 'DejaVu Sans Mono', monospace" fill="#C5511A">Atlas Edit executed</text>
-  <text x="627.1" y="124" text-anchor="end" font="600 11px 'JetBrains Mono', 'DejaVu Sans Mono', monospace" fill="#C5511A">Jul 23, 14:43 UTC</text>
+  <text x="640.1" y="110" text-anchor="start" font="600 11px 'JetBrains Mono', 'DejaVu Sans Mono', monospace" fill="#C5511A">Atlas Edit executed</text>
+  <text x="640.1" y="124" text-anchor="start" font="600 11px 'JetBrains Mono', 'DejaVu Sans Mono', monospace" fill="#C5511A">Jul 23, 14:43 UTC</text>
   <line class="ref" x1="332.0" y1="134.2" x2="332.0" y2="372" stroke="#595959" stroke-opacity="0.5"/>
   <text x="337.0" y="113.0" font="11px 'JetBrains Mono', 'DejaVu Sans Mono', monospace" fill="#595959">SparkLend spread cut</text>
   <polyline points="84.0,135.85 101.7,135.81 119.4,135.83 137.1,135.81 154.9,135.81 172.6,135.81 190.3,135.81 208.0,135.64 225.7,135.81 243.4,135.81 261.1,135.81 278.9,135.81 296.6,135.81 314.3,135.81 332.0,177.31 349.7,177.31 367.4,177.31 385.1,177.34 402.9,177.31 420.6,177.25 438.3,177.31 456.0,177.27 473.7,177.31 491.4,177.31 509.1,177.31 526.9,177.31 544.6,177.31 562.3,177.31 580.0,177.31 597.7,177.31 615.4,177.31 633.1,206.59 650.9,206.59 668.6,206.59 686.3,206.59 704.0,206.59 721.7,206.59 739.4,206.59 757.1,206.59 774.9,206.59 792.6,206.59 810.3,206.57 828.0,206.59" fill="none" stroke="#C5511A" stroke-width="2.4"/>
