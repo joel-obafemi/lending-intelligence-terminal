@@ -1,0 +1,57 @@
+---
+issue: "004"
+section: "04"
+subsection: "Morpho"
+title: "Morpho"
+draft_pass: 2
+date: 2026-08-04
+snapshot_cutoff: 2026-07-31T23:59:00Z
+---
+
+<SectionHeading number="04" subsection="Morpho" title="Morpho" />
+
+Morpho's July constant-price net deposit flow was +$135M at the protocol level. That is the second-highest positive flow among covered protocols after Aave V3, and it landed even as the vault surface underneath continued consolidating into fewer curator hands and the version mix continued shifting toward Morpho V2.
+
+Combined V1 + V2 curated TVL at July 31: **$2.21 billion**.
+
+- Morpho V1 (MetaMorpho vaults): $698M
+- Morpho V2 (Vault V2): $1.77B
+
+V2 accounted for 71.76% of curated TVL at July 31. That share has been climbing through the year as curators migrate vault TVL onto V2. The V2 majority is not a July event; Morpho V2 shipped in late 2025 and the migration has been ongoing since. What July shows is continued momentum in the same direction, not a threshold crossed this month.
+
+### Curator concentration
+
+Combined V1+V2 curator concentration read HHI 2,337 at the July 31 close, up from 2,095 at June 30 (+242 index points, +11.6%). Top-three curator share moved from 74.6% to 77.9% (+3.3 pp). The three largest curators at July 31:
+
+- **Sentora: 33.56% share ($741M).** 3 vaults, all V2
+- **Steakhouse Financial: 31.31% share ($691M).** 18 vaults, 9 V1 + 9 V2
+- **Gauntlet: 13.02% share ($287M).** 22 vaults, 18 V1 + 4 V2
+
+The structural difference across these three is worth naming. Sentora runs a concentrated model: three large V2 vaults absorbing over $740M of depositor TVL. Steakhouse runs a mixed model: 18 vaults split roughly evenly across V1 and V2, indicating both legacy V1 exposures held and new V2 mandates opened. Gauntlet runs a legacy-heavy model: 22 vaults with 82% of TVL in V1 and only 18% in V2, suggesting slower migration or a deliberate preference for the V1 vault architecture.
+
+Two curators outside the top three grew notably in July: Sky Money at 5.46% ($121M, all V2) and Galaxy Curation at 3.60% ($79M, all V2). Both are relatively new entrants on the curator leaderboard, both are V2-only, and both moved up in July. The pattern is consistent: growth on Morpho's vault surface is landing predominantly in V2 vaults, whether the curator is an established player like Sentora or a newer name like Sky Money.
+
+The concentration dynamic at the top of the table shifted across the two months. In May-to-June, Sentora grew at Steakhouse's expense (Sentora +358 bps, Steakhouse −191 bps), overtaking Steakhouse as the largest curator on the Morpho vault surface. In June-to-July, both grew coincidentally, with the ground coming from the long tail (down 330 bps collectively) rather than from each other. Across the full two-month window, Sentora added +591 bps while Steakhouse held roughly flat (+23 bps net). What Section 01 calls out at the aggregate view (concentration climbing) is Sentora rising first at Steakhouse's expense in May-to-June, then jointly with Steakhouse from the tail in June-to-July.
+
+### Morpho Midnight
+
+Morpho shipped Midnight, a fixed-rate and fixed-term lending product built on Morpho V2 markets, on July 24, 2026. Midnight is a departure from pool-based variable-rate lending in a way that the rest of the sector does not currently offer at scale. On Aave V3, Fluid, Compound V3, and Euler V2, a lender supplies capital to a pool and earns a variable rate that reflects current utilization, with the position redeemable at any time at the prevailing rate. On Midnight, a lender or borrower selects a specific maturity date and a fixed rate at origination. The rate does not float with utilization; the position runs to maturity.
+
+For a depositor market this is a categorical change. Fixed-rate exposure removes rate uncertainty for both sides of the trade. For a lender, that means locking in yield over a term. For a borrower, that means locking in cost. Neither is a new concept in traditional finance; both are new as first-class primitives in DeFi lending at the scale Morpho is deploying them.
+
+Midnight sits inside Morpho V2 markets, which means the same curator layer described above is what allocates through it. A curator running fixed-rate Morpho markets will price them alongside variable Morpho V1/V2 markets and route depositor capital based on relative yield expectations. Curators, in other words, become fixed-vs-variable rate portfolio managers on Morpho.
+
+Two things to watch as Midnight matures beyond its July 24 launch:
+
+- Whether depositor and borrower interest converges into the same maturity buckets, which would produce actual liquidity at specific dates, or spreads across many maturities, which would leave individual markets thin
+- Whether curator vaults start blending Midnight fixed-rate exposure with V1/V2 variable-rate exposure to construct portfolio-level yield strategies
+
+Neither dynamic will be observable in July's data. It is a launch signal in July and needs at least two months of post-launch operation before its shape can be read from flow numbers.
+
+### Robinhood Chain context
+
+Morpho extended its non-Ethereum footprint in July with a Robinhood Chain deployment that crossed $495M in TVL in its first month of operation. Robinhood Chain is not Ethereum, so those figures do not appear in this report's covered set. The Robinhood deployment matters for Morpho as an organisation: it established the protocol as a distribution rail into a mainstream US brokerage environment. That is likely to shape institutional demand for Morpho-hosted vaults on Ethereum over the coming quarters, even though the Robinhood TVL itself sits off-scope for this coverage.
+
+### What August tests
+
+Whether V2 share of curated TVL continues to climb (a plateau in the 70-75% range or a push toward 80%+). Whether Sentora and Steakhouse continue to gain share coincidentally or one starts absorbing the other's growth. Whether Midnight's first full month of operation produces observable maturity-bucket clustering or leaves the fixed-rate market surface too fragmented. Whether Gauntlet's high V1 weighting reverses as V2 migration continues.
