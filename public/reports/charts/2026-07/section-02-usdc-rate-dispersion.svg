@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 880 480" font-family="'Source Serif 4', 'Liberation Serif', Georgia, serif">
+  <style>
+    .title { fill: #0E1B2C; font: 600 18px 'Source Serif 4', 'Liberation Serif', Georgia, serif; }
+    .axis { fill: #595959; font: 11px 'JetBrains Mono', 'DejaVu Sans Mono', monospace; }
+    .lbl { fill: #0E1B2C; font: 12px 'JetBrains Mono', 'DejaVu Sans Mono', monospace; }
+    .val { font: 600 12px 'JetBrains Mono', 'DejaVu Sans Mono', monospace; }
+    .grid { stroke: #B8C9DD; stroke-opacity: 0.4; }
+    .ref { stroke: #595959; stroke-dasharray: 4 4; stroke-opacity: 0.7; }
+    .caption { fill: #595959; font: italic 13px 'Source Serif 4', 'Liberation Serif', Georgia, serif; }
+    .source { fill: #595959; font: 10px 'JetBrains Mono', 'DejaVu Sans Mono', monospace; letter-spacing: 0.08em; }
+  </style>
+  <rect width="880" height="480" fill="#F7F4ED"/>
+  <text class="title" x="48" y="40">USDC supply APY across pool-based markets — June 30 vs July 31, 2026</text>
+  <rect x="300" y="31" width="12" height="12" rx="2" fill="#1F3A5F"/><text x="318" y="41" class="lbl">Aave V3</text><rect x="379.4" y="31" width="12" height="12" rx="2" fill="#C5511A"/><text x="397.4" y="41" class="lbl">Fluid</text><rect x="442.4" y="31" width="12" height="12" rx="2" fill="#B8C9DD"/><text x="460.4" y="41" class="lbl">Compound V3</text><rect x="554.5999999999999" y="31" width="12" height="12" rx="2" fill="#595959"/><text x="572.5999999999999" y="41" class="lbl">Euler V2</text>
+  <line class="grid" x1="90" y1="372.0" x2="840" y2="372.0"/>
+  <text class="axis" x="80" y="376.0" text-anchor="end">0%</text>
+  <line class="grid" x1="90" y1="333.1" x2="840" y2="333.1"/>
+  <text class="axis" x="80" y="337.1" text-anchor="end">1%</text>
+  <line class="grid" x1="90" y1="294.3" x2="840" y2="294.3"/>
+  <text class="axis" x="80" y="298.3" text-anchor="end">2%</text>
+  <line class="grid" x1="90" y1="255.4" x2="840" y2="255.4"/>
+  <text class="axis" x="80" y="259.4" text-anchor="end">3%</text>
+  <line class="grid" x1="90" y1="216.6" x2="840" y2="216.6"/>
+  <text class="axis" x="80" y="220.6" text-anchor="end">4%</text>
+  <line class="grid" x1="90" y1="177.7" x2="840" y2="177.7"/>
+  <text class="axis" x="80" y="181.7" text-anchor="end">5%</text>
+  <line class="grid" x1="90" y1="138.9" x2="840" y2="138.9"/>
+  <text class="axis" x="80" y="142.9" text-anchor="end">6%</text>
+  <line class="grid" x1="90" y1="100.0" x2="840" y2="100.0"/>
+  <text class="axis" x="80" y="104.0" text-anchor="end">7%</text>
+  <line class="ref" x1="90" y1="232.1" x2="840" y2="232.1"/>
+  <text class="axis" x="836" y="227.1" text-anchor="end" fill="#404040">4-week T-bill 3.60%</text>
+  <rect x="150" y="247.9" width="40" height="124.1" fill="#1F3A5F"/>
+  <text class="val" x="170.0" y="241.9" text-anchor="middle" fill="#1F3A5F">3.19</text>
+  <rect x="200" y="122.9" width="40" height="249.1" fill="#C5511A"/>
+  <text class="val" x="220.0" y="116.9" text-anchor="middle" fill="#C5511A">6.41</text>
+  <rect x="250" y="247.1" width="40" height="124.9" fill="#B8C9DD"/>
+  <text class="val" x="270.0" y="241.1" text-anchor="middle" fill="#404040">3.21</text>
+  <rect x="300" y="261.9" width="40" height="110.1" fill="#595959"/>
+  <text class="val" x="320.0" y="255.9" text-anchor="middle" fill="#595959">2.83</text>
+  <text class="lbl" x="245.0" y="394" text-anchor="middle" font-weight="600">June 30</text>
+  <rect x="500" y="244.8" width="40" height="127.2" fill="#1F3A5F"/>
+  <text class="val" x="520.0" y="238.8" text-anchor="middle" fill="#1F3A5F">3.27</text>
+  <rect x="550" y="190.9" width="40" height="181.1" fill="#C5511A"/>
+  <text class="val" x="570.0" y="184.9" text-anchor="middle" fill="#C5511A">4.66</text>
+  <rect x="600" y="248.0" width="40" height="124.0" fill="#B8C9DD"/>
+  <text class="val" x="620.0" y="242.0" text-anchor="middle" fill="#404040">3.19</text>
+  <rect x="650" y="252.0" width="40" height="120.0" fill="#595959"/>
+  <text class="val" x="670.0" y="246.0" text-anchor="middle" fill="#595959">3.09</text>
+  <text class="lbl" x="595.0" y="394" text-anchor="middle" font-weight="600">July 31</text>
+  <text class="caption" x="48" y="440">USDC supply APY across the four pool-based markets, June 30 vs July 31, 2026. Fluid gave back most of its June premium; the other three held roughly flat.</text>
+  <text class="source" x="48" y="462">Source: Datum Labs Research, DefiLlama Yields.</text>
+</svg>
