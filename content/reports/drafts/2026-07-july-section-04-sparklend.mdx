@@ -1,0 +1,45 @@
+---
+issue: "004"
+section: "04"
+subsection: "SparkLend"
+title: "SparkLend"
+draft_pass: 4
+date: 2026-08-04
+snapshot_cutoff: 2026-07-31T23:59:00Z
+---
+
+<SectionHeading number="04" subsection="SparkLend" title="SparkLend" />
+
+SparkLend's July constant-price net deposit flow was −$203M at the protocol level. That is the largest single-protocol contraction of the month across the six covered protocols. Available pool liquidity at July 31: $3.76B. Borrow book: $1.81B. Loan-to-deposit ratio: 32.53%, below the 40.63% sector aggregate.
+
+The month contained two outsized single-day outflows that shape the total: July 12 (−$315M) and July 28 (−$173M). The other 29 days combined for approximately +$285M of offsetting inflows. The July 28 outflow followed the July 23 Atlas Edit spell that cut SparkLend's stablecoin borrow rate by 18 bps. Depositors reallocating out of a rate-just-cut venue is consistent with the timing. The July 12 outflow does not align with any known Sky governance action and appears unrelated to the Atlas Edit cycle.
+
+The rest of this subsection unpacks the SparkLend stablecoin rate mechanism itself, since that is the analytical thread that runs through both the July 6 and July 23 rate events and is likely to shape SparkLend's read for months to come.
+
+### SparkLend's stablecoin book runs on a different clock
+
+Five of SparkLend's eighteen reserves price their borrow rate off a single external anchor rather than off pool utilization. All five are stablecoins. All five stepped together on July 23. The mechanism showed up in the data that day.
+
+At 14:43 UTC on July 23, 2026, Sky's weekly Atlas Edit executive spell executed on-chain. In that single transaction, Sky cut the Sky Savings Rate from 3.60% to 3.52%, tightened the Sky Spread from 0.10% to 0.00%, and reduced the total wholesale spread that Sky Agents pay to borrow USDS from SSR + 0.30% to SSR + 0.20%. The Sky Base Rate, which is the wholesale cost of capital that SparkLend as a Sky Agent pays for its USDS inventory, dropped from 3.90% to 3.72%. 18 bps, one transaction, one governance decision.
+
+SparkLend's on-chain USDC borrow rate followed the same day. The retail rate stepped from 4.42% to 4.28% at the same execution, closing July at 4.28% after a full-month decline of 33 bps. The earlier step, on July 6, cut USDC 19.6 bps from 4.61% to 4.42%. The Sky Base Rate did not move on July 6; it held flat at 3.90% from July 1 through July 22. And SparkLend's other four Sky-linked stablecoins (DAI, USDT, USDS, PYUSD) did not step that day either. The July 6 move is therefore a SparkLend-side adjustment: a change to the local interest rate model on USDC that SparkLend layers on top of the shared Sky rate source, not a downstream reflection of Sky governance. Sky sets the wholesale rate; SparkLend adds a per-market markup on top of it. July 6 was Spark cutting its own USDC markup. July 23 was Sky cutting the wholesale rate everything is built on.
+
+<ChartCard
+  src="/reports/charts/2026-07/section-04-sparklend-sky-peg.svg"
+  caption="Sky Base Rate (wholesale) and SparkLend USDC retail borrow rate, daily through July 2026. Both step down on July 23 following the Atlas Edit weekly cycle. USDC is shown as representative; DAI, USDS, USDT, and PYUSD stepped in unison the same day. SparkLend's July 6 step on USDC is not accompanied by a Sky Base Rate move and did not repeat across the other stablecoins."
+  sources={["2026-07-sky-base-rate-daily.json", "2026-07-spark-usdc-borrow-daily.json", "2026-07-spark-reserve-mechanism.json"]}
+/>
+
+The chart makes the July 23 pass-through visible. Sky's governance decision propagated to SparkLend's user-facing rate in the same transaction cycle. The distance between the two lines, SparkLend's markup over the Sky Base Rate, narrowed from 0.71 pp on July 22 to 0.56 pp on July 23. SparkLend absorbed a portion of the wholesale cut into its own spread.
+
+The pass-through is not USDC-specific. On-chain reads of SparkLend's eighteen reserves show that DAI, USDC, USDT, USDS, and PYUSD all point their variable-borrow interest rate model at a single Sky-linked rate source contract at address 0x57027B62. That contract references sUSDS in its bytecode and derives its rate from the Sky Base Rate. DAI and USDS share the same interest rate model contract; USDC, USDT, and PYUSD each have their own model contract that reads from the same rate source. All five stablecoins stepped roughly −18 bps at the July 23 Atlas Edit execution. None of the other thirteen SparkLend reserves moved that day.
+
+The other thirteen reserves are the collateral book: WETH, wstETH, WBTC, weETH, rETH, cbBTC, LBTC, tBTC, ezETH, rsETH, GNO, sDAI, and sUSDS. Each uses a standard Aave-shape interest rate strategy with base rate, slope 1, slope 2, and optimal utilization parameters set at listing. When utilization on these markets moves, the rate moves. When utilization holds, the rate holds. They are ordinary money markets.
+
+SparkLend is therefore not a single-mechanism protocol. It is a hybrid: a Sky-linked stablecoin book bolted onto a standard Aave-style collateral book. The stablecoin side derives its rate from Sky's D3M-supplied USDS wholesale inventory, priced governance-first. The collateral side clears on utilization curves like any Aave fork.
+
+Aave V3, Morpho V1, Fluid, Compound V3, and Euler V2 all set their USDC borrow rates through utilization curves. SparkLend's collateral book follows the same convention. SparkLend's stablecoin book does not. Comparing Fluid's 4.66% supply APY on USDC to SparkLend's 3.47% supply APY on USDC is not a fair like-for-like: the two rates are set by different mechanisms responding to different inputs. Fluid's rate reflects lender-borrower matching. SparkLend's rate reflects Sky governance.
+
+### What August tests
+
+Whether the July 12 outflow event has a Sky-side or SparkLend-side cause that becomes visible after the fact. Whether depositor reallocation out of SparkLend following rate cuts continues or stabilises. Whether Sky governance runs another Atlas Edit adjustment to the Base Rate margin that would move SparkLend's stablecoin rates again. Whether SparkLend's USDC borrow rate holds at the July 4.28% close or drifts further with subsequent Sky governance moves.

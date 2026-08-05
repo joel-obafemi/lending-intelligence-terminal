@@ -1,0 +1,55 @@
+---
+issue: "004"
+section: "04"
+subsection: "Aave V3"
+title: "Aave V3"
+draft_pass: 1
+date: 2026-08-04
+snapshot_cutoff: 2026-07-31T23:59:00Z
+---
+
+<SectionHeading number="04" subsection="Aave V3" title="Aave V3" />
+
+Aave V3's July constant-price net deposit flow was +$649M, down from June's +$845M but positive for the second consecutive month. Aave V3 is the only major covered protocol to have grown in each of the last two months at constant prices. Available pool liquidity at July 31: $11.44B. Borrow book: $8.85B, the deepest in the sector. Loan-to-deposit ratio (borrowed as a share of total supplied deposits): 43.63%, above the 40.63% sector aggregate.
+
+### Composition
+
+The +$649M net inflow decomposed unevenly across the reserves. Top additions:
+
+- WEETH: +$285M
+- sUSDe: +$145M
+- WBTC: +$124M
+- wstETH: +$113M
+- cbBTC: +$63M
+
+Top drains:
+
+- rsETH: −$93M
+- USDT: −$62M
+- WETH: −$29M
+- PT-sUSDe-25JUN2026: −$28M
+- USDC: −$20M
+
+The July shape mirrors June: collateral inflows dominate; stablecoin and base ETH reserves flat to negative. Two consecutive months of the same pattern is a trend, not a one-month effect.
+
+### LRT rotation inside the collateral book
+
+The gross LRT figure (all liquid restaking tokens combined) masks a real rotation happening inside the LRT complex. WEETH added +$285M in July while rsETH shed −$93M in the same window. Depositors did not add LRTs to Aave V3 in aggregate; they concentrated the addition into weETH specifically and rotated out of rsETH. That is a within-class preference shift, not a uniform "restaking inflow."
+
+The most likely mechanism is where the deepest looping venue sits. WEETH (ether.fi) has been the sector's dominant LRT by TVL for most of 2026, and its inclusion as high-LTV collateral on Aave V3's Core Market has attracted looping strategies (deposit weETH, borrow WETH, buy more weETH, repeat). rsETH (Kelp) does not sustain the same looping activity at the same scale on Aave V3 because its borrow book depth for the paired asset is smaller. Capital rotated toward the venue where the loop closes.
+
+### The stablecoin composition shift
+
+USDC's −$20M drain gets attention because Issue 003 flagged USDC's June drain of −$162M as evidence that Aave V3's growth was not USDC-driven. July's drain is smaller in magnitude but the same direction. The larger July stablecoin outflow was actually USDT at −$62M.
+
+The full stablecoin picture on Aave V3 is not a straightforward drain. Combined outflow across USDC, USDT, and the maturing PT-sUSDe-25JUN2026 reserve totaled roughly −$110M. Combined inflow across sUSDe, USDe, USDTB, and PT-sUSDe-22OCT2026 totaled roughly +$255M. Net stablecoin position on Aave V3 grew by roughly +$145M in July, but the growth landed in the USDe complex (Ethena's synthetic dollar and its Pendle-tokenised forwards) rather than in USDC or USDT.
+
+That is a different depositor composition than early 2026. The USDe complex has become a meaningful stablecoin surface on Aave V3 and is growing at the expense of USDC and USDT positions. Two interpretations are consistent with the data: institutional carry-trade demand routing through Ethena's cash-and-carry basis, or depositor preference for higher-yield synthetic dollar exposure. Both point to the same thing: Aave V3's stablecoin depositor mix is shifting toward yield-bearing synthetic dollars.
+
+### Loan-to-deposit ratio
+
+Aave V3's LDR at July 31 sat at 43.63%, above the 40.63% sector aggregate. The borrow book depth of $8.85B is the growth mechanism from the collateral side. Depositors add LRT and BTC-variant collateral because Aave V3's stablecoin borrow depth is where they access leverage. Without the borrow book, the collateral inflows do not have a use case.
+
+### What August tests
+
+Whether the LRT rotation continues (weETH inflow, rsETH outflow) or reverses. Whether the USDe-complex growth accelerates or plateaus. Whether the USDC drain resumes at June's magnitude or continues its July slowdown. No Aave V3 protocol-specific governance actions or market listings landed in July.

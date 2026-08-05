@@ -1,0 +1,25 @@
+---
+issue: "004"
+section: "04"
+subsection: "Fluid"
+title: "Fluid"
+draft_pass: 1
+date: 2026-08-04
+snapshot_cutoff: 2026-07-31T23:59:00Z
+---
+
+<SectionHeading number="04" subsection="Fluid" title="Fluid" />
+
+Fluid's July constant-price net deposit flow was +$26M at the protocol level. That is essentially flat: a small positive number in a month when Fluid's rate leadership on USDC narrowed materially, as covered in Section 02. This subsection covers what happened to Fluid's balance sheet under that rate compression.
+
+Available pool liquidity at July 31: $464M. Borrow book: $571M. Loan-to-deposit ratio (borrowed as a share of total supplied deposits): 55.19%. That is above the 40.63% sector aggregate and second only to Euler V2's 74.86% among the six covered protocols. Fluid's above-sector LDR reading is a function of its smart lending and smart debt architecture: the same capital can serve as both lending liquidity and DEX liquidity through Fluid's cross-utilization design, which produces a higher effective borrow-to-deposit ratio than a pure Aave-style pool.
+
+### Rate compression without corresponding outflow
+
+Fluid's USDC supply APY fell from 6.41% at June 30 to 4.66% at July 31, a decline of 175 bps in a month. If Fluid ran on a pure yield-chasing depositor base, that kind of rate compression would typically produce a visible outflow. It did not. Fluid was net-positive on constant-price deposit flow in July, even with the rate premium over Aave V3 narrowing from 322 bps to 139 bps.
+
+That is a data point about depositor stickiness on Fluid. The depositor base did not treat rate leadership erosion as a reason to leave. One interpretation is that Fluid's depositor pool skews toward participants who value the protocol's structural yield advantage across a cycle rather than chasing month-over-month rate changes. Another is that the July flow window (only 31 days after the June peak) is too short for a rate-reactive depositor base to fully rotate. August will resolve which reading is right.
+
+### What August tests
+
+Whether the +$26M flat outcome carries into August or turns negative if rates continue compressing. Whether Fluid's USDC supply APY stabilises around 4.6% to 4.7% or continues drifting toward Aave V3's 3.27%. Whether Fluid's LDR holds above 50% or contracts as borrow demand eases.
