@@ -26,6 +26,7 @@ import { Annotation } from "@/components/report/Annotation"
 import { MethodologyNote } from "@/components/report/MethodologyNote"
 import { Chart } from "@/components/report/Chart"
 import { InlineChart } from "@/components/report/charts/InlineChart"
+import { ChartCard } from "@/components/report/ChartCard"
 import { ProgressBar } from "@/components/report/ProgressBar"
 import { TOC } from "@/components/report/TOC"
 import { ShareToolbar } from "@/components/report/ShareToolbar"
@@ -235,6 +236,7 @@ export default async function IssuePage({ params }: RouteParams) {
     MethodologyNote,
     Chart: (props: any) => <Chart {...props} freezeDate={fm.freeze_date} />,
     InlineChart,
+    ChartCard,
     CiteWidget: () => <CiteWidget issue={fm} pageUrl={pageUrl} />,
     NextIssue: () => (
       <NextIssue
