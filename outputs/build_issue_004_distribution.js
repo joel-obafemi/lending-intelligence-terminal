@@ -118,23 +118,24 @@ const ARTICLE_SECTIONS = [
     paras: [
       "Aave V3 added $649M of net constant-price deposits on Ethereum in July 2026, the only positive reading among the six largest lending protocols large enough to move the sector. The other five, SparkLend, Morpho V1, Fluid, Compound V3, and Euler V2, combined for a net −$96M over the same window. The sector total was +$553M. Strip out Aave V3 and the sector contracted.",
       "July halved June's growth. The same six-protocol frame added $1.33B in June and $553M in July, a 58% drop. Two other readings moved with it. Morpho's combined V1 and V2 curator concentration climbed for a second straight month, from an HHI of 2,095 at June 30 to 2,337 at July 31. And the sector's blended stablecoin supply rate closed July at 2.85% against a 3.60% 4-week Treasury bill, a Real Yield Spread of −75 bps, down from −37 bps at the June close.",
-      "One protocol carrying the sector, concentration climbing at the curator layer, and real yield deepening below the risk-free rate for a second consecutive month: the shape of a depositor market running short of new participants.",
+      "One protocol carrying the sector, concentration climbing at the curator layer, and real yield deepening below the risk-free rate for a second consecutive month: the three readings that sum up July.",
     ],
   },
   {
     header: "The growth was collateral",
     paras: [
       "Aave V3's inflow did not arrive in stablecoins. USDC on the protocol shed $20M in July, a smaller drain than June's −$162M but the same direction. USDT shed $62M and WETH shed $29M. Against those, the collateral reserves grew: weETH +$285M, sUSDe +$145M, WBTC +$124M, wstETH +$113M, cbBTC +$63M.",
-      "Inside the liquid restaking complex the flow split rather than moved as a block. weETH took +$285M while rsETH lost $93M, a rotation toward the token with the deepest looping venue on Aave rather than a uniform restaking inflow. The stablecoin picture is similar underneath the headline drain: combined outflow across USDC, USDT, and a maturing Pendle sUSDe reserve totaled roughly −$110M, while combined inflow across sUSDe, USDe, USDTB, and a longer-dated Pendle sUSDe forward totaled roughly +$255M. Net stablecoin position grew about +$145M, but the growth landed in the USDe complex, Ethena's synthetic dollar and its tokenized forwards, while USDC and USDT drained.",
+      "Inside the liquid restaking complex the flow was concentrated in weETH at +$285M, while rsETH shed $93M over the same month. The rsETH outflow was specific to that token and does not read as a broader restaking rotation. The stablecoin picture is similar underneath the headline drain: combined outflow across USDC, USDT, and a maturing Pendle sUSDe reserve totaled roughly −$110M, while combined inflow across sUSDe, USDe, USDTB, and a longer-dated Pendle sUSDe forward totaled roughly +$255M. Net stablecoin position grew about +$145M, but the growth landed in the USDe complex, Ethena's synthetic dollar and its tokenized forwards, while USDC and USDT drained.",
       "This is the second consecutive month of the same composition: collateral in, base stablecoins and ETH flat to negative. Aave V3's growth this cycle reflects depositors supplying collateral to borrow against. The 3.27% USDC supply rate, 33 bps under the T-bill, is not what draws them. Two months makes it a pattern rather than a June artifact.",
     ],
   },
   {
     header: "Sentora overtook Steakhouse on Morpho",
     paras: [
-      "Underneath the rising HHI, the curator layer rotated. Sentora grew from 27.65% of Morpho's combined V1+V2 curated TVL at May 31 to 33.56% at July 31, overtaking Steakhouse Financial to become Morpho's largest single curator. Steakhouse held roughly flat over the two months, 31.08% to 31.31%. Gauntlet declined for a second straight month, 18.59% to 13.02%, a 557 bps drop.",
+      "Underneath the rising HHI, the curator layer rotated. Sentora grew from 27.65% of Morpho's combined V1+V2 curated TVL on Ethereum at May 31 to 33.56% at July 31, overtaking Steakhouse Financial to become the largest single curator on Ethereum. Steakhouse held roughly flat over the two months, 31.08% to 31.31%. Gauntlet declined for a second straight month, 18.59% to 13.02%, a 557 bps drop.",
       "The crossover ran in two moves. May to June was a direct transfer: Sentora +358 bps, Steakhouse −191 bps, share moving from the incumbent to the challenger. June to July was coincident growth: Sentora and Steakhouse both gained, together +447 bps, with the ground coming from the long tail rather than from each other. Across the full window Sentora added +591 bps and Steakhouse netted +23 bps.",
       "The three largest curators run structurally different books. Sentora holds $741M across three concentrated V2 vaults. Steakhouse holds $691M across 18 vaults split evenly between V1 and V2. Gauntlet holds $287M across 22 vaults weighted 82% to V1. Combined top-three share still rose, 74.6% to 77.9%. The aggregate concentration number reads as generic; the composition underneath is one V2-native curator consolidating a concentrated book while the incumbent holds a mixed one and the third retreats into legacy V1 exposure.",
+      "The crossover is an Ethereum story. Across the full Morpho landscape today, all chains included, Steakhouse Financial remains the largest curator at roughly $2.3B of curated TVL against Sentora's $790M, carried by a $1.2B Base book. Sentora's rise sits almost entirely on Ethereum.",
     ],
   },
   {
@@ -220,7 +221,7 @@ const DL_THREADS = [
     tweets: [
       "Aave V3 added $649M of net constant-price deposits on Ethereum in July 2026, the only positive reading among the six largest lending protocols large enough to move the sector. The other five combined for −$96M. Strip out Aave V3 and the sector contracted.",
       "The +$649M came through the collateral reserves. The stablecoin book drained over the same month: USDC −$20M, USDT −$62M, WETH −$29M. Against those, weETH +$285M, sUSDe +$145M, WBTC +$124M, wstETH +$113M, cbBTC +$63M.",
-      "Inside the liquid restaking complex the flow split. weETH took +$285M while rsETH lost $93M, a rotation toward the token with the deepest looping venue on Aave rather than a uniform restaking inflow.",
+      "Inside the liquid restaking complex the flow was concentrated in weETH at +$285M, while rsETH shed $93M. The rsETH outflow was specific to that token and does not read as a broader restaking rotation.",
       "Net stablecoin position on Aave V3 still grew about +$145M, but the growth was the USDe complex. sUSDe, USDe, USDTB, and Pendle sUSDe forwards drew inflow while USDC and USDT drained. Ethena's synthetic dollar is now a material stablecoin surface on the protocol.",
       "This is the second consecutive month of the same composition: collateral in, base stablecoins and ETH flat to negative. June ran the same shape, USDC down $162M against $845M of collateral.",
       "Aave V3's growth this cycle is a borrow-book story. Depositors supply collateral to borrow against; the 3.27% USDC supply rate, 33 bps under the 4-week T-bill, is not what draws them. Two months makes it a pattern.",
@@ -229,24 +230,13 @@ const DL_THREADS = [
   {
     title: "Thread 2: Sentora overtook Steakhouse on Morpho",
     tweets: [
-      "Sentora closed July as Morpho's largest single curator at 33.56% of combined V1+V2 curated TVL, overtaking Steakhouse Financial at 31.31%. At May 31 Sentora sat at 27.65%, behind Steakhouse.",
+      "Sentora closed July as Morpho's largest single curator on Ethereum at 33.56% of combined V1+V2 curated TVL, overtaking Steakhouse Financial at 31.31%. At May 31 Sentora sat at 27.65%, behind Steakhouse.",
       "The crossover ran in two moves. May to June was a direct transfer: Sentora +358 bps, Steakhouse −191 bps. Share moved from the incumbent to the challenger.",
       "June to July was coincident growth: Sentora and Steakhouse both gained, together +447 bps, with the ground coming from the long tail rather than from each other. Across the full window Sentora added +591 bps, Steakhouse +23 bps net.",
       "Gauntlet declined for a second straight month, 18.59% at May 31 to 13.02% at July 31, a 557 bps drop. Combined top-three curator share still rose, 74.6% to 77.9%.",
       "The three run structurally different books. Sentora: $741M across 3 concentrated V2 vaults. Steakhouse: $691M across 18 vaults split evenly V1/V2. Gauntlet: $287M across 22 vaults, 82% weighted to V1.",
       "Morpho's combined V1+V2 HHI climbed to 2,337 at July 31 from 2,095 at June 30, a second consecutive monthly rise. The aggregate number reads as generic concentration; the composition is one V2-native curator consolidating while the incumbent holds mixed and the third retreats into legacy V1.",
-      "Two curators outside the top three grew in July, both V2-only: Sky Money to 5.46% ($121M) and Galaxy Curation to 3.60% ($79M). Growth on Morpho's vault surface is landing in V2.",
-    ],
-  },
-  {
-    title: "Thread 3: SparkLend's stablecoin rates move with Sky governance",
-    tweets: [
-      "On July 23 at 14:43 UTC, Sky's weekly Atlas Edit executive spell executed on-chain and cut the Sky Base Rate from 3.90% to 3.72%, an 18 bps step. SparkLend's USDC retail borrow rate stepped from 4.42% to 4.28% in the same cycle.\n\ntx 0x12435f652eeb08f9de4f4b6402a88de38ac092aef2a6656c87ed0be2f6f6619b",
-      "Five of SparkLend's 18 reserves price their borrow rate from that Base Rate rather than from pool utilization. All five are stablecoins: DAI, USDC, USDT, USDS, PYUSD. All five stepped roughly 18 bps on July 23.",
-      "On-chain, the five point their variable-rate model at a single Sky-linked rate source at 0x57027B62, which references sUSDS and derives from the Sky Base Rate. The Base Rate is the wholesale cost of the USDS inventory SparkLend lends against as a Sky Agent.",
-      "None of SparkLend's other 13 reserves moved on July 23. The collateral book, WETH, wstETH, WBTC, weETH and the rest, clears on standard Aave-shape utilization curves. SparkLend is a hybrid: a Sky-priced stablecoin book on an Aave-style collateral book.",
-      "An earlier step on July 6 cut USDC from 4.61% to 4.42%, but the Base Rate held and the other four Sky-linked stablecoins did not move. July 6 was SparkLend compressing its own markup; July 23 was Sky cutting the wholesale rate. The markup narrowed from 0.71 pp to 0.56 pp.",
-      "The implication is for cross-protocol rate reads. Aave V3, Fluid, Compound V3, and Euler V2 set USDC rates on utilization. SparkLend's stablecoin book does not. Fluid's 4.66% USDC supply APY and SparkLend's 3.47% are set by different mechanisms and are not a like-for-like comparison.",
+      "The crossover is an Ethereum story. Across the full Morpho landscape today, all chains included, Steakhouse Financial remains the largest curator at roughly $2.3B against Sentora's $790M, carried by a $1.2B Base book. Sentora's book sits almost entirely on Ethereum.",
     ],
   },
 ]
@@ -277,6 +267,12 @@ const DL_STANDALONE = [
   },
 ]
 
+const DL_LAUNCH_TWEET =
+  "State of DeFi Lending on Ethereum, Issue 004, July 2026, is live.\n\n" +
+  "Aave V3 was the only major lending protocol on Ethereum that grew in July. Its +$649M net flow carried a sector that would have contracted without it. Growth halved from June, curator concentration on Morpho deepened for a second consecutive month, and stablecoin real yield sank to −75 bps below the 4-week T-bill.\n\n" +
+  "Full report, six protocol sections and the data tables:\n" +
+  REPORT_URL
+
 function buildDatumLabsTwitter() {
   const children = [
     new Paragraph({
@@ -284,9 +280,12 @@ function buildDatumLabsTwitter() {
       spacing: { after: 160 },
     }),
     italicNote(
-      "Institutional voice, third person, snapshot-dated figures. Three threads plus four standalone tweets that schedule independently. Character counts noted under each tweet; long tweets assume a Premium account. Each standalone includes the report link."
+      "Institutional voice, third person, snapshot-dated figures. A launch tweet (posted with the highlights motion-graphics video), two threads, and four standalone tweets. Character counts noted under each tweet; long tweets assume a Premium account."
     ),
   ]
+  children.push(h1("Launch tweet (motion-graphics video overlay)"))
+  children.push(italicNote("Datum Labs profile only. The launch post that runs with the report highlights video; the URL is the caption link."))
+  children.push(...tweetBlock("L.1", "Launch overview", DL_LAUNCH_TWEET))
   DL_THREADS.forEach((thread, ti) => {
     children.push(h1(thread.title))
     thread.tweets.forEach((t, i) => children.push(...tweetBlock(`T${i + 1}`, `Thread ${ti + 1}`, t)))
@@ -297,7 +296,7 @@ function buildDatumLabsTwitter() {
   children.push(h1("Standalone tweets"))
   for (const s of DL_STANDALONE) children.push(...tweetBlock(s.id, s.title, `${s.text}\n\n${REPORT_URL}`))
 
-  const tweetTotal = DL_THREADS.reduce((n, t) => n + t.tweets.length + 1, 0) + DL_STANDALONE.length
+  const tweetTotal = 1 + DL_THREADS.reduce((n, t) => n + t.tweets.length + 1, 0) + DL_STANDALONE.length
   return writeDoc("Issue_004_Datum_Labs_Twitter.docx", children).then((kb) => ({ kb, tweetTotal }))
 }
 
@@ -316,24 +315,13 @@ const JOEL_THREADS = [
       "In August I am watching one reading: whether Aave keeps carrying the sector, or a month arrives where it goes flat and another protocol absorbs the inflow. That is what decides whether July was structural.",
     ],
   },
-  {
-    title: "Thread 2: the SparkLend Sky mechanism",
-    tweets: [
-      "The most consequential thing in this month's data, for me, is that five of SparkLend's 18 reserves do not work like the USDC markets on the other five protocols at all.",
-      "All five are stablecoins: DAI, USDC, USDT, USDS, PYUSD. Their borrow rate tracks the Sky Base Rate, the wholesale cost of the USDS that SparkLend lends against as a Sky Agent, rather than pool utilization.",
-      "On July 23 at 14:43 UTC, Sky's Atlas Edit spell cut that Base Rate from 3.90% to 3.72%. SparkLend's USDC retail rate stepped from 4.42% to 4.28% in the same cycle. All five Sky-linked reserves moved together. The other 13 did not.",
-      "The subtle part is July 6. USDC stepped that day too, 4.61% to 4.42%, but the Base Rate held and the other four stablecoins stayed put. July 6 was Spark compressing its own markup over the wholesale rate. July 23 was Sky cutting the wholesale rate itself. Two different events.",
-      "On-chain, the five point at one Sky-linked rate source, 0x57027B62, which references sUSDS. The collateral book, WETH, wstETH, WBTC and the rest, still clears on Aave-shape utilization curves. SparkLend is a hybrid.",
-      "The implication I keep coming back to: any cross-protocol USDC rate table that lists SparkLend next to Aave or Fluid is comparing two different primitives. Fluid's 4.66% is lender-borrower matching. SparkLend's 3.47% is a governance decision.",
-    ],
-  },
 ]
 const JOEL_STANDALONE = [
   {
     id: "S.1",
     title: "Sentora crossover as a vault-surface story",
     text:
-      "Sentora overtaking Steakhouse as Morpho's largest curator is a story about the vault surface, one level below protocol flow. Morpho took +$135M at the protocol level in July; underneath, Sentora consolidated from 27.65% in May to 33.56% in July on three concentrated V2 vaults.",
+      "Sentora overtaking Steakhouse as Morpho's largest curator on Ethereum is a story about the vault surface, one level below protocol flow. Morpho took +$135M at the protocol level in July; underneath, Sentora consolidated from 27.65% in May to 33.56% in July on three concentrated V2 vaults. Across the full Morpho landscape, Steakhouse still leads on the strength of its Base book.",
   },
   {
     id: "S.2",
