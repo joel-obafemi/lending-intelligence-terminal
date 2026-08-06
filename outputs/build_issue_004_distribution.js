@@ -26,7 +26,7 @@ const {
 const REPO = path.resolve(__dirname, "..")
 const DIST = path.join(REPO, "content/reports/distribution")
 const REPORT_URL = "https://datumlab.xyz/resources/reports/state-of-lending-ethereum-july-2026"
-const BODY = { font: "Georgia", size: 22 } // 11pt
+const BODY = { font: "Cambria", size: 22 } // 11pt
 
 function p(text) {
   return new Paragraph({ children: [new TextRun({ ...BODY, text })], spacing: { after: 220 } })
@@ -34,14 +34,14 @@ function p(text) {
 function h1(text) {
   return new Paragraph({
     heading: HeadingLevel.HEADING_1,
-    children: [new TextRun({ font: "Georgia", size: 32, bold: true, color: "0E1B2C", text })],
+    children: [new TextRun({ font: "Cambria", size: 32, bold: true, color: "0E1B2C", text })],
     spacing: { before: 400, after: 200 },
   })
 }
 function h2(text) {
   return new Paragraph({
     heading: HeadingLevel.HEADING_2,
-    children: [new TextRun({ font: "Georgia", size: 28, bold: true, color: "0E1B2C", text })],
+    children: [new TextRun({ font: "Cambria", size: 28, bold: true, color: "0E1B2C", text })],
     spacing: { before: 340, after: 200 },
   })
 }
@@ -147,9 +147,9 @@ const ARTICLE_SECTIONS = [
     ],
   },
   {
-    header: "Fluid gave back its rate lead",
+    header: "Fluid gave back most of its rate premium",
     paras: [
-      "Fluid closed June with the sector's only positive real yield on USDC: a 6.41% supply APY, 281 bps over the 4-week T-bill. It closed July at 4.66%, 107 bps under the T-bill, a 175 bps compression in a month while Aave V3's USDC rate moved 8 bps (3.19% to 3.27%). Fluid still leads the pool-based USDC field, but its margin over Aave narrowed from 322 bps to 139 bps, and the dispersion across the four pool-based USDC markets halved from 322 bps to 157 bps.",
+      "Fluid closed June with the sector's only positive real yield on USDC: a 6.41% supply APY, 281 bps over the 4-week T-bill. It closed July at 4.66%, 106 bps over the T-bill, a 175 bps compression in a month while Aave V3's USDC rate moved 8 bps (3.19% to 3.27%). Fluid still leads the pool-based USDC field and stayed the only venue paying above the T-bill, though its margin over Aave narrowed from 322 bps to 139 bps and the dispersion across the four pool-based USDC markets halved from 322 bps to 157 bps.",
       "The compression was idiosyncratic to Fluid rather than sector-wide, but Fluid took +$26M of net flow anyway, near-flat. A 175 bps rate cut on a structurally higher-yielding venue did not produce a visible exit. On a lending book whose yield edge comes from capital that serves as both DEX and lending liquidity, that reads as depositor stickiness worth tracking into August.",
     ],
   },
@@ -167,7 +167,7 @@ const ARTICLE_CLOSE_TAIL = ". Issue 004 of the monthly State of DeFi Lending on 
 function buildArticle() {
   const children = [
     new Paragraph({
-      children: [new TextRun({ font: "Georgia", size: 40, bold: true, color: "0E1B2C", text: ARTICLE_TITLE })],
+      children: [new TextRun({ font: "Cambria", size: 40, bold: true, color: "0E1B2C", text: ARTICLE_TITLE })],
       spacing: { after: 200 },
     }),
     new Paragraph({
@@ -194,13 +194,13 @@ function buildArticle() {
 // ════════════════════════════════════════════════════════════════════════
 const MINI_PARAS = [
   "Aave V3 was the only major DeFi lending protocol on Ethereum that grew in July 2026. Its +$649M net constant-price flow carried a sector that would have contracted without it; the other five covered protocols combined for a net −$96M over the same window.",
-  "The July State of DeFi Lending on Ethereum report covers four findings from the month: the collateral inflows carrying Aave while its USDC book drains, Sentora overtaking Steakhouse as Morpho's largest curator, SparkLend's stablecoin rates stepping with Sky governance rather than pool utilization, and the erosion of Fluid's June rate leadership on USDC.",
+  "The July State of DeFi Lending on Ethereum report covers four findings from the month: the collateral inflows carrying Aave while its USDC book drains, Sentora overtaking Steakhouse as Morpho's largest curator, SparkLend's stablecoin rates stepping with Sky governance rather than pool utilization, and the compression of Fluid's June rate premium on USDC.",
   "Full report below.",
 ]
 function buildMiniPost() {
   const children = [
     new Paragraph({
-      children: [new TextRun({ font: "Georgia", size: 32, bold: true, color: "0E1B2C", text: "Issue 004 LinkedIn Mini-Post" })],
+      children: [new TextRun({ font: "Cambria", size: 32, bold: true, color: "0E1B2C", text: "Issue 004 LinkedIn Mini-Post" })],
       spacing: { after: 120 },
     }),
     italicNote(
@@ -243,9 +243,9 @@ const DL_THREADS = [
 const DL_STANDALONE = [
   {
     id: "S.1",
-    title: "Fluid rate leadership eroded",
+    title: "Fluid rate premium compressed",
     text:
-      "Fluid closed June with the sector's only positive real yield on USDC: 6.41% supply APY, 281 bps over the 4-week T-bill. It closed July at 4.66%, 107 bps under the T-bill. The 175 bps compression narrowed its lead over Aave V3 from 322 bps to 139 bps.",
+      "Fluid closed June with the sector's only positive real yield on USDC: 6.41% supply APY, 281 bps over the 4-week T-bill. It closed July at 4.66%, 106 bps over the T-bill, still the only venue above it. The 175 bps compression narrowed its lead over Aave V3 from 322 bps to 139 bps.",
   },
   {
     id: "S.2",
@@ -276,7 +276,7 @@ const DL_LAUNCH_TWEET =
 function buildDatumLabsTwitter() {
   const children = [
     new Paragraph({
-      children: [new TextRun({ font: "Georgia", size: 40, bold: true, color: "0E1B2C", text: "Issue 004 Twitter: Datum Labs profile" })],
+      children: [new TextRun({ font: "Cambria", size: 40, bold: true, color: "0E1B2C", text: "Issue 004 Twitter: Datum Labs profile" })],
       spacing: { after: 160 },
     }),
     italicNote(
@@ -340,7 +340,7 @@ const JOEL_STANDALONE = [
 function buildJoelTwitter() {
   const children = [
     new Paragraph({
-      children: [new TextRun({ font: "Georgia", size: 40, bold: true, color: "0E1B2C", text: "Issue 004 Twitter: Joel personal profile" })],
+      children: [new TextRun({ font: "Cambria", size: 40, bold: true, color: "0E1B2C", text: "Issue 004 Twitter: Joel personal profile" })],
       spacing: { after: 160 },
     }),
     italicNote(
