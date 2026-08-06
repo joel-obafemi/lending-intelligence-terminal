@@ -68,10 +68,10 @@ SANS = "'Segoe UI', 'Inter', 'Helvetica Neue', Arial, sans-serif"
 SERIF = SANS
 MONO = SANS
 
-ISSUE_LABEL = "ISSUE 003"
-MONTH_LABEL = "JUNE 2026"
+ISSUE_LABEL = "ISSUE 004"
+MONTH_LABEL = "JULY 2026"
 FOOTER_URL = "DATUMLABS.XYZ/LENDING-TERMINAL"
-FOOTER_TAG = "REPORTS  &#183;  2026-06-JUNE"
+FOOTER_TAG = "REPORTS  &#183;  2026-07-JULY"
 
 # The Datum Labs logo ships embedded in the Issue 002 cards; reuse it rather
 # than duplicating the base64 blob in every script.
