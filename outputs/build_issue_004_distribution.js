@@ -122,10 +122,11 @@ const ARTICLE_SECTIONS = [
     ],
   },
   {
-    header: "The growth was collateral",
+    header: "Aave grew on collateral, not on its base stablecoin supply",
     paras: [
-      "Aave V3's inflow did not arrive in stablecoins. USDC on the protocol shed $20M in July, a smaller drain than June's −$162M but the same direction. USDT shed $62M and WETH shed $29M. Against those, the collateral reserves grew: weETH +$285M, sUSDe +$145M, WBTC +$124M, wstETH +$113M, cbBTC +$63M.",
-      "Inside the liquid restaking complex the flow was concentrated in weETH at +$285M, while rsETH shed $93M over the same month. The rsETH outflow was specific to that token and does not read as a broader restaking rotation. The stablecoin picture is similar underneath the headline drain: combined outflow across USDC, USDT, and a maturing Pendle sUSDe reserve totaled roughly −$110M, while combined inflow across sUSDe, USDe, USDTB, and a longer-dated Pendle sUSDe forward totaled roughly +$255M. Net stablecoin position grew about +$145M, but the growth landed in the USDe complex, Ethena's synthetic dollar and its tokenized forwards, while USDC and USDT drained.",
+      "Aave V3's inflow arrived in the assets people post to borrow against, not in the assets people lend to earn a supply rate. USDC on the protocol shed $20M in July, a smaller drain than June's −$162M but the same direction. USDT shed $62M and WETH shed $29M. Against those, the volatile collateral reserves grew: weETH +$285M, WBTC +$124M, wstETH +$113M, cbBTC +$63M. Alongside them, sUSDe grew +$145M. sUSDe is a stablecoin by asset class, but on Aave it functions as collateral for Ethena carry trades rather than as lending supply.",
+      "Inside the liquid restaking complex, the flow was concentrated in weETH at +$285M while rsETH shed $93M over the same month. That reads as a within-token rotation rather than a broader restaking move.",
+      "The stablecoin picture has the same shape underneath the headline drain. Combined outflow across USDC, USDT, and a maturing Pendle sUSDe reserve totaled roughly −$110M. Combined inflow across sUSDe, USDe, USDTB, and a longer-dated Pendle sUSDe forward totaled roughly +$255M. Net stablecoin position grew about +$145M, but the growth landed in the USDe complex, Ethena's synthetic dollar and its tokenized forwards, while USDC and USDT drained.",
       "This is the second consecutive month of the same composition: collateral in, base stablecoins and ETH flat to negative. Aave V3's growth this cycle reflects depositors supplying collateral to borrow against. The 3.27% USDC supply rate, 33 bps under the T-bill, is not what draws them. Two months makes it a pattern rather than a June artifact.",
     ],
   },
@@ -220,7 +221,7 @@ const DL_THREADS = [
     title: "Thread 1: Aave carried the sector",
     tweets: [
       "Aave V3 added $649M of net constant-price deposits on Ethereum in July 2026, the only positive reading among the six largest lending protocols large enough to move the sector. The other five combined for −$96M. Strip out Aave V3 and the sector contracted.",
-      "The +$649M came through the collateral reserves. The stablecoin book drained over the same month: USDC −$20M, USDT −$62M, WETH −$29M. Against those, weETH +$285M, sUSDe +$145M, WBTC +$124M, wstETH +$113M, cbBTC +$63M.",
+      "The +$649M arrived in assets supplied to borrow against, not the base stablecoins people lend for yield. USDC −$20M, USDT −$62M, WETH −$29M. Against those: weETH +$285M, WBTC +$124M, wstETH +$113M, cbBTC +$63M, plus sUSDe +$145M, a stablecoin that works as Ethena-carry collateral on Aave rather than lending supply.",
       "Inside the liquid restaking complex the flow was concentrated in weETH at +$285M, while rsETH shed $93M. The rsETH outflow was specific to that token and does not read as a broader restaking rotation.",
       "Net stablecoin position on Aave V3 still grew about +$145M, but the growth was the USDe complex. sUSDe, USDe, USDTB, and Pendle sUSDe forwards drew inflow while USDC and USDT drained. Ethena's synthetic dollar is now a material stablecoin surface on the protocol.",
       "This is the second consecutive month of the same composition: collateral in, base stablecoins and ETH flat to negative. June ran the same shape, USDC down $162M against $845M of collateral.",
@@ -308,7 +309,7 @@ const JOEL_THREADS = [
     title: "Thread 1: the Aave collateral pattern",
     tweets: [
       "This is the second month I have watched Aave V3 carry the entire Ethereum lending sector. In July its +$649M net constant-price flow was effectively the whole story: the other five protocols netted −$96M.",
-      "What keeps pulling me back to the composition is that almost none of it is USDC. weETH +$285M, sUSDe +$145M, WBTC +$124M. USDC actually shed $20M, USDT $62M. The growth is collateral.",
+      "What keeps pulling me back to the composition is that almost none of it is base stablecoins. weETH +$285M, WBTC +$124M, and sUSDe +$145M, which is a dollar but sits on Aave as collateral for the Ethena carry. USDC actually shed $20M, USDT $62M. The growth is collateral to borrow against, not lending supply.",
       "Collateral supplied at scale to the deepest borrow book on Ethereum reads one way to me: depositors are here to borrow against it. A 3.27% USDC rate, 33 bps under the T-bill, is not what pulls that capital in.",
       "The part I did not expect at the start of this cycle is how durable it is. Two months, same shape: collateral in, base stablecoins and ETH flat to negative. That durability is what makes it a pattern rather than a liquidation echo.",
       "The stablecoin growth that did happen went to the USDe complex, sUSDe and USDe and the Pendle forwards, while USDC and USDT drained. That composition shift is the quieter thread I want to keep watching.",
