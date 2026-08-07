@@ -1313,6 +1313,47 @@
         }
       },
       "notes": "88% of Euler V2 curated TVL labeled by curator name; long tail unlabeled per Aug 2026 on-chain investigation."
+    },
+    {
+      "id": "spark_sky_linked_reserves_july_31",
+      "issue": "004",
+      "section_anchors": [
+        "§01"
+      ],
+      "threshold_pct": 0,
+      "historical_wrong_alarms": [
+        "SparkLend does not work this way",
+        "SparkLend and the other five covered protocols structurally different",
+        "category error",
+        "closer to a CDP",
+        "closer in mechanism to a CDP with a governance-set borrow rate",
+        "set by Sky governance rather than by pool utilization",
+        "not by pool utilization on SparkLend itself",
+        "one rate reflects lender-borrower matching, the other reflects a Sky governance decision",
+        "stablecoin supply rate is set by a Sky-linked interest rate model that feeds off Sky governance parameters",
+        "reflects Sky governance",
+        "reflects a Sky governance decision"
+      ],
+      "last_verified_at": "2026-08-07T11:45:07Z",
+      "cited_value": 5,
+      "unit": "count",
+      "rounded_cited_in_prose": 5,
+      "alt_forms_in_prose": [
+        "Five of SparkLend's eighteen reserves",
+        "5 of 18 SparkLend reserves",
+        "five stablecoins",
+        "DAI, USDC, USDT, USDS, and PYUSD",
+        "DAI, USDC, USDT, USDS, PYUSD"
+      ],
+      "cross_check": {
+        "method": "derived_from_snapshot",
+        "snapshot": "content/snapshots/2026-07-spark-reserve-mechanism.json",
+        "derive": "field",
+        "params": {
+          "field_path": "summary.sky_linked_count"
+        }
+      },
+      "notes": "Five of SparkLend's 18 reserves (DAI, USDC, USDT, USDS, PYUSD) use RateTargetBaseInterestRateStrategy: a standard Aave-shape utilization curve whose base rate parameter is set by a Sky-linked rate source (shared contract 0x57027B62, references sUSDS in bytecode) rather than fixed at listing. The other 13 reserves use utilization curves with base rate parameters fixed at listing. Rate on Sky-linked reserves responds to both pool utilization and to Sky Base Rate movements. Bytecode-verified via scripts/query-spark-reserve-mechanism.ts. Alarms scoped to prior over-claims where earlier drafts framed the mechanism as governance-set rather than governance-anchored."
     }
   ]
 }

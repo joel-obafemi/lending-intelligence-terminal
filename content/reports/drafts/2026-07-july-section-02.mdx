@@ -2,14 +2,14 @@
 issue: "004"
 section: "02"
 title: "Rate Compression Across the Sector"
-draft_pass: 1
+draft_pass: 2
 date: 2026-08-04
 snapshot_cutoff: 2026-07-31T23:59:00Z
 ---
 
 <SectionHeading number="02" title="Rate Compression Across the Sector" />
 
-Fluid held the sector's only positive real-yield spread on USDC at the June close, paying depositors 281 bps above the 4-week T-bill. By July 31 it paid 107 bps below the T-bill. Fluid lost more than half its rate lead in a single month while the sector's real-yield deficit deepened by another 38 bps. Stablecoin depositors on DeFi lending markets are being paid less than a T-bill everywhere in the sector, and Fluid's June rate premium is being priced away.
+Fluid held the sector's only positive real-yield spread on USDC at the June close, paying depositors 281 bps above the 4-week T-bill. By July 31 that premium compressed to 106 bps above the T-bill. Fluid gave back more than half its rate lead in a single month while the sector's real-yield deficit deepened by another 38 bps. Stablecoin depositors on DeFi lending markets are being paid less than a T-bill in every pool-based market except Fluid, whose premium over the risk-free rate compressed toward its structural level.
 
 The sector's blended stablecoin supply APY closed July at 2.85%, against a 4-week T-bill of 3.60%. Real Yield Spread: −75 bps. That is deeper than June's −37 bps close and marks two consecutive months of materially negative RYS after May sat close to parity at −0.3 bps.
 
@@ -24,7 +24,7 @@ Fluid still leads the pool-based USDC field at the July close, and by a meaningf
 - Compound V3: 3.19%
 - Euler V2: 3.09%
 
-Fluid's lead over Aave V3 narrowed from 322 bps at June 30 to 139 bps at July 31. Issue 003 called out the +281 bps positive spread over T-bill as the sector's only positive real-yield reading and treated it as evidence of Fluid's structural rate advantage. That framing holds: Fluid's smart lending and smart debt architecture supports higher supply APYs than a pure Aave-style pool at any given utilization, and Fluid still leads the sector at July close by 139 bps over Aave V3. What has changed is the specific magnitude. The +281 bps June spread was an unusually elevated condition on top of Fluid's structural lead, and it did not carry through July. At July 31 Fluid pays 107 bps below the T-bill, and its lead over Aave V3 sits closer to what its structural advantage sustains than what June's exceptional print suggested.
+Fluid's lead over Aave V3 narrowed from 322 bps at June 30 to 139 bps at July 31. Issue 003 called out the +281 bps positive spread over T-bill as the sector's only positive real-yield reading and treated it as evidence of Fluid's structural rate advantage. That framing holds: Fluid's smart lending and smart debt architecture supports higher supply APYs than a pure Aave-style pool at any given utilization, and Fluid still leads the sector at July close by 139 bps over Aave V3. What has changed is the specific magnitude. The +281 bps June spread was an unusually elevated condition on top of Fluid's structural lead, and it did not carry through July. At July 31 Fluid pays 106 bps above the T-bill, and its lead over Aave V3 sits closer to what its structural advantage sustains than what June's exceptional print suggested.
 
 <ChartCard
   src="/reports/charts/2026-07/section-02-usdc-rate-dispersion.svg"
@@ -34,13 +34,13 @@ Fluid's lead over Aave V3 narrowed from 322 bps at June 30 to 139 bps at July 31
 
 ### One methodology caveat on SparkLend
 
-SparkLend's USDC supply APY at July 31 was 3.47%, which reads as mid-pack against the four pool-based markets above. Comparing it as a like-for-like is misleading. SparkLend's stablecoin supply rate is set by a Sky-linked interest rate model that feeds off Sky governance parameters, not by pool utilization on SparkLend itself. The SparkLend subsection in per-protocol coverage covers the mechanism in full. For any cross-protocol rate comparison in this section, the four pool-based markets (Aave V3, Fluid, Compound V3, Euler V2) are the fair comparison set. SparkLend's rate reflects a different input entirely.
+SparkLend's USDC supply APY at July 31 was 3.47%. Comparing it as a like-for-like against the four pool-based markets above is incomplete without accounting for one mechanism difference. Five of SparkLend's stablecoin reserves (DAI, USDC, USDT, USDS, PYUSD) use a utilization-curve IRM whose base rate parameter is set by a Sky-linked rate source rather than fixed at listing. That means SparkLend's stablecoin rates respond to both pool utilization and to Sky governance decisions that shift the base rate anchor. Aave, Fluid, Compound, and Euler set their USDC IRM base rate at listing and revisit it rarely, so their rates move with utilization alone. The comparison isn't invalid; it's incomplete without accounting for the Sky-anchored base on Spark's side. The SparkLend subsection in per-protocol coverage covers the mechanism in full.
 
 ### What the compression means
 
 Two forces are converging on the sector's stablecoin markets. First, T-bill yields held steady around 3.60% through July, providing a hard floor for any risk-free comparison. Second, stablecoin lending rates across the pool-based markets compressed toward one another and toward that floor. Even Fluid, whose structural capital efficiency has kept it above the pack, gave back most of the extra premium it carried at the June close.
 
-The result is a sector where stablecoin lending pays less than a T-bill in every pool-based market, and where the dispersion across those markets is compressing. At the June 30 close the spread from top to bottom of the pool-based USDC field was 322 bps (Fluid 6.41% to Aave V3 3.19%). At July 31 it was 157 bps (Fluid 4.66% to Euler V2 3.09%). The dispersion halved.
+The result is a sector where stablecoin lending pays less than a T-bill in every pool-based market except Fluid, and where the dispersion across those markets is compressing. At the June 30 close the spread from top to bottom of the pool-based USDC field was 322 bps (Fluid 6.41% to Aave V3 3.19%). At July 31 it was 157 bps (Fluid 4.66% to Euler V2 3.09%). The dispersion halved.
 
 Issue 003 closed with RYS at −37 bps and framed it as a compression signal. Issue 004 closes with it at −75 bps. The compression has followed through, and it is now the second consecutive month of deep negative real yield on the sector's largest asset class. That matters more than the specific level. Compression is now a trend, not a data point.
 

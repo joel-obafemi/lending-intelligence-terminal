@@ -3,7 +3,7 @@ issue: "004"
 section: "04"
 subsection: "SparkLend"
 title: "SparkLend"
-draft_pass: 4
+draft_pass: 5
 date: 2026-08-04
 snapshot_cutoff: 2026-07-31T23:59:00Z
 ---
@@ -18,7 +18,7 @@ The rest of this subsection unpacks the SparkLend stablecoin rate mechanism itse
 
 ### SparkLend's stablecoin book runs on a different clock
 
-Five of SparkLend's eighteen reserves price their borrow rate off a single external anchor rather than off pool utilization. All five are stablecoins. All five stepped together on July 23. The mechanism showed up in the data that day.
+Five of SparkLend's eighteen reserves price their borrow rate off a utilization curve whose base rate parameter is anchored to a Sky-linked rate source rather than fixed at listing. All five are stablecoins. All five stepped on July 23, by different amounts, when Sky moved that anchor. The mechanism showed up in the data that day.
 
 At 14:43 UTC on July 23, 2026, Sky's weekly Atlas Edit executive spell executed on-chain. In that single transaction, Sky cut the Sky Savings Rate from 3.60% to 3.52%, tightened the Sky Spread from 0.10% to 0.00%, and reduced the total wholesale spread that Sky Agents pay to borrow USDS from SSR + 0.30% to SSR + 0.20%. The Sky Base Rate, which is the wholesale cost of capital that SparkLend as a Sky Agent pays for its USDS inventory, dropped from 3.90% to 3.72%. 18 bps, one transaction, one governance decision.
 
@@ -30,15 +30,15 @@ SparkLend's on-chain USDC borrow rate followed the same day. The retail rate ste
   sources={["2026-07-sky-base-rate-daily.json", "2026-07-spark-usdc-borrow-daily.json", "2026-07-spark-reserve-mechanism.json"]}
 />
 
-The chart makes the July 23 pass-through visible. Sky's governance decision propagated to SparkLend's user-facing rate in the same transaction cycle. The distance between the two lines, SparkLend's markup over the Sky Base Rate, narrowed from 0.71 pp on July 22 to 0.56 pp on July 23. SparkLend absorbed a portion of the wholesale cut into its own spread.
+The chart makes the July 23 pass-through visible. Sky's governance decision propagated to SparkLend's user-facing rate in the same transaction cycle. SparkLend's markup over the Sky Base Rate (SparkLend USDC retail borrow minus Sky Base Rate) widened from 0.52 pp on July 22 to 0.56 pp on July 23. Sky cut the wholesale rate by 18 bps; SparkLend passed 14 bps through to its USDC retail rate and absorbed the remaining 4 bps into a slightly wider markup.
 
-The pass-through is not USDC-specific. On-chain reads of SparkLend's eighteen reserves show that DAI, USDC, USDT, USDS, and PYUSD all point their variable-borrow interest rate model at a single Sky-linked rate source contract at address 0x57027B62. That contract references sUSDS in its bytecode and derives its rate from the Sky Base Rate. DAI and USDS share the same interest rate model contract; USDC, USDT, and PYUSD each have their own model contract that reads from the same rate source. All five stablecoins stepped roughly −18 bps at the July 23 Atlas Edit execution. None of the other thirteen SparkLend reserves moved that day.
+The pass-through is not USDC-specific. On-chain reads of SparkLend's eighteen reserves show that DAI, USDC, USDT, USDS, and PYUSD all point their variable-borrow interest rate model at a single Sky-linked rate source contract at address 0x57027B62. That contract references sUSDS in its bytecode and derives its rate from the Sky Base Rate. DAI and USDS share the same interest rate model contract; USDC, USDT, and PYUSD each have their own model contract that reads from the same rate source. The five Sky-linked reserves stepped by different amounts on July 23, depending on how much of the Sky Base Rate move passed through to each retail rate and how each pool's utilization moved that day. DAI and USDS both stepped 18.4 bps, tracking the 18 bps wholesale Base Rate move with utilization roughly stable. USDC stepped 13.8 bps, since SparkLend absorbed 4 bps into its local markup on USDC. PYUSD stepped 8 bps, a partial pass-through. USDT stepped 48.6 bps because its pool utilization dropped from 93.0% to 83.6% on the same day, stacking a utilization-driven move on top of the Sky-driven anchor shift. None of the other thirteen SparkLend reserves moved materially that day.
 
 The other thirteen reserves are the collateral book: WETH, wstETH, WBTC, weETH, rETH, cbBTC, LBTC, tBTC, ezETH, rsETH, GNO, sDAI, and sUSDS. Each uses a standard Aave-shape interest rate strategy with base rate, slope 1, slope 2, and optimal utilization parameters set at listing. When utilization on these markets moves, the rate moves. When utilization holds, the rate holds. They are ordinary money markets.
 
-SparkLend is therefore not a single-mechanism protocol. It is a hybrid: a Sky-linked stablecoin book bolted onto a standard Aave-style collateral book. The stablecoin side derives its rate from Sky's D3M-supplied USDS wholesale inventory, priced governance-first. The collateral side clears on utilization curves like any Aave fork.
+SparkLend is a hybrid. Its Sky-linked stablecoin reserves use Aave-shape utilization curves whose base rate parameter is anchored to a Sky-linked rate source that Sky governance can move via Atlas Edit executive spells. Its collateral book of WETH, wstETH, WBTC, and the rest uses standard Aave-shape utilization curves with base rate parameters fixed at listing. On the collateral side, utilization is the whole input. On the Sky-linked stablecoin side, utilization is one of two inputs; the other is Sky governance.
 
-Aave V3, Morpho V1, Fluid, Compound V3, and Euler V2 all set their USDC borrow rates through utilization curves. SparkLend's collateral book follows the same convention. SparkLend's stablecoin book does not. Comparing Fluid's 4.66% supply APY on USDC to SparkLend's 3.47% supply APY on USDC is not a fair like-for-like: the two rates are set by different mechanisms responding to different inputs. Fluid's rate reflects lender-borrower matching. SparkLend's rate reflects Sky governance.
+Aave V3, Morpho V1, Fluid, Compound V3, and Euler V2 set their USDC IRM base rate at listing and revisit it rarely, so their rates move with utilization alone. SparkLend's collateral book follows the same convention. Its Sky-linked stablecoin reserves add a second input: the base rate anchor moves whenever Sky's Atlas Edit adjusts the Sky Base Rate. Comparing Fluid's 4.66% supply APY on USDC to SparkLend's 3.47% supply APY on USDC is influenced by both pool utilization and, in SparkLend's case, that Sky-governance-set anchor. SparkLend's rate can shift on days when its pool utilization has not moved, like July 23, in ways the other four protocols' rates cannot.
 
 ### What August tests
 
