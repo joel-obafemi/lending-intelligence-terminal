@@ -23,7 +23,7 @@ export interface EngineRunResult {
   digest?: {
     alertCount: number;
     recipients: string[];
-    status: "sent" | "skipped-empty" | "failed";
+    status: "sent" | "skipped-empty" | "skipped-no-key" | "failed";
     error?: string;
   };
 }
@@ -94,6 +94,28 @@ export class AlertEngine {
       windowEndMs: now.getTime(),
       dashboardBaseUrl: this.env.PUBLIC_DASHBOARD_BASE_URL,
     });
+
+    // Telegram-only deployments don't have Resend wired up. Short-circuit
+    // before the send attempt so the daily run's status reads as
+    // intentionally skipped, not failed. Same recording shape so /digest
+    // history queries still work.
+    if (!this.env.RESEND_API_KEY) {
+      await recordDigestRun(this.env, {
+        ran_at: now.getTime(),
+        alerts_count: digest.alertCount,
+        recipients: recipients.join(","),
+        status: "skipped-empty",
+        error_message: "RESEND_API_KEY not configured (Telegram-only mode)",
+      });
+      console.log(
+        `engine: RESEND_API_KEY not set, skipping email digest (Telegram alerts already dispatched)`,
+      );
+      return {
+        alertCount: digest.alertCount,
+        recipients,
+        status: "skipped-no-key",
+      };
+    }
 
     if (recipients.length === 0) {
       await recordDigestRun(this.env, {

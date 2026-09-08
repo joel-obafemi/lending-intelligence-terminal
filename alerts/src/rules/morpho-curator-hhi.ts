@@ -13,12 +13,25 @@ import { readLatest, writeLatest } from "../state/kv";
 import { MorphoGraphQLClient, type MorphoCuratorShare } from "../sources/morpho";
 import { formatUsdShort } from "../dispatchers/format";
 
+/**
+ * HHI methodology version. "v1v2-combined" aggregates MetaMorpho (V1) and
+ * Vault V2 curator books, per the Issue 003 erratum; earlier state was
+ * V1-only and reads ~2x more concentrated. When the stored state predates
+ * the current methodology, the rule re-seeds silently instead of firing a
+ * spurious cross-methodology delta, and 7-day comparisons skip snapshots
+ * recorded under the old methodology.
+ */
+const METHODOLOGY = "v1v2-combined";
+
 interface LatestState {
   hhi: number;
   top3CombinedPct: number;
   top1Name: string;
   top1Pct: number;
   recordedAt: number;
+  methodology?: string;
+  /** Epoch ms since which D1 snapshots are on the current methodology. */
+  methodologySince?: number;
 }
 
 type Trigger =
@@ -36,7 +49,7 @@ export function createMorphoCuratorHhiRule(deps: MorphoHhiRuleDeps = {}): AlertR
     id: "morpho_curator_hhi",
     name: "Morpho curator HHI",
     description:
-      "Fires on threshold crossings (2500 / 3000), 7-day delta > 100 points, or > 1pp top-3 share change in 24h.",
+      "Combined V1+V2 curator HHI. Fires on threshold crossings (2500 / 3000), 7-day delta > 100 points, or > 1pp top-3 share change in 24h.",
     schedule: "daily",
     cooldownHours: 24,
 
@@ -69,17 +82,25 @@ export function createMorphoCuratorHhiRule(deps: MorphoHhiRuleDeps = {}): AlertR
         "global",
       );
 
+      const sameMethodology = prev?.methodology === METHODOLOGY;
+      const methodologySince = sameMethodology
+        ? prev?.methodologySince ?? 0
+        : nowMs;
+
       await writeLatest<LatestState>(ctx.env, "morpho_curator_hhi", "global", {
         hhi: result.hhi,
         top3CombinedPct,
         top1Name: top3[0]?.name ?? "",
         top1Pct: top3[0]?.sharePct ?? 0,
         recordedAt: nowMs,
+        methodology: METHODOLOGY,
+        methodologySince,
       });
 
-      if (!prev) {
+      if (!prev || !sameMethodology) {
         console.log(
-          `morpho_curator_hhi: seeded baseline HHI=${result.hhi.toFixed(0)}, top1=${top3[0]?.name ?? "n/a"}`,
+          `morpho_curator_hhi: ${prev ? "re-seeded on methodology change" : "seeded baseline"} ` +
+            `HHI=${result.hhi.toFixed(0)}, top1=${top3[0]?.name ?? "n/a"}`,
         );
         return [];
       }
@@ -94,7 +115,11 @@ export function createMorphoCuratorHhiRule(deps: MorphoHhiRuleDeps = {}): AlertR
 
       const sevenDaysAgoMs = nowMs - 7 * 24 * 3600 * 1000;
       const weekAgo = await findHhiSnapshotAtOrBefore(ctx.env, sevenDaysAgoMs);
-      if (weekAgo && Math.abs(result.hhi - weekAgo.hhi) > HHI_7D_DELTA_TRIGGER) {
+      if (
+        weekAgo &&
+        weekAgo.snapshot_at >= methodologySince &&
+        Math.abs(result.hhi - weekAgo.hhi) > HHI_7D_DELTA_TRIGGER
+      ) {
         triggers.push({
           kind: "7d-delta",
           deltaPoints: result.hhi - weekAgo.hhi,
@@ -173,11 +198,18 @@ function buildEvent(args: BuildEventArgs): AlertEvent {
       "Large 24-hour shifts in top-3 share point to fast-moving allocator activity.";
   }
 
+  // The displayed prior must match the trigger's comparison window: the
+  // 7-day delta compares against the D1 snapshot from a week back, while
+  // the other triggers compare against yesterday's state. Mixing the two
+  // produced "moved -112 points" next to "prior <unchanged>".
+  const priorHhi = primary.kind === "7d-delta" ? primary.prior : args.prevHhi;
+  const priorLabel = primary.kind === "7d-delta" ? "7d prior" : "prior";
+
   // Voice rules: no em-dashes, no first-person plural.
   const lines = [
     `Morpho's curator HHI just ${action}.`,
     "",
-    `HHI: ${args.prevHhi.toFixed(0)} to ${result.hhi.toFixed(0)}`,
+    `HHI: ${priorHhi.toFixed(0)} to ${result.hhi.toFixed(0)}`,
     `Top 3 curators: ${namesLine} (${top3CombinedPct.toFixed(1)}% combined)`,
     "",
     interpretation,
@@ -188,7 +220,7 @@ function buildEvent(args: BuildEventArgs): AlertEvent {
   if (suggestedTweet.length > 280) {
     suggestedTweet = [
       `Morpho's curator HHI just ${action}.`,
-      `HHI ${args.prevHhi.toFixed(0)} to ${result.hhi.toFixed(0)}. Top 3: ${namesLine} (${top3CombinedPct.toFixed(1)}%).`,
+      `HHI ${priorHhi.toFixed(0)} to ${result.hhi.toFixed(0)}. Top 3: ${namesLine} (${top3CombinedPct.toFixed(1)}%).`,
       dashboardUrl,
     ].join("\n");
   }
@@ -198,7 +230,7 @@ function buildEvent(args: BuildEventArgs): AlertEvent {
 
   const headline = `Morpho curator HHI ${action} (now ${result.hhi.toFixed(0)})`;
   const body = [
-    `HHI: ${result.hhi.toFixed(0)} (prior ${args.prevHhi.toFixed(0)})`,
+    `HHI: ${result.hhi.toFixed(0)} (${priorLabel} ${priorHhi.toFixed(0)})`,
     `Top 3: ${namesLine}`,
     `Top 3 combined: ${top3CombinedPct.toFixed(1)}%`,
     `Curated TVL: ${formatUsdShort(result.totalAssetsUsd)} across ${result.vaultCount.toLocaleString()} vaults`,

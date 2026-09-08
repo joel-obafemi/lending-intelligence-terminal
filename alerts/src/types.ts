@@ -6,7 +6,7 @@ export type Protocol =
   | "compound-v3"
   | "euler-v2";
 export type Severity = "INFO" | "NORMAL" | "WARNING" | "CRITICAL";
-export type Schedule = "fast" | "hourly" | "daily";
+export type Schedule = "fast" | "hourly" | "daily" | "weekly";
 
 export interface Env {
   ALERTS_DB: D1Database;
@@ -19,8 +19,12 @@ export interface Env {
 
   /** Postgres connection string for the liquidator-economy Neon DB. */
   LIQUIDATOR_DATABASE_URL?: string;
+  /** Postgres connection string for the moonwell-dashboard Neon DB. */
+  MOONWELL_DATABASE_URL?: string;
 
   PUBLIC_DASHBOARD_BASE_URL: string;
+  /** Dashboard base URL for Moonwell-rule links. Distinct product = distinct base URL. */
+  MOONWELL_DASHBOARD_BASE_URL?: string;
   /** Comma-separated recipients for the daily digest. Falls back to RESEND_DIGEST_TO. */
   DIGEST_RECIPIENTS?: string;
   /** Sender address for the daily digest (must be verified in Resend). */
