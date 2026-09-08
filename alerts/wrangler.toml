@@ -7,12 +7,16 @@ compatibility_flags = ["nodejs_compat"]
 [observability]
 enabled = true
 
-# Cron triggers. The handler dispatches to fast / hourly / daily rule sets.
+# Cron triggers. The handler dispatches to fast / hourly / daily / weekly
+# rule sets. "0 10 * * 1" = Monday 10:00 UTC, the Moonwell weekly recap window
+# (catches US East 6am scroll and EU 11am late-morning; intentionally avoids
+# Anthias Labs' Thursday recap so the two feeds add signal rather than echo).
 [triggers]
 crons = [
   "*/5 * * * *",
   "0 */1 * * *",
-  "0 0 * * *"
+  "0 0 * * *",
+  "0 10 * * 1"
 ]
 
 # D1 binding. Replace database_id after `wrangler d1 create datumlabs-alerts`.
@@ -28,5 +32,10 @@ id = "be6d7e2dd8aa43419b465132d316b8d3"
 
 [vars]
 PUBLIC_DASHBOARD_BASE_URL = "https://datumlab.xyz/lending-terminal"
+MOONWELL_DASHBOARD_BASE_URL = "https://joelobafemi.xyz/moonwell"
 DIGEST_FROM = "alerts@datumlab.xyz"
 DIGEST_RECIPIENTS = "datumlabss@gmail.com"
+
+# Secrets (set via `wrangler secret put`):
+#   TELEGRAM_BOT_TOKEN, TELEGRAM_CHAT_ID, RESEND_API_KEY,
+#   FRED_API_KEY, LIQUIDATOR_DATABASE_URL, MOONWELL_DATABASE_URL

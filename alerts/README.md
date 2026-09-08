@@ -1,18 +1,25 @@
 # datumlabs-alerts
 
-Cloudflare Worker that evaluates lending-protocol alert rules against
-DefiLlama and dispatches tweet-ready alerts to Telegram. Covers Aave V3,
-Spark, Morpho, and Fluid on Ethereum mainnet. Companion to the
-`lending-intelligence-terminal` Next.js dashboard.
+Cloudflare Worker that evaluates protocol alert rules on a schedule and
+dispatches tweet-ready alerts to Telegram, with a daily digest email.
 
-The Worker lives in this directory and is deployed independently of the
-dashboard. The full design rationale, voice rules, and the seven launch
-rules are documented in `../BUILD_SPEC_alert_system.md`.
+It is multi-product. Today it covers the Lending Intelligence Terminal
+(Aave V3, Spark, Morpho, Fluid on Ethereum mainnet) and the Moonwell
+dashboard (Base, OP Mainnet, Ethereum). The Worker lives in this
+directory and deploys independently of either dashboard.
+
+**New here? Read [`ARCHITECTURE.md`](./ARCHITECTURE.md) first.** It is the
+build handbook: the abstractions, how to onboard another dashboard, and
+the production tuning lessons (noise floors, price-vs-units, cooldown key
+design) that are not obvious from the code. This README covers operating
+the Worker that already exists. `../BUILD_SPEC_alert_system.md` holds the
+original design spec.
 
 ## Status
 
-Phase 1 + Phase 2 + Phase 3 live. All seven launch rules running plus
-the daily digest email:
+25 rules live across two products, plus the daily digest email.
+
+Lending terminal rules:
 
 | Rule                          | Schedule | Cooldown | Severity                |
 |-------------------------------|----------|----------|-------------------------|
@@ -23,9 +30,19 @@ the daily digest email:
 | `real_yield_spread_regime`    | hourly   | 24h      | NORMAL / CRITICAL       |
 | `liquidation_cascade`         | hourly   | 6h       | WARNING / CRITICAL      |
 | `morpho_curator_hhi`          | daily    | 24h      | NORMAL / WARNING        |
+| `whale_liquidation`, `cascade_burst`, `daily_volume_spike` | mixed | mixed | NORMAL / WARNING |
+
+Moonwell rules (15) live in `src/rules/moonwell-*.ts` and read the
+Moonwell dashboard's own Neon tables via `MOONWELL_DATABASE_URL`. They
+cover TVL and vault thresholds, 7-day supply and borrow deltas, OEV
+revenue and wrapper capture, liquidation whales and daily spikes, monthly
+and all-time-high revenue, a Monday weekly recap, and
+`moonwell_dashboard_audit_fail`, which tails the dashboard's own coverage
+audit and is the single highest-value rule in the system.
 
 Phase 4 (public `/pulse` page + Beehiiv subscriber signup) is the only
-remaining phase.
+remaining phase of the original spec. See section 9 of `ARCHITECTURE.md`
+for the roadmap beyond it.
 
 ## Provisioned resources
 

@@ -79,3 +79,57 @@ CREATE TABLE IF NOT EXISTS digest_runs (
   error_message TEXT
 );
 CREATE INDEX IF NOT EXISTS idx_digest_runs_at ON digest_runs(ran_at DESC);
+
+-- ─── Moonwell additions ────────────────────────────────────────────────
+
+-- Per-market supply/borrow snapshots for the 7-day Δ rules. Stored in
+-- token units (not USD) so price moves don't muddy the signal. Each row
+-- is (chain, market_symbol, snapshot_at). Self-seeds on first run; the
+-- rule needs ≥7 days of accumulated rows before it can compare.
+CREATE TABLE IF NOT EXISTS moonwell_market_snapshots (
+  chain TEXT NOT NULL,
+  market_symbol TEXT NOT NULL,
+  snapshot_at INTEGER NOT NULL,     -- unix epoch ms
+  total_supply REAL NOT NULL,       -- underlying-token units
+  total_borrow REAL NOT NULL,
+  supply_usd REAL NOT NULL,         -- for display in fired alerts
+  borrow_usd REAL NOT NULL,
+  PRIMARY KEY (chain, market_symbol, snapshot_at)
+);
+CREATE INDEX IF NOT EXISTS idx_mw_market_snap_at
+  ON moonwell_market_snapshots(snapshot_at DESC);
+CREATE INDEX IF NOT EXISTS idx_mw_market_snap_lookup
+  ON moonwell_market_snapshots(chain, market_symbol, snapshot_at DESC);
+
+-- All-time-high tracker for daily protocol revenue. One row per metric_key
+-- (currently just "daily_protocol_revenue_usd"). The rule reads + updates
+-- atomically per evaluation.
+CREATE TABLE IF NOT EXISTS moonwell_revenue_ath (
+  metric_key TEXT PRIMARY KEY,      -- "daily_protocol_revenue_usd"
+  peak_value REAL NOT NULL,
+  peak_date TEXT NOT NULL,          -- ISO YYYY-MM-DD
+  updated_at INTEGER NOT NULL
+);
+
+-- Daily liquidation count history. Drives the spike rule's 30d rolling
+-- mean + stddev. One row per UTC day per chain.
+CREATE TABLE IF NOT EXISTS moonwell_liquidation_daily_count (
+  chain TEXT NOT NULL,
+  day TEXT NOT NULL,                -- ISO YYYY-MM-DD UTC
+  count INTEGER NOT NULL,
+  volume_usd REAL NOT NULL,
+  largest_usd REAL NOT NULL,
+  PRIMARY KEY (chain, day)
+);
+CREATE INDEX IF NOT EXISTS idx_mw_liq_count_day
+  ON moonwell_liquidation_daily_count(day DESC);
+
+-- Wrapper-specific "first time hitting 70%" tracker so the rule never
+-- double-fires for the same wrapper. Cleared only by truncate.
+CREATE TABLE IF NOT EXISTS moonwell_oev_wrapper_capture_fires (
+  wrapper_address TEXT PRIMARY KEY,
+  wrapper_label TEXT NOT NULL,
+  chain TEXT NOT NULL,
+  capture_rate_pct REAL NOT NULL,
+  fired_at INTEGER NOT NULL
+);
